@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>518330283384-rg6sb9ek7vsc7gf8s9j1mnnng5vrj9l1.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.518330283384-rg6sb9ek7vsc7gf8s9j1mnnng5vrj9l1</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDPQxT4skbrhahQHEMoDbgDpJvpVKG9BVY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>518330283384</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.playposse.sociallearning.socialLearning</string>
+	<key>PROJECT_ID</key>
+	<string>social-learning-32741</string>
+	<key>STORAGE_BUCKET</key>
+	<string>social-learning-32741.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:518330283384:ios:2bf27cb952c003a0fd048d</string>
+</dict>
+</plist>

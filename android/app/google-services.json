@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "518330283384",
+    "project_id": "social-learning-32741",
+    "storage_bucket": "social-learning-32741.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:518330283384:android:602df8be06096757fd048d",
+        "android_client_info": {
+          "package_name": "com.playposse.sociallearning.social_learning"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "518330283384-41akqio9j5lhuqp5pb4e0jp29qo30ttp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDa2M7Zwf7aKi_Db8Nn9G0ncJNZAMRAFwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "518330283384-41akqio9j5lhuqp5pb4e0jp29qo30ttp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "518330283384-rg6sb9ek7vsc7gf8s9j1mnnng5vrj9l1.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.playposse.sociallearning.socialLearning"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
