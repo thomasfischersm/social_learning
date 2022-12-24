@@ -37,7 +37,7 @@ class SocialLearningApp extends StatelessWidget {
       initialRoute: '/landing',
       routes: {
         '/landing': (context) => const LandingPage(),
-        '/home': (context) =>  const MyHomePage(title: 'Flutter Demo Home Page'),
+        '/home': (context) =>  const MyHomePage(title: 'Flutter Demo Hoe Page'),
         '/sign_in': (context) => SignInPage(),
         '/sign-out': (context) {
           return SignOutScreen();
