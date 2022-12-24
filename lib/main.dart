@@ -4,10 +4,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/ui_foundation/application_state.dart';
+import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
+import 'package:social_learning/ui_foundation/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
 import 'ui_foundation/bottom_bar.dart';
 import 'firebase_options.dart';
+import 'ui_foundation/profile_page.dart';
+import 'ui_foundation/sign_out_page.dart';
 
 // good sign in code lab
 // https://firebase.google.com/codelabs/firebase-get-to-know-flutter#4
@@ -37,11 +41,10 @@ class SocialLearningApp extends StatelessWidget {
       initialRoute: '/landing',
       routes: {
         '/landing': (context) => const LandingPage(),
-        '/home': (context) =>  const MyHomePage(title: 'Flutter Demo Hoe Page'),
+        '/home': (context) => const HomePage(),
+        '/profile': (context) => const ProfilePage(),
         '/sign_in': (context) => SignInPage(),
-        '/sign-out': (context) {
-          return SignOutScreen();
-        },
+        '/sign_out': (context) => SignOutPage(),
       },
     );
   }
@@ -135,8 +138,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       Navigator.pushNamed(context, '/sign-in');
                     }
                   },
-                  child:
-                      Text(applicationState.isLoggedIn ? 'sign out' : 'sign in'));
+                  child: Text(
+                      applicationState.isLoggedIn ? 'sign out' : 'sign in'));
             }),
           ],
         ),
@@ -152,16 +155,3 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class SignOutScreen extends StatelessWidget {
-  const SignOutScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-        onPressed: () {
-          auth.FirebaseAuth.instance.signOut();
-          Navigator.pushNamed(context, '/home');
-        },
-        child: const Text("Ghost myself"));
-  }
-}

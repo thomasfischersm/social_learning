@@ -35,7 +35,6 @@ class LandingPage extends StatelessWidget {
                 const Divider(),
                 TextButton(
                     onPressed: () {
-                      print('got button');
                       Navigator.of(context)
                           .pushNamed(NavigationEnum.sign_in.route);
                     },
