@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 import '../data/course.dart';
-import 'application_state.dart';
+import '../state/application_state.dart';
 import 'bottom_bar.dart';
 import 'navigation_enum.dart';
 

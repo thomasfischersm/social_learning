@@ -3,9 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:social_learning/ui_foundation/application_state.dart';
+import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
+import 'package:social_learning/ui_foundation/lesson_list_page.dart';
 import 'package:social_learning/ui_foundation/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
 import 'ui_foundation/bottom_bar.dart';
@@ -21,8 +23,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(ChangeNotifierProvider(
-    create: (context) => ApplicationState(),
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => ApplicationState()),
+      ChangeNotifierProvider(create: (context) => LibraryState())
+    ],
     builder: ((context, child) => const SocialLearningApp()),
   ));
 }
@@ -43,6 +48,7 @@ class SocialLearningApp extends StatelessWidget {
         '/landing': (context) => const LandingPage(),
         '/home': (context) => const HomePage(),
         '/profile': (context) => const ProfilePage(),
+        '/lesson_list': (context) => const LessonListPage(),
         '/sign_in': (context) => SignInPage(),
         '/sign_out': (context) => SignOutPage(),
       },
@@ -154,4 +160,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_learning/data/course.dart';
+import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 
-import '../data/course.dart';
-import 'application_state.dart';
 import 'navigation_enum.dart';
 
 class HomePage extends StatefulWidget {
@@ -44,24 +44,24 @@ class HomePageState extends State<HomePage> {
                     'Pick a course',
                     style: Theme.of(context).textTheme.headline4,
                   ),
-                  Consumer<ApplicationState>(
-                    builder: (context, applicationState, child) {
+                  Consumer<LibraryState>(
+                    builder: (context, libraryState, child) {
                       return DropdownButton<Course>(
                           icon: const Icon(Icons.arrow_downward),
-                          value: applicationState.selectedCourse,
-                          items: applicationState.availableCourses
+                          value: libraryState.selectedCourse,
+                          items: libraryState.availableCourses
                               .map<DropdownMenuItem<Course>>((Course value) {
                             return DropdownMenuItem<Course>(
                                 value: value, child: Text(value.title));
                           }).toList(),
                           onChanged: (Course? value) {
-                            applicationState.selectedCourse = value;
+                            libraryState.selectedCourse = value;
                           });
                     },
                   ),
-                  Consumer<ApplicationState>(
-                    builder: (context, value, child) {
-                      if (value.isCourseSelected) {
+                  Consumer<LibraryState>(
+                    builder: (context, libraryState, child) {
+                      if (libraryState.isCourseSelected) {
                         return TextButton(
                           onPressed: () => Navigator.pushNamed(
                               context, NavigationEnum.lesson_list.route),

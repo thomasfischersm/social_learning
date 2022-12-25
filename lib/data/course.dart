@@ -1,15 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Course {
-  var id;
-  var title;
-  var creatorId;
+  String? id;
+  String title;
+  String creatorId;
 
   Course(this.id, this.title, this.creatorId);
 
-  Course.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e) {
-    id = e.id;
-    title = e.data()['title'] as String;
-    creatorId = e.data()['creatorId'] as String;
-  }
+  Course.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e)
+      : id = e.id,
+        title = e.data()['title'] as String,
+        creatorId = e.data()['creatorId'] as String ;
 }

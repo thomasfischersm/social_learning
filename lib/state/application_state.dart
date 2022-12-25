@@ -24,28 +24,6 @@ class ApplicationState extends ChangeNotifier {
 
   bool get isLoggedIn => _loggedIn;
 
-  bool get isCourseSelected => _selectedCourse != null;
-
-  Course? _selectedCourse;
-
-  Course? get selectedCourse => _selectedCourse;
-
-  set selectedCourse(Course? course) {
-    _selectedCourse = course;
-    notifyListeners();
-  }
-
-  var _availableCourses = <Course>[];
-  bool _isCourseListLoaded = false;
-
-  List<Course> get availableCourses {
-    if (!_isCourseListLoaded) {
-      _isCourseListLoaded = true;
-      loadCourseList();
-    }
-    return _availableCourses;
-  }
-
   Future<void> init() async {
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
@@ -60,24 +38,6 @@ class ApplicationState extends ChangeNotifier {
       } else {
         _loggedIn = true;
       }
-      notifyListeners();
-    });
-  }
-
-  Future<void> loadCourseList() async {
-    // Create courses.
-    // FirebaseFirestore.instance.collection('courses').add(<String, dynamic>{
-    //   'title': 'Argentine Tango',
-    //   'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
-    // });
-
-    FirebaseFirestore.instance
-        .collection('courses')
-        .orderBy('title', descending: false)
-        .snapshots()
-        .listen((snapshot) {
-      _availableCourses =
-          snapshot.docs.map((e) => Course.fromSnapshot(e)).toList();
       notifyListeners();
     });
   }
