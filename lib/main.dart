@@ -7,6 +7,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
+import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/lesson_list_page.dart';
 import 'package:social_learning/ui_foundation/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
@@ -49,8 +50,9 @@ class SocialLearningApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/profile': (context) => const ProfilePage(),
         '/lesson_list': (context) => const LessonListPage(),
+        '/lesson_detail': (context) => const LessonDetailPage(),
         '/sign_in': (context) => SignInPage(),
-        '/sign_out': (context) => SignOutPage(),
+        '/sign_out': (context) => const SignOutPage(),
       },
     );
   }

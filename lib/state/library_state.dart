@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 class LibraryState extends ChangeNotifier {
   bool get isCourseSelected => _selectedCourse != null;
@@ -84,9 +83,34 @@ class LibraryState extends ChangeNotifier {
           .snapshots()
           .listen((snapshot) {
         _lessons = snapshot.docs.map((e) => Lesson.fromSnapshot(e)).toList();
-        print('results: ${snapshot.docs.length}');
         notifyListeners();
       });
     }
+  }
+
+  Lesson? findLesson(String lessonId) {
+    return _lessons?.firstWhere((lesson) => lesson.id == lessonId);
+  }
+
+  Lesson? findPreviousLesson(Lesson? currentLesson) {
+    List<Lesson>? lessons = _lessons;
+    if (lessons != null && currentLesson != null) {
+      var currentIndex = lessons.indexOf(currentLesson);
+      if (currentIndex > 0) {
+        return lessons[currentIndex - 1];
+      }
+    }
+    return null;
+  }
+
+  Lesson? findNextLesson(Lesson? currentLesson) {
+    List<Lesson>? lessons = _lessons;
+    if (lessons != null && currentLesson != null) {
+      var currentIndex = lessons.indexOf(currentLesson);
+      if (currentIndex + 1 < lessons.length) {
+        return lessons[currentIndex + 1];
+      }
+    }
+    return null;
   }
 }

@@ -1,8 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
+import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
+import 'package:social_learning/ui_foundation/navigation_enum.dart';
 
 class LessonListPage extends StatefulWidget {
   const LessonListPage({super.key});
@@ -16,6 +18,13 @@ class LessonListPage extends StatefulWidget {
 class LessonListState extends State<LessonListPage> {
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<LibraryState>(context, listen: false).selectedCourse ==
+        null) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        Navigator.pushNamed(context, NavigationEnum.home.route);
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(title:
           Consumer<LibraryState>(builder: (context, libraryState, child) {
@@ -30,8 +39,17 @@ class LessonListState extends State<LessonListPage> {
                 return ListView.builder(
                     itemCount: libraryState.lessons?.length ?? 0,
                     itemBuilder: (context, index) {
-                      return Text(
-                          libraryState.lessons?[index].title ?? 'error');
+                      return InkWell(
+                          onTap: () {
+                            Lesson? lesson = libraryState.lessons?[index];
+                            if (lesson != null) {
+                              Navigator.pushNamed(
+                                  context, NavigationEnum.lesson_detail.route,
+                                  arguments: LessonDetailArgument(lesson.id));
+                            }
+                          },
+                          child: Text(
+                              libraryState.lessons?[index].title ?? 'error'));
                     });
               }))),
     );
