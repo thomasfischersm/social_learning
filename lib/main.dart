@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
@@ -27,7 +28,8 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => ApplicationState()),
-      ChangeNotifierProvider(create: (context) => LibraryState())
+      ChangeNotifierProvider(create: (context) => LibraryState()),
+      ChangeNotifierProvider(create: (context) => GraduationState()),
     ],
     builder: ((context, child) => const SocialLearningApp()),
   ));

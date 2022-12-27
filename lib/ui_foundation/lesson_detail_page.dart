@@ -5,6 +5,7 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
@@ -140,20 +141,16 @@ class GraduationDialogContent extends StatefulWidget {
 class GraduationDialogState extends State<GraduationDialogContent> {
   Lesson lesson;
   List<User>? _students;
-  String _partialName = '';
+  TextEditingController textFieldController = TextEditingController();
 
   GraduationDialogState(this.lesson);
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController textFieldController = TextEditingController(text: _partialName);
-    String partialDisplayName;
-
     return Column(
       children: [
         TextField(
           onChanged: (value) async {
-            _partialName = value;
             var students =
                 await UserFunctions.findUsersByPartialDisplayName(value);
             setState(() {
@@ -166,26 +163,28 @@ class GraduationDialogState extends State<GraduationDialogContent> {
                   'Start typing the display name of the student whom you want to graduate.'),
         ),
         SizedBox(
-          width:200,
+            width: 200,
             height: 200,
-            child:ListView.builder(
-          itemCount: _students?.length ?? 0,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return Row(
-              children: [
-                Text(_students![index].displayName),
-                TextButton(
-                    onPressed: () {
-                      print(
-                          'Graduating ${_students![index].displayName} in ${lesson.title}');
-                    },
-                    child: Text('Graduate'))
-              ],
-            );
-          },
-        ))
+            child: ListView.builder(
+              itemCount: _students?.length ?? 0,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return Row(
+                  children: [
+                    Text(_students![index].displayName),
+                    TextButton(
+                        onPressed: () {
+                          Provider.of<GraduationState>(context, listen: false)
+                              .graduate(lesson, _students![index]);
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Graduate'))
+                  ],
+                );
+              },
+            ))
       ],
     );
   }
 }
+

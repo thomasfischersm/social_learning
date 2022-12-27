@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
@@ -39,17 +40,24 @@ class LessonListState extends State<LessonListPage> {
                 return ListView.builder(
                     itemCount: libraryState.lessons?.length ?? 0,
                     itemBuilder: (context, index) {
-                      return InkWell(
-                          onTap: () {
-                            Lesson? lesson = libraryState.lessons?[index];
-                            if (lesson != null) {
-                              Navigator.pushNamed(
-                                  context, NavigationEnum.lesson_detail.route,
-                                  arguments: LessonDetailArgument(lesson.id));
-                            }
-                          },
-                          child: Text(
-                              libraryState.lessons?[index].title ?? 'error'));
+                      return InkWell(onTap: () {
+                        Lesson? lesson = libraryState.lessons?[index];
+                        if (lesson != null) {
+                          Navigator.pushNamed(
+                              context, NavigationEnum.lesson_detail.route,
+                              arguments: LessonDetailArgument(lesson.id));
+                        }
+                      }, child: Consumer<GraduationState>(
+                          builder: (context, graduationState, child) {
+                        return Text(
+                          libraryState.lessons?[index].title ?? 'error',
+                          style: TextStyle(
+                              color: (graduationState.hasGraduated(
+                                      libraryState.lessons?[index]))
+                                  ? Colors.green
+                                  : Colors.black),
+                        );
+                      }));
                     });
               }))),
     );

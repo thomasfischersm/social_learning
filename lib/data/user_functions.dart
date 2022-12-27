@@ -45,6 +45,7 @@ class UserFunctions {
         .get();
     print('called firebase');
     List<User> users = snapshot.docs.map((e) => User.fromSnapshot(e)).toList();
+    users.removeWhere((user) => user.uid == auth.FirebaseAuth.instance.currentUser!.uid);
     print('converted');
 
     return users;
