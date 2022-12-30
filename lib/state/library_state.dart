@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 
@@ -8,7 +9,19 @@ class LibraryState extends ChangeNotifier {
 
   Course? _selectedCourse;
 
-  Course? get selectedCourse => _selectedCourse;
+  Course? get selectedCourse {
+    if (_selectedCourse == null && _availableCourses.isNotEmpty) {
+      () async {
+        var prefs = await SharedPreferences.getInstance();
+        var tmp = prefs.getString('selectedCourseId');
+        if (tmp != null && tmp.isNotEmpty) {
+          selectedCourse = _availableCourses.firstWhere((element) => element.id == tmp);
+        }
+      }();
+    }
+
+    return _selectedCourse;
+  }
 
   set selectedCourse(Course? course) {
     if (_selectedCourse != course) {
@@ -17,6 +30,15 @@ class LibraryState extends ChangeNotifier {
     }
 
     _selectedCourse = course;
+
+    String? courseId = course?.id;
+    if (courseId != null) {
+      () async {
+        var prefs = await SharedPreferences.getInstance();
+        prefs.setString('selectedCourseId', courseId);
+      }();
+    }
+
     notifyListeners();
   }
 
@@ -95,9 +117,12 @@ class LibraryState extends ChangeNotifier {
   Lesson? findPreviousLesson(Lesson? currentLesson) {
     List<Lesson>? lessons = _lessons;
     if (lessons != null && currentLesson != null) {
-      var currentIndex = lessons.indexOf(currentLesson);
+      var currentIndex = lessons.indexOf(currentLesson) - 1;
+      while (currentIndex >= 0 && lessons[currentIndex].isLevel) {
+        currentIndex--;
+      }
       if (currentIndex > 0) {
-        return lessons[currentIndex - 1];
+        return lessons[currentIndex];
       }
     }
     return null;
@@ -106,9 +131,12 @@ class LibraryState extends ChangeNotifier {
   Lesson? findNextLesson(Lesson? currentLesson) {
     List<Lesson>? lessons = _lessons;
     if (lessons != null && currentLesson != null) {
-      var currentIndex = lessons.indexOf(currentLesson);
-      if (currentIndex + 1 < lessons.length) {
-        return lessons[currentIndex + 1];
+      var currentIndex = lessons.indexOf(currentLesson) + 1;
+      while (currentIndex < lessons.length && lessons[currentIndex].isLevel) {
+        currentIndex++;
+      }
+      if (currentIndex < lessons.length) {
+        return lessons[currentIndex];
       }
     }
     return null;

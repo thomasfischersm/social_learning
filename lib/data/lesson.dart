@@ -6,10 +6,11 @@ class Lesson {
   int sortOrder;
   String title;
   String instructions;
+  bool isLevel;
   String creatorId;
 
   Lesson(this.id, this.courseId, this.sortOrder, this.title, this.instructions,
-      this.creatorId);
+      this.isLevel, this.creatorId);
 
   Lesson.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -17,5 +18,6 @@ class Lesson {
         sortOrder = e.data()['sortOrder'] as int,
         title = e.data()['title'] as String,
         instructions = e.data()['instructions'] as String,
+        isLevel = e.data()['isLevel'] as bool,
         creatorId = e.data()['creatorId'] as String ;
 }

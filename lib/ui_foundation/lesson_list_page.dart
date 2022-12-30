@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
@@ -42,24 +44,43 @@ class LessonListState extends State<LessonListPage> {
                     itemBuilder: (context, index) {
                       return InkWell(onTap: () {
                         Lesson? lesson = libraryState.lessons?[index];
-                        if (lesson != null) {
+                        if ((lesson != null) && (!lesson.isLevel)) {
                           Navigator.pushNamed(
                               context, NavigationEnum.lesson_detail.route,
                               arguments: LessonDetailArgument(lesson.id));
                         }
                       }, child: Consumer<GraduationState>(
                           builder: (context, graduationState, child) {
-                        return Text(
-                          libraryState.lessons?[index].title ?? 'error',
-                          style: TextStyle(
-                              color: (graduationState.hasGraduated(
-                                      libraryState.lessons?[index]))
-                                  ? Colors.green
-                                  : Colors.black),
-                        );
+                        return (libraryState.lessons?[index].isLevel ?? false)
+                            ? Text(
+                                'Level ${_getLevelNumber(libraryState.lessons, index)}: ${libraryState.lessons?[index].title}',
+                                style: Theme.of(context).textTheme.headline6)
+                            : Text(
+                                libraryState.lessons?[index].title ?? 'error',
+                                style: TextStyle(
+                                    color: (graduationState.hasGraduated(
+                                            libraryState.lessons?[index]))
+                                        ? Colors.green
+                                        : Colors.black),
+                              );
                       }));
                     });
               }))),
     );
+  }
+
+  int _getLevelNumber(List<Lesson>? lessons, index) {
+    if (lessons == null) {
+      return -1;
+    }
+
+    int currentLevel = 1;
+    for (int i = 0; i < min(index, lessons.length); i++) {
+      if (lessons[i].isLevel) {
+        currentLevel++;
+      }
+    }
+
+    return currentLevel;
   }
 }
