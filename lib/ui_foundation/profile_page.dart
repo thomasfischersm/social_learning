@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:social_learning/data/user_functions.dart';
 
 import '../data/course.dart';
 import '../state/application_state.dart';
@@ -23,10 +28,10 @@ class ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(
-        title: Text('Social Learning'),
+      appBar: AppBar(
+        title: const Text('Social Learning'),
       ),
-      bottomNavigationBar: BottomBar(),
+      bottomNavigationBar: const BottomBar(),
       body: Center(
           child: Container(
               constraints: const BoxConstraints(maxWidth: 310, maxHeight: 350),
@@ -42,14 +47,21 @@ class ProfilePageState extends State<ProfilePage> {
                       onPressed: () {
                         showDisplayNameDialog(context, applicationState);
                       },
-                      child: Text('Change display name'),
+                      child: const Text('Change display name'),
                     ),
+                    const Spacer(),
+                    _createProfileImage(applicationState),
+                    TextButton(
+                        onPressed: () {
+                          _pickProfileImage(context);
+                        },
+                        child: const Text('Upload profile image')),
                     const Spacer(),
                     const Divider(),
                     TextButton(
                         onPressed: () => Navigator.pushNamed(
                             context, NavigationEnum.sign_out.route),
-                        child: new Text("Sign out")),
+                        child: const Text("Sign out")),
                   ],
                 );
               }))),
@@ -65,7 +77,7 @@ class ProfilePageState extends State<ProfilePage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text("Enter a new display name"),
+            title: const Text("Enter a new display name"),
             content: TextField(
               onChanged: (value) {
                 setState(() {
@@ -73,7 +85,7 @@ class ProfilePageState extends State<ProfilePage> {
                 });
               },
               controller: textFieldController,
-              decoration: InputDecoration(hintText: 'Princess Fedora'),
+              decoration: const InputDecoration(hintText: 'Princess Fedora'),
             ),
             actions: [
               TextButton(
@@ -82,19 +94,63 @@ class ProfilePageState extends State<ProfilePage> {
                     Navigator.pop(context);
                   });
                 },
-                child: Text("Cancel"),
+                child: const Text("Cancel"),
               ),
               TextButton(
                 onPressed: () {
                   setState(() {
-                    applicationState.userDisplayName = textFieldController.value.text;
+                    applicationState.userDisplayName =
+                        textFieldController.value.text;
                     Navigator.pop(context);
                   });
                 },
-                child: Text("OK"),
+                child: const Text("OK"),
               ),
             ],
           );
         });
+  }
+
+  void _pickProfileImage(BuildContext context) async {
+    var applicationState =
+        Provider.of<ApplicationState>(context, listen: false);
+
+    // Pick the photo from the user.
+    final ImagePicker picker = ImagePicker();
+    XFile? file = await picker.pickImage(source: ImageSource.gallery);
+    int length = await file?.length() ?? -1;
+
+    // Upload the photo to Firebase.
+    if (file != null) {
+      var fireStoragePath =
+          '/users/${auth.FirebaseAuth.instance.currentUser?.uid}/profilePhoto';
+      var storageRef = FirebaseStorage.instance.ref(fireStoragePath);
+      // var storageRef = FirebaseStorage.instance.ref().child(
+      //     '/profilePhoto');
+      // var uploadTask = await storageRef.putFile(File(file.path));
+      var imageData = await file.readAsBytes();
+      await storageRef.putData(
+          imageData, SettableMetadata(contentType: file.mimeType));
+      String imageUrl = await storageRef.getDownloadURL();
+      UserFunctions.updateProfilePhoto(fireStoragePath, imageUrl);
+
+      applicationState.invalidateProfilePhoto();
+    }
+  }
+
+  Widget _createProfileImage(ApplicationState applicationState) {
+    print('create profile photo ${applicationState.profilePhotoUrl}');
+    String? profilePhotoUrl = applicationState.profilePhotoUrl;
+    if (profilePhotoUrl != null) {
+      return Expanded(
+          child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      fit: BoxFit.scaleDown,
+                      image: NetworkImage(profilePhotoUrl)))));
+    } else {
+      return const Icon(Icons.photo);
+    }
   }
 }

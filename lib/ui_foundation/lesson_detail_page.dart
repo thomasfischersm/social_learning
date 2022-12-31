@@ -169,8 +169,18 @@ class GraduationDialogState extends State<GraduationDialogContent> {
               itemCount: _students?.length ?? 0,
               shrinkWrap: true,
               itemBuilder: (context, index) {
+                var profilePhotoUrl = _students![index].profilePhotoUrl;
+                print('line item: $profilePhotoUrl');
                 return Row(
                   children: [
+                    if (profilePhotoUrl != null)
+                      Expanded(
+                          child: Container( width: 50, height: 50,
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      fit: BoxFit.scaleDown,
+                                      image: NetworkImage(profilePhotoUrl))))),
                     Text(_students![index].displayName),
                     TextButton(
                         onPressed: () {
@@ -187,4 +197,3 @@ class GraduationDialogState extends State<GraduationDialogContent> {
     );
   }
 }
-

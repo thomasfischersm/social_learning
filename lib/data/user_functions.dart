@@ -14,11 +14,34 @@ class UserFunctions {
   }
 
   static void updateDisplayName(String uid, String displayName) async {
-    var querySnapshot = await FirebaseFirestore.instance.collection('users').where('uid', isEqualTo: uid).get();
-    FirebaseFirestore.instance.collection('users').doc(querySnapshot.docs[0].id).update({
+    var querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('uid', isEqualTo: uid)
+        .get();
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(querySnapshot.docs[0].id)
+        .update({
       'uid': auth.FirebaseAuth.instance.currentUser!.uid,
       'displayName': displayName,
       'sortName': displayName.toLowerCase(),
+    });
+  }
+
+  static void updateProfilePhoto(
+      String profileFireStoragePath, String profilePhotoUrl) async {
+    String uid = auth.FirebaseAuth.instance.currentUser!.uid;
+    var querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('uid', isEqualTo: uid)
+        .get();
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(querySnapshot.docs[0].id)
+        .update({
+      'uid': auth.FirebaseAuth.instance.currentUser!.uid,
+      'profileFireStoragePath': profileFireStoragePath,
+      'profilePhotoUrl': profilePhotoUrl,
     });
   }
 
@@ -45,9 +68,22 @@ class UserFunctions {
         .get();
     print('called firebase');
     List<User> users = snapshot.docs.map((e) => User.fromSnapshot(e)).toList();
-    users.removeWhere((user) => user.uid == auth.FirebaseAuth.instance.currentUser!.uid);
+    users.removeWhere(
+        (user) => user.uid == auth.FirebaseAuth.instance.currentUser!.uid);
     print('converted');
 
     return users;
+  }
+
+  static Future<User> getCurrentUser() async {
+    String uid = auth.FirebaseAuth.instance.currentUser!.uid;
+    var snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('uid', isEqualTo: uid)
+        .get();
+    var userDoc = snapshot.docs[0];
+    String? readUid = userDoc.data()['uid'];
+    print('got current user from firebase $readUid');
+    return User.fromSnapshot(userDoc);
   }
 }
