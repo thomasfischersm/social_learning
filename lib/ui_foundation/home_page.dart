@@ -72,6 +72,7 @@ class HomePageState extends State<HomePage> {
                       }
                     },
                   ),
+                  const Text('(C) 2023 Thomas Fischer')
                 ],
               ))),
     );

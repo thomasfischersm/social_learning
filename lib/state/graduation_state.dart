@@ -43,8 +43,6 @@ class GraduationState extends ChangeNotifier {
       'mentorUid': auth.FirebaseAuth.instance.currentUser?.uid,
       'timestamp': FieldValue.serverTimestamp(),
     };
-    print('Self: ${auth.FirebaseAuth.instance.currentUser?.uid}');
-    print('Graduating: $data');
     FirebaseFirestore.instance.collection('graduations').add(data);
     }
 }

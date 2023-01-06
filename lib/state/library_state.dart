@@ -84,7 +84,6 @@ class LibraryState extends ChangeNotifier {
 
   Future<void> loadLessonList() async {
     // Create courses.
-    // print('creatorId: ${auth.FirebaseAuth.instance.currentUser!.uid}');
     // FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
     //   'courseId': FirebaseFirestore.instance.doc('/courses/4ZUgIakaAbcCiVWMxSKb'),
     //   'sortOrder': 2,

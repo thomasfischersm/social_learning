@@ -28,8 +28,7 @@ class UserFunctions {
     });
   }
 
-  static void updateProfilePhoto(
-      String profileFireStoragePath, String profilePhotoUrl) async {
+  static void updateProfilePhoto(String profileFireStoragePath) async {
     String uid = auth.FirebaseAuth.instance.currentUser!.uid;
     var querySnapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -41,12 +40,11 @@ class UserFunctions {
         .update({
       'uid': auth.FirebaseAuth.instance.currentUser!.uid,
       'profileFireStoragePath': profileFireStoragePath,
-      'profilePhotoUrl': profilePhotoUrl,
     });
   }
 
   static Future<List<User>> findUsersByPartialDisplayName(
-      String partialDisplayName) async {
+      String partialDisplayName, int resultLimit) async {
     // Protect against charges.
     if (partialDisplayName.length < 3) {
       return [];
@@ -59,18 +57,15 @@ class UserFunctions {
         String.fromCharCode(
             partialDisplayName.codeUnits[partialDisplayName.length - 1] + 1);
 
-    print('$minStr -> $maxStr');
-
     var snapshot = await FirebaseFirestore.instance
         .collection('users')
         .where('sortName', isGreaterThanOrEqualTo: minStr)
         .where('sortName', isLessThan: maxStr)
+        .limit(resultLimit)
         .get();
-    print('called firebase');
     List<User> users = snapshot.docs.map((e) => User.fromSnapshot(e)).toList();
     users.removeWhere(
         (user) => user.uid == auth.FirebaseAuth.instance.currentUser!.uid);
-    print('converted');
 
     return users;
   }
@@ -82,8 +77,6 @@ class UserFunctions {
         .where('uid', isEqualTo: uid)
         .get();
     var userDoc = snapshot.docs[0];
-    String? readUid = userDoc.data()['uid'];
-    print('got current user from firebase $readUid');
     return User.fromSnapshot(userDoc);
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
@@ -29,27 +31,25 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool _loggedIn = false;
+  bool _isLoggedIn = false;
 
-  bool get isLoggedIn => _loggedIn;
+  bool get isLoggedIn => _isLoggedIn;
 
-  bool _isProfilePhotoUrlInitialized = false;
-  String? _profilePhotoUrl;
-
-  String? get profilePhotoUrl {
-    print('profilePhotoUrl $_profilePhotoUrl');
-    if (!_isProfilePhotoUrlInitialized) {
-      _isProfilePhotoUrlInitialized = true;
+  bool _isCurrentUserInitialized = false;
+  User? _currentUser;
+  User? get currentUser {
+    if (_isLoggedIn && !_isCurrentUserInitialized) {
+      var start = DateTime.now().millisecondsSinceEpoch;
+      _isCurrentUserInitialized = true;
       () async {
-        print('start profile photo URL loading');
-        User user = await UserFunctions.getCurrentUser();
-        _profilePhotoUrl = user.profilePhotoUrl;
+        _currentUser = await UserFunctions.getCurrentUser();
 
         notifyListeners();
-        print('done with profile photo url loading $_profilePhotoUrl');
+        var end = DateTime.now().millisecondsSinceEpoch;
+        // await Future.delayed(Duration(seconds: 5));
       }();
     }
-    return _profilePhotoUrl;
+    return _currentUser;
   }
 
   Future<void> init() async {
@@ -62,20 +62,23 @@ class ApplicationState extends ChangeNotifier {
 
     auth.FirebaseAuth.instance.idTokenChanges().listen((auth.User? user) {
       if (user == null) {
-        _loggedIn = false;
+        _isLoggedIn = false;
       } else {
-        _loggedIn = true;
+        _isLoggedIn = true;
       }
 
-      _isProfilePhotoUrlInitialized = false;
-      _profilePhotoUrl = null;
+      _isCurrentUserInitialized = false;
+      _currentUser = null;
 
       notifyListeners();
     });
   }
 
   void invalidateProfilePhoto() {
-    _isProfilePhotoUrlInitialized = false;
+    _isCurrentUserInitialized = false;
+    _currentUser = null;
+    print('test $currentUser');
+
     notifyListeners();
   }
 }

@@ -10,6 +10,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/navigation_enum.dart';
+import 'package:social_learning/ui_foundation/profile_image_widget.dart';
 
 class LessonDetailArgument {
   String lessonId;
@@ -152,7 +153,7 @@ class GraduationDialogState extends State<GraduationDialogContent> {
         TextField(
           onChanged: (value) async {
             var students =
-                await UserFunctions.findUsersByPartialDisplayName(value);
+                await UserFunctions.findUsersByPartialDisplayName(value, 10);
             setState(() {
               _students = students;
             });
@@ -169,18 +170,12 @@ class GraduationDialogState extends State<GraduationDialogContent> {
               itemCount: _students?.length ?? 0,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                var profilePhotoUrl = _students![index].profilePhotoUrl;
-                print('line item: $profilePhotoUrl');
+                var profileFireStoragePath = _students![index].profileFireStoragePath;
                 return Row(
                   children: [
-                    if (profilePhotoUrl != null)
+                    if (profileFireStoragePath != null)
                       Expanded(
-                          child: Container( width: 50, height: 50,
-                              decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  image: DecorationImage(
-                                      fit: BoxFit.scaleDown,
-                                      image: NetworkImage(profilePhotoUrl))))),
+                          child: ProfileImageWidget(_students![index].profileFireStoragePath)),
                     Text(_students![index].displayName),
                     TextButton(
                         onPressed: () {
