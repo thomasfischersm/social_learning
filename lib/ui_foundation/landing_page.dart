@@ -36,7 +36,7 @@ class LandingPage extends StatelessWidget {
                 TextButton(
                     onPressed: () {
                       Navigator.of(context)
-                          .pushNamed(NavigationEnum.sign_in.route);
+                          .pushNamed(NavigationEnum.signIn.route);
                     },
                     child: const Text('Register/sign in')),
               ],

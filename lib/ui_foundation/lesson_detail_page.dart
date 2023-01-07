@@ -23,7 +23,7 @@ class LessonDetailPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return new LessonDetailState();
+    return LessonDetailState();
   }
 }
 
@@ -71,7 +71,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                                 IconButton(
                                     onPressed: () {
                                       Navigator.pushNamed(context,
-                                          NavigationEnum.lesson_detail.route,
+                                          NavigationEnum.lessonDetail.route,
                                           arguments: LessonDetailArgument(
                                               previousLesson.id));
                                     },
@@ -80,7 +80,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                                 IconButton(
                                     onPressed: () {
                                       Navigator.pushNamed(context,
-                                          NavigationEnum.lesson_detail.route,
+                                          NavigationEnum.lessonDetail.route,
                                           arguments: LessonDetailArgument(
                                               nextLesson.id));
                                     },

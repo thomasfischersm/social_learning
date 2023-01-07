@@ -70,7 +70,7 @@ class ProfilePageState extends State<ProfilePage> {
                             TextButton(
                                 onPressed: () =>
                                     Navigator.pushNamed(
-                                        context, NavigationEnum.sign_out.route),
+                                        context, NavigationEnum.signOut.route),
                                 child: const Text("Sign out")),
                           ],
                         );

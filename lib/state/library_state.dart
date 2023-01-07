@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 class LibraryState extends ChangeNotifier {
   bool get isCourseSelected => _selectedCourse != null;
@@ -15,7 +18,8 @@ class LibraryState extends ChangeNotifier {
         var prefs = await SharedPreferences.getInstance();
         var tmp = prefs.getString('selectedCourseId');
         if (tmp != null && tmp.isNotEmpty) {
-          selectedCourse = _availableCourses.firstWhere((element) => element.id == tmp);
+          selectedCourse =
+              _availableCourses.firstWhere((element) => element.id == tmp);
         }
       }();
     }
@@ -86,10 +90,19 @@ class LibraryState extends ChangeNotifier {
     // Create courses.
     // FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
     //   'courseId': FirebaseFirestore.instance.doc('/courses/4ZUgIakaAbcCiVWMxSKb'),
+    //   'sortOrder': 1,
+    //   'title': 'Wohoo!',
+    //   'instructions': 'Couple work: Basic and inside turn',
+    //   'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
+    //   'isLevel': false,
+    // });
+    // FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
+    //   'courseId': FirebaseFirestore.instance.doc('/courses/4ZUgIakaAbcCiVWMxSKb'),
     //   'sortOrder': 2,
     //   'title': 'First dance',
     //   'instructions': 'Couple work: Basic and inside turn',
     //   'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
+    //   'isLevel': false,
     // });
 
     var courseId = selectedCourse?.id;
@@ -139,5 +152,86 @@ class LibraryState extends ChangeNotifier {
       }
     }
     return null;
+  }
+
+  void updateSortOrder(Lesson touchedLesson, int newSortOrder) {
+    int oldSortOrder = touchedLesson.sortOrder;
+    var lessons = _lessons;
+
+    if (lessons == null) {
+      return;
+    }
+
+    newSortOrder = max(newSortOrder, 0);
+    newSortOrder = min(newSortOrder, lessons.length - 1);
+
+    if ((newSortOrder == oldSortOrder)) {
+      return;
+    } else if (newSortOrder > oldSortOrder) {
+      for (Lesson lesson in lessons) {
+        if ((touchedLesson != lesson) &&
+            (lesson.sortOrder > oldSortOrder) &&
+            (lesson.sortOrder <= newSortOrder)) {
+          _setSortOrder(lesson, lesson.sortOrder - 1);
+        }
+      }
+    } else {
+      for (Lesson lesson in lessons) {
+        if ((touchedLesson != lesson) &&
+            (lesson.sortOrder < oldSortOrder) &&
+            (lesson.sortOrder >= newSortOrder)) {
+          _setSortOrder(lesson, lesson.sortOrder + 1);
+        }
+      }
+    }
+
+    _setSortOrder(touchedLesson, newSortOrder);
+  }
+
+  void _setSortOrder(Lesson lesson, int newSortOrder) {
+    FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
+      'sortOrder': newSortOrder,
+      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid
+    }, SetOptions(merge: true));
+  }
+
+  void deleteLesson(Lesson deletedLesson) {
+    int sortOrder = deletedLesson.sortOrder;
+    var lessons = _lessons;
+    if (lessons == null) {
+      return;
+    }
+
+    // Delete lesson.
+    FirebaseFirestore.instance.doc('/lessons/${deletedLesson.id}').delete();
+
+    // Update sortOrder for following lessons.
+    for (Lesson lesson in lessons) {
+      if ((deletedLesson != lesson) && (lesson.sortOrder > sortOrder)) {
+        _setSortOrder(lesson, lesson.sortOrder - 1);
+      }
+    }
+  }
+
+  void createLesson(
+      String courseId, String title, String instructions, bool isLevel) {
+    FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
+      'courseId': FirebaseFirestore.instance.doc('/courses/$courseId'),
+      'sortOrder': _lessons?.length ?? 0,
+      'title': title,
+      'instructions': instructions,
+      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
+      'isLevel': isLevel,
+    });
+  }
+
+  void updateLesson(
+      String lessonId, String title, String instructions, bool isLevel) {
+    FirebaseFirestore.instance.doc('/lessons/$lessonId').set({
+      'title': title,
+      'instructions': instructions,
+      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
+      'isLevel': isLevel,
+    }, SetOptions(merge: true));
   }
 }

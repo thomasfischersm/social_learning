@@ -19,10 +19,17 @@ class BottomBar extends StatelessWidget {
                       builder: (context, libraryState, child) => addIcon(
                           context,
                           Icons.school,
-                          NavigationEnum.lesson_list,
+                          NavigationEnum.lessonList,
                           libraryState.isCourseSelected &&
                               applicationState.isLoggedIn),
                     ),
+                    Consumer<LibraryState>(
+                        builder: (context, libraryState, child) =>
+                            (applicationState.currentUser?.isAdmin ??
+                                    false && libraryState.isCourseSelected)
+                                ? addIcon(context, Icons.menu_book,
+                                    NavigationEnum.cmsHome, true)
+                                : null ?? Spacer()),
                     addIcon(context, Icons.settings, NavigationEnum.profile,
                         applicationState.isLoggedIn),
                   ],

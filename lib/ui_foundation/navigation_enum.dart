@@ -3,10 +3,12 @@ enum NavigationEnum {
   landing_page('/landing'),
   home('/home'),
   profile('/profile'),
-  lesson_list('/lesson_list'),
-  lesson_detail('/lesson_detail'),
-  sign_in('/sign_in'),
-  sign_out('/sign_out'),;
+  lessonList('/lesson_list'),
+  lessonDetail('/lesson_detail'),
+  signIn('/sign_in'),
+  signOut('/sign_out'),
+  cmsHome('/cms_home'),
+  cmsLesson('/cms_detail');
 
   final String route;
   const NavigationEnum(this.route);

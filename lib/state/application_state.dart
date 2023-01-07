@@ -77,7 +77,6 @@ class ApplicationState extends ChangeNotifier {
   void invalidateProfilePhoto() {
     _isCurrentUserInitialized = false;
     _currentUser = null;
-    print('test $currentUser');
 
     notifyListeners();
   }

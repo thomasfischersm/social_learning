@@ -46,7 +46,7 @@ class LessonListState extends State<LessonListPage> {
                         Lesson? lesson = libraryState.lessons?[index];
                         if ((lesson != null) && (!lesson.isLevel)) {
                           Navigator.pushNamed(
-                              context, NavigationEnum.lesson_detail.route,
+                              context, NavigationEnum.lessonDetail.route,
                               arguments: LessonDetailArgument(lesson.id));
                         }
                       }, child: Consumer<GraduationState>(

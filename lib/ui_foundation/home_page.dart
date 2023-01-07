@@ -64,7 +64,7 @@ class HomePageState extends State<HomePage> {
                       if (libraryState.isCourseSelected) {
                         return TextButton(
                           onPressed: () => Navigator.pushNamed(
-                              context, NavigationEnum.lesson_list.route),
+                              context, NavigationEnum.lessonList.route),
                           child: const Text('View Lessons'),
                         );
                       } else {

@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/cms_detail_page.dart';
+import 'package:social_learning/ui_foundation/cms_home_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
@@ -55,6 +57,8 @@ class SocialLearningApp extends StatelessWidget {
         '/lesson_detail': (context) => const LessonDetailPage(),
         '/sign_in': (context) => SignInPage(),
         '/sign_out': (context) => const SignOutPage(),
+        '/cms_home': (context) => const CmsHomePage(),
+        '/cms_detail': (context) => const CmsDetailPage(),
       },
     );
   }
