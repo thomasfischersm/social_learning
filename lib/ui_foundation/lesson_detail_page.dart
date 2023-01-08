@@ -50,7 +50,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                   showGraduationDialog(context, selectedLesson);
                 });
               },
-              child: Text('Graduate'),
+              child: const Text('Graduate'),
             ),
             body: Center(
                 child: Container(

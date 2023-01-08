@@ -33,18 +33,16 @@ class CmsHomePageState extends State<CmsHomePage> {
                     Text('Content Management',
                         style: Theme.of(context).textTheme.headline5),
                     Expanded(
-                        child: Container(
-                            color: Colors.red,
-                            child: ListView.builder(
-                                itemCount: libraryState.lessons?.length ?? 0,
-                                // shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  var lesson = libraryState.lessons?[index];
-                                  return (lesson != null)
-                                      ? EditLessonRow(lesson)
-                                      // ? Text(lesson.title)
-                                      : const ListTile();
-                                }))),
+                        child: ListView.builder(
+                            itemCount: libraryState.lessons?.length ?? 0,
+                            // shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              var lesson = libraryState.lessons?[index];
+                              return (lesson != null)
+                                  ? EditLessonRow(lesson)
+                                  // ? Text(lesson.title)
+                                  : const ListTile();
+                            })),
                     TextButton(
                         onPressed: () {
                           Navigator.pushNamed(
@@ -89,6 +87,7 @@ class EditLessonRowState extends State<EditLessonRow> {
     }
 
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Expanded(
             flex: 1,
@@ -109,7 +108,7 @@ class EditLessonRowState extends State<EditLessonRow> {
             )),
         Expanded(
             flex: 5,
-            child: TextButton(
+            child: Align(alignment: Alignment.centerLeft,child: TextButton(
               child: Text(widget.lesson.title,
                   overflow: TextOverflow.ellipsis,
                   style: (widget.lesson.isLevel)
@@ -122,7 +121,7 @@ class EditLessonRowState extends State<EditLessonRow> {
                 Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
                     arguments: LessonDetailArgument(widget.lesson.id));
               },
-            )),
+            ))),
         IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {

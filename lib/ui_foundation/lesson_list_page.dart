@@ -52,9 +52,12 @@ class LessonListState extends State<LessonListPage> {
                       }, child: Consumer<GraduationState>(
                           builder: (context, graduationState, child) {
                         return (libraryState.lessons?[index].isLevel ?? false)
-                            ? Text(
-                                'Level ${_getLevelNumber(libraryState.lessons, index)}: ${libraryState.lessons?[index].title}',
-                                style: Theme.of(context).textTheme.headline6)
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 3),
+                                child: Text(
+                                    'Level ${_getLevelNumber(libraryState.lessons, index)}: ${libraryState.lessons?[index].title}',
+                                    style:
+                                        Theme.of(context).textTheme.headline6))
                             : Text(
                                 libraryState.lessons?[index].title ?? 'error',
                                 style: TextStyle(
