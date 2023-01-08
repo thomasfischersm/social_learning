@@ -56,7 +56,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                 child: Container(
                     constraints:
                         const BoxConstraints(maxWidth: 310, maxHeight: 350),
-                    child: Consumer<LibraryState>(
+                    child: SingleChildScrollView(child: Consumer<LibraryState>(
                         builder: (context, libraryState, child) {
                       return Column(
                         children: [
@@ -93,7 +93,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                           )
                         ],
                       );
-                    }))),
+                    })))),
           );
         }
       }
