@@ -98,11 +98,10 @@ class LessonDetailState extends State<LessonDetailPage> {
         }
       }
 
-      // Fall through if the route argument is bad.
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        Navigator.pushNamed(context, NavigationEnum.home.route);
-      });
-      return const Scaffold();
+      return Scaffold(
+          appBar: AppBar(title: const Text('Nothing loaded')),
+          bottomNavigationBar: const BottomBar(),
+          body: const Spacer());
     });
   }
 
@@ -170,12 +169,14 @@ class GraduationDialogState extends State<GraduationDialogContent> {
               itemCount: _students?.length ?? 0,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                var profileFireStoragePath = _students![index].profileFireStoragePath;
+                var profileFireStoragePath =
+                    _students![index].profileFireStoragePath;
                 return Row(
                   children: [
                     if (profileFireStoragePath != null)
                       Expanded(
-                          child: ProfileImageWidget(_students![index].profileFireStoragePath)),
+                          child: ProfileImageWidget(
+                              _students![index].profileFireStoragePath)),
                     Text(_students![index].displayName),
                     TextButton(
                         onPressed: () {
