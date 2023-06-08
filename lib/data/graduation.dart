@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+@Deprecated('Replaced with practice_record and lesson_status')
 class Graduation {
   String id;
   String lessonId;

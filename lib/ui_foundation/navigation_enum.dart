@@ -3,6 +3,8 @@ enum NavigationEnum {
   landing_page('/landing'),
   home('/home'),
   profile('/profile'),
+  levelList('/level_list'),
+  levelDetail('/level_detail'),
   lessonList('/lesson_list'),
   lessonDetail('/lesson_detail'),
   signIn('/sign_in'),

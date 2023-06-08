@@ -78,4 +78,16 @@ class UserFunctions {
     var userDoc = snapshot.docs[0];
     return User.fromSnapshot(userDoc);
   }
+
+  static extractNumberId(DocumentReference? id) {
+    if (id != null) {
+      var idStr = id.toString();
+      int index = idStr.lastIndexOf('/');
+      if (index != -1) {
+        return int.parse(idStr.substring(index + 1));
+      }
+    }
+
+    return null;
+  }
 }

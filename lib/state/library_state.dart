@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
@@ -68,6 +69,17 @@ class LibraryState extends ChangeNotifier {
     return _lessons;
   }
 
+  List<Level>? _levels;
+  bool _isLevelListLoaded = false;
+
+  List<Level>? get levels {
+    if (!_isLevelListLoaded) {
+      _isLevelListLoaded = true;
+      loadLevelList();
+    }
+    return _levels;
+  }
+
   Future<void> loadCourseList() async {
     // Create courses.
     // FirebaseFirestore.instance.collection('courses').add(<String, dynamic>{
@@ -113,6 +125,24 @@ class LibraryState extends ChangeNotifier {
           .collection('lessons')
           .where('courseId',
               isEqualTo: FirebaseFirestore.instance.doc(coursePath))
+          .orderBy('sortOrder', descending: false)
+          .snapshots()
+          .listen((snapshot) {
+        _lessons = snapshot.docs.map((e) => Lesson.fromSnapshot(e)).toList();
+        notifyListeners();
+      });
+    }
+  }
+
+  Future<void> loadLevelList() async {
+    var courseId = selectedCourse?.id;
+    if (courseId != null) {
+      String coursePath = '/courses/$courseId';
+
+      FirebaseFirestore.instance
+          .collection('levels')
+          .where('courseId',
+          isEqualTo: FirebaseFirestore.instance.doc(coursePath))
           .orderBy('sortOrder', descending: false)
           .snapshots()
           .listen((snapshot) {
@@ -233,5 +263,13 @@ class LibraryState extends ChangeNotifier {
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
       'isLevel': isLevel,
     }, SetOptions(merge: true));
+  }
+
+  Level? findLevel(String levelId) {
+    return levels?.firstWhere((element) => element.id == levelId);
+  }
+
+  int findLevelPosition(Level? level) {
+    return (level != null) ? levels?.indexOf(level) ?? -1 : -1;
   }
 }

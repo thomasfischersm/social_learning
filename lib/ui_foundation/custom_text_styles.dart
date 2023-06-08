@@ -10,10 +10,10 @@ class CustomTextStyles {
       Theme.of(context).textTheme.bodyLarge;
 
   static TextStyle? getPartiallyLearned(BuildContext context) =>
-      getBody(context)?.copyWith();
+      getBody(context)?.copyWith(color: const Color.fromRGBO(16, 68, 54, 1));
 
   static TextStyle? getFullyLearned(BuildContext context) =>
-      getBody(context)?.copyWith();
+      getBody(context)?.copyWith(color: const Color.fromRGBO(31, 138, 112, 1));
 
   static TextStyle? getLink(BuildContext context) => getBody(context)
       ?.copyWith(color: Colors.blue, decoration: TextDecoration.underline);

@@ -121,6 +121,6 @@ class HomePageState extends State<HomePage> {
   _openCourse(Course course, LibraryState libraryState) {
     libraryState.selectedCourse = course;
     Navigator.pushNamed(
-        context, NavigationEnum.lessonList.route);
+        context, NavigationEnum.levelList.route);
   }
 }

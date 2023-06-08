@@ -6,6 +6,7 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
+@Deprecated("Use StudentState")
 class GraduationState extends ChangeNotifier {
 
   bool _isInitialized = false;
