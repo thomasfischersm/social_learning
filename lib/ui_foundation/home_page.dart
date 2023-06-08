@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data_support/level_migration.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
@@ -22,6 +23,8 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    // LevelMigration.migrate();
+
     return Scaffold(
         appBar: AppBar(
           title: const Text('Learning Lab'),
@@ -71,8 +74,10 @@ class HomePageState extends State<HomePage> {
 
         Column textColumn =
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          CustomUiConstants.getTextPadding(
-              Text(course.title, style: CustomTextStyles.subHeadline)),
+          InkWell(child: CustomUiConstants.getTextPadding(
+              Text(course.title, style: CustomTextStyles.subHeadline)), onTap: () {
+                _openCourse(course, libraryState);
+              },),
           CustomUiConstants.getRichTextPadding(RichText(
               text: TextSpan(children: [
             TextSpan(style: CustomTextStyles.getBody(context), text: pureText),
@@ -86,7 +91,7 @@ class HomePageState extends State<HomePage> {
                             launchUrl(Uri.parse(linkText));
                           })))
           ]))),
-          CustomUiConstants.getDivider()
+          CustomUiConstants.getDivider(),
         ]);
 
         Column actionColumn = Column(children: [

@@ -40,91 +40,113 @@ class LevelDetailState extends State<LevelDetailPage> {
 
     return Scaffold(
         appBar: AppBar(title:
-        Consumer<LibraryState>(builder: (context, libraryState, child) {
-          LevelDetailArgument? argument =
-          ModalRoute.of(context)!.settings.arguments as LevelDetailArgument?;
-          Level? level = libraryState.findLevel(argument?.levelId);
-          int levelPosition = libraryState.findLevelPosition(level);
-          return Text('Level ${levelPosition}: ${level.title}');
+            Consumer<LibraryState>(builder: (context, libraryState, child) {
+          LevelDetailArgument? argument = ModalRoute.of(context)!
+              .settings
+              .arguments as LevelDetailArgument?;
+          var levelId = argument?.levelId;
+          if (levelId != null) {
+            Level? level = libraryState.findLevel(levelId);
+            if (level != null) {
+              int levelPosition = libraryState.findLevelPosition(level);
+              return Text('Level ${levelPosition + 1}: ${level.title}');
+            }
+          }
+          return const Text('Failed to load');
         })),
         bottomNavigationBar: const BottomBar(),
         body: Center(
           child: Container(
               constraints: const BoxConstraints(maxWidth: 310, maxHeight: 350),
+              padding: const EdgeInsets.all(5.0 * 3.1),
               child: Consumer<LibraryState>(
                   builder: (context, libraryState, child) =>
                       Consumer<StudentState>(
                           builder: (context, studentState, child) {
-                            List<LevelCompletion> levelCompletions =
-                            studentState.getLevelCompletions(libraryState);
+                        LevelDetailArgument? argument = ModalRoute.of(context)!
+                            .settings
+                            .arguments as LevelDetailArgument?;
+                        var levelId = argument?.levelId;
+                        if (levelId == null) {
+                          return const Text('Failed to load (1).');
+                        }
+                        Level? level = libraryState.findLevel(levelId);
+                        if (level == null) {
+                          return const Text('Failed to load (2).');
+                        }
+                        int levelPosition =
+                            libraryState.findLevelPosition(level);
 
-                            return Row(
-                              children: [
-                                CustomUiConstants.getTextPadding(Text(
-                                  '${libraryState.selectedCourse?.title} Curriculum',
-                                  style: CustomTextStyles.headline,
-                                )),
-                                generateLevelList(levelCompletions),
-                                CustomUiConstants.getTextPadding(Text(
-                                  '\nStats',
-                                  style: CustomTextStyles.headline,
-                                )),
-                                Text('Lessons practiced: ${studentState.getPracticeCount()}', style: CustomTextStyles.getBody(context),),
-                                Text('Lessons completed: ${studentState.getGraduationCount()}', style: CustomTextStyles.getBody(context),),
-                                Text('Lessons taught: ${studentState.getTeachCount()}', style: CustomTextStyles.getBody(context),),
-                              ],
-                            );
-                          }))),
+                        return SingleChildScrollView(
+                            child: Column(
+                          children: [
+                            CustomUiConstants.getTextPadding(Text(
+                              'Level ${levelPosition + 1}: ${level.title}',
+                              style: CustomTextStyles.headline,
+                            )),
+                            CustomUiConstants.getTextPadding(Text(
+                              level.description ?? '',
+                              style: CustomTextStyles.getBody(context),
+                            )),
+                            generateLessonList(
+                                level, libraryState, studentState),
+                            CustomUiConstants.getTextPadding(Text(
+                              '',
+                              style: CustomTextStyles.getBody(context),
+                            )),
+                            CustomUiConstants.getDivider(),
+                            CustomUiConstants.getTextPadding(Text(
+                              'P = Practiced lesson, T = Taught lesson',
+                              style: CustomTextStyles.getBody(context),
+                            )),
+                          ],
+                        ));
+                      }))),
         ));
   }
 
-  ListView generateLevelList(List<LevelCompletion> levelCompletions) {
-    return ListView.builder(
-        itemCount: levelCompletions.length,
-        itemBuilder: (context, index) {
-          var levelCompletion = levelCompletions[index];
-          Level level = levelCompletion.level;
+  Widget generateLessonList(
+      Level level, LibraryState libraryState, StudentState studentState) {
+    print('The dangerous id is ${level.id}');
+    Iterable<Lesson> lessons =
+        libraryState.getLessonsByLevel(level.id!);
 
-          String levelText = 'Level ${index + 1}: ${level.title}';
-          TextStyle? levelTextStyle;
-          if (levelCompletion.isLevelGraduated) {
-            levelText += ' - Complete';
-            levelTextStyle = CustomTextStyles.getFullyLearned(context);
-          } else if (levelCompletion.graduatedLessonIds.length > 0) {
-            levelText +=
-            ' - ${levelCompletion.lessonsGraduatedCount}/${levelCompletion.lessonCount} '
-                '(${levelCompletion.lessonsGraduatedCount * 100 / levelCompletion.lessonCount}%)';
-            levelTextStyle = CustomTextStyles.getPartiallyLearned(context);
-          } else {
-            levelTextStyle = CustomTextStyles.getBody(context);
-          }
+    List<Widget> children = [];
+    for (Lesson lesson in lessons) {
+      List<Widget> rowChildren = [];
 
-          return InkWell(
-              onTap: () {
-                if (level != null) {
-                  Navigator.pushNamed(context, NavigationEnum.levelDetail.route,
-                      arguments: LevelDetailArgument(level.id));
-                }
-              },
-              child: Text(
-                levelText,
-                style: levelTextStyle,
-              ));
-        });
-  }
-
-  int _getLevelNumber(List<Lesson>? lessons, index) {
-    if (lessons == null) {
-      return -1;
-    }
-
-    int currentLevel = 1;
-    for (int i = 0; i < min(index, lessons.length); i++) {
-      if (lessons[i].isLevel) {
-        currentLevel++;
+      LessonCount lessonCount = studentState.getCountsForLesson(lesson);
+      TextStyle? textStyle;
+      if (lessonCount.isGraduated) {
+        textStyle = CustomTextStyles.getFullyLearned(context);
+      } else if (lessonCount.practiceCount > 0) {
+        textStyle = CustomTextStyles.getPartiallyLearned(context);
+      } else {
+        textStyle = CustomTextStyles.getBody(context);
       }
+
+      var text = lesson.title;
+      if (lessonCount.teachCount > 0) {
+        text +=
+            ' (P:${lessonCount.practiceCount}, T:${lessonCount.teachCount})';
+      } else if (lessonCount.practiceCount > 0) {
+        text += ' (P:${lessonCount.practiceCount})';
+      }
+      rowChildren.add(Text(
+        text,
+        style: textStyle,
+      ));
+      rowChildren.add(Text('${lesson.synopsis}\n'));
+
+      children.add(InkWell(
+        child: Row(children: children),
+        onTap: () {
+          Navigator.pushNamed(context, NavigationEnum.lessonDetail.route,
+              arguments: LessonDetailArgument(lesson.id));
+        },
+      ));
     }
 
-    return currentLevel;
+    return Row(children: children);
   }
 }

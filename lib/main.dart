@@ -6,12 +6,14 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/cms_detail_page.dart';
 import 'package:social_learning/ui_foundation/cms_home_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/lesson_list_page.dart';
+import 'package:social_learning/ui_foundation/level_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_list_page.dart';
 import 'package:social_learning/ui_foundation/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
@@ -33,6 +35,7 @@ void main() async {
       ChangeNotifierProvider(create: (context) => ApplicationState()),
       ChangeNotifierProvider(create: (context) => LibraryState()),
       ChangeNotifierProvider(create: (context) => GraduationState()),
+      ChangeNotifierProvider(create: (context) => StudentState()),
     ],
     builder: ((context, child) => const SocialLearningApp()),
   ));

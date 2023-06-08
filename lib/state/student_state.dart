@@ -23,7 +23,7 @@ class StudentState extends ChangeNotifier {
       FirebaseFirestore.instance
           .collection('practiceRecords')
           .where('menteeUid',
-          isEqualTo: auth.FirebaseAuth.instance.currentUser?.uid)
+              isEqualTo: auth.FirebaseAuth.instance.currentUser?.uid)
           .snapshots()
           .listen((snapshot) {
         _learnRecords =
@@ -34,7 +34,7 @@ class StudentState extends ChangeNotifier {
       FirebaseFirestore.instance
           .collection('practiceRecords')
           .where('mentorUid',
-          isEqualTo: auth.FirebaseAuth.instance.currentUser?.uid)
+              isEqualTo: auth.FirebaseAuth.instance.currentUser?.uid)
           .snapshots()
           .listen((snapshot) {
         _teachRecords =
@@ -51,7 +51,7 @@ class StudentState extends ChangeNotifier {
 
     _init();
     return _learnRecords?.any((element) =>
-    (element.lessonId == lesson.id) && (element.isGraduation)) ??
+            (element.lessonId == lesson.id) && (element.isGraduation)) ??
         false;
   }
 
@@ -71,10 +71,9 @@ class StudentState extends ChangeNotifier {
   int getGraduationCount() =>
       _learnRecords?.fold(
           0,
-              (previousValue, element) =>
-          previousValue =
+          (previousValue, element) => previousValue =
               previousValue! + (element.isGraduation ? 1 : 0)) ??
-          0;
+      0;
 
   int getTeachCount() => _teachRecords?.length ?? 0;
 
@@ -149,8 +148,13 @@ class StudentState extends ChangeNotifier {
     }
 
     for (Lesson lesson in lessons) {
-      int levelId = UserFunctions.extractNumberId(lesson.levelId);
-      LevelCompletion? levelCompletion = levelIdToCompletionMap[levelId.toString()];
+      if (lesson.isLevel) {
+        continue;
+      }
+
+      int levelId = UserFunctions.extractNumberId(lesson.levelId)!;
+      LevelCompletion? levelCompletion =
+          levelIdToCompletionMap[levelId.toString()];
 
       if (levelCompletion != null) {
         levelCompletion.lessonIds.add(int.parse(lesson.id));
@@ -161,22 +165,61 @@ class StudentState extends ChangeNotifier {
     var learnRecords = _learnRecords;
     if (learnRecords != null) {
       for (PracticeRecord practiceRecord in learnRecords) {
-        int lessonId = UserFunctions.extractNumberId(practiceRecord.lessonId);
-        lessonIdToCompletionMap[lessonId.toString()]?.graduatedLessonIds.add(lessonId);
+        int lessonId = UserFunctions.extractNumberId(practiceRecord.lessonId)!;
+        lessonIdToCompletionMap[lessonId.toString()]
+            ?.graduatedLessonIds
+            .add(lessonId);
       }
     }
 
     return levelCompletions;
   }
+
+  LessonCount getCountsForLesson(Lesson lesson) {
+    _init();
+
+    LessonCount lessonCount = LessonCount();
+    var learnRecords = _learnRecords;
+    if (learnRecords != null) {
+      for (PracticeRecord record in learnRecords) {
+        if (record.lessonId.id.endsWith('/${lesson.id}')) {
+          lessonCount.practiceCount++;
+          lessonCount.isGraduated =
+              lessonCount.isGraduated || record.isGraduation;
+        }
+      }
+    }
+
+    var teachRecords = _teachRecords;
+    if (teachRecords != null) {
+      for (PracticeRecord record in teachRecords) {
+        if (record.lessonId.id.endsWith('/${lesson.id}')) {
+          lessonCount.teachCount++;
+        }
+      }
+    }
+
+    return lessonCount;
+  }
 }
 
 class LevelCompletion {
   Level level;
+
   int get lessonCount => lessonIds.length;
+
   int get lessonsGraduatedCount => graduatedLessonIds.length;
-  bool get isLevelGraduated => (lessonCount == lessonsGraduated) && (lessonCount > 0);
+
+  bool get isLevelGraduated =>
+      (lessonCount == lessonsGraduatedCount) && (lessonCount > 0);
   Set<int> lessonIds = {};
   Set<int> graduatedLessonIds = {};
 
   LevelCompletion(this.level);
+}
+
+class LessonCount {
+  int practiceCount = 0;
+  int teachCount = 0;
+  bool isGraduated = false;
 }

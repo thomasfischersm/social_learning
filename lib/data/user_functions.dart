@@ -79,7 +79,7 @@ class UserFunctions {
     return User.fromSnapshot(userDoc);
   }
 
-  static extractNumberId(DocumentReference? id) {
+  static int? extractNumberId(DocumentReference? id) {
     if (id != null) {
       var idStr = id.toString();
       int index = idStr.lastIndexOf('/');

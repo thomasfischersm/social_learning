@@ -32,6 +32,7 @@ class LibraryState extends ChangeNotifier {
     if (_selectedCourse != course) {
       _lessons = null;
       _isLessonListLoaded = false;
+      _isLevelListLoaded = false;
     }
 
     _selectedCourse = course;
@@ -146,9 +147,26 @@ class LibraryState extends ChangeNotifier {
           .orderBy('sortOrder', descending: false)
           .snapshots()
           .listen((snapshot) {
-        _lessons = snapshot.docs.map((e) => Lesson.fromSnapshot(e)).toList();
+        _levels = snapshot.docs.map((e) => Level.fromSnapshot(e)).toList();
+        print('Loaded ${_levels?.length} levels');
         notifyListeners();
       });
+    }
+  }
+
+  Iterable<Lesson> getLessonsByLevel(String rawLevelId) {
+    var lessonsRef = lessons;
+    if (lessonsRef != null) {
+      return lessonsRef.where((element) {
+        var otherLevelId = element.levelId;
+        if (otherLevelId != null) {
+          return otherLevelId.id.endsWith('/$rawLevelId');
+        } else {
+          return false;
+        }
+      });
+    } else {
+      return [];
     }
   }
 

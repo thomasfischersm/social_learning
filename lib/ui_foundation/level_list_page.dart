@@ -42,6 +42,7 @@ class LevelListState extends State<LevelListPage> {
         body: Center(
           child: Container(
               constraints: const BoxConstraints(maxWidth: 310, maxHeight: 350),
+              padding: const EdgeInsets.all(5.0 * 3.1),
               child: Consumer<LibraryState>(
                   builder: (context, libraryState, child) =>
                       Consumer<StudentState>(
@@ -49,7 +50,8 @@ class LevelListState extends State<LevelListPage> {
                         List<LevelCompletion> levelCompletions =
                             studentState.getLevelCompletions(libraryState);
 
-                        return Row(
+                        return SingleChildScrollView(child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CustomUiConstants.getTextPadding(Text(
                               '${libraryState.selectedCourse?.title} Curriculum',
@@ -60,49 +62,69 @@ class LevelListState extends State<LevelListPage> {
                               '\nStats',
                               style: CustomTextStyles.headline,
                             )),
-                            Text('Lessons practiced: ${studentState.getPracticeCount()}', style: CustomTextStyles.getBody(context),),
-                            Text('Lessons completed: ${studentState.getGraduationCount()}', style: CustomTextStyles.getBody(context),),
-                            Text('Lessons taught: ${studentState.getTeachCount()}', style: CustomTextStyles.getBody(context),),
+                            Text(
+                              'Lessons practiced: ${studentState.getPracticeCount()}',
+                              style: CustomTextStyles.getBody(context),
+                            ),
+                            Text(
+                              'Lessons completed: ${studentState.getGraduationCount()}',
+                              style: CustomTextStyles.getBody(context),
+                            ),
+                            Text(
+                              'Lessons taught: ${studentState.getTeachCount()}',
+                              style: CustomTextStyles.getBody(context),
+                            ),
                           ],
-                        );
+                        ));
                       }))),
         ));
   }
 
-  ListView generateLevelList(List<LevelCompletion> levelCompletions) {
-    return ListView.builder(
-        itemCount: levelCompletions.length,
-        itemBuilder: (context, index) {
-          var levelCompletion = levelCompletions[index];
-          Level level = levelCompletion.level;
+  Widget generateLevelList(List<LevelCompletion> levelCompletions) {
+    if (levelCompletions.isEmpty) {
+      return Text(
+        'Undergoing maintenance - no levels!',
+        style: CustomTextStyles.getBody(context),
+      );
+    }
 
-          String levelText = 'Level ${index + 1}: ${level.title}';
-          TextStyle? levelTextStyle;
-          if (levelCompletion.isLevelGraduated) {
-            levelText += ' - Complete';
-            levelTextStyle = CustomTextStyles.getFullyLearned(context);
-          } else if (levelCompletion.graduatedLessonIds.length > 0) {
-            levelText +=
-                ' - ${levelCompletion.lessonsGraduatedCount}/${levelCompletion.lessonCount} '
-                '(${levelCompletion.lessonsGraduatedCount * 100 / levelCompletion.lessonCount}%)';
-            levelTextStyle = CustomTextStyles.getPartiallyLearned(context);
-          } else {
-            levelTextStyle = CustomTextStyles.getBody(context);
-          }
+    List<Widget> children = [];
+    for (int i = 0; i < levelCompletions.length; i++) {
+      LevelCompletion levelCompletion = levelCompletions[i];
+      Level level = levelCompletion.level;
 
-          return InkWell(
-              onTap: () {
-                var levelId = level.id;
-                if (levelId != null) {
-                  Navigator.pushNamed(context, NavigationEnum.levelDetail.route,
-                      arguments: LevelDetailArgument(levelId));
-                }
-              },
-              child: Text(
-                levelText,
-                style: levelTextStyle,
-              ));
-        });
+      String levelText = 'Level ${i + 1}: ${level.title}';
+      TextStyle? levelTextStyle;
+      if (levelCompletion.isLevelGraduated) {
+        levelText += ' - Complete';
+        levelTextStyle = CustomTextStyles.getFullyLearned(context);
+      } else if (levelCompletion.graduatedLessonIds.length > 0) {
+        levelText +=
+            ' - ${levelCompletion.lessonsGraduatedCount}/${levelCompletion.lessonCount} '
+            '(${levelCompletion.lessonsGraduatedCount * 100 / levelCompletion.lessonCount}%)';
+        levelTextStyle = CustomTextStyles.getPartiallyLearned(context);
+      } else {
+        levelTextStyle = CustomTextStyles.getBody(context);
+      }
+
+      children.add(InkWell(
+          onTap: () {
+            var levelId = level.id;
+            if (levelId != null) {
+              Navigator.pushNamed(context, NavigationEnum.levelDetail.route,
+                  arguments: LevelDetailArgument(levelId));
+            }
+          },
+          child: Text(
+            levelText,
+            style: levelTextStyle,
+          )));
+    }
+
+    return Column(
+      children: children,
+      crossAxisAlignment: CrossAxisAlignment.start,
+    );
   }
 
   int _getLevelNumber(List<Lesson>? lessons, index) {
