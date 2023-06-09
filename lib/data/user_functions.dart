@@ -79,12 +79,12 @@ class UserFunctions {
     return User.fromSnapshot(userDoc);
   }
 
-  static int? extractNumberId(DocumentReference? id) {
+  static String? extractNumberId(DocumentReference? id) {
     if (id != null) {
-      var idStr = id.toString();
+      var idStr = id.path;
       int index = idStr.lastIndexOf('/');
       if (index != -1) {
-        return int.parse(idStr.substring(index + 1));
+        return idStr.substring(index + 1);
       }
     }
 

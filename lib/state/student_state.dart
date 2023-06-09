@@ -152,12 +152,12 @@ class StudentState extends ChangeNotifier {
         continue;
       }
 
-      int levelId = UserFunctions.extractNumberId(lesson.levelId)!;
+      String levelId = UserFunctions.extractNumberId(lesson.levelId)!;
       LevelCompletion? levelCompletion =
-          levelIdToCompletionMap[levelId.toString()];
+          levelIdToCompletionMap[levelId];
 
       if (levelCompletion != null) {
-        levelCompletion.lessonIds.add(int.parse(lesson.id));
+        levelCompletion.lessonRawIds.add(lesson.id);
         lessonIdToCompletionMap[lesson.id] = levelCompletion;
       }
     }
@@ -165,10 +165,10 @@ class StudentState extends ChangeNotifier {
     var learnRecords = _learnRecords;
     if (learnRecords != null) {
       for (PracticeRecord practiceRecord in learnRecords) {
-        int lessonId = UserFunctions.extractNumberId(practiceRecord.lessonId)!;
-        lessonIdToCompletionMap[lessonId.toString()]
-            ?.graduatedLessonIds
-            .add(lessonId);
+        String lessonRawId = UserFunctions.extractNumberId(practiceRecord.lessonId)!;
+        lessonIdToCompletionMap[lessonRawId.toString()]
+            ?.graduatedLessonRawIds
+            .add(lessonRawId);
       }
     }
 
@@ -206,14 +206,14 @@ class StudentState extends ChangeNotifier {
 class LevelCompletion {
   Level level;
 
-  int get lessonCount => lessonIds.length;
+  int get lessonCount => lessonRawIds.length;
 
-  int get lessonsGraduatedCount => graduatedLessonIds.length;
+  int get lessonsGraduatedCount => graduatedLessonRawIds.length;
 
   bool get isLevelGraduated =>
       (lessonCount == lessonsGraduatedCount) && (lessonCount > 0);
-  Set<int> lessonIds = {};
-  Set<int> graduatedLessonIds = {};
+  Set<String> lessonRawIds = {};
+  Set<String> graduatedLessonRawIds = {};
 
   LevelCompletion(this.level);
 }

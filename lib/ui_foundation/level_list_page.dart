@@ -98,7 +98,7 @@ class LevelListState extends State<LevelListPage> {
       if (levelCompletion.isLevelGraduated) {
         levelText += ' - Complete';
         levelTextStyle = CustomTextStyles.getFullyLearned(context);
-      } else if (levelCompletion.graduatedLessonIds.length > 0) {
+      } else if (levelCompletion.graduatedLessonRawIds.isNotEmpty) {
         levelText +=
             ' - ${levelCompletion.lessonsGraduatedCount}/${levelCompletion.lessonCount} '
             '(${levelCompletion.lessonsGraduatedCount * 100 / levelCompletion.lessonCount}%)';

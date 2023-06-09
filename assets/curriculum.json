@@ -1,0 +1,129 @@
+{
+  "courses": [
+    {
+      "id": "V4UYTsc7mK4oEHNLFXMU",
+      "title": "Acroyoga",
+      "description": "Acroyoga is a practice where the base lifts the flyer into the air to move through a sequence of acrobatic moves. The playful and vigorously physical activity develops trust and communication.\\n\\nSessions available in NYC: https://learninglab.fans/acroyoga",
+      "levels": [
+        {
+          "id": "5HSOg0mbQvJVaVvtdeG5",
+          "title": "Getting your wings",
+          "description": "",
+          "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+          "lessons": null
+        },
+        {
+          "id": "CK6NvWv1Tzs5GooLBQ9o",
+          "title": "First inversion",
+          "description": "",
+          "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+          "lessons": null
+        },
+        {
+          "id": "kAkx2wv0WPmwpPOXzqGw",
+          "title": "Side star",
+          "description": "",
+          "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+          "lessons": null
+        },
+        {
+          "id": "Npfpqj7WOy8mr6BTuN81",
+          "title": "Star",
+          "description": "",
+          "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+          "lessons": null
+        },
+        {
+          "id": "y4C7sXYUxUlh5mkAmiqZ",
+          "title": "Couch",
+          "description": "",
+          "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+          "lessons": null
+        },
+        {
+          "id": "BOkYKjnjMDDHyxjxoV4D",
+          "title": "Transitions",
+          "description": "",
+          "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+          "lessons": null
+        },
+        {
+          "id": "sHfWG1SrkLuM9ai9mHFC",
+          "title": "Ninja star",
+          "description": "",
+          "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+          "lessons": null
+        },
+        {
+          "id": "PZpezpOZkAnKE32FDyOT",
+          "title": "Four step",
+          "description": "",
+          "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+          "lessons": null
+        }
+      ]
+    },
+    {
+      "id": "Mq6QltGcrE9P3jBNSGx1",
+      "title": "Argentine Tango",
+      "description": "Argentine Tango combines classical elegance and a deeply meditative connection between the partners.\\n\\nSessions available in LA: https://oxygentango.com",
+      "levels": null
+    },
+    {
+      "id": "4ZUgIakaAbcCiVWMxSKb",
+      "title": "Sensual bachata",
+      "description": "Sensual Bachata is a modern dance full of energy, improvisation, and connection.\\n\\nSessions available in NYC: https://learninglab.fans/bachata",
+      "levels": [
+        {
+          "id": "ZOGbogDqRdyktkH7z4Og",
+          "title": "Going From Stepping To Dancing",
+          "description": "",
+          "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+          "lessons": null
+        },
+        {
+          "id": "zR8he7BzBs9oJIDglaFr",
+          "title": "Get Those Feet Moving",
+          "description": "",
+          "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+          "lessons": null
+        },
+        {
+          "id": "pBhbj5YqJSEeMR3XYuU5",
+          "title": "First choreo",
+          "description": "",
+          "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+          "lessons": null
+        },
+        {
+          "id": "8FcAG8FuWLgKIdsriJN4",
+          "title": "Cuddle position",
+          "description": "",
+          "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+          "lessons": null
+        },
+        {
+          "id": "4D1YjjwfDbzYMQ11TTGX",
+          "title": "Shadow position",
+          "description": "",
+          "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+          "lessons": null
+        },
+        {
+          "id": "aWzPgKfFEwPwcJTW3Ho4",
+          "title": "Turns deep dive",
+          "description": "",
+          "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+          "lessons": null
+        },
+        {
+          "id": "T063CDokCBEcWZySQSDQ",
+          "title": "Styling",
+          "description": "",
+          "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+          "lessons": null
+        }
+      ]
+    }
+  ]
+}
