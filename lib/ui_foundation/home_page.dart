@@ -25,7 +25,10 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     // LevelMigration.migrate();
-    JsonCurriculumSync.export();
+    // JsonCurriculumSync.export();
+    // JsonCurriculumSync.import();
+    JsonCurriculumSync.convertTextToJson(
+        'acroyoga-origin.txt', '/courses/V4UYTsc7mK4oEHNLFXMU');
 
     return Scaffold(
         appBar: AppBar(
@@ -76,10 +79,13 @@ class HomePageState extends State<HomePage> {
 
         Column textColumn =
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          InkWell(child: CustomUiConstants.getTextPadding(
-              Text(course.title, style: CustomTextStyles.subHeadline)), onTap: () {
-                _openCourse(course, libraryState);
-              },),
+          InkWell(
+            child: CustomUiConstants.getTextPadding(
+                Text(course.title, style: CustomTextStyles.subHeadline)),
+            onTap: () {
+              _openCourse(course, libraryState);
+            },
+          ),
           CustomUiConstants.getRichTextPadding(RichText(
               text: TextSpan(children: [
             TextSpan(style: CustomTextStyles.getBody(context), text: pureText),
@@ -127,7 +133,6 @@ class HomePageState extends State<HomePage> {
 
   _openCourse(Course course, LibraryState libraryState) {
     libraryState.selectedCourse = course;
-    Navigator.pushNamed(
-        context, NavigationEnum.levelList.route);
+    Navigator.pushNamed(context, NavigationEnum.levelList.route);
   }
 }

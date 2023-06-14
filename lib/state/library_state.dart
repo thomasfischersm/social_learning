@@ -147,7 +147,7 @@ class LibraryState extends ChangeNotifier {
           .orderBy('sortOrder', descending: false)
           .snapshots()
           .listen((snapshot) {
-        _levels = snapshot.docs.map((e) => Level.fromSnapshot(e)).toList();
+        _levels = snapshot.docs.map((e) => Level.fromQuerySnapshot(e)).toList();
         print('Loaded ${_levels?.length} levels');
         notifyListeners();
       });
