@@ -26,11 +26,13 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     // LevelMigration.migrate();
     // JsonCurriculumSync.export();
-    JsonCurriculumSync.import();
     // JsonCurriculumSync.convertTextToJson(
     //     'acroyoga-origin.txt', '/courses/V4UYTsc7mK4oEHNLFXMU');
     // JsonCurriculumSync.convertTextToJson(
     //     'bachata-origin.txt', '/courses/4ZUgIakaAbcCiVWMxSKb');
+
+    JsonCurriculumSync.importV2();
+    // JsonCurriculumSync.export();
 
     return Scaffold(
         appBar: AppBar(

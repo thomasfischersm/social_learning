@@ -157,8 +157,8 @@ class StudentState extends ChangeNotifier {
           levelIdToCompletionMap[levelId];
 
       if (levelCompletion != null) {
-        levelCompletion.lessonRawIds.add(lesson.id);
-        lessonIdToCompletionMap[lesson.id] = levelCompletion;
+        levelCompletion.lessonRawIds.add(lesson.id!);
+        lessonIdToCompletionMap[lesson.id!] = levelCompletion;
       }
     }
 

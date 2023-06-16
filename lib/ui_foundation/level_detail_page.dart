@@ -79,6 +79,7 @@ class LevelDetailState extends State<LevelDetailPage> {
 
                         return SingleChildScrollView(
                             child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CustomUiConstants.getTextPadding(Text(
                               'Level ${levelPosition + 1}: ${level.title}',
@@ -108,14 +109,16 @@ class LevelDetailState extends State<LevelDetailPage> {
   Widget generateLessonList(
       Level level, LibraryState libraryState, StudentState studentState) {
     print('The dangerous id is ${level.id}');
-    Iterable<Lesson> lessons =
-        libraryState.getLessonsByLevel(level.id!);
+    Iterable<Lesson> lessons = libraryState.getLessonsByLevel(level.id!);
 
+    print('Got ${lessons.length} lessons to show');
     List<Widget> children = [];
     for (Lesson lesson in lessons) {
-      List<Widget> rowChildren = [];
+      List<Widget> columnChildren = [];
 
+      print('Before get count');
       LessonCount lessonCount = studentState.getCountsForLesson(lesson);
+      print('After get count');
       TextStyle? textStyle;
       if (lessonCount.isGraduated) {
         textStyle = CustomTextStyles.getFullyLearned(context);
@@ -132,21 +135,31 @@ class LevelDetailState extends State<LevelDetailPage> {
       } else if (lessonCount.practiceCount > 0) {
         text += ' (P:${lessonCount.practiceCount})';
       }
-      rowChildren.add(Text(
+      columnChildren.add(Text(
         text,
         style: textStyle,
       ));
-      rowChildren.add(Text('${lesson.synopsis}\n'));
+      // if ((lesson.synopsis != null) && (lesson.synopsis!.isNotEmpty)) {
+        columnChildren.add(Text('${lesson.synopsis}\n'));
+      // }
 
       children.add(InkWell(
-        child: Row(children: children),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: columnChildren,
+        ),
         onTap: () {
           Navigator.pushNamed(context, NavigationEnum.lessonDetail.route,
-              arguments: LessonDetailArgument(lesson.id));
+              arguments: LessonDetailArgument(lesson.id!));
         },
       ));
     }
 
-    return Row(children: children);
+    print('Done generate lesson list');
+    if (1 == 2) return Text('Test');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
+    );
   }
 }

@@ -121,6 +121,7 @@ class LibraryState extends ChangeNotifier {
     var courseId = selectedCourse?.id;
     if (courseId != null) {
       String coursePath = '/courses/$courseId';
+      print('Loading lessons for $coursePath');
 
       FirebaseFirestore.instance
           .collection('lessons')
@@ -160,7 +161,7 @@ class LibraryState extends ChangeNotifier {
       return lessonsRef.where((element) {
         var otherLevelId = element.levelId;
         if (otherLevelId != null) {
-          return otherLevelId.id.endsWith('/$rawLevelId');
+          return otherLevelId.id == rawLevelId;
         } else {
           return false;
         }

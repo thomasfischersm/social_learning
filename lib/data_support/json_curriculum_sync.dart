@@ -6,10 +6,12 @@ import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:social_learning/data_support/level_sync.dart';
 
 class JsonCurriculumSync {
   static bool _runExportOnce = false;
   static bool _runImportOnce = false;
+  static bool _runImportV2Once = false;
 
   static void export() async {
     if (_runExportOnce) {
@@ -22,9 +24,9 @@ class JsonCurriculumSync {
 
     var db = FirebaseFirestore.instance;
     var lessonDocs = (await db
-        .collection('lessons')
-        .orderBy('sortOrder', descending: false)
-        .get())
+            .collection('lessons')
+            .orderBy('sortOrder', descending: false)
+            .get())
         .docs;
 
     // Parse lessons from the db.
@@ -35,7 +37,7 @@ class JsonCurriculumSync {
       var lesson = Lesson.fromSnapshot(snapshot);
       lessons.add(lesson);
       var levelPath =
-      (lesson.levelId != null) ? '/${lesson.levelId!.path}' : null;
+          (lesson.levelId != null) ? '/${lesson.levelId!.path}' : null;
 
       if (lesson.isLevel || (levelPath == null)) {
         // Skip.
@@ -45,7 +47,7 @@ class JsonCurriculumSync {
       var lessonData = {
         'id': lesson.id,
         'courseId': '/${lesson.courseId.path}',
-        'levelId': '/$levelPath',
+        'levelId': levelPath,
         'title': lesson.title,
         'synopsis': lesson.synopsis,
         'instructions': lesson.instructions,
@@ -60,9 +62,9 @@ class JsonCurriculumSync {
     }
 
     var levelDocs = (await db
-        .collection('levels')
-        .orderBy('sortOrder', descending: false)
-        .get())
+            .collection('levels')
+            .orderBy('sortOrder', descending: false)
+            .get())
         .docs;
 
     List<Level> levels = [];
@@ -92,9 +94,9 @@ class JsonCurriculumSync {
     }
 
     var courseDocs = (await db
-        .collection('courses')
-        .orderBy('title', descending: false)
-        .get())
+            .collection('courses')
+            .orderBy('title', descending: false)
+            .get())
         .docs;
 
     List<Course> courses = [];
@@ -138,7 +140,7 @@ class JsonCurriculumSync {
     await db.runTransaction((transaction) async {
       var querySnapshot = await db.collection('levels').get();
       for (QueryDocumentSnapshot<Map<String, dynamic>> levelSnapshot
-      in querySnapshot.docs) {
+          in querySnapshot.docs) {
         var courseId = levelSnapshot['courseId'];
         if (courseId is String) {
           levelSnapshot.data()['courseId'] = db.doc(courseId);
@@ -157,19 +159,18 @@ class JsonCurriculumSync {
       int levelSortOrder = 0;
 
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-      await db.collection('levels').get();
+          await db.collection('levels').get();
       Map<String, QueryDocumentSnapshot<Map<String, dynamic>>>
-      levelIdToSnapshot = {};
+          levelIdToSnapshot = {};
       for (QueryDocumentSnapshot<Map<String, dynamic>> levelSnapshot
-      in querySnapshot.docs) {
+          in querySnapshot.docs) {
         levelIdToSnapshot[levelSnapshot.id] = levelSnapshot;
       }
 
       for (int i = 0; i < coursesJson.length; i++) {
         var courseJson = coursesJson[i];
         print(
-            'Course ${courseJson['title']} has ${courseJson['levels']
-                ?.length}.');
+            'Course ${courseJson['title']} has ${courseJson['levels']?.length}.');
         var jsonLevels = courseJson['levels'];
 
         if (jsonLevels != null) {
@@ -213,7 +214,8 @@ class JsonCurriculumSync {
     print('Created level ${levelJson['title']}');
   }
 
-  static Future<bool> updateLevel(levelJson,
+  static Future<bool> updateLevel(
+      levelJson,
       QueryDocumentSnapshot<Map<String, dynamic>> levelSnapshot,
       courseJson,
       int levelSortOrder,
@@ -225,12 +227,7 @@ class JsonCurriculumSync {
     Level currentLevel = Level.fromSnapshot(levelSnapshot);
 
     print(
-        ' EQ: course ${newLevel.courseId ==
-            currentLevel.courseId}, title ${newLevel.title ==
-            currentLevel.title}, description ${newLevel.description ==
-            currentLevel.description}, sortOrder ${levelSortOrder ==
-            currentLevel.sortOrder} (${levelSortOrder} - ${currentLevel
-            .sortOrder}');
+        ' EQ: course ${newLevel.courseId == currentLevel.courseId}, title ${newLevel.title == currentLevel.title}, description ${newLevel.description == currentLevel.description}, sortOrder ${levelSortOrder == currentLevel.sortOrder} (${levelSortOrder} - ${currentLevel.sortOrder}');
     if ((newLevel.courseId == currentLevel.courseId) &&
         (newLevel.title == currentLevel.title) &&
         (newLevel.description == currentLevel.description) &&
@@ -256,11 +253,11 @@ class JsonCurriculumSync {
 
   static void checkForDeletedLevels(
       Map<String, QueryDocumentSnapshot<Map<String, dynamic>>>
-      levelIdToSnapshot,
+          levelIdToSnapshot,
       FirebaseFirestore db,
       Transaction transaction) {
     for (QueryDocumentSnapshot<Map<String, dynamic>> levelSnapshot
-    in levelIdToSnapshot.values) {
+        in levelIdToSnapshot.values) {
       var level = Level.fromQuerySnapshot(levelSnapshot);
       var docRef = db.collection('levels').doc('${level.id}');
       transaction.delete(docRef);
@@ -302,5 +299,48 @@ class JsonCurriculumSync {
     var data = {'levels': levelsData};
     var json = encoder.convert(data);
     print(json);
+  }
+
+  static void importV2() async {
+    if (_runImportV2Once) {
+      print('Import V2 has already run!');
+      return;
+    } else {
+      _runImportV2Once = true;
+      print('Starting import V2');
+    }
+
+    String rawJson = await rootBundle.loadString('curriculum.json');
+    var json = const JsonDecoder().convert(rawJson);
+
+    var db = FirebaseFirestore.instance;
+
+    // DELETE: trash collections
+    await db.runTransaction((transaction) async {
+      var querySnapshot = await db.collection('lessons').get();
+      for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
+        transaction.delete(doc.reference);
+        print('Delete old lesson');
+      }
+    });
+
+    db.runTransaction((transaction) async {
+      var levelSync = LevelSync(transaction);
+
+      var coursesJson = json['courses'];
+      for (int i = 0; i < coursesJson.length; i++) {
+        var courseJson = coursesJson[i];
+        print(
+            'Course ${courseJson['title']} has ${courseJson['levels']?.length}.');
+        // print('get dynamic type: ${courseJson['levels'].runtimeType}');
+        // print('levels are: ${courseJson['levels']}');
+        List<dynamic>? jsonLevels = courseJson['levels'];
+
+        if (jsonLevels != null) {
+          await levelSync.sync(jsonLevels, '/courses/${courseJson['id']}',
+              i == coursesJson.length - 1);
+        }
+      }
+    });
   }
 }

@@ -6,54 +6,71 @@
       "description": "Acroyoga is a practice where the base lifts the flyer into the air to move through a sequence of acrobatic moves. The playful and vigorously physical activity develops trust and communication.\\n\\nSessions available in NYC: https://learninglab.fans/acroyoga",
       "levels": [
         {
+          "id": "PMPnsYaKGPc8hakr4vZS",
           "title": "Getting your wings",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "MxrVn4SpUflPnIMKQTjU",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/PMPnsYaKGPc8hakr4vZS",
               "title": "Warm-up 1: Flashlights",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "IahumldakAC4lalpI3Dw",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/PMPnsYaKGPc8hakr4vZS",
               "title": "Warm-up 2: Plank play",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Q0cmalYsiUfekL3fElUf",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/PMPnsYaKGPc8hakr4vZS",
               "title": "Warm-up 3: Table-on-table",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "jSwrkIsiN70SHR7NHJYJ",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/PMPnsYaKGPc8hakr4vZS",
               "title": "Drill lesson: bird entry",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Z7hdP1QUjc0ZXA2g2shp",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/PMPnsYaKGPc8hakr4vZS",
               "title": "Position lesson 1: bird",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "pc4qUPgBTw9TdKusvHvN",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/PMPnsYaKGPc8hakr4vZS",
               "title": "Position lesson 2: king throne",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "9rRELAexEICiBCTHY1dF",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/PMPnsYaKGPc8hakr4vZS",
               "title": "Position lesson 3: whale",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "E5u1100YDxaa3PGibx8B",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/PMPnsYaKGPc8hakr4vZS",
               "title": "Machine: bird, king throne, whale",
               "synopsis": "",
               "instructions": ""
@@ -61,54 +78,71 @@
           ]
         },
         {
+          "id": "uNxbWD48KBszWg2HEZdf",
           "title": "First inversion",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "iuDXFuaIUC4eMcalvgbd",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/uNxbWD48KBszWg2HEZdf",
               "title": "Warm-up 1: Partner leg throwdowns",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "JKCTOwLBiP4MnIOx42AU",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/uNxbWD48KBszWg2HEZdf",
               "title": "Warm-up 2: Counterbalance sitting down",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "EsU1ig3x6GIrRaZnXl04",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/uNxbWD48KBszWg2HEZdf",
               "title": "Warm-up 3: Push-up partner clapping - opposite leg raise",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "il9rmodarbjQ10o035Gy",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/uNxbWD48KBszWg2HEZdf",
               "title": "Drill lesson: bird practice: no hands, one foot, leg ups, rotations",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "53o2BS1dr6rSBPVCheEV",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/uNxbWD48KBszWg2HEZdf",
               "title": "Position lesson 1: Shoulderstand",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "kddMLIn7ikPDqHbPzIkn",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/uNxbWD48KBszWg2HEZdf",
               "title": "Position lesson 2: Shin-to-foot",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "1DEaxsZApyT9TH1iEOSy",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/uNxbWD48KBszWg2HEZdf",
               "title": "Position lesson 3: Foot-to-shin",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "BKxeEuj24y64IxlHsGTq",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/uNxbWD48KBszWg2HEZdf",
               "title": "Machine: bird, shoulder stand, shin-to-foot, foot-to-shin, king throne",
               "synopsis": "",
               "instructions": ""
@@ -116,54 +150,71 @@
           ]
         },
         {
+          "id": "f4D7bWT1bwu1x8Xjl2SV",
           "title": "Side star",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "RjUNP8SuOqtf9BLtE35z",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/f4D7bWT1bwu1x8Xjl2SV",
               "title": "Warm-up 1: Spread pike pulses",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "tmMsG4kdq1Pnse2yDsmp",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/f4D7bWT1bwu1x8Xjl2SV",
               "title": "Warm-up 2: Counterbalance Partner Foot Hold",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "5juut2VaOekZgMmohgeR",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/f4D7bWT1bwu1x8Xjl2SV",
               "title": "Warm-up 3: Sit-up partner pike",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "ADRs477T1XWRfXHQHff0",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/f4D7bWT1bwu1x8Xjl2SV",
               "title": "Drill lesson: Practice half-moon alignment for side star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "D95E3AGolZ8k6UCY38fs",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/f4D7bWT1bwu1x8Xjl2SV",
               "title": "Position lesson 1: Paserita twist",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "ODE3JYqpJmHeiQYSJOBp",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/f4D7bWT1bwu1x8Xjl2SV",
               "title": "Position lesson 2: Straddle bat",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "ZHRwXsEcyFv9kps9CJAd",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/f4D7bWT1bwu1x8Xjl2SV",
               "title": "Position lesson 3: Side star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "QNsy40inuNCLKDc5Y85v",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/f4D7bWT1bwu1x8Xjl2SV",
               "title": "Machine: bird, prasarita twist, straddle bat, side star, tick tock",
               "synopsis": "",
               "instructions": ""
@@ -171,54 +222,71 @@
           ]
         },
         {
+          "id": "gGyi5M3yXH3c1Q67TGtL",
           "title": "Intro to star",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "v7tqaEDtE1XM3xGf3Ikg",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gGyi5M3yXH3c1Q67TGtL",
               "title": "Warm-up 1: Shoulders on Thigh Bridge",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "v0qfP7i5Altpvtr4o2t4",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gGyi5M3yXH3c1Q67TGtL",
               "title": "Warm-up 2: Barnacle on Cow Pose",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "1L50ltn6sh0TVNmQOuZZ",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gGyi5M3yXH3c1Q67TGtL",
               "title": "Warm-up 3: Forward roll",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "YsaYJth89rGC6BjzyAxr",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gGyi5M3yXH3c1Q67TGtL",
               "title": "Drilllesson: Tripod Headstand",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "paFRbFgMVgwTwXtrJzK1",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gGyi5M3yXH3c1Q67TGtL",
               "title": "Position lesson 1: Star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "YdrbsnzydrA06zxGGXlE",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gGyi5M3yXH3c1Q67TGtL",
               "title": "Position lesson 2: Foot-to-hand",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Mw0SRHNqZXEwBpO5R1wi",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gGyi5M3yXH3c1Q67TGtL",
               "title": "Position lesson 3: Reverse throne",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "zng9StDXOEofzTy1yLeU",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gGyi5M3yXH3c1Q67TGtL",
               "title": "Machine: star, foot-to-hand, reverse throne, bonus: reverse shoulder stand.",
               "synopsis": "",
               "instructions": ""
@@ -226,54 +294,71 @@
           ]
         },
         {
+          "id": "3ajF3RTg1wWQB82bGT72",
           "title": "Couch",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "dxE7i0nolW3cj519KjcD",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/3ajF3RTg1wWQB82bGT72",
               "title": "Warm-up 1: Bear Crawl",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "EzPBDufReonUNpgUZs4j",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/3ajF3RTg1wWQB82bGT72",
               "title": "Warm-up 2: Monkey Walk",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "2U3oK5Ab79MpWrXgAH2E",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/3ajF3RTg1wWQB82bGT72",
               "title": "Warm-up 3: Frog Hops",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Fi8OreDQNhbFOAm4qmQX",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/3ajF3RTg1wWQB82bGT72",
               "title": "Drill lesson: Tight makes light. The base bases. The flyer holds the shape.",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "RTuitjH7GVuIeYaZxmie",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/3ajF3RTg1wWQB82bGT72",
               "title": "Position lesson 1: Straddle throne",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "7psgSAhFM1KDFILFDo0t",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/3ajF3RTg1wWQB82bGT72",
               "title": "Position lesson 2: Couch",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "EqNewjavqumjLzY0plLU",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/3ajF3RTg1wWQB82bGT72",
               "title": "Position lesson 3: Transition to couch on other side through straddle throne.",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "TD5SF65T56RqEne0qGI5",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/3ajF3RTg1wWQB82bGT72",
               "title": "Machine: Pizza Wheel machine",
               "synopsis": "",
               "instructions": ""
@@ -281,54 +366,71 @@
           ]
         },
         {
+          "id": "rybwWj0ywuClQJm7qqHG",
           "title": "Transitions",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "rZBQjFzlRnbjRlCfHdEz",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/rybwWj0ywuClQJm7qqHG",
               "title": "Warm-up 1: Hollow Body Hurricane",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "yDbXNZjUKCw9qcZq7bAi",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/rybwWj0ywuClQJm7qqHG",
               "title": "Warm-up 2: Plank On Hip",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "sE6zxTheuuFbFYUH6K2C",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/rybwWj0ywuClQJm7qqHG",
               "title": "Warm-up 3: Fall Back/Hold Partner’s Neck",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "j2pS3l0IxrWrmCw9ugoG",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/rybwWj0ywuClQJm7qqHG",
               "title": "Drill lesson: flyer led vs base led",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "jgr5X9gakIfTdsgvBAjH",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/rybwWj0ywuClQJm7qqHG",
               "title": "Position lesson 1: Bird to side star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "KobBWOdBVDPFKJ6zZbch",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/rybwWj0ywuClQJm7qqHG",
               "title": "Position lesson 2: Side star to back flying across the base, continue to other side star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "34saOU3ZFqrG8T5EQcKH",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/rybwWj0ywuClQJm7qqHG",
               "title": "Position lesson 3: Side star to straddle throne",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "LDyNJzEoMs6UMI6z303C",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/rybwWj0ywuClQJm7qqHG",
               "title": "Machine: Bird, side star, back flying across the base, other side star, straddle bat, side star on other leg, rotate through back flying, return to bird.",
               "synopsis": "",
               "instructions": ""
@@ -336,54 +438,71 @@
           ]
         },
         {
+          "id": "RpOmeHa9YYv0PIrXKSIC",
           "title": "Ninja star",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "uQS1OoxrsgRXPqQ3uouF",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/RpOmeHa9YYv0PIrXKSIC",
               "title": "Warm-up 1: Kick Feet Up (Hold Partner)",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "IWSqmGamvwIRpQfNYd3r",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/RpOmeHa9YYv0PIrXKSIC",
               "title": "Warm-up 2: Dragon Flag On Partner",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "f5Uu95cn6orySxILIMCh",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/RpOmeHa9YYv0PIrXKSIC",
               "title": "Warm-up 3: D. Flag on Partner’s Knees",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "kFEk2r3LZMKnEq6A148h",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/RpOmeHa9YYv0PIrXKSIC",
               "title": "Drill lesson: Spotting (Review spotting for bird, throne, and shoulderstand.)",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "1GcOE6utvAf3E6l4Zzqz",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/RpOmeHa9YYv0PIrXKSIC",
               "title": "Position lesson 1: Reverse bird",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "RMUzcucsa4XKZjgM3DUH",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/RpOmeHa9YYv0PIrXKSIC",
               "title": "Position lesson 2: Tic toc",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "uQa00KxNoXt2IaWUsfZq",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/RpOmeHa9YYv0PIrXKSIC",
               "title": "Position lesson 3: Ninja star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "TtLoeyVaAtEoK9mpiiOL",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/RpOmeHa9YYv0PIrXKSIC",
               "title": "Machine: Foot to hand, reverse bird, straddle bat, ninja star",
               "synopsis": "",
               "instructions": ""
@@ -391,54 +510,71 @@
           ]
         },
         {
+          "id": "v4F80TITueIqYctGEzDB",
           "title": "Trap door",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "yPTmkywP3QkUZzlaPEFH",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/v4F80TITueIqYctGEzDB",
               "title": "Warm-up 1: Stand on Table Top",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "qmRdZ7vp3CsSg6v3uJ14",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/v4F80TITueIqYctGEzDB",
               "title": "Warm-up 2: 360 Plank Stress Test",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "0IXdMINRpuRI8OW57K2C",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/v4F80TITueIqYctGEzDB",
               "title": "Warm-up 3:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "U8sCrtxA1eOWtsC8QaEC",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/v4F80TITueIqYctGEzDB",
               "title": "Drill lesson: Communication",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "QGBBwsLtKoKOT6RiISin",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/v4F80TITueIqYctGEzDB",
               "title": "Position 1: Foot-to-Hand",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "1VTg9i5acfVmjFlO55ck",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/v4F80TITueIqYctGEzDB",
               "title": "Position 2: Reverse Throne",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "lNjgPw03hFeFP4clY3Vv",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/v4F80TITueIqYctGEzDB",
               "title": "Position 3: Folded Leaf",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "kPzQPXVOxUGYhEK5RBVu",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/v4F80TITueIqYctGEzDB",
               "title": "Machine: Trap Door",
               "synopsis": "",
               "instructions": ""
@@ -446,48 +582,63 @@
           ]
         },
         {
+          "id": "HpabcRDH5YHbUIVTFB6A",
           "title": "Spotting deep dive",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "EISFwo5DtKee4sr93KC5",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/HpabcRDH5YHbUIVTFB6A",
               "title": "Warm-up 1:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "hRhKMBmiKsv7lyKLZMq1",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/HpabcRDH5YHbUIVTFB6A",
               "title": "Warm-up 2:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "f7NQpjoX2q8T7E4fPCJZ",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/HpabcRDH5YHbUIVTFB6A",
               "title": "Warm-up 3:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "4Of92R53Pi5a0H29UwEf",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/HpabcRDH5YHbUIVTFB6A",
               "title": "Drill lesson: Fall scenario analysis",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "q3hoaQqNtuGbj4cWiCC5",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/HpabcRDH5YHbUIVTFB6A",
               "title": "Position 1: Fall drill from bird",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Yer3pdvz05f0S3CRhvCp",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/HpabcRDH5YHbUIVTFB6A",
               "title": "Position 2: Bailing backwards out of star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "pQNkp9QDfcNQyYvqby1P",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/HpabcRDH5YHbUIVTFB6A",
               "title": "Position 3: Popcorn spotting a star challenge",
               "synopsis": "",
               "instructions": ""
@@ -495,54 +646,71 @@
           ]
         },
         {
+          "id": "gRJfYNH5FCXR1NCowaBh",
           "title": "Four step",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "ZTH8SCdBuQDcFeV4NOlL",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gRJfYNH5FCXR1NCowaBh",
               "title": "Warm-up 1:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "J6upAeZtiR43M0VHlMsI",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gRJfYNH5FCXR1NCowaBh",
               "title": "Warm-up 2:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "jjRCVSeVlGOMd9ES74hm",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gRJfYNH5FCXR1NCowaBh",
               "title": "Warm-up 3:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "FZ15MKIACF6UW1KDf9kq",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gRJfYNH5FCXR1NCowaBh",
               "title": "Drill lesson: Vocabulary drill",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "rGen0wLBjZKf7KFE9h6Q",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gRJfYNH5FCXR1NCowaBh",
               "title": "Position lesson 1: Back flying",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "7BBv3u98YqjeNrb7ihzK",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gRJfYNH5FCXR1NCowaBh",
               "title": "Position lesson 2: Reverse Shoulder stand",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "FwrBpUpeJOiIvcRq1uSH",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gRJfYNH5FCXR1NCowaBh",
               "title": "Position lesson 3: Star to Foot-to-Hand",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "w3niMBoxNfpHVtl7NFaj",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/gRJfYNH5FCXR1NCowaBh",
               "title": "Machine: Four Step",
               "synopsis": "",
               "instructions": ""
@@ -550,54 +718,71 @@
           ]
         },
         {
+          "id": "apuRJvkE0UPYM4GjTAlq",
           "title": "Intermediate Star",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "PSvtTUaCxkyHqnDa64dH",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/apuRJvkE0UPYM4GjTAlq",
               "title": "Warm-up 1:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "tBeiPQbtjmJh1FTOBsUp",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/apuRJvkE0UPYM4GjTAlq",
               "title": "Warm-up 2:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "84IiCUNVfeR29PB2BwRj",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/apuRJvkE0UPYM4GjTAlq",
               "title": "Warm-up 3:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "RFwKCGYvd6Y5DDT8XKHN",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/apuRJvkE0UPYM4GjTAlq",
               "title": "Drill lesson: Movement Explorations in Star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "uDeWADBad3i24eQv8b98",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/apuRJvkE0UPYM4GjTAlq",
               "title": "Position 1: Mono Star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "7haVCgNRtOkTfml0JinR",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/apuRJvkE0UPYM4GjTAlq",
               "title": "Position 2: Stepping Down From Star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Ifn7O5NjYaIF2RewHp4Y",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/apuRJvkE0UPYM4GjTAlq",
               "title": "Position 3: Reverse star",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "UnHeXTMizISIJvHIYVKL",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/apuRJvkE0UPYM4GjTAlq",
               "title": "Machine: Cork Screw",
               "synopsis": "",
               "instructions": ""
@@ -605,54 +790,71 @@
           ]
         },
         {
+          "id": "NkvmVWApLZiqvsyzZhGB",
           "title": "Lunar Intro",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "jUfd6Ukx0mmwIK070YmS",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/NkvmVWApLZiqvsyzZhGB",
               "title": "Warm-up 1:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "5S1S7ZX0miPsI3LP43i3",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/NkvmVWApLZiqvsyzZhGB",
               "title": "Warm-up 2:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "i9e4Wntfo4KF9fSHXRSA",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/NkvmVWApLZiqvsyzZhGB",
               "title": "Warm-up 3:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "XbQk6yT1jkdZSbmqqRe3",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/NkvmVWApLZiqvsyzZhGB",
               "title": "Drill lesson: Health Boundaries",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "z3ji5ot4GOYQdeKiTKnf",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/NkvmVWApLZiqvsyzZhGB",
               "title": "Position 1: Hammock",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "kMVmfWm9SASSbctJ2mPZ",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/NkvmVWApLZiqvsyzZhGB",
               "title": "Position 2: Low-Flying Whale",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "5D2l6q8AmhfKoLaBlSDL",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/NkvmVWApLZiqvsyzZhGB",
               "title": "Position 3: Multi-Base Cat Cow",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "FSIf1tDET1FHRgl5XOXw",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/NkvmVWApLZiqvsyzZhGB",
               "title": "Machine: Folded leaf variations",
               "synopsis": "",
               "instructions": ""
@@ -660,54 +862,71 @@
           ]
         },
         {
+          "id": "Jlp1tRTbRKgXK9flhgI1",
           "title": "Intro to Standing",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "vsjIVKeFaxlDfdfpksij",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/Jlp1tRTbRKgXK9flhgI1",
               "title": "Warm-up 1: Helicopter (hands on hips)",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "AjLbW8pVDx4LPgYFTpAD",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/Jlp1tRTbRKgXK9flhgI1",
               "title": "Warm-up 2: Tuck Sit",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "38rfFckRkYyel0czgPTj",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/Jlp1tRTbRKgXK9flhgI1",
               "title": "Warm-up 3:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Evi1bAtZtzOqc0ppSJTJ",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/Jlp1tRTbRKgXK9flhgI1",
               "title": "Drill lesson:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "bM4oPoz1trwslhJpy7fL",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/Jlp1tRTbRKgXK9flhgI1",
               "title": "Position lesson 1: Titanic",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "p2oiKGDlDNFDh4hyQ7pJ",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/Jlp1tRTbRKgXK9flhgI1",
               "title": "Position lesson 2: Kicking through the armpit",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "GGAiJWPjYkDp09LfHMm1",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/Jlp1tRTbRKgXK9flhgI1",
               "title": "Position lesson 3: Shoulder bird",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Jo8TEz5mhg3uWtP3B3S7",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/Jlp1tRTbRKgXK9flhgI1",
               "title": "Machine: Shoulder bird -> chest -> ship figure -> Titanic",
               "synopsis": "",
               "instructions": ""
@@ -715,54 +934,71 @@
           ]
         },
         {
+          "id": "CcRUnICJNITTYKsDqYKe",
           "title": "Multi-Base",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "c8Hm4xIsDvBkFThunJ7U",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/CcRUnICJNITTYKsDqYKe",
               "title": "Warm-up 1:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Fd6EqeE8DxWuPvUpw2o0",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/CcRUnICJNITTYKsDqYKe",
               "title": "Warm-up 2:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "JWkZmawFkzcicu5vEkxM",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/CcRUnICJNITTYKsDqYKe",
               "title": "Warm-up 3:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "q5HCehlNkXyi1wznJwIV",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/CcRUnICJNITTYKsDqYKe",
               "title": "Drill lesson:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "hG1HYFl4zBN6G6Qw98vh",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/CcRUnICJNITTYKsDqYKe",
               "title": "Position 1: Tic Toc across the room",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "LUz25opbIkjfwNV9EbqS",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/CcRUnICJNITTYKsDqYKe",
               "title": "Position 2: Titanic -> Star -> Concert Seating",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "fvoNeRNEvAPXrZ9mHKOh",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/CcRUnICJNITTYKsDqYKe",
               "title": "Position 3: Reverse Bird -> Shoulder Stand -> Back Flying -> Foot-to-Hand",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "fbGes8OCpYa8R6mXx4BF",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/CcRUnICJNITTYKsDqYKe",
               "title": "Machine: Pass the flyer improvisation",
               "synopsis": "",
               "instructions": ""
@@ -770,60 +1006,79 @@
           ]
         },
         {
+          "id": "c8zl7ij24nwZahSY9PkV",
           "title": "Classic Machines",
           "description": "",
           "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
           "lessons": [
             {
+              "id": "XTRaam6uPROpU9tjRKH8",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/c8zl7ij24nwZahSY9PkV",
               "title": "Warm-up 1:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "8FawY6lqHWAa8fupoKLQ",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/c8zl7ij24nwZahSY9PkV",
               "title": "Warm-up 2:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "QSGPz8F9VtLdJiXZQ8Bm",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/c8zl7ij24nwZahSY9PkV",
               "title": "Warm-up 3:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "yaKvgn5gHoL7NaGr6PFl",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/c8zl7ij24nwZahSY9PkV",
               "title": "Drill lesson:",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Ei3lL7WvJ5ECLhiFXqHi",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/c8zl7ij24nwZahSY9PkV",
               "title": "Machine 1: Barrel Roll",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "3yUJZ49bwOIznIzLJsO8",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/c8zl7ij24nwZahSY9PkV",
               "title": "Machine 2: Garter Belt",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "jryLnI3uX4fcS2K0p8gm",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/c8zl7ij24nwZahSY9PkV",
               "title": "Machine 3: Monkey Frog",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "DgtWuNrusMnLdV8VSjaR",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/c8zl7ij24nwZahSY9PkV",
               "title": "Machine 4: Spider Roll",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "9ZmJHt1MWri581vxbmzz",
               "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/c8zl7ij24nwZahSY9PkV",
               "title": "",
               "synopsis": "",
               "instructions": ""
@@ -844,42 +1099,55 @@
       "description": "Sensual Bachata is a modern dance full of energy, improvisation, and connection.\\n\\nSessions available in NYC: https://learninglab.fans/bachata",
       "levels": [
         {
+          "id": "GurPNfB8YlrsACvqemi3",
           "title": "Going From Stepping To Dancing",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
+              "id": "3LOuYZF5eHYScm4cQQmj",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/GurPNfB8YlrsACvqemi3",
               "title": "Shines 1 lesson: “normal” basic",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "8ZC2RAIdoiZgtuKSM6fh",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/GurPNfB8YlrsACvqemi3",
               "title": "Technique 1: Static hip movement explorations",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "d34Eu3AlmP6aGkraFA4Z",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/GurPNfB8YlrsACvqemi3",
               "title": "Technique 2: Dynamic hip movement explorations",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "WpAl16PYQyuwGEKZWqDq",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/GurPNfB8YlrsACvqemi3",
               "title": "Technique 3: Drawing energy from the floor",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "KWjhUcaMTNipekAbYTFq",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/GurPNfB8YlrsACvqemi3",
               "title": "Technique 4: Body drumming to learn rhythm",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "8x9D0XE44DQSjU8duvDL",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/GurPNfB8YlrsACvqemi3",
               "title": "Partner 1: Doing the basic with a partner",
               "synopsis": "",
               "instructions": ""
@@ -887,42 +1155,55 @@
           ]
         },
         {
+          "id": "Y9T5IFGXFKhm0VKuvbwI",
           "title": "First step patterns",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
+              "id": "o8NTdiRdCtwX3xnSDUK8",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/Y9T5IFGXFKhm0VKuvbwI",
               "title": "Shines 1 lesson: “normal” basic",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "YNNdsNs5kkVGmVoxjeVX",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/Y9T5IFGXFKhm0VKuvbwI",
               "title": "Shines 2 lesson: box step",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "6qtMwWYIBqFtrsRO5Nut",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/Y9T5IFGXFKhm0VKuvbwI",
               "title": "Technique: Partner position",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "CTBucSKLkB2hsXVk2A1b",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/Y9T5IFGXFKhm0VKuvbwI",
               "title": "Partner 1 lesson: Basic with partner",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "tj1f8ouJXLR76qn7mt6c",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/Y9T5IFGXFKhm0VKuvbwI",
               "title": "Partner 2 lesson: Inside turn",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "yaFMhDsVxpPlMrUBTlMe",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/Y9T5IFGXFKhm0VKuvbwI",
               "title": "Partner 3 lesson: Box step",
               "synopsis": "",
               "instructions": ""
@@ -930,42 +1211,55 @@
           ]
         },
         {
+          "id": "4r454o5zZrjE8ySo04BS",
           "title": "First choreo",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
+              "id": "fdPGVkV69zewUQfTYO6c",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/4r454o5zZrjE8ySo04BS",
               "title": "Shines 1 lesson: inside turn",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "ZHdA7BYPUEnmKG46SXsQ",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/4r454o5zZrjE8ySo04BS",
               "title": "Shines 2 lesson: integrate",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "Mnam03F9bo9mN3dpHGKz",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/4r454o5zZrjE8ySo04BS",
               "title": "Technique: Hand grips, their purpose, and transition",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "qvZn0zEf7W8uCEaMoW9y",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/4r454o5zZrjE8ySo04BS",
               "title": "Partner 1 lesson: Leader turn",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "tELIv3x1DXZfVdf13Xyv",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/4r454o5zZrjE8ySo04BS",
               "title": "Partner 2 lesson: Hip swing",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "FnP7kmd3REhZCzY6pnYP",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/4r454o5zZrjE8ySo04BS",
               "title": "Choreo: Box step into hip swing, basico, follower turn into leader turn",
               "synopsis": "",
               "instructions": ""
@@ -973,42 +1267,55 @@
           ]
         },
         {
+          "id": "TS0vgZ9aP6vWuR2ZhPky",
           "title": "Cuddle position",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
+              "id": "5jbSrw1zziDJL6kizv7y",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/TS0vgZ9aP6vWuR2ZhPky",
               "title": "Shines 1 lesson: Wave isolation",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "ClJVzTLmLKtltAaa8V9c",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/TS0vgZ9aP6vWuR2ZhPky",
               "title": "Shines 2 lesson: integrate",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "O2D6qE57A3jpn1GVJleO",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/TS0vgZ9aP6vWuR2ZhPky",
               "title": "Technique: Momentum game",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "MebtowzbaVAWCRT0rQ42",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/TS0vgZ9aP6vWuR2ZhPky",
               "title": "Partner 1 lesson: Entrance/exit into cuddle position",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "jAYOUADIF1PCqyPPM00H",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/TS0vgZ9aP6vWuR2ZhPky",
               "title": "Partner 2 lesson: Wave in cuddle position",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "5TC9LDxh7lrhr5I2ms4L",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/TS0vgZ9aP6vWuR2ZhPky",
               "title": "Choreo: Leader turn to entrance in cuddle position, wave, exit cuddle position",
               "synopsis": "",
               "instructions": ""
@@ -1016,42 +1323,55 @@
           ]
         },
         {
+          "id": "DxUpCNt5ry8gL48KyGKG",
           "title": "Shadow position",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
+              "id": "a396safrZOFQty1unayu",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/DxUpCNt5ry8gL48KyGKG",
               "title": "Shines 1 lesson: Side step - 180-degree turn - side step",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "q6o7c5cLbXXNiiKYFJPy",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/DxUpCNt5ry8gL48KyGKG",
               "title": "Shines 2 lesson: integrate",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "4kwF3d1oy3PzjmACrX0v",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/DxUpCNt5ry8gL48KyGKG",
               "title": "Technique: Spotting",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "5j2eVzCOWvONVICF0jCP",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/DxUpCNt5ry8gL48KyGKG",
               "title": "Partner 1 lesson: Enter shadow position with cut turn",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "yQj8dbLORTfv2luYYrGI",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/DxUpCNt5ry8gL48KyGKG",
               "title": "Partner 2 lesson: Exit shadow position",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "9byD1KnLtGnSV9q6slTK",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/DxUpCNt5ry8gL48KyGKG",
               "title": "Choreo: Enter shadow position on 5, basic in shadow position, exit shadow position, hip swing",
               "synopsis": "",
               "instructions": ""
@@ -1059,42 +1379,55 @@
           ]
         },
         {
+          "id": "nXbkefrhFnzMiEE40lVB",
           "title": "Turns deep dive",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
+              "id": "XkXFuQnIB8o3iwH5esGx",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/nXbkefrhFnzMiEE40lVB",
               "title": "Shines 1 lesson: Outside turn",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "RQsm87EHHrS7R9NuqTcs",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/nXbkefrhFnzMiEE40lVB",
               "title": "Shines 2 lesson: integrate",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "GJfyVSsjBdrxzqWGoAqF",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/nXbkefrhFnzMiEE40lVB",
               "title": "Technique: Spin on axis, pull arms in",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "QFgSjJ94FUagyzGmNsng",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/nXbkefrhFnzMiEE40lVB",
               "title": "Partner 1 lesson: turn in 2 counts",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "0mixIvzIEo5mOD9AOERm",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/nXbkefrhFnzMiEE40lVB",
               "title": "Partner 2 lesson: Outside turns",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "sj1CelODHtkoO5EDTEfL",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/nXbkefrhFnzMiEE40lVB",
               "title": "Choreo: Follower outside turn to leader turn to both turn, end in hip swing",
               "synopsis": "",
               "instructions": ""
@@ -1102,42 +1435,55 @@
           ]
         },
         {
+          "id": "z3EoGEOjdUJMDgCZh7NS",
           "title": "Styling",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
+              "id": "pQPB2Ue0NtMuGIoyvyu6",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/z3EoGEOjdUJMDgCZh7NS",
               "title": "Shines 1 lesson: basic in place",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "JZZHNGnmRU1wQMmcRwQ2",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/z3EoGEOjdUJMDgCZh7NS",
               "title": "Shines 2 lesson: integrate",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "2Hyj2SQ36GCaDxRYGt4m",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/z3EoGEOjdUJMDgCZh7NS",
               "title": "Technique: Expression game - play a character",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "9CtqjHcrCl5Msur7quWT",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/z3EoGEOjdUJMDgCZh7NS",
               "title": "Partner 1 lesson: Combs on their own and after turns",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "1A8ZhdcuCSp7ERJezoTD",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/z3EoGEOjdUJMDgCZh7NS",
               "title": "Partner 2 lesson: Hand tosses",
               "synopsis": "",
               "instructions": ""
             },
             {
+              "id": "bFuT3j7S6jg7gzeTN4Qq",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/z3EoGEOjdUJMDgCZh7NS",
               "title": "Choreo: Comb to hand change to inside turn, toss both hands to the side and initiate turn from the follower’s hip, leader turn with neck wrap around self",
               "synopsis": "",
               "instructions": ""
@@ -1145,42 +1491,50 @@
           ]
         },
         {
+          "id": "etMTnOWQjCFjCdqrshbs",
           "title": "Intro to body waves",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-          "lessons": []
+          "lessons": null
         },
         {
+          "id": "CMu73TJPWMNd9X3gd4JB",
           "title": "Stunning choreo",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-          "lessons": []
+          "lessons": null
         },
         {
+          "id": "AVT1vjNeqJiRVGiOcsqD",
           "title": "The six types of basics and syncopations",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-          "lessons": []
+          "lessons": null
         },
         {
+          "id": "tv5p055WX8hXhy0QpRFk",
           "title": "Closed position and body isolations",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-          "lessons": []
+          "lessons": null
         },
         {
+          "id": "byvu0bqbEhrfNVeCO0NS",
           "title": "Salsa-style turn patterns",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-          "lessons": []
+          "lessons": null
         },
         {
+          "id": "K9sO7Diml6VZq8B4VgpC",
           "title": "Lead/follow deep dive and games",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
+              "id": "wzzJaLbbKEYAPbrTUFgp",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/K9sO7Diml6VZq8B4VgpC",
               "title": "",
               "synopsis": "",
               "instructions": ""

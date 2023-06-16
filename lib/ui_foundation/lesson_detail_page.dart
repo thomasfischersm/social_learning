@@ -73,7 +73,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                                       Navigator.pushNamed(context,
                                           NavigationEnum.lessonDetail.route,
                                           arguments: LessonDetailArgument(
-                                              previousLesson.id));
+                                              previousLesson.id!));
                                     },
                                     icon: Icon(Icons.arrow_left)),
                               if (nextLesson != null)
@@ -82,7 +82,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                                       Navigator.pushNamed(context,
                                           NavigationEnum.lessonDetail.route,
                                           arguments: LessonDetailArgument(
-                                              nextLesson.id));
+                                              nextLesson.id!));
                                     },
                                     icon: Icon(Icons.arrow_right))
                             ],

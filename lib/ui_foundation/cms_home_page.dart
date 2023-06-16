@@ -119,7 +119,7 @@ class EditLessonRowState extends State<EditLessonRow> {
                       : Theme.of(context).textTheme.bodyText1),
               onPressed: () {
                 Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
-                    arguments: LessonDetailArgument(widget.lesson.id));
+                    arguments: LessonDetailArgument(widget.lesson.id!));
               },
             ))),
         IconButton(
