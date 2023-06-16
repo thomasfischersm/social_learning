@@ -316,13 +316,13 @@ class JsonCurriculumSync {
     var db = FirebaseFirestore.instance;
 
     // DELETE: trash collections
-    await db.runTransaction((transaction) async {
-      var querySnapshot = await db.collection('lessons').get();
-      for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
-        transaction.delete(doc.reference);
-        print('Delete old lesson');
-      }
-    });
+    // await db.runTransaction((transaction) async {
+    //   var querySnapshot = await db.collection('lessons').get();
+    //   for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
+    //     transaction.delete(doc.reference);
+    //     print('Delete old lesson');
+    //   }
+    // });
 
     db.runTransaction((transaction) async {
       var levelSync = LevelSync(transaction);

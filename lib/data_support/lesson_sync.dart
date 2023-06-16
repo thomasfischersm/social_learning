@@ -42,11 +42,12 @@ class LessonSync extends EntitySync<Lesson> {
   }
 
   @override
-  String createNewEntity(Lesson jsonType, int newSortOrder) {
+  String createNewEntity(Lesson jsonType, String fullParentId, int newSortOrder) {
     var ref = db.collection(collectionName).doc();
+    String rawParentId = fullParentId.substring(fullParentId.lastIndexOf('/') + 1);
     transaction.set(ref, <String, dynamic>{
       'courseId': jsonType.courseId,
-      'levelId': jsonType.levelId,
+      'levelId': db.collection('levels').doc(rawParentId),
       'sortOrder': newSortOrder,
       'title': jsonType.title,
       'synopsis': jsonType.synopsis,
@@ -61,12 +62,14 @@ class LessonSync extends EntitySync<Lesson> {
   @override
   void updateEntity(
       Lesson dbType, Lesson jsonType, String fullParentId, int sortOrder) {
+    print('Update lesson with level id $fullParentId');
     var docRef = createRef(dbType.id!);
+    String rawParentId = fullParentId.substring(fullParentId.lastIndexOf('/') + 1);
     transaction.set(
         docRef,
         <String, dynamic>{
           'courseId': jsonType.courseId,
-          'levelId': '/levels/$fullParentId',
+          'levelId': db.collection('levels').doc(rawParentId),
           'sortOrder': sortOrder,
           'title': jsonType.title,
           'synopsis': jsonType.synopsis,

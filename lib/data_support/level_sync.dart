@@ -48,7 +48,7 @@ class LevelSync extends EntitySync<Level> {
   }
 
   @override
-  String createNewEntity(Level jsonType, int newSortOrder) {
+  String createNewEntity(Level jsonType, String fullParentId, int newSortOrder) {
     var ref = db.collection(collectionName).doc();
     transaction.set(ref, <String, dynamic>{
       'courseId': jsonType.courseId,

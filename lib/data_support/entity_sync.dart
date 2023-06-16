@@ -27,7 +27,7 @@ abstract class EntitySync<T> {
     return db.collection(collectionName).doc(rawId);
   }
 
-  String createNewEntity(T jsonType, int newSortOrder);
+  String createNewEntity(T jsonType, String fullParentId, int newSortOrder);
 
   void updateEntity(T dbType, T jsonType, String fullParentId, int sortOrder);
 
@@ -60,7 +60,7 @@ abstract class EntitySync<T> {
       String? newRawId;
 
       if (dbType == null) {
-        newRawId = createNewEntity(jsonType, sortOrderCounter);
+        newRawId = createNewEntity(jsonType, fullParentId, sortOrderCounter);
 
         if (enableDebug) {
           print('Created $collectionName ${jsonEntity['title']}. $newRawId');
