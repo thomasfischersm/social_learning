@@ -36,7 +36,7 @@ class LevelSync extends EntitySync<Level> {
   bool compareEntity(Level dbType, Level jsonType, int newSortOrder) {
     if (enableDebug) {
       print(
-          ' EQ: course ${jsonType.courseId == dbType.courseId}, '
+          ' EQ (level): course ${jsonType.courseId == dbType.courseId}, '
               'title ${jsonType.title == dbType.title}, '
               'description ${jsonType.description == dbType.description}, '
               'sortOrder ${newSortOrder == dbType.sortOrder}');

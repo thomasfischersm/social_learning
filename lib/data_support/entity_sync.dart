@@ -36,11 +36,11 @@ abstract class EntitySync<T> {
     transaction.delete(docRef);
   }
 
-  Future<void> handleChildren(
-      Map<String, dynamic> currentJson, T? dbType, String? newRawId, bool isLastInvocation);
+  Future<void> handleChildren(Map<String, dynamic> currentJson, T? dbType,
+      String? newRawId, bool isLastInvocation);
 
-  Future<void> sync(List<dynamic> jsonList, String fullParentId,
-      bool deleteLeftOver) async {
+  Future<void> sync(
+      List<dynamic> jsonList, String fullParentId, bool deleteLeftOver) async {
     // Get and parse the data.
     if (!hasLoadedFromDb) {
       hasLoadedFromDb = true;
@@ -81,10 +81,19 @@ abstract class EntitySync<T> {
         syncedRawIds.add(newRawId!);
       }
 
-      await handleChildren(jsonEntity, dbType, newRawId, i == jsonList.length - 1);
+      await handleChildren(jsonEntity, dbType, newRawId,
+          deleteLeftOver && (i == jsonList.length - 1));
     }
 
     if (deleteLeftOver) {
+      print('Deleting leftover $collectionName.');
+      print('raw DB ids: ${rawIdToDbEntity.keys.toList()
+        ..sort((a, b) => a.compareTo(b))
+        ..join(', ')}');
+      print('raw synced ids: ${syncedRawIds.toList()
+        ..sort((a, b) => a.compareTo(b))
+        ..join(', ')}');
+
       var obsoleteIds = rawIdToDbEntity.keys
           .where((element) => !syncedRawIds.contains(element));
       for (String obsoleteId in obsoleteIds) {

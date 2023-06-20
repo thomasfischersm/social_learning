@@ -31,8 +31,9 @@ class HomePageState extends State<HomePage> {
     // JsonCurriculumSync.convertTextToJson(
     //     'bachata-origin.txt', '/courses/4ZUgIakaAbcCiVWMxSKb');
 
-    // JsonCurriculumSync.importV2();
+    JsonCurriculumSync.importV2();
     // JsonCurriculumSync.export();
+    // Why are lessons being deleted by the import???
 
     return Scaffold(
         appBar: AppBar(

@@ -27,7 +27,7 @@ class LessonSync extends EntitySync<Lesson> {
   @override
   bool compareEntity(Lesson dbType, Lesson jsonType, int newSortOrder) {
     if (enableDebug) {
-      print(' EQ: course ${jsonType.courseId == dbType.courseId}, '
+      print(' EQ (lesson): course ${jsonType.courseId == dbType.courseId}, '
           'title ${jsonType.title == dbType.title}, '
           'synopsis ${jsonType.synopsis == dbType.synopsis}, '
           'instructions ${jsonType.instructions == dbType.instructions}, '

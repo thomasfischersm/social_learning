@@ -1,0 +1,35 @@
+{
+  "courses": [
+    {
+      "id": "V4UYTsc7mK4oEHNLFXMU",
+      "title": "Acroyoga",
+      "description": "Acroyoga is a practice where the base lifts the flyer into the air to move through a sequence of acrobatic moves. The playful and vigorously physical activity develops trust and communication.\\n\\nSessions available in NYC: https://learninglab.fans/acroyoga",
+      "levels": [
+        {
+          "id": "DRsN8aQlH56ofF1pKnYo",
+          "title": "Getting your wings",
+          "description": "",
+          "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+          "lessons": [
+            {
+              "id": "kvSLNSoUrBf20l8NWgBn",
+              "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/DRsN8aQlH56ofF1pKnYo",
+              "title": "Warm-up 1: Flashlights",
+              "synopsis": "",
+              "instructions": ""
+            },
+            {
+              "id": "0Suiz3twtoyxBndbb9ON",
+              "courseId": "/courses/V4UYTsc7mK4oEHNLFXMU",
+              "levelId": "/levels/DRsN8aQlH56ofF1pKnYo",
+              "title": "Shines 2 lesson: integrate",
+              "synopsis": "",
+              "instructions": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
