@@ -59,6 +59,10 @@ abstract class EntitySync<T> {
       T? dbType = rawIdToDbEntity[jsonEntity['id']];
       String? newRawId;
 
+      if (enableDebug && (collectionName == 'lessons')) {
+        print('syncing ${jsonEntity['title']}');
+      }
+
       if (dbType == null) {
         newRawId = createNewEntity(jsonType, fullParentId, sortOrderCounter);
 

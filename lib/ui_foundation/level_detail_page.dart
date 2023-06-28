@@ -83,7 +83,7 @@ class LevelDetailState extends State<LevelDetailPage> {
                           children: [
                             CustomUiConstants.getTextPadding(Text(
                               'Level ${levelPosition + 1}: ${level.title}',
-                              style: CustomTextStyles.headline,
+                              style: CustomTextStyles.subHeadline,
                             )),
                             CustomUiConstants.getTextPadding(Text(
                               level.description ?? '',
