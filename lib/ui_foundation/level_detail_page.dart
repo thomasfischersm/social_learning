@@ -128,6 +128,8 @@ class LevelDetailState extends State<LevelDetailPage> {
         textStyle = CustomTextStyles.getBody(context);
       }
 
+      TextStyle? emphasizedTextStyle = textStyle?.copyWith(fontWeight: FontWeight.bold);
+
       var text = lesson.title;
       if (lessonCount.teachCount > 0) {
         text +=
@@ -137,7 +139,7 @@ class LevelDetailState extends State<LevelDetailPage> {
       }
       columnChildren.add(Text(
         text,
-        style: textStyle,
+        style: emphasizedTextStyle,
       ));
       // if ((lesson.synopsis != null) && (lesson.synopsis!.isNotEmpty)) {
         columnChildren.add(Text('${lesson.synopsis}\n'));

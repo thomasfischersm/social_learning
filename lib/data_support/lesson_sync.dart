@@ -38,9 +38,16 @@ class LessonSync extends EntitySync<Lesson> {
         (dbType.title == jsonType.title) &&
         (dbType.synopsis == jsonType.synopsis) &&
         (dbType.instructions == jsonType.instructions) &&
+        (dbType.cover == jsonType.cover) &&
+        (dbType.recapVideo == jsonType.recapVideo) &&
+        (dbType.lessonVideo == jsonType.lessonVideo) &&
+        (dbType.practiceVideo == jsonType.practiceVideo) &&
         (dbType.sortOrder == newSortOrder);
   }
-
+  String? cover;
+  String? recapVideo;
+  String? lessonVideo;
+  String? practiceVideo;
   @override
   String createNewEntity(Lesson jsonType, String fullParentId, int newSortOrder) {
     var ref = db.collection(collectionName).doc();
@@ -52,6 +59,10 @@ class LessonSync extends EntitySync<Lesson> {
       'title': jsonType.title,
       'synopsis': jsonType.synopsis,
       'instructions': jsonType.instructions,
+      'cover': jsonType.cover,
+      'recapVideo': jsonType.recapVideo,
+      'lessonVideo': jsonType.lessonVideo,
+      'practiceVideo': jsonType.practiceVideo,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
       'isLevel': false,
     });
@@ -74,6 +85,10 @@ class LessonSync extends EntitySync<Lesson> {
           'title': jsonType.title,
           'synopsis': jsonType.synopsis,
           'instructions': jsonType.instructions,
+          'cover': jsonType.cover,
+          'recapVideo': jsonType.recapVideo,
+          'lessonVideo': jsonType.lessonVideo,
+          'practiceVideo': jsonType.practiceVideo,
           'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
           'isLevel': false,
         },

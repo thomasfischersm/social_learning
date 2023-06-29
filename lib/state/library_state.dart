@@ -144,7 +144,7 @@ class LibraryState extends ChangeNotifier {
       FirebaseFirestore.instance
           .collection('levels')
           .where('courseId',
-          isEqualTo: FirebaseFirestore.instance.doc(coursePath))
+              isEqualTo: FirebaseFirestore.instance.doc(coursePath))
           .orderBy('sortOrder', descending: false)
           .snapshots()
           .listen((snapshot) {
@@ -284,11 +284,12 @@ class LibraryState extends ChangeNotifier {
     }, SetOptions(merge: true));
   }
 
-  Level? findLevel(String levelId) {
-    return levels?.firstWhere((element) => element.id == levelId);
-  }
+  Level? findLevel(String levelId) =>
+      levels?.firstWhere((element) => element.id == levelId);
 
-  int findLevelPosition(Level? level) {
-    return (level != null) ? levels?.indexOf(level) ?? -1 : -1;
-  }
+  Level? findLevelByDocRef(DocumentReference levelRef) =>
+      findLevel(levelRef.id);
+
+  int findLevelPosition(Level? level) =>
+      (level != null) ? levels?.indexOf(level) ?? -1 : -1;
 }

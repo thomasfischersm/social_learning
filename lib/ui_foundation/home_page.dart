@@ -33,7 +33,6 @@ class HomePageState extends State<HomePage> {
 
     // JsonCurriculumSync.importV2();
     // JsonCurriculumSync.export();
-    // Why are lessons being deleted by the import???
 
     return Scaffold(
         appBar: AppBar(

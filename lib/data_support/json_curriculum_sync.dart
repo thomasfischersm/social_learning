@@ -51,6 +51,10 @@ class JsonCurriculumSync {
         'title': lesson.title,
         'synopsis': lesson.synopsis,
         'instructions': lesson.instructions,
+        'cover': lesson.cover,
+        'recapVideo': lesson.recapVideo,
+        'lessonVideo': lesson.lessonVideo,
+        'practiceVideo': lesson.practiceVideo,
       };
 
       List<Map<String, dynamic>>? lessonList = levelPathToLessonData[levelPath];
