@@ -9,6 +9,14 @@ class CustomTextStyles {
   static TextStyle? getBody(BuildContext context) =>
       Theme.of(context).textTheme.bodyLarge;
 
+  static TextStyle? getBodyEmphasized(BuildContext context) => Theme.of(context)
+      .textTheme
+      .bodyLarge
+      ?.copyWith(fontWeight: FontWeight.bold);
+
+  static TextStyle? getBodyNote(BuildContext context) =>
+      Theme.of(context).textTheme.bodyMedium;
+
   static TextStyle? getPartiallyLearned(BuildContext context) =>
       getBody(context)?.copyWith(color: const Color.fromRGBO(16, 68, 54, 1));
 
