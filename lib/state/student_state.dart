@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/lesson_status.dart';
@@ -7,6 +8,7 @@ import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/data/user_functions.dart';
+import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 
 class StudentState extends ChangeNotifier {
@@ -37,8 +39,12 @@ class StudentState extends ChangeNotifier {
               isEqualTo: auth.FirebaseAuth.instance.currentUser?.uid)
           .snapshots()
           .listen((snapshot) {
+print('listening to new records');
+            snapshot.docs.forEach((element) {print('got record ${element.data()}');});
+
         _teachRecords =
             snapshot.docs.map((e) => PracticeRecord.fromSnapshot(e)).toList();
+        print('done listening');
         notifyListeners();
       });
     }
@@ -51,19 +57,31 @@ class StudentState extends ChangeNotifier {
 
     _init();
     return _learnRecords?.any((element) =>
-            (element.lessonId == lesson.id) && (element.isGraduation)) ??
+            (element.lessonId.id == lesson.id) && (element.isGraduation)) ??
         false;
+  }
+
+  void recordTeachingWithCheck(
+      Lesson lesson, User mentee, bool isGraduation, BuildContext context) {
+    var hasGraduated = (getLessonStatus(lesson) > 1);
+    var isAdmin = (Provider.of<ApplicationState>(context, listen: false)
+            .currentUser
+            ?.isAdmin ??
+        false);
+    if (hasGraduated || isAdmin) {
+      recordTeaching(lesson, mentee, isGraduation);
+    }
   }
 
   void recordTeaching(Lesson lesson, User mentee, bool isGraduation) {
     var data = <String, dynamic>{
-      'lessonId': lesson.id,
+      'lessonId': FirebaseFirestore.instance.doc('lessons/${lesson.id}'),
       'menteeUid': mentee.uid,
       'mentorUid': auth.FirebaseAuth.instance.currentUser?.uid,
       'isGraduation': isGraduation,
       'timestamp': FieldValue.serverTimestamp(),
     };
-    FirebaseFirestore.instance.collection('practice_record').add(data);
+    FirebaseFirestore.instance.collection('practiceRecords').add(data);
   }
 
   int getPracticeCount() => _learnRecords?.length ?? 0;
@@ -153,8 +171,7 @@ class StudentState extends ChangeNotifier {
       }
 
       String levelId = UserFunctions.extractNumberId(lesson.levelId)!;
-      LevelCompletion? levelCompletion =
-          levelIdToCompletionMap[levelId];
+      LevelCompletion? levelCompletion = levelIdToCompletionMap[levelId];
 
       if (levelCompletion != null) {
         levelCompletion.lessonRawIds.add(lesson.id!);
@@ -165,7 +182,8 @@ class StudentState extends ChangeNotifier {
     var learnRecords = _learnRecords;
     if (learnRecords != null) {
       for (PracticeRecord practiceRecord in learnRecords) {
-        String lessonRawId = UserFunctions.extractNumberId(practiceRecord.lessonId)!;
+        String lessonRawId =
+            UserFunctions.extractNumberId(practiceRecord.lessonId)!;
         lessonIdToCompletionMap[lessonRawId.toString()]
             ?.graduatedLessonRawIds
             .add(lessonRawId);

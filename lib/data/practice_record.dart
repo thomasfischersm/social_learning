@@ -6,7 +6,7 @@ class PracticeRecord {
   String menteeUid;
   String mentorUid;
   bool isGraduation;
-  Timestamp timestamp;
+  Timestamp? timestamp;
 
   PracticeRecord(this.id, this.lessonId, this.menteeUid, this.mentorUid,
       this.isGraduation, this.timestamp);
@@ -17,5 +17,5 @@ class PracticeRecord {
         menteeUid = e.data()['menteeUid'] as String,
         mentorUid = e.data()['mentorUid'] as String,
         isGraduation = e.data()['isGraduation'] as bool,
-        timestamp = e.data()['timestamp'] as Timestamp;
+        timestamp = e.data()['timestamp'] as Timestamp?;
 }

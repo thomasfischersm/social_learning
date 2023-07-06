@@ -224,12 +224,14 @@ class LessonDetailState extends State<LessonDetailPage> {
                 child: const Text("OK"),
               ),
             ],
-            content: DisabledDialogContent(),
+            content: const DisabledDialogContent(),
           );
         });
   }
 
   void _showRecordDialog(BuildContext context, Lesson currentLesson) {
+    User? selectedLearner;
+    bool isReady = false;
     showDialog(
         context: context,
         builder: (context) {
@@ -237,15 +239,32 @@ class LessonDetailState extends State<LessonDetailPage> {
             title: const Text("Record Lesson"),
             actions: [
               TextButton(
+                  onPressed: () {
+                    User? localLearner = selectedLearner;
+                    if (localLearner != null) {
+                      setState(() {
+                        Provider.of<StudentState>(context, listen: false)
+                            .recordTeachingWithCheck(
+                                currentLesson, localLearner, isReady, context);
+                        Navigator.pop(context);
+                      });
+                    }
+                  },
+                  child: const Text('Record')),
+              TextButton(
                 onPressed: () {
                   setState(() {
                     Navigator.pop(context);
                   });
                 },
-                child: const Text("Cancel"),
+                child: const Text('Cancel'),
               ),
             ],
-            content: RecordDialogContent(currentLesson),
+            content: RecordDialogContent(currentLesson,
+                (User? student, bool isReadyToGraduate) {
+              selectedLearner = student;
+              isReady = isReadyToGraduate;
+            }),
           );
         });
   }
@@ -296,8 +315,9 @@ class DisabledDialogState extends State<DisabledDialogContent> {
 
 class RecordDialogContent extends StatefulWidget {
   Lesson lesson;
+  Function onUserSelected;
 
-  RecordDialogContent(this.lesson, {super.key});
+  RecordDialogContent(this.lesson, this.onUserSelected, {super.key});
 
   @override
   State<StatefulWidget> createState() {
@@ -308,54 +328,96 @@ class RecordDialogContent extends StatefulWidget {
 class RecordDialogState extends State<RecordDialogContent> {
   Lesson lesson;
   List<User>? _students;
+  bool _isReadyToGraduate = false;
   TextEditingController textFieldController = TextEditingController();
 
   RecordDialogState(this.lesson);
 
   @override
   Widget build(BuildContext context) {
+    if (_students?.length == 1) {
+      widget.onUserSelected(_students![0], _isReadyToGraduate);
+    } else {
+      widget.onUserSelected(null, _isReadyToGraduate);
+    }
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextField(
-          onChanged: (value) async {
-            var students =
-                await UserFunctions.findUsersByPartialDisplayName(value, 10);
-            setState(() {
-              _students = students;
-            });
-          },
-          controller: textFieldController,
-          decoration: const InputDecoration(
-              hintText:
-                  'Start typing the display name of the student whom you want to graduate.'),
-        ),
-        SizedBox(
-            width: 200,
-            height: 200,
-            child: ListView.builder(
-              itemCount: _students?.length ?? 0,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                var profileFireStoragePath =
-                    _students![index].profileFireStoragePath;
-                return Row(
-                  children: [
-                    if (profileFireStoragePath != null)
-                      Expanded(
-                          child: ProfileImageWidget(
-                              _students![index].profileFireStoragePath)),
-                    Text(_students![index].displayName),
-                    TextButton(
-                        onPressed: () {
-                          Provider.of<GraduationState>(context, listen: false)
-                              .graduate(lesson, _students![index]);
-                          Navigator.pop(context);
+        const Text('Records that you taught a lesson.'),
+        Table(columnWidths: const {
+          0: IntrinsicColumnWidth(),
+          1: FlexColumnWidth()
+        }, children: [
+          const TableRow(children: [
+            Padding(padding: EdgeInsets.fromLTRB(0,4,4,4), child: Text('Mentor:')),
+            Padding(padding: EdgeInsets.all(4), child: Text('You')),
+          ]),
+          TableRow(children: [
+            const Padding(padding: EdgeInsets.fromLTRB(0,4,4,4), child: Text('Learner:')),
+            Padding(
+                padding: EdgeInsets.all(4),
+                child: Column(children: [
+                  TextField(
+                    onChanged: (value) async {
+                      var students =
+                          await UserFunctions.findUsersByPartialDisplayName(
+                              value, 10);
+                      setState(() {
+                        _students = students;
+                      });
+                    },
+                    controller: textFieldController,
+                    decoration: const InputDecoration(
+                        hintText:
+                            'Start typing the display name of the student whom you want to graduate.'),
+                  ),
+                  SizedBox(
+                      width: 200,
+                      height: 200,
+                      child: ListView.builder(
+                        itemCount: _students?.length ?? 0,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          var profileFireStoragePath =
+                              _students![index].profileFireStoragePath;
+                          return InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _students = [_students![index]];
+                                });
+                              },
+                              child: Row(
+                                children: [
+                                  if (profileFireStoragePath != null)
+                                    Expanded(
+                                        child: ProfileImageWidget(
+                                            _students![index]
+                                                .profileFireStoragePath)),
+                                  Text(_students![index].displayName)
+                                ],
+                              ));
                         },
-                        child: const Text('Graduate'))
-                  ],
-                );
+                      ))
+                ])),
+          ]),
+        ]),
+        Row(
+          children: [
+            Checkbox(
+              value: _isReadyToGraduate,
+              onChanged: (value) {
+                setState(() {
+                  print(
+                      'before $_isReadyToGraduate -> ${!_isReadyToGraduate} $value');
+                  _isReadyToGraduate = value ?? false;
+                  print('checkbox checked $_isReadyToGraduate');
+                });
               },
-            ))
+            ),
+            const Text('The learner is ready to teach this lesson.'),
+          ],
+        )
       ],
     );
   }
