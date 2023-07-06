@@ -108,17 +108,13 @@ class LevelDetailState extends State<LevelDetailPage> {
 
   Widget generateLessonList(
       Level level, LibraryState libraryState, StudentState studentState) {
-    print('The dangerous id is ${level.id}');
     Iterable<Lesson> lessons = libraryState.getLessonsByLevel(level.id!);
 
-    print('Got ${lessons.length} lessons to show');
     List<Widget> children = [];
     for (Lesson lesson in lessons) {
       List<Widget> columnChildren = [];
 
-      print('Before get count');
       LessonCount lessonCount = studentState.getCountsForLesson(lesson);
-      print('After get count');
       TextStyle? textStyle;
       if (lessonCount.isGraduated) {
         textStyle = CustomTextStyles.getFullyLearned(context);

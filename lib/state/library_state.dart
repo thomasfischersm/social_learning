@@ -121,7 +121,6 @@ class LibraryState extends ChangeNotifier {
     var courseId = selectedCourse?.id;
     if (courseId != null) {
       String coursePath = '/courses/$courseId';
-      print('Loading lessons for $coursePath');
 
       FirebaseFirestore.instance
           .collection('lessons')

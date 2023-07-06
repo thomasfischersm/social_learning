@@ -157,7 +157,6 @@ class LessonDetailState extends State<LessonDetailPage> {
 
     List<String> instructions =
         lesson.instructions.replaceAll('\r', '').split('\n');
-    print('\\n at ${lesson.instructions.indexOf('\n')} ${instructions.length}');
 
     for (String str in instructions) {
       str = str.trim();
@@ -408,10 +407,7 @@ class RecordDialogState extends State<RecordDialogContent> {
               value: _isReadyToGraduate,
               onChanged: (value) {
                 setState(() {
-                  print(
-                      'before $_isReadyToGraduate -> ${!_isReadyToGraduate} $value');
                   _isReadyToGraduate = value ?? false;
-                  print('checkbox checked $_isReadyToGraduate');
                 });
               },
             ),

@@ -39,12 +39,8 @@ class StudentState extends ChangeNotifier {
               isEqualTo: auth.FirebaseAuth.instance.currentUser?.uid)
           .snapshots()
           .listen((snapshot) {
-print('listening to new records');
-            snapshot.docs.forEach((element) {print('got record ${element.data()}');});
-
         _teachRecords =
             snapshot.docs.map((e) => PracticeRecord.fromSnapshot(e)).toList();
-        print('done listening');
         notifyListeners();
       });
     }
@@ -69,7 +65,10 @@ print('listening to new records');
             ?.isAdmin ??
         false);
     if (hasGraduated || isAdmin) {
+      print('Recording practiceRecord.');
       recordTeaching(lesson, mentee, isGraduation);
+    } else {
+      print('Silently discarding practiceRecord ${getLessonStatus(lesson)}');
     }
   }
 
@@ -106,7 +105,7 @@ print('listening to new records');
 
     if (learnRecords != null) {
       for (PracticeRecord record in learnRecords) {
-        if (record.lessonId == lesson.id) {
+        if (record.lessonId.id == lesson.id) {
           if (record.isGraduation) {
             hasGraduated = true;
             hasPracticed = true;
@@ -182,11 +181,13 @@ print('listening to new records');
     var learnRecords = _learnRecords;
     if (learnRecords != null) {
       for (PracticeRecord practiceRecord in learnRecords) {
-        String lessonRawId =
-            UserFunctions.extractNumberId(practiceRecord.lessonId)!;
-        lessonIdToCompletionMap[lessonRawId.toString()]
-            ?.graduatedLessonRawIds
-            .add(lessonRawId);
+        if (practiceRecord.isGraduation) {
+          String lessonRawId =
+          UserFunctions.extractNumberId(practiceRecord.lessonId)!;
+          lessonIdToCompletionMap[lessonRawId.toString()]
+              ?.graduatedLessonRawIds
+              .add(lessonRawId);
+        }
       }
     }
 
@@ -195,15 +196,18 @@ print('listening to new records');
 
   LessonCount getCountsForLesson(Lesson lesson) {
     _init();
+    print('getCountsForLesson for ${lesson.title}');
 
     LessonCount lessonCount = LessonCount();
     var learnRecords = _learnRecords;
     if (learnRecords != null) {
       for (PracticeRecord record in learnRecords) {
-        if (record.lessonId.id.endsWith('/${lesson.id}')) {
+        if (record.lessonId.id==lesson.id) {
           lessonCount.practiceCount++;
           lessonCount.isGraduated =
               lessonCount.isGraduated || record.isGraduation;
+        } else {
+          print('lesson id didn\'t match ${record.lessonId.id} and ${lesson.id}');
         }
       }
     }
@@ -211,7 +215,7 @@ print('listening to new records');
     var teachRecords = _teachRecords;
     if (teachRecords != null) {
       for (PracticeRecord record in teachRecords) {
-        if (record.lessonId.id.endsWith('/${lesson.id}')) {
+        if (record.lessonId.id==lesson.id) {
           lessonCount.teachCount++;
         }
       }
