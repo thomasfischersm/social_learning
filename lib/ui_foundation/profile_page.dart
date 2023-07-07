@@ -11,7 +11,6 @@ import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/profile_image_widget.dart';
 
-import '../data/course.dart';
 import '../state/application_state.dart';
 import 'bottom_bar.dart';
 import 'navigation_enum.dart';
