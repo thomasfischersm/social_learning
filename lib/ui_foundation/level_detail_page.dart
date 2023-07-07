@@ -124,7 +124,8 @@ class LevelDetailState extends State<LevelDetailPage> {
         textStyle = CustomTextStyles.getBody(context);
       }
 
-      TextStyle? emphasizedTextStyle = textStyle?.copyWith(fontWeight: FontWeight.bold);
+      TextStyle? emphasizedTextStyle =
+          textStyle?.copyWith(fontWeight: FontWeight.bold);
 
       var text = lesson.title;
       if (lessonCount.teachCount > 0) {
@@ -133,12 +134,17 @@ class LevelDetailState extends State<LevelDetailPage> {
       } else if (lessonCount.practiceCount > 0) {
         text += ' (P:${lessonCount.practiceCount})';
       }
-      columnChildren.add(Text(
-        text,
-        style: emphasizedTextStyle,
+      columnChildren.add(Row(
+        children: [
+          Text(
+            text,
+            style: emphasizedTextStyle,
+          ),
+          if (lessonCount.isGraduated) Icon(Icons.workspace_premium, color: CustomTextStyles.fullyLearnedColor)
+        ],
       ));
       // if ((lesson.synopsis != null) && (lesson.synopsis!.isNotEmpty)) {
-        columnChildren.add(Text('${lesson.synopsis}\n'));
+      columnChildren.add(Text('${lesson.synopsis}\n'));
       // }
 
       children.add(InkWell(
