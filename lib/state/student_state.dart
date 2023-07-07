@@ -142,6 +142,7 @@ class StudentState extends ChangeNotifier {
   }
 
   List<LevelCompletion> getLevelCompletions(LibraryState libraryState) {
+    _init();
     var levels = libraryState.levels;
     if (levels == null) {
       return [];
