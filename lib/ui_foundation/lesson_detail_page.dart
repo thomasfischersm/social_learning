@@ -343,21 +343,30 @@ class RecordDialogState extends State<RecordDialogContent> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Records that you taught a lesson.'),
+        CustomUiConstants.getTextPadding(Text(
+            'Records that you taught a lesson.',
+            style: CustomTextStyles.getBody(context))),
         Table(columnWidths: const {
           0: IntrinsicColumnWidth(),
           1: FlexColumnWidth()
         }, children: [
-          const TableRow(children: [
-            Padding(padding: EdgeInsets.fromLTRB(0,4,4,4), child: Text('Mentor:')),
-            Padding(padding: EdgeInsets.all(4), child: Text('You')),
+          TableRow(children: [
+            Padding(
+                padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
+                child:
+                    Text('Mentor:', style: CustomTextStyles.getBody(context))),
+            const Padding(padding: EdgeInsets.all(4), child: Text('You')),
           ]),
           TableRow(children: [
-            const Padding(padding: EdgeInsets.fromLTRB(0,4,4,4), child: Text('Learner:')),
             Padding(
-                padding: EdgeInsets.all(4),
+                padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
+                child:
+                    Text('Learner:', style: CustomTextStyles.getBody(context))),
+            Padding(
+                padding: const EdgeInsets.all(4),
                 child: Column(children: [
                   TextField(
+                    style: CustomTextStyles.getBody(context),
                     onChanged: (value) async {
                       var students =
                           await UserFunctions.findUsersByPartialDisplayName(
@@ -386,16 +395,30 @@ class RecordDialogState extends State<RecordDialogContent> {
                                   _students = [_students![index]];
                                 });
                               },
-                              child: Row(
-                                children: [
-                                  if (profileFireStoragePath != null)
-                                    Expanded(
-                                        child: ProfileImageWidget(
-                                            _students![index]
-                                                .profileFireStoragePath)),
-                                  Text(_students![index].displayName)
-                                ],
-                              ));
+                              child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(bottom: 2, top: 2),
+                                  child: Row(
+                                    children: [
+                                      if (profileFireStoragePath != null)
+                                        Expanded(
+                                            flex: 1,
+                                            child: Padding(
+                                                padding: const EdgeInsets.only(
+                                                    right: 4),
+                                                child: AspectRatio(
+                                                    aspectRatio: 1,
+                                                    child: ProfileImageWidget(
+                                                        _students![index]
+                                                            .profileFireStoragePath)))),
+                                      Expanded(
+                                          flex: 3,
+                                          child: Text(
+                                              _students![index].displayName,
+                                              style: CustomTextStyles.getBody(
+                                                  context))),
+                                    ],
+                                  )));
                         },
                       ))
                 ])),
@@ -411,7 +434,8 @@ class RecordDialogState extends State<RecordDialogContent> {
                 });
               },
             ),
-            const Text('The learner is ready to teach this lesson.'),
+            Text('The learner is ready to teach this lesson.',
+                style: CustomTextStyles.getBody(context)),
           ],
         )
       ],

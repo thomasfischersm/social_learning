@@ -7,6 +7,8 @@ import 'package:image_picker/image_picker.dart';
 
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/data/user_functions.dart';
+import 'package:social_learning/ui_foundation/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/profile_image_widget.dart';
 
 import '../data/course.dart';
@@ -28,54 +30,64 @@ class ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Social Learning'),
-        ),
-        bottomNavigationBar: const BottomBar(),
-        body: Center(
-            child: Container(
-                constraints: const BoxConstraints(
-                    maxWidth: 310, maxHeight: 350),
-                child: Consumer<ApplicationState>(
-                    builder: (context, applicationState, child) {
-                        return Column(
-                          children: [
-                            Text(
-                              'Hello ${applicationState.userDisplayName ??
-                                  '<pick a display name>'}',
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .headline3,
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                showDisplayNameDialog(
-                                    context, applicationState);
-                              },
-                              child: const Text('Change display name'),
-                            ),
-                            const Spacer(),
-                            ProfileImageWidget(
-                                applicationState.currentUser
-                                    ?.profileFireStoragePath),
-                            TextButton(
-                                onPressed: () {
-                                  _pickProfileImage(context);
-                                },
-                                child: const Text('Upload profile image')),
-                            const Spacer(),
-                            const Divider(),
-                            TextButton(
-                                onPressed: () =>
-                                    Navigator.pushNamed(
-                                        context, NavigationEnum.signOut.route),
-                                child: const Text("Sign out")),
-                          ],
-                        );
-                    }))),
-      );
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Social Learning'),
+      ),
+      bottomNavigationBar: const BottomBar(),
+      body: Center(
+          child: Container(
+              constraints: const BoxConstraints(maxWidth: 310, maxHeight: 350),
+              child: Consumer<ApplicationState>(
+                  builder: (context, applicationState, child) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 4),
+                              child: ProfileImageWidget(applicationState
+                                  .currentUser?.profileFireStoragePath),
+                            )),
+                        Expanded(
+                          flex: 1,
+                          child: Text(
+                            applicationState.userDisplayName ??
+                                '<pick a display name>',
+                            style: CustomTextStyles.subHeadline,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      'Settings',
+                      style: CustomTextStyles.subHeadline,
+                    ),
+                    TextButton(
+                        onPressed: () {
+                          _pickProfileImage(context);
+                        },
+                        child: const Text('Upload profile image.')),
+                    TextButton(
+                      onPressed: () {
+                        showDisplayNameDialog(context, applicationState);
+                      },
+                      child: const Text('Change display name.'),
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: CustomUiConstants.getDivider()),
+                    TextButton(
+                        onPressed: () => Navigator.pushNamed(
+                            context, NavigationEnum.signOut.route),
+                        child: const Text("Sign out.")),
+                  ],
+                );
+              }))),
+    );
   }
 
   void showDisplayNameDialog(

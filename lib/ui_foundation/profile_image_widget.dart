@@ -13,7 +13,6 @@ class ProfileImageWidget extends StatefulWidget {
 }
 
 class ProfileImageWidgetState extends State<ProfileImageWidget> {
-
   String? _profilePhotoUrl;
   String? _lastProfileFireStoragePath;
 
@@ -30,12 +29,10 @@ class ProfileImageWidgetState extends State<ProfileImageWidget> {
     }
     var profilePhotoUrl = _profilePhotoUrl;
     if (profilePhotoUrl != null) {
-      return Container(width: 50, height: 50,
-          decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              image: DecorationImage(
-                  fit: BoxFit.scaleDown,
-                  image: NetworkImage(profilePhotoUrl))));
+      return CircleAvatar(
+            backgroundImage: NetworkImage(profilePhotoUrl),
+            maxRadius: 100,
+          );
     } else {
       return const Icon(Icons.photo);
     }
