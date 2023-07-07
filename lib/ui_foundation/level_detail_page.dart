@@ -137,10 +137,10 @@ class LevelDetailState extends State<LevelDetailPage> {
       }
       columnChildren.add(Row(
         children: [
-          Text(
+          Flexible(child: Text(
             text,
             style: emphasizedTextStyle,
-          ),
+          )),
           if (lessonCount.isGraduated) Icon(Icons.workspace_premium, color: CustomTextStyles.fullyLearnedColor)
         ],
       ));
