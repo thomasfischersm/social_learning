@@ -30,7 +30,7 @@ class BottomBar extends StatelessWidget {
                                 ? addIcon(context, Icons.menu_book,
                                     NavigationEnum.cmsHome, true)
                                 : null ?? Spacer()),
-                    addIcon(context, Icons.settings, NavigationEnum.profile,
+                    addIcon(context, Icons.person, NavigationEnum.profile,
                         applicationState.isLoggedIn),
                   ],
                 )));
