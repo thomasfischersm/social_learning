@@ -100,6 +100,7 @@ class LevelDetailState extends State<LevelDetailPage> {
                               'P = Practiced lesson, T = Taught lesson',
                               style: CustomTextStyles.getBody(context),
                             )),
+                            CustomUiConstants.getGeneralFooter(context)
                           ],
                         ));
                       }))),

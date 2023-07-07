@@ -67,7 +67,7 @@ class HomePageState extends State<HomePage> {
                       style: CustomTextStyles.headline,
                     )),
                     _generateCourseList(context),
-                    const Text('(C) 2023 Thomas Fischer')
+                    CustomUiConstants.getGeneralFooter(context, withDivider: false)
                   ],
                 )))));
   }

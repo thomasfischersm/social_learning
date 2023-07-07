@@ -39,7 +39,8 @@ class ProfilePageState extends State<ProfilePage> {
               constraints: const BoxConstraints(maxWidth: 310, maxHeight: 350),
               child: Consumer<ApplicationState>(
                   builder: (context, applicationState, child) {
-                return Column(
+                return SingleChildScrollView(
+                    child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -83,8 +84,9 @@ class ProfilePageState extends State<ProfilePage> {
                         onPressed: () => Navigator.pushNamed(
                             context, NavigationEnum.signOut.route),
                         child: const Text("Sign out.")),
+                    CustomUiConstants.getGeneralFooter(context)
                   ],
-                );
+                ));
               }))),
     );
   }

@@ -116,7 +116,8 @@ class LessonDetailState extends State<LessonDetailPage> {
                                 ],
                               ),
                               CustomUiConstants.getDivider(),
-                              _generateInstructionText(lesson, context)
+                              _generateInstructionText(lesson, context),
+                              CustomUiConstants.getGeneralFooter(context)
                             ],
                           ))))));
             }

@@ -74,6 +74,7 @@ class LevelListState extends State<LevelListPage> {
                               'Lessons taught: ${studentState.getTeachCount()}',
                               style: CustomTextStyles.getBody(context),
                             ),
+                            CustomUiConstants.getGeneralFooter(context)
                           ],
                         ));
                       }))),
