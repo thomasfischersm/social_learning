@@ -64,56 +64,50 @@ class LessonDetailState extends State<LessonDetailPage> {
                     child: const Text('Record'),
                   ),
                   body: Center(
-                      child: CustomUiConstants.framePage( IntrinsicHeight(
-                                  child: Column(
+                      child: CustomUiConstants.framePage(IntrinsicHeight(
+                          child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (lesson.cover != null)
+                        Expanded(
+                            child: Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Image(
+                                    image: AssetImage(lesson.cover!),
+                                    fit: BoxFit.contain))),
+                      Text('Level ${levelPosition + 1}',
+                          style: CustomTextStyles.getBody(context)),
+                      Text('Lesson: ${lesson.title}',
+                          style: CustomTextStyles.subHeadline),
+                      Row(
+                        children: [
+                          Expanded(
+                              child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (lesson.cover != null)
-                                Expanded(
-                                    child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 8),
-                                        child: Image(
-                                            image: AssetImage(lesson.cover!),
-                                            fit: BoxFit.contain))),
-                              Text('Level ${levelPosition + 1}',
+                              Text(lesson.synopsis ?? '',
                                   style: CustomTextStyles.getBody(context)),
-                              Text('Lesson: ${lesson.title}',
-                                  style: CustomTextStyles.subHeadline),
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(lesson.synopsis ?? '',
-                                          style: CustomTextStyles.getBody(
-                                              context)),
-                                      Text(
-                                        _generateLessonStatus(
-                                            studentState, counts),
-                                        style:
-                                            CustomTextStyles.getBody(context),
-                                      ),
-                                    ],
-                                  )),
-                                  if (lesson.recapVideo != null)
-                                    _addVideoIcon(
-                                        lesson.recapVideo!, 'Recap', context),
-                                  if (lesson.lessonVideo != null)
-                                    _addVideoIcon(
-                                        lesson.lessonVideo!, 'Lesson', context),
-                                  if (lesson.practiceVideo != null)
-                                    _addVideoIcon(lesson.practiceVideo!,
-                                        'Practice', context),
-                                ],
+                              Text(
+                                _generateLessonStatus(studentState, counts),
+                                style: CustomTextStyles.getBody(context),
                               ),
-                              CustomUiConstants.getDivider(),
-                              _generateInstructionText(lesson, context),
-                              CustomUiConstants.getGeneralFooter(context)
                             ],
-                          )))));
+                          )),
+                          if (lesson.recapVideo != null)
+                            _addVideoIcon(lesson.recapVideo!, 'Recap', context),
+                          if (lesson.lessonVideo != null)
+                            _addVideoIcon(
+                                lesson.lessonVideo!, 'Lesson', context),
+                          if (lesson.practiceVideo != null)
+                            _addVideoIcon(
+                                lesson.practiceVideo!, 'Practice', context),
+                        ],
+                      ),
+                      CustomUiConstants.getDivider(),
+                      _generateInstructionText(lesson, context),
+                      CustomUiConstants.getGeneralFooter(context)
+                    ],
+                  )))));
             }
           }
           return Scaffold(
@@ -373,7 +367,7 @@ class RecordDialogState extends State<RecordDialogContent> {
                     controller: textFieldController,
                     decoration: const InputDecoration(
                         hintText:
-                            'Start typing the display name of the student whom you want to graduate.'),
+                            'Start typing the name.'),
                   ),
                   SizedBox(
                       width: 200,
@@ -429,8 +423,9 @@ class RecordDialogState extends State<RecordDialogContent> {
                 });
               },
             ),
-            Text('The learner is ready to teach this lesson.',
-                style: CustomTextStyles.getBody(context)),
+            Flexible(
+                child: Text('The learner is ready to teach this lesson.',
+                    style: CustomTextStyles.getBody(context))),
           ],
         )
       ],

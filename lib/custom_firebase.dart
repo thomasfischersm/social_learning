@@ -7,5 +7,6 @@ class CustomFirebase {
 
   static init() {
     analytics = FirebaseAnalytics.instance;
+    analytics.setAnalyticsCollectionEnabled(true);
   }
 }
