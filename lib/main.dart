@@ -52,7 +52,7 @@ class SocialLearningApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Learning Lab',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         fontFamily: 'Ovo',

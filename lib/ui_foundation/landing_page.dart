@@ -9,7 +9,8 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: CustomUiConstants.framePage(Column(
+        child: CustomUiConstants.framePage(
+            Column(
               children: [
                 Text(
                   'Social Learning',
@@ -39,6 +40,7 @@ class LandingPage extends StatelessWidget {
                     },
                     child: const Text('Register/sign in')),
               ],
-            )));
+            ),
+            enableScrolling: false));
   }
 }
