@@ -40,4 +40,11 @@ class CustomUiConstants {
       ],
     );
   }
+
+  static Widget framePage(Widget child) {
+    return Container(
+        constraints: const BoxConstraints(maxWidth: 400, maxHeight: 730),
+        padding: const EdgeInsets.all(5.0 * 3.1),
+        child: SafeArea(child: SingleChildScrollView(child: child)));
+  }
 }

@@ -56,10 +56,7 @@ class LevelDetailState extends State<LevelDetailPage> {
         })),
         bottomNavigationBar: const BottomBar(),
         body: Center(
-          child: Container(
-              constraints: const BoxConstraints(maxWidth: 310, maxHeight: 350),
-              padding: const EdgeInsets.all(5.0 * 3.1),
-              child: Consumer<LibraryState>(
+          child: CustomUiConstants.framePage(Consumer<LibraryState>(
                   builder: (context, libraryState, child) =>
                       Consumer<StudentState>(
                           builder: (context, studentState, child) {

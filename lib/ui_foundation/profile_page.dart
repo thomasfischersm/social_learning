@@ -35,12 +35,9 @@ class ProfilePageState extends State<ProfilePage> {
       ),
       bottomNavigationBar: const BottomBar(),
       body: Center(
-          child: Container(
-              constraints: const BoxConstraints(maxWidth: 310, maxHeight: 350),
-              child: Consumer<ApplicationState>(
+          child: CustomUiConstants.framePage(Consumer<ApplicationState>(
                   builder: (context, applicationState, child) {
-                return SingleChildScrollView(
-                    child: Column(
+                return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -86,7 +83,7 @@ class ProfilePageState extends State<ProfilePage> {
                         child: const Text("Sign out.")),
                     CustomUiConstants.getGeneralFooter(context)
                   ],
-                ));
+                );
               }))),
     );
   }

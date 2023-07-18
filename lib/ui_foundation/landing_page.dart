@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
 
 import 'navigation_enum.dart';
 
@@ -8,9 +9,7 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Container(
-            constraints: const BoxConstraints(maxWidth: 310, maxHeight: 350),
-            child: Column(
+        child: CustomUiConstants.framePage(Column(
               children: [
                 Text(
                   'Social Learning',

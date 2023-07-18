@@ -64,12 +64,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                     child: const Text('Record'),
                   ),
                   body: Center(
-                      child: Container(
-                          constraints: const BoxConstraints(
-                              maxWidth: 310, maxHeight: 350),
-                          padding: const EdgeInsets.all(5.0 * 3.1),
-                          child: SingleChildScrollView(
-                              child: IntrinsicHeight(
+                      child: CustomUiConstants.framePage( IntrinsicHeight(
                                   child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -118,7 +113,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                               _generateInstructionText(lesson, context),
                               CustomUiConstants.getGeneralFooter(context)
                             ],
-                          ))))));
+                          )))));
             }
           }
           return Scaffold(

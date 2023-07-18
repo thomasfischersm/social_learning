@@ -40,12 +40,8 @@ class HomePageState extends State<HomePage> {
         ),
         bottomNavigationBar: const BottomBar(),
         body: Center(
-            child: Container(
-                constraints:
-                    const BoxConstraints(maxWidth: 310, maxHeight: 350),
-                padding: const EdgeInsets.all(5.0 * 3.1),
-                child: SingleChildScrollView(
-                    child: Column(
+            child: CustomUiConstants.framePage(
+                    Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomUiConstants.getTextPadding(Text(
@@ -69,7 +65,7 @@ class HomePageState extends State<HomePage> {
                     _generateCourseList(context),
                     CustomUiConstants.getGeneralFooter(context, withDivider: false)
                   ],
-                )))));
+                ))));
   }
 
   _generateCourseList(BuildContext context) {
