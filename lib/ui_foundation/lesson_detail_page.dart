@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
@@ -161,8 +162,8 @@ class LessonDetailState extends State<LessonDetailPage> {
 
     return Padding(
         padding: const EdgeInsets.only(top: 8),
-        child: RichText(
-            text: TextSpan(
+        child: SelectableText.rich(
+             TextSpan(
                 text: 'Instructions\n',
                 style: CustomTextStyles.subHeadline,
                 children: textSpans)));
