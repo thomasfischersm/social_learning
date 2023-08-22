@@ -1,4 +1,7 @@
+import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:googleapis/docs/v1.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/state/library_state.dart';
@@ -49,10 +52,45 @@ class CmsHomePageState extends State<CmsHomePage> {
                               context, NavigationEnum.cmsLesson.route);
                         },
                         child: const Text('Create new lesson')),
+                    TextButton(
+                        child: const Text('Test Google docs'),
+                        onPressed: () {
+                          _testGoogleDocs();
+                        }),
                   ],
                 );
               }))),
     );
+  }
+
+  void _testGoogleDocs() async {
+    var googleSignIn = GoogleSignIn(
+        clientId:
+            '518330283384-41akqio9j5lhuqp5pb4e0jp29qo30ttp.apps.googleusercontent.com',
+        scopes: <String>[
+          'https://www.googleapis.com/auth/drive.file',
+          'https://www.googleapis.com/auth/documents.readonly'
+        ]);
+    print('Start Google sign in');
+    var account = await googleSignIn.signIn();
+    print('finished Google sign in: ${account?.displayName}' );
+
+    if (account == null) {
+      print('failed to login');
+      return;
+    }
+
+    final authHeaders = account.authHeaders;
+    var authClient = await googleSignIn.authenticatedClient();
+
+    var docsApi = DocsApi(authClient!);
+    var createDoc = await docsApi.documents.create(Document(title: 'Test from app'));
+    print('finished creating doc');
+
+    var readDoc = await docsApi.documents.get('1z4osfIJKwevtErY8G3girYhe25Qvbn77DEU4sRXwDbw');
+    var json = readDoc.body!.toJson();
+    print('json from doc is $json');
+    // print('content is ${readDoc.body!.content.pa})
   }
 }
 
@@ -108,20 +146,22 @@ class EditLessonRowState extends State<EditLessonRow> {
             )),
         Expanded(
             flex: 5,
-            child: Align(alignment: Alignment.centerLeft,child: TextButton(
-              child: Text(widget.lesson.title,
-                  overflow: TextOverflow.ellipsis,
-                  style: (widget.lesson.isLevel)
-                      ? Theme.of(context)
-                          .textTheme
-                          .bodyText1
-                          ?.copyWith(fontWeight: FontWeight.bold)
-                      : Theme.of(context).textTheme.bodyText1),
-              onPressed: () {
-                Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
-                    arguments: LessonDetailArgument(widget.lesson.id!));
-              },
-            ))),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  child: Text(widget.lesson.title,
+                      overflow: TextOverflow.ellipsis,
+                      style: (widget.lesson.isLevel)
+                          ? Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              ?.copyWith(fontWeight: FontWeight.bold)
+                          : Theme.of(context).textTheme.bodyText1),
+                  onPressed: () {
+                    Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
+                        arguments: LessonDetailArgument(widget.lesson.id!));
+                  },
+                ))),
         IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () {
