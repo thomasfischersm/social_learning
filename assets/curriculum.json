@@ -2009,7 +2009,19 @@
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
               "levelId": "/levels/1xLFZdaA6xtLQ9AwMvHG",
               "title": "Parade In Side-To-Side Position",
-              "synopsis": "Completo",
+              "synopsis": "",
+              "instructions": "",
+              "cover": null,
+              "recapVideo": null,
+              "lessonVideo": null,
+              "practiceVideo": null
+            },
+            {
+              "id": "hSEnQJ9UlOZufebJzhBp",
+              "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
+              "levelId": "/levels/1xLFZdaA6xtLQ9AwMvHG",
+              "title": "Completo",
+              "synopsis": "",
               "instructions": "",
               "cover": null,
               "recapVideo": null,
@@ -2044,8 +2056,8 @@
         },
         {
           "id": "psZX2hbUbtxc0FZAsfKS",
-          "title": "Movement Technique",
-          "description": "Musicality",
+          "title": "Musicality",
+          "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
