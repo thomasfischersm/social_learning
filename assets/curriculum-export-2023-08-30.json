@@ -1579,15 +1579,12 @@
       "description": "Sensual Bachata is a modern dance full of energy, improvisation, and connection.\\n\\nSessions available in NYC: https://learninglab.fans/bachata",
       "levels": [
         {
-          "id": "JSnmEPGpNpuMo0p4cjk4",
           "title": "Movement Technique",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
-              "id": "ojkB3i9DsNX2HnjwfXxS",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/JSnmEPGpNpuMo0p4cjk4",
               "title": "Transferring Walking Skills To Bachata",
               "synopsis": "",
               "instructions": "",
@@ -1597,9 +1594,7 @@
               "practiceVideo": null
             },
             {
-              "id": "CB2MAqUW6XH5utUHOJt7",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/JSnmEPGpNpuMo0p4cjk4",
               "title": "Bachata Movement Technique From The Feet Up",
               "synopsis": "",
               "instructions": "",
@@ -1609,9 +1604,7 @@
               "practiceVideo": null
             },
             {
-              "id": "pCG8kob63gS1APVYPex1",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/JSnmEPGpNpuMo0p4cjk4",
               "title": "The Basic Step Pattern",
               "synopsis": "",
               "instructions": "",
@@ -1621,9 +1614,7 @@
               "practiceVideo": null
             },
             {
-              "id": "yb441QoLYJc2xl7Tjc02",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/JSnmEPGpNpuMo0p4cjk4",
               "title": "Hip Movement Patterns",
               "synopsis": "",
               "instructions": "",
@@ -1633,9 +1624,7 @@
               "practiceVideo": null
             },
             {
-              "id": "8mQpPBXYY0IWgY3d27UU",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/JSnmEPGpNpuMo0p4cjk4",
               "title": "Chest-Lead, Hip-Lead, And Foot-Lead Movement",
               "synopsis": "",
               "instructions": "",
@@ -1645,9 +1634,7 @@
               "practiceVideo": null
             },
             {
-              "id": "hNxgmgyhix5RxGSVONmn",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/JSnmEPGpNpuMo0p4cjk4",
               "title": "Finding The \"1\" In Music",
               "synopsis": "",
               "instructions": "",
@@ -1657,9 +1644,7 @@
               "practiceVideo": null
             },
             {
-              "id": "tlgXG4Yln2U3oitvLXQo",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/JSnmEPGpNpuMo0p4cjk4",
               "title": "Dancing The Basic With a Partner",
               "synopsis": "",
               "instructions": "",
@@ -1671,15 +1656,12 @@
           ]
         },
         {
-          "id": "TlSUNy34OmbftYBdQahi",
           "title": "Fundamental Step Patterns",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
-              "id": "vq8h5xHB8fNxFWozSGe6",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Basic In Place",
               "synopsis": "",
               "instructions": "",
@@ -1689,9 +1671,7 @@
               "practiceVideo": null
             },
             {
-              "id": "GNjaYIUB0evzo3JVE0YG",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Forward/Backward Basic",
               "synopsis": "",
               "instructions": "",
@@ -1701,9 +1681,7 @@
               "practiceVideo": null
             },
             {
-              "id": "3ZBrihMCPMsMCHuOPAEK",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Lateral Basic",
               "synopsis": "",
               "instructions": "",
@@ -1713,9 +1691,7 @@
               "practiceVideo": null
             },
             {
-              "id": "PDoP1QJsMPJXyMp2QjOG",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Box Step/Quadrato",
               "synopsis": "",
               "instructions": "",
@@ -1725,9 +1701,7 @@
               "practiceVideo": null
             },
             {
-              "id": "u1971MQglWKPQslTQFk0",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Madrid Step/Diagonales",
               "synopsis": "",
               "instructions": "",
@@ -1737,9 +1711,7 @@
               "practiceVideo": null
             },
             {
-              "id": "nhgJuYXw251w5wgbFmzh",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Grapevine",
               "synopsis": "",
               "instructions": "",
@@ -1749,9 +1721,7 @@
               "practiceVideo": null
             },
             {
-              "id": "IjxFVm2xbCO55FrF8dOv",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Open Break",
               "synopsis": "",
               "instructions": "",
@@ -1761,9 +1731,7 @@
               "practiceVideo": null
             },
             {
-              "id": "jO9xR8e6Bu2CQ4icBLfe",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Basics Shines Practice",
               "synopsis": "",
               "instructions": "",
@@ -1773,9 +1741,7 @@
               "practiceVideo": null
             },
             {
-              "id": "58HVrHT6MzoajFo9VEwQ",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Push’n’Pull Grip",
               "synopsis": "",
               "instructions": "",
@@ -1785,9 +1751,7 @@
               "practiceVideo": null
             },
             {
-              "id": "Nr8kWGZGOfFHP3BGEmpw",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Bolero",
               "synopsis": "",
               "instructions": "",
@@ -1797,9 +1761,7 @@
               "practiceVideo": null
             },
             {
-              "id": "tWwVYw43KD2J8LJooAPP",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/TlSUNy34OmbftYBdQahi",
               "title": "Dancing the Six Basics With A Partner",
               "synopsis": "",
               "instructions": "",
@@ -1811,15 +1773,12 @@
           ]
         },
         {
-          "id": "3pakzdPC6SIuB0nXokKo",
           "title": "Turning Technique",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
-              "id": "TlRSsuxhrXKoiBiHx1Am",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Spin And Spot",
               "synopsis": "",
               "instructions": "",
@@ -1829,9 +1788,7 @@
               "practiceVideo": null
             },
             {
-              "id": "kH88DiNTOFWo5zo8S5jc",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Step Pattern Inside Turn",
               "synopsis": "",
               "instructions": "",
@@ -1841,9 +1798,7 @@
               "practiceVideo": null
             },
             {
-              "id": "LvLsMdcVcBT1BmZDIYOp",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Step Pattern Outside Turn",
               "synopsis": "",
               "instructions": "",
@@ -1853,9 +1808,7 @@
               "practiceVideo": null
             },
             {
-              "id": "ForJSb3zvMuQ5sWtLIVF",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Step Pattern Quick Turn",
               "synopsis": "",
               "instructions": "",
@@ -1865,9 +1818,7 @@
               "practiceVideo": null
             },
             {
-              "id": "RgudkJ2lXVGCOanw4dnV",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Step Pattern Prep Turn",
               "synopsis": "",
               "instructions": "",
@@ -1877,9 +1828,7 @@
               "practiceVideo": null
             },
             {
-              "id": "19BMNvjuiWdNADfUqoC2",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Prep, Lead Signals, And Tracing For Turns",
               "synopsis": "",
               "instructions": "",
@@ -1889,9 +1838,7 @@
               "practiceVideo": null
             },
             {
-              "id": "wrc03knZxrx2YH9Q646q",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Dancing Inside Turns With A Partner",
               "synopsis": "",
               "instructions": "",
@@ -1901,9 +1848,7 @@
               "practiceVideo": null
             },
             {
-              "id": "SmYU5oikGBbJYG051HZn",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Dancing Outside Turns With A Partner",
               "synopsis": "",
               "instructions": "",
@@ -1913,9 +1858,7 @@
               "practiceVideo": null
             },
             {
-              "id": "56WZSj99IyU5grnZoroD",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Dancing Quick Turns With a Partner",
               "synopsis": "",
               "instructions": "",
@@ -1925,9 +1868,7 @@
               "practiceVideo": null
             },
             {
-              "id": "45nAcb0Gw0O6TygfvvGN",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Dancing Prep Turns With a Partner",
               "synopsis": "",
               "instructions": "",
@@ -1939,15 +1880,12 @@
           ]
         },
         {
-          "id": "1xLFZdaA6xtLQ9AwMvHG",
           "title": "Common Maneuvers",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
-              "id": "y38bKmS9Cw32EiiVlyKG",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/1xLFZdaA6xtLQ9AwMvHG",
               "title": "Transitioning Between Open, Social, And Closed Position",
               "synopsis": "",
               "instructions": "",
@@ -1957,9 +1895,7 @@
               "practiceVideo": null
             },
             {
-              "id": "SYktBn49lJokSLQSBrGR",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/1xLFZdaA6xtLQ9AwMvHG",
               "title": "Enter Shadow Position Through The Open Break",
               "synopsis": "",
               "instructions": "",
@@ -1969,9 +1905,7 @@
               "practiceVideo": null
             },
             {
-              "id": "cwoVwSOnzCoE4GyhA70L",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/1xLFZdaA6xtLQ9AwMvHG",
               "title": "Enter Shadow Position Through An Inside Turn\n",
               "synopsis": "",
               "instructions": "",
@@ -1981,9 +1915,7 @@
               "practiceVideo": null
             },
             {
-              "id": "LAJ8M8DGWXwe3RjQhCei",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/1xLFZdaA6xtLQ9AwMvHG",
               "title": "Enter And Exit Hammer Lock",
               "synopsis": "",
               "instructions": "",
@@ -1993,9 +1925,7 @@
               "practiceVideo": null
             },
             {
-              "id": "SAOAn985Xe7JJ57LnlPx",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/1xLFZdaA6xtLQ9AwMvHG",
               "title": "Enter Cuddle Position",
               "synopsis": "",
               "instructions": "",
@@ -2005,9 +1935,7 @@
               "practiceVideo": null
             },
             {
-              "id": "GOtNQHMR8yCQevCMaBTT",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/1xLFZdaA6xtLQ9AwMvHG",
               "title": "Parade In Side-To-Side Position",
               "synopsis": "Completo",
               "instructions": "",
@@ -2017,9 +1945,7 @@
               "practiceVideo": null
             },
             {
-              "id": "W6mK8BWqYgIlebhuXdMv",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/1xLFZdaA6xtLQ9AwMvHG",
               "title": "Bow",
               "synopsis": "",
               "instructions": "",
@@ -2029,9 +1955,7 @@
               "practiceVideo": null
             },
             {
-              "id": "5F5wAIKQboIg38Kflk3y",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/1xLFZdaA6xtLQ9AwMvHG",
               "title": "Impulso",
               "synopsis": "",
               "instructions": "",
@@ -2043,15 +1967,12 @@
           ]
         },
         {
-          "id": "psZX2hbUbtxc0FZAsfKS",
           "title": "Movement Technique",
           "description": "Musicality",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
-              "id": "sUZZG3VhyqD4KR47hwn3",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/psZX2hbUbtxc0FZAsfKS",
               "title": "1, 2,3, Hold",
               "synopsis": "",
               "instructions": "",
@@ -2061,9 +1982,7 @@
               "practiceVideo": null
             },
             {
-              "id": "ML0nx9GmqURS5UrVwico",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/psZX2hbUbtxc0FZAsfKS",
               "title": "What To Do With The Song Opening",
               "synopsis": "",
               "instructions": "",
@@ -2073,9 +1992,7 @@
               "practiceVideo": null
             },
             {
-              "id": "yvQG6IHGLpHgs4qUcBnX",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/psZX2hbUbtxc0FZAsfKS",
               "title": "Dealing With An Extra Bar Of Music",
               "synopsis": "",
               "instructions": "",
@@ -2085,9 +2002,7 @@
               "practiceVideo": null
             },
             {
-              "id": "rl9VmHBGPadqFcodKOEi",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/psZX2hbUbtxc0FZAsfKS",
               "title": "How To Switch Between Leader And Follower Timing",
               "synopsis": "",
               "instructions": "",
@@ -2097,9 +2012,7 @@
               "practiceVideo": null
             },
             {
-              "id": "SUVISa1nXvMdy3HgOCdy",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/psZX2hbUbtxc0FZAsfKS",
               "title": "Four Syncopations",
               "synopsis": "",
               "instructions": "",
@@ -2109,9 +2022,7 @@
               "practiceVideo": null
             },
             {
-              "id": "xnTENPEC5wBKSZLO9J3m",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/psZX2hbUbtxc0FZAsfKS",
               "title": "Leading Syncopations",
               "synopsis": "",
               "instructions": "",
@@ -2121,9 +2032,7 @@
               "practiceVideo": null
             },
             {
-              "id": "JgNvPWq0wahTJzd37ZR3",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/psZX2hbUbtxc0FZAsfKS",
               "title": "Three Musical Phases: Derejo, Majao, and Mambo",
               "synopsis": "",
               "instructions": "",
@@ -2133,9 +2042,7 @@
               "practiceVideo": null
             },
             {
-              "id": "NaI8nlFWPgMO1C7kMs49",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/psZX2hbUbtxc0FZAsfKS",
               "title": "Bass Timing",
               "synopsis": "",
               "instructions": "",
@@ -2145,9 +2052,7 @@
               "practiceVideo": null
             },
             {
-              "id": "TEacMr6oNV9jxSPvVToj",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/psZX2hbUbtxc0FZAsfKS",
               "title": "Dance Texture",
               "synopsis": "",
               "instructions": "",
@@ -2159,15 +2064,12 @@
           ]
         },
         {
-          "id": "XBfmByLeuN8K8r3rcRgu",
           "title": "Intro To Sensual Movements",
           "description": "",
           "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
           "lessons": [
             {
-              "id": "aSD82vrR03Vt4E260bTg",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Body Movement Warm-Up",
               "synopsis": "",
               "instructions": "",
@@ -2177,9 +2079,7 @@
               "practiceVideo": null
             },
             {
-              "id": "2xeOB85MgVtaBKEE3LDJ",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Forward Wave Organic",
               "synopsis": "",
               "instructions": "",
@@ -2189,9 +2089,7 @@
               "practiceVideo": null
             },
             {
-              "id": "e0EesgSvto8ZHQ0k1ovi",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Forward Wave Breakdown",
               "synopsis": "",
               "instructions": "",
@@ -2201,9 +2099,7 @@
               "practiceVideo": null
             },
             {
-              "id": "lmXm80vLzeqxh7H3BC2E",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Sideward Wave",
               "synopsis": "",
               "instructions": "",
@@ -2213,9 +2109,7 @@
               "practiceVideo": null
             },
             {
-              "id": "YbeemRVkjdbURWJr3cHf",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Dancing Sideward Wave With A Partner",
               "synopsis": "",
               "instructions": "",
@@ -2225,9 +2119,7 @@
               "practiceVideo": null
             },
             {
-              "id": "SGv9r1FozeYY4rc7EJ8m",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Body Wave In Cuddle Position",
               "synopsis": "",
               "instructions": "",
@@ -2237,9 +2129,7 @@
               "practiceVideo": null
             },
             {
-              "id": "I2RzuiGlHDmKskalxKe6",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Diagonal Body Waves",
               "synopsis": "",
               "instructions": "",
@@ -2249,9 +2139,7 @@
               "practiceVideo": null
             },
             {
-              "id": "lZQFjbVhvmJ87HULabBu",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Diagonal Body Wave In Shadow Position",
               "synopsis": "",
               "instructions": "",
@@ -2261,9 +2149,7 @@
               "practiceVideo": null
             },
             {
-              "id": "MYWVb5PL6YByS7MCnjuh",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Hip Roll",
               "synopsis": "",
               "instructions": "",
@@ -2273,9 +2159,7 @@
               "practiceVideo": null
             },
             {
-              "id": "zy4cVdagigLIvvubjEdS",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Hip Roll In Hammer Lock",
               "synopsis": "",
               "instructions": "",
@@ -2285,9 +2169,7 @@
               "practiceVideo": null
             },
             {
-              "id": "p54NVwmcvTptMlz7MwVp",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
-              "levelId": "/levels/XBfmByLeuN8K8r3rcRgu",
               "title": "Hip Roll In Closed Position",
               "synopsis": "",
               "instructions": "",
