@@ -32,7 +32,7 @@ class HomePageState extends State<HomePage> {
     //     'bachata-origin.txt', '/courses/4ZUgIakaAbcCiVWMxSKb');
 
     // JsonCurriculumSync.importV2();
-    // JsonCurriculumSync.export();
+    JsonCurriculumSync.export();
 
     return Scaffold(
         appBar: AppBar(
