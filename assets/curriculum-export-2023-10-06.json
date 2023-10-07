@@ -3,7 +3,7 @@
     {
       "id": "V4UYTsc7mK4oEHNLFXMU",
       "title": "Acroyoga",
-      "description": "Acroyoga is a practice where the base lifts the flyer into the air to move through a sequence of acrobatic moves. The playful and vigorously physical activity develops trust and communication.\n\nSessions available in NYC: https://learninglab.fans/acroyoga",
+      "description": "Acroyoga is a practice where the base lifts the flyer into the air to move through a sequence of acrobatic moves. The playful and vigorously physical activity develops trust and communication.\\n\\nSessions available in NYC: https://learninglab.fans/acroyoga",
       "levels": [
         {
           "id": "aMJr0w0sSgTvQoQb3KH3",
@@ -1570,13 +1570,13 @@
     {
       "id": "Mq6QltGcrE9P3jBNSGx1",
       "title": "Argentine Tango",
-      "description": "Argentine Tango combines classical elegance and a deeply meditative connection between the partners.\n\nSessions available in LA: https://oxygentango.com",
+      "description": "Argentine Tango combines classical elegance and a deeply meditative connection between the partners.\\n\\nSessions available in LA: https://oxygentango.com",
       "levels": null
     },
     {
       "id": "4ZUgIakaAbcCiVWMxSKb",
       "title": "Sensual bachata",
-      "description": "Sensual Bachata is a modern dance full of energy, improvisation, and connection.\n\nSessions available in NYC: https://learninglab.fans/bachata",
+      "description": "Sensual Bachata is a modern dance full of energy, improvisation, and connection.\\n\\nSessions available in NYC: https://learninglab.fans/bachata",
       "levels": [
         {
           "id": "JSnmEPGpNpuMo0p4cjk4",
@@ -1889,6 +1889,7 @@
               "practiceVideo": null
             },
             {
+              "id": "ifaTaqIISTeVpd7qlt91",
               "courseId": "/courses/4ZUgIakaAbcCiVWMxSKb",
               "levelId": "/levels/3pakzdPC6SIuB0nXokKo",
               "title": "Step Pattern Delayed Turn",
