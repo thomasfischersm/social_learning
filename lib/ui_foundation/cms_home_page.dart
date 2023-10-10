@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -73,7 +75,7 @@ class CmsHomePageState extends State<CmsHomePage> {
         ]);
     print('Start Google sign in');
     var account = await googleSignIn.signIn();
-    print('finished Google sign in: ${account?.displayName}' );
+    print('finished Google sign in: ${account?.displayName}');
 
     if (account == null) {
       print('failed to login');
@@ -84,13 +86,131 @@ class CmsHomePageState extends State<CmsHomePage> {
     var authClient = await googleSignIn.authenticatedClient();
 
     var docsApi = DocsApi(authClient!);
-    var createDoc = await docsApi.documents.create(Document(title: 'Test from app'));
+    var createDoc =
+        await docsApi.documents.create(Document(title: 'Test from app'));
     print('finished creating doc');
 
-    var readDoc = await docsApi.documents.get('1z4osfIJKwevtErY8G3girYhe25Qvbn77DEU4sRXwDbw');
+    var readDoc = await docsApi.documents
+        .get('1z4osfIJKwevtErY8G3girYhe25Qvbn77DEU4sRXwDbw');
     var json = readDoc.body!.toJson();
     print('json from doc is $json');
-    // print('content is ${readDoc.body!.content.pa})
+
+    // Reading document.
+    for (StructuralElement structuralElement in readDoc.body!.content!) {
+      print(
+          '- Structural element\'s paragraph: ${structuralElement.paragraph}');
+
+      if (structuralElement.paragraph != null) {
+        for (ParagraphElement paragraphElement
+            in structuralElement.paragraph!.elements!) {
+          print('-- ${paragraphElement.textRun!.content}');
+        }
+      }
+    }
+
+    var now = DateTime.now();
+    var index = createDoc.body!.content![0].endIndex;
+    print('create doc endIndex is $index');
+    await docsApi.documents.batchUpdate(
+        BatchUpdateDocumentRequest(requests: [
+          Request(
+              insertText: InsertTextRequest(
+                  location: Location(index: index),
+                  text: 'The current time is ${now.hour} : ${now.minute}.'))
+        ], writeControl: WriteControl(targetRevisionId: createDoc.revisionId)),
+        createDoc.documentId!);
+    print('wrote timestamp to the Google doc');
+
+    _testUpdateGoogleDoc(docsApi);
+  }
+}
+
+void _testUpdateGoogleDoc(DocsApi docsApi) async {
+  print('Reading magic doc...');
+  var magicDoc = await docsApi.documents
+      .get('1Ox6pnbfx08knYUSZqgbPT9jJpF52vQa1QOCkprHjZno');
+  print('...Read magic doc');
+
+  var updateRequests = <Request>[];
+
+  var body = magicDoc.body;
+  var deltaIndex = 0;
+  if (body != null) {
+    var bodyContent = body.content;
+    if (bodyContent != null) {
+      for (StructuralElement structuralElement in bodyContent) {
+        var paragraph = structuralElement.paragraph;
+        if (paragraph != null) {
+          print('- Paragraph:');
+          var paragraphElements = paragraph.elements;
+          if (paragraphElements != null) {
+            for (ParagraphElement paragraphElement in paragraphElements) {
+              print(
+                  '-- element ${paragraphElement.startIndex}-${paragraphElement.endIndex}: ${paragraphElement.textRun!.content}');
+
+              var content = paragraphElement.textRun?.content;
+              if (content != null) {
+                var regExp = RegExp('(\\d+)\\+(\\d+)=(\\d+)?');
+                var match = regExp.firstMatch(content);
+
+                if (match != null) {
+                  print(
+                      '--- matched regex ${match.group(1)} ${match.group(2)}');
+                  var a = int.tryParse(match.group(1) ?? '');
+                  var b = int.tryParse(match.group(2) ?? '');
+
+                  if ((a != null) && (b != null)) {
+                    print(
+                        '--- matched two numbers and ${match.groupCount} groups');
+                    var sum = a + b;
+
+                    var updateStartIndex = (paragraphElement.startIndex ?? 0) +
+                        match.group(1)!.length +
+                        match.group(2)!.length +
+                        2;
+                    updateStartIndex =
+                        min(updateStartIndex, paragraphElement.endIndex! - 1);
+
+                    if ((match.group(3) != null) &&
+                        match.group(3)!.isNotEmpty) {
+                      // Delete the old sum.
+                      var deleteEndIndex = updateStartIndex + match.group(3)!.length;
+                      print(
+                          "delete text: startIndex: ${paragraphElement.startIndex}, endIndex: ${paragraphElement.endIndex}, updateIndex: $updateStartIndex, deleteEndIndex: $deleteEndIndex");
+                      updateRequests.add(Request(
+                          deleteContentRange: DeleteContentRangeRequest(
+                              range: Range(
+                                  startIndex: updateStartIndex - deltaIndex,
+                                  endIndex: deleteEndIndex - deltaIndex))));
+                      // deltaIndex += deleteEndIndex - updateStartIndex;
+                    }
+
+                    // Add the new sum.
+                    print(
+                        'insert text: updateStartIndex: $updateStartIndex, paragraphElement.endIndex: ${paragraphElement.endIndex}');
+                    updateRequests.add(Request(
+                        insertText: InsertTextRequest(
+                            location: Location(index: (updateStartIndex + 0) - deltaIndex),
+                            text: '$sum')));
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (updateRequests.isNotEmpty) {
+    await docsApi.documents.batchUpdate(
+        BatchUpdateDocumentRequest(
+            requests: updateRequests,
+            writeControl: WriteControl(targetRevisionId: magicDoc.revisionId)),
+        magicDoc.documentId!);
+    print('wrote sums to the Google magicDoc');
+  } else {
+    print('no updates to make!');
   }
 }
 
