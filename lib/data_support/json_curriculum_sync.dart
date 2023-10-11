@@ -13,10 +13,10 @@ class JsonCurriculumSync {
   static bool _runImportOnce = false;
   static bool _runImportV2Once = false;
 
-  static void export() async {
+  static Future<String?> export() async {
     if (_runExportOnce) {
       print('Export has already run!');
-      return;
+      return Future.value(null);
     } else {
       _runExportOnce = true;
       print('Starting export');
@@ -123,6 +123,7 @@ class JsonCurriculumSync {
     var data = {'courses': coursesData};
     var json = encoder.convert(data);
     print(json);
+    return json;
   }
 
   static void import() async {

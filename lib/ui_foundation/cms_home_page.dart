@@ -6,6 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/docs/v1.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data_support/google_doc_export.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
@@ -59,6 +60,12 @@ class CmsHomePageState extends State<CmsHomePage> {
                         onPressed: () {
                           _testGoogleDocs();
                         }),
+                    TextButton(
+                      child: const Text('Export to Google docs'),
+                      onPressed: () {
+                        GoogleDocExport.export();
+                      },
+                    ),
                   ],
                 );
               }))),
@@ -174,7 +181,8 @@ void _testUpdateGoogleDoc(DocsApi docsApi) async {
                     if ((match.group(3) != null) &&
                         match.group(3)!.isNotEmpty) {
                       // Delete the old sum.
-                      var deleteEndIndex = updateStartIndex + match.group(3)!.length;
+                      var deleteEndIndex =
+                          updateStartIndex + match.group(3)!.length;
                       print(
                           "delete text: startIndex: ${paragraphElement.startIndex}, endIndex: ${paragraphElement.endIndex}, updateIndex: $updateStartIndex, deleteEndIndex: $deleteEndIndex");
                       updateRequests.add(Request(
@@ -190,7 +198,8 @@ void _testUpdateGoogleDoc(DocsApi docsApi) async {
                         'insert text: updateStartIndex: $updateStartIndex, paragraphElement.endIndex: ${paragraphElement.endIndex}');
                     updateRequests.add(Request(
                         insertText: InsertTextRequest(
-                            location: Location(index: (updateStartIndex + 0) - deltaIndex),
+                            location: Location(
+                                index: (updateStartIndex + 0) - deltaIndex),
                             text: '$sum')));
                   }
                 }

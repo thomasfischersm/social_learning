@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/custom_firebase.dart';
+import 'package:social_learning/globals.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
@@ -53,6 +54,7 @@ class SocialLearningApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Learning Lab',
+      scaffoldMessengerKey: snackbarKey,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         fontFamily: 'Ovo',
