@@ -7,8 +7,10 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/custom_firebase.dart';
 import 'package:social_learning/globals.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/available_session_state.dart';
 import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/cms_detail_page.dart';
 import 'package:social_learning/ui_foundation/cms_home_page.dart';
@@ -19,6 +21,9 @@ import 'package:social_learning/ui_foundation/lesson_list_page.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_list_page.dart';
 import 'package:social_learning/ui_foundation/navigation_enum.dart';
+import 'package:social_learning/ui_foundation/session_create_page.dart';
+import 'package:social_learning/ui_foundation/session_create_warning_page.dart';
+import 'package:social_learning/ui_foundation/session_home_page.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
 import 'ui_foundation/bottom_bar.dart';
 import 'firebase_options.dart';
@@ -35,12 +40,16 @@ void main() async {
 
   CustomFirebase.init();
 
+  LibraryState libraryState = LibraryState();
+
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => ApplicationState()),
-      ChangeNotifierProvider(create: (context) => LibraryState()),
+      ChangeNotifierProvider(create: (context) => libraryState),
       ChangeNotifierProvider(create: (context) => GraduationState()),
       ChangeNotifierProvider(create: (context) => StudentState()),
+      ChangeNotifierProvider(create: (context) => AvailableSessionState(libraryState)),
+      ChangeNotifierProvider(create: (context) => OrganizerSessionState()),
     ],
     builder: ((context, child) => const SocialLearningApp()),
   ));
@@ -61,18 +70,21 @@ class SocialLearningApp extends StatelessWidget {
       ),
       initialRoute: '/landing',
       routes: {
-    '/landing': (context) => const LandingPage(),
-    '/home': (context) => const HomePage(),
-    '/profile': (context) => const ProfilePage(),
-    '/level_list': (context) => const LevelListPage(),
-    '/level_detail': (context) => const LevelDetailPage(),
-    '/lesson_list': (context) => const LessonListPage(),
-    '/lesson_detail': (context) => const LessonDetailPage(),
-    '/sign_in': (context) => SignInPage(),
-    '/sign_out': (context) => const SignOutPage(),
-    '/cms_home': (context) => const CmsHomePage(),
-    '/cms_detail': (context) => const CmsDetailPage(),
-    },
+        '/landing': (context) => const LandingPage(),
+        '/home': (context) => const HomePage(),
+        '/profile': (context) => const ProfilePage(),
+        '/level_list': (context) => const LevelListPage(),
+        '/level_detail': (context) => const LevelDetailPage(),
+        '/lesson_list': (context) => const LessonListPage(),
+        '/lesson_detail': (context) => const LessonDetailPage(),
+        '/sign_in': (context) => SignInPage(),
+        '/sign_out': (context) => const SignOutPage(),
+        '/cms_home': (context) => const CmsHomePage(),
+        '/cms_detail': (context) => const CmsDetailPage(),
+        '/session_home': (context) => const SessionHomePage(),
+        '/session_create_warning': (context) => const SessionCreateWarningPage(),
+        '/session_create': (context) => const SessionCreatePage(),
+      },
     );
   }
 }
@@ -148,34 +160,26 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .headline4,
+              style: Theme.of(context).textTheme.headline4,
             ),
             Consumer<ApplicationState>(
                 builder: (context, applicationState, child) {
-                  return Text('defunc',
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .headline2);
-                }),
+              return Text('defunc',
+                  style: Theme.of(context).textTheme.headline2);
+            }),
             Consumer<ApplicationState>(
                 builder: (context, applicationState, child) {
-                  return TextButton(
-                      onPressed: () {
-                        if (applicationState.isLoggedIn) {
-                          Navigator.pushNamed(context, '/sign-out');
-                        } else {
-                          Navigator.pushNamed(context, '/sign-in');
-                        }
-                      },
-                      child: Text(
-                          applicationState.isLoggedIn
-                              ? 'sign out'
-                              : 'sign in'));
-                }),
+              return TextButton(
+                  onPressed: () {
+                    if (applicationState.isLoggedIn) {
+                      Navigator.pushNamed(context, '/sign-out');
+                    } else {
+                      Navigator.pushNamed(context, '/sign-in');
+                    }
+                  },
+                  child: Text(
+                      applicationState.isLoggedIn ? 'sign out' : 'sign in'));
+            }),
           ],
         ),
       ),
@@ -185,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // T
       bottomNavigationBar:
-      BottomBar(), // his trailing comma makes auto-formatting nicer for build methods.
+          BottomBar(), // his trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

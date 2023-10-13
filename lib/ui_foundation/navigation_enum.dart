@@ -10,7 +10,10 @@ enum NavigationEnum {
   signIn('/sign_in'),
   signOut('/sign_out'),
   cmsHome('/cms_home'),
-  cmsLesson('/cms_detail');
+  cmsLesson('/cms_detail'),
+  sessionHome('/session_home'),
+  sessionCreateWarning('/session_create_warning'),
+  sessionCreate('/session_create');
 
   final String route;
   const NavigationEnum(this.route);
