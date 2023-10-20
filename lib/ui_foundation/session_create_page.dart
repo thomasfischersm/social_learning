@@ -39,20 +39,41 @@ class SessionCreateState extends State<SessionCreatePage> {
               builder: (context, libraryState, child) {
                 return Consumer<ApplicationState>(
                     builder: (context, applicationState, child) {
-                  return GridView.count(
-                    crossAxisCount: 2, shrinkWrap: true,
-                    children: [
-                      const Text('Session name:'),
-                      TextField(
-                        controller: sessionNameController,
-                      ),
-                      const Text('Organizer:'),
-                      Text(
-                          '${applicationState.currentUser?.displayName} (you)'),
-                      const Text('Course'),
-                      Text('${libraryState.selectedCourse?.title}'),
-                    ],
-                  );
+                  return Table(columnWidths: const <int, TableColumnWidth>{
+                    0: IntrinsicColumnWidth(),
+                    1: FlexColumnWidth(),
+                  }, children: <TableRow>[
+                    TableRow(children: <Widget>[
+                      CustomUiConstants.getTextPadding(
+                          const Text('Session name:')),
+                      TextField(controller: sessionNameController),
+                    ]),
+                    TableRow(children: <Widget>[
+                      CustomUiConstants.getTextPadding(
+                          const Text('Organizer:')),
+                      CustomUiConstants.getTextPadding(Text(
+                          '${applicationState.currentUser?.displayName} (you)')),
+                    ]),
+                    TableRow(children: <Widget>[
+                      CustomUiConstants.getTextPadding(const Text('Course')),
+                      CustomUiConstants.getTextPadding(
+                          Text('${libraryState.selectedCourse?.title}')),
+                    ]),
+                  ]);
+                  // return GridView.count(
+                  //   crossAxisCount: 2, shrinkWrap: true,
+                  //   children: [
+                  //     const Text('Session name:'),
+                  //     TextField(
+                  //       controller: sessionNameController,
+                  //     ),
+                  //     const Text('Organizer:'),
+                  //     Text(
+                  //         '${applicationState.currentUser?.displayName} (you)'),
+                  //     const Text('Course'),
+                  //     Text('${libraryState.selectedCourse?.title}'),
+                  //   ],
+                  // );
                 });
               },
             ),
@@ -77,12 +98,15 @@ class SessionCreateState extends State<SessionCreatePage> {
   void _createSession(BuildContext context, String sessionName) {
     print('Attempting to create session $sessionName');
 
-    var applicationState = Provider.of<ApplicationState>(context, listen: false);
+    var applicationState =
+        Provider.of<ApplicationState>(context, listen: false);
     var libraryState = Provider.of<LibraryState>(context, listen: false);
-    var organizerSessionState = Provider.of<OrganizerSessionState>(context, listen: false);
+    var organizerSessionState =
+        Provider.of<OrganizerSessionState>(context, listen: false);
 
-    organizerSessionState.createSession(sessionName, applicationState, libraryState);
+    organizerSessionState.createSession(
+        sessionName, applicationState, libraryState);
 
-    // TODO: Re-direct to the session page.
+    Navigator.pushNamed(context, NavigationEnum.sessionHost.route);
   }
 }

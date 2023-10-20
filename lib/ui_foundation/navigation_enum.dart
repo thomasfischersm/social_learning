@@ -13,7 +13,8 @@ enum NavigationEnum {
   cmsLesson('/cms_detail'),
   sessionHome('/session_home'),
   sessionCreateWarning('/session_create_warning'),
-  sessionCreate('/session_create');
+  sessionCreate('/session_create'),
+  sessionHost('/session_host');
 
   final String route;
   const NavigationEnum(this.route);

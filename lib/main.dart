@@ -24,6 +24,7 @@ import 'package:social_learning/ui_foundation/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/session_create_page.dart';
 import 'package:social_learning/ui_foundation/session_create_warning_page.dart';
 import 'package:social_learning/ui_foundation/session_home_page.dart';
+import 'package:social_learning/ui_foundation/session_host_page.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
 import 'ui_foundation/bottom_bar.dart';
 import 'firebase_options.dart';
@@ -40,16 +41,19 @@ void main() async {
 
   CustomFirebase.init();
 
+  ApplicationState applicationState = ApplicationState();
   LibraryState libraryState = LibraryState();
 
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => ApplicationState()),
+      ChangeNotifierProvider(create: (context) => applicationState),
       ChangeNotifierProvider(create: (context) => libraryState),
       ChangeNotifierProvider(create: (context) => GraduationState()),
       ChangeNotifierProvider(create: (context) => StudentState()),
-      ChangeNotifierProvider(create: (context) => AvailableSessionState(libraryState)),
-      ChangeNotifierProvider(create: (context) => OrganizerSessionState()),
+      ChangeNotifierProvider(
+          create: (context) => AvailableSessionState(libraryState)),
+      ChangeNotifierProvider(
+          create: (context) => OrganizerSessionState(applicationState)),
     ],
     builder: ((context, child) => const SocialLearningApp()),
   ));
@@ -82,8 +86,10 @@ class SocialLearningApp extends StatelessWidget {
         '/cms_home': (context) => const CmsHomePage(),
         '/cms_detail': (context) => const CmsDetailPage(),
         '/session_home': (context) => const SessionHomePage(),
-        '/session_create_warning': (context) => const SessionCreateWarningPage(),
+        '/session_create_warning': (context) =>
+            const SessionCreateWarningPage(),
         '/session_create': (context) => const SessionCreatePage(),
+        '/session_host': (context) => const SessionHostPage(),
       },
     );
   }
