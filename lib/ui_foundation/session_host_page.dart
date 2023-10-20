@@ -12,7 +12,7 @@ class SessionHostPage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return new SessionHostState();
+    return SessionHostState();
   }
 }
 

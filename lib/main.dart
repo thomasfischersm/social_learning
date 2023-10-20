@@ -11,6 +11,7 @@ import 'package:social_learning/state/available_session_state.dart';
 import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/cms_detail_page.dart';
 import 'package:social_learning/ui_foundation/cms_home_page.dart';
@@ -25,6 +26,7 @@ import 'package:social_learning/ui_foundation/session_create_page.dart';
 import 'package:social_learning/ui_foundation/session_create_warning_page.dart';
 import 'package:social_learning/ui_foundation/session_home_page.dart';
 import 'package:social_learning/ui_foundation/session_host_page.dart';
+import 'package:social_learning/ui_foundation/session_student_page.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
 import 'ui_foundation/bottom_bar.dart';
 import 'firebase_options.dart';
@@ -54,6 +56,7 @@ void main() async {
           create: (context) => AvailableSessionState(libraryState)),
       ChangeNotifierProvider(
           create: (context) => OrganizerSessionState(applicationState)),
+      ChangeNotifierProvider(create: (context) => StudentSessionState())
     ],
     builder: ((context, child) => const SocialLearningApp()),
   ));
@@ -90,6 +93,7 @@ class SocialLearningApp extends StatelessWidget {
             const SessionCreateWarningPage(),
         '/session_create': (context) => const SessionCreatePage(),
         '/session_host': (context) => const SessionHostPage(),
+        '/session_student': (context) => const SessionStudentPage(),
       },
     );
   }

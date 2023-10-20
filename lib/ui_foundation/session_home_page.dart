@@ -6,6 +6,7 @@ import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/navigation_enum.dart';
+import 'package:social_learning/ui_foundation/session_student_page.dart';
 
 class SessionHomePage extends StatefulWidget {
   const SessionHomePage({super.key});
@@ -65,6 +66,9 @@ class SessionHomeState extends State<SessionHomePage> {
         var sessionLabel =
             '${session.name} by ${session.organizerName} with ${session.participantCount} participants';
         result.add(InkWell(
+            onTap: () {
+              _joinSession(session, context);
+            },
             child: Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(sessionLabel,
@@ -77,5 +81,16 @@ class SessionHomeState extends State<SessionHomePage> {
 
   _navigateToCreateSession() {
     Navigator.pushNamed(context, NavigationEnum.cmsLesson.route);
+  }
+
+  _joinSession(Session session, BuildContext context) {
+    print('Tapped to join a session');
+    // TODO: Check if the current user is the organizer of the session.
+
+    String? sessionId = session.id;
+    if (sessionId != null) {
+      Navigator.pushNamed(context, NavigationEnum.sessionStudent.route,
+          arguments: SessionStudentArgument(sessionId));
+    }
   }
 }

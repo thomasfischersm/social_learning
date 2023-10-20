@@ -14,7 +14,8 @@ enum NavigationEnum {
   sessionHome('/session_home'),
   sessionCreateWarning('/session_create_warning'),
   sessionCreate('/session_create'),
-  sessionHost('/session_host');
+  sessionHost('/session_host'),
+  sessionStudent('/session_student');
 
   final String route;
   const NavigationEnum(this.route);
