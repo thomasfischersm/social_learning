@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/state/available_session_state.dart';
+import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
@@ -91,6 +94,38 @@ class SessionHomeState extends State<SessionHomePage> {
     if (sessionId != null) {
       Navigator.pushNamed(context, NavigationEnum.sessionStudent.route,
           arguments: SessionStudentArgument(sessionId));
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _checkForActiveSession(context);
+  }
+
+  // Checks if there is an active session and re-directs accordingly.
+  void _checkForActiveSession(BuildContext context) {
+    OrganizerSessionState organizerSessionState =
+        Provider.of<OrganizerSessionState>(context, listen: false);
+
+    if (organizerSessionState.currentSession != null) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushNamed(context, NavigationEnum.sessionHost.route);
+      });
+      return;
+    }
+
+    StudentSessionState studentSessionState =
+        Provider.of<StudentSessionState>(context, listen: false);
+
+    if (studentSessionState.currentSession != null) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushNamed(context, NavigationEnum.sessionStudent.route,
+            arguments: SessionStudentArgument(
+                studentSessionState.currentSession!.id!));
+      });
+      return;
     }
   }
 }

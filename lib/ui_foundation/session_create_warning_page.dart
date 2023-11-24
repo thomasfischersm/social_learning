@@ -54,29 +54,4 @@ class SessionCreateWarningState extends State<SessionCreateWarningPage> {
           ],
         ))));
   }
-
-  List<Widget> _showAvailableSessions(
-      BuildContext context, AvailableSessionState availableSessionState) {
-    List<Widget> result = [];
-    if (availableSessionState.availableSessions.isEmpty) {
-      result.add(Text('No sessions available.',
-          style: CustomTextStyles.getBody(context)));
-    } else {
-      for (Session session in availableSessionState.availableSessions) {
-        var sessionLabel =
-            '${session.name} by ${session.organizerName} with ${session.participantCount} participants';
-        result.add(InkWell(
-            child: Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(sessionLabel,
-                    style: CustomTextStyles.getBody(context)))));
-      }
-    }
-
-    return result;
-  }
-
-  _navigateToCreateSession() {
-    Navigator.pushNamed(context, NavigationEnum.cmsLesson.route);
-  }
 }

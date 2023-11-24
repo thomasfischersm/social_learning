@@ -28,7 +28,7 @@ class SessionStudentState extends State<SessionStudentPage> {
       String sessionId = argument.sessionId;
       var studentSessionState =
           Provider.of<StudentSessionState>(context, listen: false);
-      studentSessionState.attemptToJoin(sessionId);
+      studentSessionState.attemptToJoin(sessionId, context);
     }
 
     return Scaffold(
