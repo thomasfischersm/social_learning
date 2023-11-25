@@ -70,8 +70,13 @@ class StudentSessionState extends ChangeNotifier {
       notifyListeners();
 
       // Check if self needs to be added.
-      var containsSelf = _sessionParticipants.any((element) => element.participantUid == applicationState.currentUser?.uid);
+      var containsSelf = _sessionParticipants.any((element) {
+        print('Checking if ${element.participantUid} == ${applicationState.currentUser?.uid} => ${element.participantUid == applicationState.currentUser?.uid}');
+        return element.participantUid == applicationState.currentUser?.uid;
+      });
+      print('containsSelf: $containsSelf; this.uid: ${applicationState.currentUser?.uid}');
       if (!containsSelf) {
+        print('Student added itself as a participant');
         FirebaseFirestore.instance.collection('sessionParticipants').add({
           'sessionId': FirebaseFirestore.instance.doc(sessionPath),
           'participantId': FirebaseFirestore.instance.doc('/users/${applicationState.currentUser?.id}'),

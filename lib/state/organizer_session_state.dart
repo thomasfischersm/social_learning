@@ -216,12 +216,14 @@ class OrganizerSessionState extends ChangeNotifier {
       _sessionParticipantsSubscription = null;
     }
 
+    print('Connecting host to listen to session participants.');
     _sessionParticipantsSubscription = FirebaseFirestore.instance
         .collection('sessionParticipants')
         .where('sessionId',
             isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId'))
         .snapshots()
         .listen((snapshot) {
+      print('Got new session participants for host: ${snapshot.docs.length}');
       _sessionParticipants =
           snapshot.docs.map((e) => SessionParticipant.fromSnapshot(e)).toList();
 
