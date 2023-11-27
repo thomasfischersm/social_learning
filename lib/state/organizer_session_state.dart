@@ -91,7 +91,7 @@ class OrganizerSessionState extends ChangeNotifier {
       'organizerUid': organizer.uid,
       'organizerName': organizer.displayName,
       'participantCount': 1,
-      'startTime': null,
+      'startTime': FieldValue.serverTimestamp(),
       'isActive': true,
     });
     String sessionId = sessionDoc.id;
@@ -233,7 +233,7 @@ class OrganizerSessionState extends ChangeNotifier {
         FirebaseFirestore.instance
             .collection('sessions')
             .doc(sessionId)
-            .set({'participantCount': _sessionParticipants.length});
+            .set({'participantCount': _sessionParticipants.length}, SetOptions(merge: true));
       }
 
       _reconnectParticipantUsersSubscription();

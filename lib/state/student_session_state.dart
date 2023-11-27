@@ -57,7 +57,7 @@ class StudentSessionState extends ChangeNotifier {
       _sessionParticipantsSubscription = null;
     }
 
-    String sessionPath = '/sessions/$_currentSession.id';
+    String sessionPath = '/sessions/$sessionId';
     _sessionParticipantsSubscription = FirebaseFirestore.instance
         .collection('sessionParticipants')
         .where('sessionId',
