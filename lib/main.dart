@@ -56,7 +56,7 @@ void main() async {
           create: (context) => AvailableSessionState(libraryState)),
       ChangeNotifierProvider(
           create: (context) => OrganizerSessionState(applicationState)),
-      ChangeNotifierProvider(create: (context) => StudentSessionState())
+      ChangeNotifierProvider(create: (context) => StudentSessionState(applicationState))
     ],
     builder: ((context, child) => const SocialLearningApp()),
   ));

@@ -8,6 +8,7 @@ import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/ui_foundation/navigation_enum.dart';
+import 'package:social_learning/data/user.dart';
 
 class StudentSessionState extends ChangeNotifier {
   Session? _currentSession;
@@ -24,10 +25,52 @@ class StudentSessionState extends ChangeNotifier {
 
   get sessionParticipants => _sessionParticipants;
 
-  void attemptToJoin(String sessionId, BuildContext context) {
-    ApplicationState applicationState =
-        Provider.of<ApplicationState>(context, listen: false);
+  ApplicationState _applicationState;
+  User? _lastUser;
 
+  StudentSessionState(this._applicationState) {
+    _applicationState.addListener(() {
+      _checkForOngoingSession();
+    });
+
+    _checkForOngoingSession();
+  }
+
+  void _checkForOngoingSession() {
+    print('StudentSessionState._checkForOngoingSession() for user ${_applicationState.currentUser?.id}');
+    var lastUser = _applicationState.currentUser;
+    if (lastUser == _lastUser) {
+      // No change. Ignore!
+      print('User hasn\'t changed.');
+      return;
+    }
+    _lastUser = lastUser;
+
+    if (lastUser == null) {
+      // Clear any session.
+      print('User is gone.');
+      _resetSession();
+      return;
+    }
+
+    print('Checking active session for user ${lastUser.id}');
+    var userIdRef = FirebaseFirestore.instance.doc('/users/${lastUser.id}');
+    FirebaseFirestore.instance
+        .collection('sessionParticipants')
+        .where('participantId', isEqualTo: userIdRef)
+        .where('isActive', isEqualTo: true)
+        .get()
+        .then((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        var sessionParticipant =
+            SessionParticipant.fromSnapshot(snapshot.docs.first);
+        print('Trying to automatically log into session ${sessionParticipant.sessionId.id}');
+        attemptToJoin(sessionParticipant.sessionId.id, null);
+      }
+    });
+  }
+
+  void attemptToJoin(String sessionId, BuildContext? context) {
     var oldSessionSubscription = _sessionsSubscription;
     if (oldSessionSubscription != null) {
       oldSessionSubscription.cancel();
@@ -45,8 +88,10 @@ class StudentSessionState extends ChangeNotifier {
 
       // If the user is already the host, re-direct from the student to the
       // host page.
-      if (_currentSession?.organizerUid == applicationState.currentUser?.uid) {
-        Navigator.pushNamed(context, NavigationEnum.sessionHost.route);
+      if (_currentSession?.organizerUid == _applicationState.currentUser?.uid) {
+        if (context != null) {
+          Navigator.pushNamed(context, NavigationEnum.sessionHost.route);
+        }
         return;
       }
     });
@@ -64,24 +109,29 @@ class StudentSessionState extends ChangeNotifier {
             isEqualTo: FirebaseFirestore.instance.doc(sessionPath))
         .snapshots()
         .listen((snapshot) {
-      print('Got new session participants for student: ${snapshot.docs.length}');
+      print(
+          'Got new session participants for student: ${snapshot.docs.length}');
       _sessionParticipants =
           snapshot.docs.map((e) => SessionParticipant.fromSnapshot(e)).toList();
       notifyListeners();
 
       // Check if self needs to be added.
       var containsSelf = _sessionParticipants.any((element) {
-        print('Checking if ${element.participantUid} == ${applicationState.currentUser?.uid} => ${element.participantUid == applicationState.currentUser?.uid}');
-        return element.participantUid == applicationState.currentUser?.uid;
+        print(
+            'Checking if ${element.participantUid} == ${_applicationState.currentUser?.uid} => ${element.participantUid == _applicationState.currentUser?.uid}');
+        return element.participantUid == _applicationState.currentUser?.uid;
       });
-      print('containsSelf: $containsSelf; this.uid: ${applicationState.currentUser?.uid}');
+      print(
+          'containsSelf: $containsSelf; this.uid: ${_applicationState.currentUser?.uid}');
       if (!containsSelf) {
         print('Student added itself as a participant');
         FirebaseFirestore.instance.collection('sessionParticipants').add({
           'sessionId': FirebaseFirestore.instance.doc(sessionPath),
-          'participantId': FirebaseFirestore.instance.doc('/users/${applicationState.currentUser?.id}'),
-          'participantUid': applicationState.currentUser?.uid,
+          'participantId': FirebaseFirestore.instance
+              .doc('/users/${_applicationState.currentUser?.id}'),
+          'participantUid': _applicationState.currentUser?.uid,
           'isInstructor': false,
+          'isActive': true,
         });
       }
     });
@@ -89,5 +139,17 @@ class StudentSessionState extends ChangeNotifier {
     // TODO: Check if organizer and re-direct.
     // TODO: Add self as participant if needed.
     // TODO: Subscribe to participants.
+    // TODO: Figure out the bug why sessions aren't visible on the first try.
+  }
+
+  _resetSession() {
+    _currentSession = null;
+    _sessionParticipants = List.empty();
+    _sessionsSubscription?.cancel();
+    _sessionsSubscription = null;
+    _sessionParticipantsSubscription?.cancel();
+    _sessionParticipantsSubscription = null;
+
+    notifyListeners();
   }
 }

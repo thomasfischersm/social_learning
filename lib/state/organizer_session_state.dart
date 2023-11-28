@@ -106,6 +106,7 @@ class OrganizerSessionState extends ChangeNotifier {
       'participantId': FirebaseFirestore.instance.doc('/users/${organizer.id}'),
       'participantUid': organizer.uid,
       'isInstructor': organizer.isAdmin,
+      'isActive': true,
     });
     print('after creating participant');
 
@@ -230,10 +231,9 @@ class OrganizerSessionState extends ChangeNotifier {
       if ((_currentSession != null) &&
           (_sessionParticipants.length != _currentSession?.participantCount)) {
         // Update the session participant count.
-        FirebaseFirestore.instance
-            .collection('sessions')
-            .doc(sessionId)
-            .set({'participantCount': _sessionParticipants.length}, SetOptions(merge: true));
+        FirebaseFirestore.instance.collection('sessions').doc(sessionId).set(
+            {'participantCount': _sessionParticipants.length},
+            SetOptions(merge: true));
       }
 
       _reconnectParticipantUsersSubscription();

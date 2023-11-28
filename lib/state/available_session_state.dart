@@ -16,10 +16,14 @@ class AvailableSessionState extends ChangeNotifier {
   List<Session> get availableSessions => _availableSessions;
 
   AvailableSessionState(LibraryState libraryState) {
+    print('AvailableSessionState cstr()');
     libraryState.addListener(() { onLibraryStateUpdated(libraryState);});
+
+    onLibraryStateUpdated(libraryState);
   }
 
   void onLibraryStateUpdated(LibraryState libraryState) {
+    print('AvailableSessionState.onLibraryStateUpdated(); course: ${libraryState.selectedCourse?.title}');
     Course? newCourse = libraryState.selectedCourse;
     if (_lastCourse == newCourse) {
       // No change. Ignore!
