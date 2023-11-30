@@ -88,7 +88,6 @@ class SessionHomeState extends State<SessionHomePage> {
 
   _joinSession(Session session, BuildContext context) {
     print('Tapped to join a session');
-    // TODO: Check if the current user is the organizer of the session.
 
     String? sessionId = session.id;
     if (sessionId != null) {

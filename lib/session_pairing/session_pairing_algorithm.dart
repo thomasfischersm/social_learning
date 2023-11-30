@@ -1,6 +1,7 @@
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 
 class SessionPairingAlgorithm {
@@ -14,7 +15,8 @@ class SessionPairingAlgorithm {
     List<SessionParticipant> allParticipants =
         List.from(organizerSessionState.sessionParticipants);
 
-    return _generatePairings(allParticipants, List.empty(), organizerSessionState);
+    return _generatePairings(
+        allParticipants, List.empty(), organizerSessionState);
   }
 
   _generatePairings(
@@ -39,9 +41,9 @@ class SessionPairingAlgorithm {
 
       LearnerPair pair = LearnerPair(
           participantA,
-          organizerSessionState.getParticipantUser(participantA)!,
+          organizerSessionState.getUser(participantA)!,
           participantB,
-          organizerSessionState.getParticipantUser(participantB)!,
+          organizerSessionState.getUser(participantB)!,
           lesson);
 
       pairings.addAll(_generatePairings(List.from(thisParticipants),
@@ -63,16 +65,34 @@ class SessionPairingAlgorithm {
   Lesson? _pickBestLesson(
       SessionParticipant participantA,
       SessionParticipant participantB,
-      OrganizerSessionState organizerSessionState) {
-    User userA = organizerSessionState.getUser(participantA);
+      OrganizerSessionState organizerSessionState,
+      LibraryState libraryState) {
+    User? userA = organizerSessionState.getUser(participantA);
     List<Lesson> teachableLessons =
         organizerSessionState.getGraduatedLessons(participantA);
 
-    User userB = organizerSessionState.getUser(participantB);
+    User? userB = organizerSessionState.getUser(participantB);
     List<Lesson> alreadyLearnedLessons =
         organizerSessionState.getGraduatedLessons(participantB);
 
-    // TODO: Handle the case where the user is an instructor.
+    // Handle the case where the user is an instructor.
+    if (userB?.isAdmin ?? false) {
+      // There is no point in teaching an instructor.
+      return null;
+    } else if (userA?.isAdmin ?? false) {
+      // If the teacher is an instructor, pick the lesson that's next for the
+      // learner.
+      var tmp = libraryState.lessons;
+      if (tmp != null) {
+        List<Lesson> courseLessons = List.from(tmp);
+        courseLessons.sort((lessonA, lessonB) =>
+            lessonA.sortOrder.compareTo(lessonB.sortOrder));
+        Set<Lesson> alreadyLearnedLessonsSet = alreadyLearnedLessons.toSet();
+        courseLessons
+            .removeWhere((lesson) => alreadyLearnedLessonsSet.contains(lesson));
+        return (courseLessons.isNotEmpty) ? courseLessons.first : null;
+      }
+    }
 
     // Find relevant lessons.
     Set<Lesson> possibleLessons =
@@ -83,7 +103,7 @@ class SessionPairingAlgorithm {
       return null;
     } else {
       return possibleLessons.reduce((lessonA, lessonB) =>
-      (lessonA.sortOrder > lessonB.sortOrder) ? lessonA : lessonB);
+          (lessonA.sortOrder > lessonB.sortOrder) ? lessonA : lessonB);
     }
   }
 }
@@ -110,5 +130,5 @@ class PairedSession {
 
   PairedSession(this.pairs, this.unpairedParticipants);
 
-  // TODO: Remove pairings that don't have a lesson to teach.
+// TODO: Remove pairings that don't have a lesson to teach.
 }

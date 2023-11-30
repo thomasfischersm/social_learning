@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/learning_strategy_enum.dart';
 
 class SessionParticipant {
   String? id;
@@ -9,6 +10,7 @@ class SessionParticipant {
   bool isActive;
   int teachCount;
   int learnCount;
+  LearningStrategyEnum learningStrategy;
 
   SessionParticipant(
       this.id,
@@ -18,7 +20,8 @@ class SessionParticipant {
       this.isInstructor,
       this.isActive,
       this.teachCount,
-      this.learnCount);
+      this.learnCount,
+      this.learningStrategy);
 
   SessionParticipant.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -28,5 +31,8 @@ class SessionParticipant {
         isInstructor = e.data()['isInstructor'] as bool,
         isActive = e.data()['isActive'] as bool,
         teachCount = e.data()['teachCount'] as int? ?? 0,
-        learnCount = e.data()['learnCount'] as int? ?? 0;
+        learnCount = e.data()['learnCount'] as int? ?? 0,
+        learningStrategy = LearningStrategyEnum.values[
+            e.data()['learningStrategy'] as int? ??
+                LearningStrategyEnum.preferred.index];
 }
