@@ -11,6 +11,9 @@ import 'package:social_learning/ui_foundation/navigation_enum.dart';
 import 'package:social_learning/data/user.dart';
 
 class StudentSessionState extends ChangeNotifier {
+  bool _isInitialized = false;
+  get isInitialized => _isInitialized;
+
   Session? _currentSession;
 
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
@@ -84,6 +87,7 @@ class StudentSessionState extends ChangeNotifier {
         .listen((snapshot) {
       print('Got new session for student: ${snapshot.data()}');
       _currentSession = Session.fromSnapshot(snapshot);
+      _isInitialized = true;
       notifyListeners();
 
       // If the user is already the host, re-direct from the student to the

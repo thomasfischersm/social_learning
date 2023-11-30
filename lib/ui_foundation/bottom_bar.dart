@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/state/student_session_state.dart';
 
 import '../state/application_state.dart';
 import 'navigation_enum.dart';
@@ -30,13 +32,22 @@ class BottomBar extends StatelessWidget {
                                 ? addIcon(context, Icons.menu_book,
                                     NavigationEnum.cmsHome, true)
                                 : null ?? Spacer()),
-                    Consumer<LibraryState>(
-                      builder: (context, libraryState, child) => addIcon(
-                          context,
-                          Icons.groups,
-                          NavigationEnum.sessionHome,
-                          libraryState.isCourseSelected &&
-                              applicationState.isLoggedIn),
+                    Consumer<StudentSessionState>(
+                      builder: (context, studentSessionState, child) =>
+                          Consumer<OrganizerSessionState>(
+                        builder: (context, organizerSessionState, child) =>
+                            Consumer<LibraryState>(
+                          builder: (context, libraryState, child) => addIcon(
+                            context,
+                            Icons.groups,
+                            _getSessionNavigationTarget(applicationState, libraryState, studentSessionState, organizerSessionState),
+                            libraryState.isCourseSelected &&
+                                applicationState.isLoggedIn &&
+                                (studentSessionState.isInitialized ||
+                                organizerSessionState.isInitialized),
+                          ),
+                        ),
+                      ),
                     ),
                     addIcon(context, Icons.person, NavigationEnum.profile,
                         applicationState.isLoggedIn),
@@ -61,5 +72,25 @@ class BottomBar extends StatelessWidget {
         }
       },
     );
+  }
+
+  NavigationEnum _getSessionNavigationTarget(
+      ApplicationState applicationState,
+      LibraryState libraryState,
+      StudentSessionState studentSessionState,
+      OrganizerSessionState organizerSessionState) {
+
+    print('bottom bar session button: host session ${organizerSessionState.isInitialized}, student session ${studentSessionState.isInitialized}, course selected ${libraryState.isCourseSelected}, logged in ${applicationState.isLoggedIn}');
+
+    if (organizerSessionState.currentSession != null) {
+      return NavigationEnum.sessionHost;
+    } else if (studentSessionState.currentSession != null) {
+      return NavigationEnum.sessionStudent;
+    } else if (libraryState.isCourseSelected && applicationState.isLoggedIn) {
+      return NavigationEnum.sessionHome;
+    } else {
+      // The user needs to select a course first.
+      return NavigationEnum.home;
+    }
   }
 }

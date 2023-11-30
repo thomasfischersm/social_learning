@@ -12,6 +12,9 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 
 class OrganizerSessionState extends ChangeNotifier {
+  bool _isInitialized = false;
+  get isInitialized => _isInitialized;
+
   Session? _currentSession;
   List<SessionParticipant> _sessionParticipants = List.empty();
   List<User> _participantUsers = List.empty();
@@ -54,6 +57,7 @@ class OrganizerSessionState extends ChangeNotifier {
 
           _subscribeToSession(sessionId);
           _subscribeToParticipants(sessionId);
+          _isInitialized = true;
           notifyListeners();
         }
       });
