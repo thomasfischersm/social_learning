@@ -23,6 +23,7 @@ class OrganizerSessionState extends ChangeNotifier {
   Session? _currentSession;
   List<SessionParticipant> _sessionParticipants = List.empty();
   List<User> _participantUsers = List.empty();
+  Map<String, User> _uidToUserMap = {};
 
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
       _sessionsSubscription;
@@ -168,11 +169,13 @@ class OrganizerSessionState extends ChangeNotifier {
         print('Received firebase update for session users: ${snapshot.size}');
         _participantUsers =
             snapshot.docs.map((e) => User.fromSnapshot(e)).toList();
+        _uidToUserMap = { for (var user in _participantUsers) user.uid: user};
 
         notifyListeners();
       });
     } else {
       _participantUsers = List.empty();
+      _uidToUserMap = {};
       notifyListeners();
     }
   }
@@ -189,7 +192,7 @@ class OrganizerSessionState extends ChangeNotifier {
     for (SessionParticipant participant in _sessionParticipants) {
       var participantId = participant.participantId;
       if (participantId != null) {
-        User? user = getParticipantUser(participant);
+        User? user = getUser(participant);
         if (user != null) {
           userUids.add(user.uid);
         }
@@ -217,25 +220,8 @@ class OrganizerSessionState extends ChangeNotifier {
     }
   }
 
-  User? getParticipantUser(SessionParticipant sessionParticipant) {
-    // TODO: Create a lookup map to speed things up.
-
-    String? rawUserId =
-        UserFunctions.extractNumberId(sessionParticipant.participantId);
-
-    if (rawUserId != null) {
-      for (User participantUser in _participantUsers) {
-        if (participantUser.id == rawUserId) {
-          return participantUser;
-        }
-      }
-    }
-
-    return null;
-  }
-
   List<Lesson> getGraduatedLessons(SessionParticipant sessionParticipant) {
-    User? user = getParticipantUser(sessionParticipant);
+    User? user = getUser(sessionParticipant);
     List<Lesson> graduatedLessons = List.empty();
 
     if (user != null) {
@@ -318,8 +304,7 @@ class OrganizerSessionState extends ChangeNotifier {
     });
   }
 
-  User getUser(SessionParticipant participant) {
-    return _participantUsers
-        .firstWhere((user) => user.id == participant.participantId.id);
+  User? getUser(SessionParticipant participant) {
+    return _uidToUserMap[participant.participantUid];
   }
 }

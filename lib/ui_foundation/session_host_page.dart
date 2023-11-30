@@ -39,7 +39,7 @@ class SessionHostState extends State<SessionHostPage> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                       onPressed: () => _pairNextSession(context, organizerSessionState),
-                      child: const Text('Pair next session'))
+                      child: const Text('Pair next session')))
             ],
           );
         }))));
@@ -51,7 +51,7 @@ class SessionHostState extends State<SessionHostPage> {
     for (SessionParticipant sessionParticipant
         in organizerSessionState.sessionParticipants) {
       User? participantUser =
-          organizerSessionState.getParticipantUser(sessionParticipant);
+          organizerSessionState.getUser(sessionParticipant);
 
       tableRows.add(TableRow(children: <Widget>[
         CustomUiConstants.getTextPadding(
