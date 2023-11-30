@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
@@ -5,24 +7,48 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 
 class SessionPairingAlgorithm {
-  generateNextSessionPairing(OrganizerSessionState organizerSessionState) {
+  generateNextSessionPairing(OrganizerSessionState organizerSessionState, LibraryState libraryState) {
+    // Generate all possible pairings.
+    List<PairedSession> possiblePairings =
+        _generatePossiblePairings(organizerSessionState, libraryState);
+
+    // Remove pairs without a lesson.
+    for (var pairedSession in possiblePairings) {
+      pairedSession.removePairsWithoutLesson();
+    }
+
+    // Only keep the pairings with the least amount of unpaired participants.
+    _keepOnlyPairingsWithTheLeastUnpairedParticipants(possiblePairings);
+
     // TODO: Determine the possible pairings.
     // TODO: Pick the best pairing.
   }
 
+  void _keepOnlyPairingsWithTheLeastUnpairedParticipants(List<PairedSession> possiblePairings) {
+    if (possiblePairings.isNotEmpty) {
+      var minUnpairedParticipants = possiblePairings.fold<int>(
+          possiblePairings.first.unpairedParticipants.length,
+              (value, element) =>
+              min(value, element.unpairedParticipants.length));
+      possiblePairings.removeWhere(
+              (pairedSession) =>
+          pairedSession.unpairedParticipants.length > minUnpairedParticipants);
+    }
+  }
+
   List<PairedSession> _generatePossiblePairings(
-      OrganizerSessionState organizerSessionState) {
+      OrganizerSessionState organizerSessionState,LibraryState libraryState) {
     List<SessionParticipant> allParticipants =
         List.from(organizerSessionState.sessionParticipants);
 
     return _generatePairings(
-        allParticipants, List.empty(), organizerSessionState);
+        allParticipants, List.empty(), organizerSessionState, libraryState);
   }
 
   _generatePairings(
       List<SessionParticipant> remainingParticipants,
       List<LearnerPair> currentPairs,
-      OrganizerSessionState organizerSessionState) {
+      OrganizerSessionState organizerSessionState, LibraryState libraryState) {
     if (remainingParticipants.length < 2) {
       return List.from([PairedSession(currentPairs, remainingParticipants)]);
     }
@@ -37,7 +63,7 @@ class SessionPairingAlgorithm {
 
       // One way pair
       Lesson? lesson =
-          _pickBestLesson(participantA, participantB, organizerSessionState);
+          _pickBestLesson(participantA, participantB, organizerSessionState, libraryState);
 
       LearnerPair pair = LearnerPair(
           participantA,
@@ -47,16 +73,16 @@ class SessionPairingAlgorithm {
           lesson);
 
       pairings.addAll(_generatePairings(List.from(thisParticipants),
-          List.from(currentPairs)..add(pair), organizerSessionState));
+          List.from(currentPairs)..add(pair), organizerSessionState, libraryState));
 
       // TODO: Skip the reverse case when a user is an instructor.
 
       // Reverse pair
       Lesson? reverseLesson =
-          _pickBestLesson(participantA, participantB, organizerSessionState);
+          _pickBestLesson(participantA, participantB, organizerSessionState, libraryState);
       LearnerPair reversePair = pair.reverse(lesson);
       pairings.addAll(_generatePairings(List.from(thisParticipants),
-          List.from(currentPairs)..add(reversePair), organizerSessionState));
+          List.from(currentPairs)..add(reversePair), organizerSessionState, libraryState));
     }
 
     return pairings;
@@ -131,4 +157,16 @@ class PairedSession {
   PairedSession(this.pairs, this.unpairedParticipants);
 
 // TODO: Remove pairings that don't have a lesson to teach.
+
+  removePairsWithoutLesson() {
+    pairs.removeWhere((pair) {
+      if (pair.lesson == null) {
+        unpairedParticipants.add(pair.teachingParticipant);
+        unpairedParticipants.add(pair.learningParticipant);
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }
 }
