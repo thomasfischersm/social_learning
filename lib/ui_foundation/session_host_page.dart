@@ -35,6 +35,11 @@ class SessionHostState extends State<SessionHostPage> {
                   '${organizerSessionState.currentSession?.participantCount} Participants',
                   style: CustomTextStyles.subHeadline)),
               _createParticipantTable(organizerSessionState),
+              Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                      onPressed: () => _pairNextSession(context, organizerSessionState),
+                      child: const Text('Pair next session'))
             ],
           );
         }))));
@@ -59,5 +64,9 @@ class SessionHostState extends State<SessionHostPage> {
     return Table(
         columnWidths: const {0: FlexColumnWidth(), 1: IntrinsicColumnWidth()},
         children: tableRows);
+  }
+
+  _pairNextSession(BuildContext context, OrganizerSessionState organizerSessionState) {
+    
   }
 }

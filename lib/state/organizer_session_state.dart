@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
@@ -13,6 +15,9 @@ import 'package:social_learning/state/library_state.dart';
 
 class OrganizerSessionState extends ChangeNotifier {
   bool _isInitialized = false;
+
+  LibraryState _libraryState;
+
   get isInitialized => _isInitialized;
 
   Session? _currentSession;
@@ -25,6 +30,8 @@ class OrganizerSessionState extends ChangeNotifier {
       _sessionParticipantsSubscription;
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
       _participantUsersSubscription;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
+      _practiceRecordsSubscription;
 
   get currentSession => _currentSession;
 
@@ -32,7 +39,11 @@ class OrganizerSessionState extends ChangeNotifier {
 
   get participantUsers => _participantUsers;
 
-  OrganizerSessionState(ApplicationState applicationState) {
+  List<PracticeRecord> _practiceRecords = List.empty();
+
+  get practiceRecords => _practiceRecords;
+
+  OrganizerSessionState(ApplicationState applicationState, this._libraryState) {
     _connectToActiveSession(applicationState);
 
     applicationState.addListener(() {
@@ -166,7 +177,49 @@ class OrganizerSessionState extends ChangeNotifier {
     }
   }
 
+  _reconnectPracticeRecordSubscription() {
+    // Disconnect from the old subscription.
+    var oldSubscription = _practiceRecordsSubscription;
+    if (oldSubscription != null) {
+      oldSubscription.cancel();
+    }
+
+    // Build a list of user ids.
+    List<String> userUids = [];
+    for (SessionParticipant participant in _sessionParticipants) {
+      var participantId = participant.participantId;
+      if (participantId != null) {
+        User? user = getParticipantUser(participant);
+        if (user != null) {
+          userUids.add(user.uid);
+        }
+      }
+    }
+
+    // Subscribe to Firebase changes.
+    print('_reconnectPracticeRecordSubscription: $userUids');
+    if (userUids.isNotEmpty) {
+      _practiceRecordsSubscription = FirebaseFirestore.instance
+          .collection('practiceRecords')
+          .where('isGraduation', isEqualTo: true)
+          .where('menteeUid', whereIn: userUids)
+          .snapshots()
+          .listen((snapshot) {
+        print('Received firebase update for practice records: ${snapshot.size}');
+        _practiceRecords =
+            snapshot.docs.map((e) => PracticeRecord.fromSnapshot(e)).toList();
+
+        notifyListeners();
+      });
+    } else {
+      _practiceRecords = List.empty();
+      notifyListeners();
+    }
+  }
+
   User? getParticipantUser(SessionParticipant sessionParticipant) {
+    // TODO: Create a lookup map to speed things up.
+
     String? rawUserId =
         UserFunctions.extractNumberId(sessionParticipant.participantId);
 
@@ -179,6 +232,24 @@ class OrganizerSessionState extends ChangeNotifier {
     }
 
     return null;
+  }
+
+  List<Lesson> getGraduatedLessons(SessionParticipant sessionParticipant) {
+    User? user = getParticipantUser(sessionParticipant);
+    List<Lesson> graduatedLessons = List.empty();
+
+    if (user != null) {
+      for (PracticeRecord practiceRecord in _practiceRecords) {
+        if (practiceRecord.menteeUid == user.uid) {
+          Lesson? lesson = _libraryState.findLesson(practiceRecord.lessonId.id);
+          if (lesson != null) {
+            graduatedLessons.add(lesson);
+          }
+        }
+      }
+    }
+
+    return graduatedLessons;
   }
 
   _subscribeToSession(String sessionId) {
@@ -241,8 +312,14 @@ class OrganizerSessionState extends ChangeNotifier {
       }
 
       _reconnectParticipantUsersSubscription();
+      _reconnectPracticeRecordSubscription();
 
       notifyListeners();
     });
+  }
+
+  User getUser(SessionParticipant participant) {
+    return _participantUsers
+        .firstWhere((user) => user.id == participant.participantId.id);
   }
 }

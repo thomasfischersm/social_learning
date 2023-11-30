@@ -7,9 +7,18 @@ class SessionParticipant {
   String participantUid;
   bool isInstructor;
   bool isActive;
+  int teachCount;
+  int learnCount;
 
-  SessionParticipant(this.id, this.sessionId, this.participantId,
-      this.participantUid, this.isInstructor, this.isActive);
+  SessionParticipant(
+      this.id,
+      this.sessionId,
+      this.participantId,
+      this.participantUid,
+      this.isInstructor,
+      this.isActive,
+      this.teachCount,
+      this.learnCount);
 
   SessionParticipant.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -17,5 +26,7 @@ class SessionParticipant {
         participantId = e.data()['participantId'] as DocumentReference,
         participantUid = e.data()['participantUid'] as String,
         isInstructor = e.data()['isInstructor'] as bool,
-        isActive = e.data()['isActive'] as bool;
+        isActive = e.data()['isActive'] as bool,
+        teachCount = e.data()['teachCount'] as int? ?? 0,
+        learnCount = e.data()['learnCount'] as int? ?? 0;
 }
