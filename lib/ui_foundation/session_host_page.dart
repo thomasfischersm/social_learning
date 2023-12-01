@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
+import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
@@ -38,7 +40,8 @@ class SessionHostState extends State<SessionHostPage> {
               Align(
                   alignment: Alignment.centerRight,
                   child: TextButton(
-                      onPressed: () => _pairNextSession(context, organizerSessionState),
+                      onPressed: () =>
+                          _pairNextSession(context, organizerSessionState),
                       child: const Text('Pair next session')))
             ],
           );
@@ -50,8 +53,7 @@ class SessionHostState extends State<SessionHostPage> {
 
     for (SessionParticipant sessionParticipant
         in organizerSessionState.sessionParticipants) {
-      User? participantUser =
-          organizerSessionState.getUser(sessionParticipant);
+      User? participantUser = organizerSessionState.getUser(sessionParticipant);
 
       tableRows.add(TableRow(children: <Widget>[
         CustomUiConstants.getTextPadding(
@@ -66,7 +68,14 @@ class SessionHostState extends State<SessionHostPage> {
         children: tableRows);
   }
 
-  _pairNextSession(BuildContext context, OrganizerSessionState organizerSessionState) {
-    
+  _pairNextSession(
+      BuildContext context, OrganizerSessionState organizerSessionState) {
+    // Match students.
+    var libraryState = Provider.of<LibraryState>(context, listen: false);
+    PairedSession pairedSession = SessionPairingAlgorithm()
+        .generateNextSessionPairing(organizerSessionState, libraryState);
+
+    // Save next round to the Firestore.
+    organizerSessionState.saveNextRound(pairedSession);
   }
 }

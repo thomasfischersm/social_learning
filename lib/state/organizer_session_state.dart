@@ -6,45 +6,91 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/session.dart';
+import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/user_functions.dart';
+import 'package:social_learning/data_support/firestore_document_subscription.dart';
+import 'package:social_learning/data_support/firestore_list_subscription.dart';
 import 'package:social_learning/globals.dart';
+import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 
 class OrganizerSessionState extends ChangeNotifier {
   bool _isInitialized = false;
 
-  LibraryState _libraryState;
+  final LibraryState _libraryState;
 
   get isInitialized => _isInitialized;
 
-  Session? _currentSession;
-  List<SessionParticipant> _sessionParticipants = List.empty();
-  List<User> _participantUsers = List.empty();
+  // new subscriptions
+  late FirestoreDocumentSubscription _sessionsSubscription;
+
+  late FirestoreListSubscription _sessionParticipantsSubscription;
+
+  late FirestoreListSubscription _participantUsersSubscription;
+
+  late FirestoreListSubscription _practiceRecordsSubscription;
+
+  late FirestoreListSubscription _sessionPairingSubscription;
+
+  get currentSession => _sessionsSubscription.item;
+
+  get sessionParticipants => _sessionParticipantsSubscription.items;
+
+  get participantUsers => _participantUsersSubscription.items;
+
+  get practiceRecords => _practiceRecordsSubscription.items;
+
+  Map<User, List<Lesson>> _userToGraduatedLessons = {};
+
   Map<String, User> _uidToUserMap = {};
 
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
-      _sessionsSubscription;
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
-      _sessionParticipantsSubscription;
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
-      _participantUsersSubscription;
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
-      _practiceRecordsSubscription;
-
-  get currentSession => _currentSession;
-
-  get sessionParticipants => _sessionParticipants;
-
-  get participantUsers => _participantUsers;
-
-  List<PracticeRecord> _practiceRecords = List.empty();
-
-  get practiceRecords => _practiceRecords;
+  Map<int, List<SessionPairing>> _roundNumberToSessionPairings = {};
 
   OrganizerSessionState(ApplicationState applicationState, this._libraryState) {
+    // Start subscriptions.
+     _sessionsSubscription =
+    FirestoreDocumentSubscription<Session>(
+            (snapshot) => Session.fromSnapshot(snapshot), () {
+      _isInitialized = true;
+      notifyListeners();
+    });
+
+     _sessionParticipantsSubscription =
+    FirestoreListSubscription<SessionParticipant>(
+        'sessionParticipants',
+            (snapshot) => SessionParticipant.fromSnapshot(snapshot),
+        _handleSessionParticipantsUpdate,
+            () => notifyListeners());
+
+    _participantUsersSubscription =
+    FirestoreListSubscription<User>(
+        'users',
+            (snapshot) => User.fromSnapshot(snapshot),
+            (participantUsers) => _uidToUserMap = {
+          for (var user in participantUsers) user.uid: user
+        },
+            () => notifyListeners());
+
+    final FirestoreListSubscription _practiceRecordsSubscription =
+    FirestoreListSubscription<PracticeRecord>(
+      'practiceRecords',
+          (snapshot) => PracticeRecord.fromSnapshot(snapshot),
+          (practiceRecords) => _userToGraduatedLessons = {},
+          () => notifyListeners(),
+    );
+
+    final FirestoreListSubscription _sessionPairingSubscription =
+    FirestoreListSubscription<SessionPairing>(
+      'sessionPairings',
+          (snapshot) => SessionPairing.fromSnapshot(snapshot),
+      null,
+          () => notifyListeners(),
+    );
+
+    // Check if the user logged back into the app with a running session.
     _connectToActiveSession(applicationState);
 
     applicationState.addListener(() {
@@ -65,10 +111,9 @@ class OrganizerSessionState extends ChangeNotifier {
         if (snapshot.size > 0) {
           var session = Session.fromQuerySnapshot(snapshot.docs.first);
           String sessionId = session.id!;
-          _currentSession = session;
+          // _currentSession = session;
 
           _subscribeToSession(sessionId);
-          _subscribeToParticipants(sessionId);
           _isInitialized = true;
           notifyListeners();
         }
@@ -129,9 +174,6 @@ class OrganizerSessionState extends ChangeNotifier {
     // Listen to session changes.
     _subscribeToSession(sessionId);
 
-    // Listen to participant changes.
-    _subscribeToParticipants(sessionId);
-
     notifyListeners();
 
     snackbarKey.currentState?.showSnackBar(SnackBar(
@@ -140,15 +182,13 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   _reconnectParticipantUsersSubscription() {
-    // Disconnect from the old subscription.
-    var oldSubscription = _participantUsersSubscription;
-    if (oldSubscription != null) {
-      oldSubscription.cancel();
-    }
+    _participantUsersSubscription.resubscribe((collectionReference) =>
+        collectionReference.where(FieldPath.documentId, whereIn: getUserIds()));
+  }
 
-    // Build a list of user ids.
+  List<String> getUserIds() {
     List<String> userIds = [];
-    for (SessionParticipant participant in _sessionParticipants) {
+    for (SessionParticipant participant in sessionParticipants) {
       var participantId = participant.participantId;
       if (participantId != null) {
         var rawUserId = UserFunctions.extractNumberId(participantId);
@@ -157,39 +197,19 @@ class OrganizerSessionState extends ChangeNotifier {
         }
       }
     }
-
-    // Subscribe to Firebase changes.
-    print('_reconnectParticipantUsersSubscription: $userIds');
-    if (userIds.isNotEmpty) {
-      _participantUsersSubscription = FirebaseFirestore.instance
-          .collection('users')
-          .where(FieldPath.documentId, whereIn: userIds)
-          .snapshots()
-          .listen((snapshot) {
-        print('Received firebase update for session users: ${snapshot.size}');
-        _participantUsers =
-            snapshot.docs.map((e) => User.fromSnapshot(e)).toList();
-        _uidToUserMap = { for (var user in _participantUsers) user.uid: user};
-
-        notifyListeners();
-      });
-    } else {
-      _participantUsers = List.empty();
-      _uidToUserMap = {};
-      notifyListeners();
-    }
+    return userIds;
   }
 
   _reconnectPracticeRecordSubscription() {
-    // Disconnect from the old subscription.
-    var oldSubscription = _practiceRecordsSubscription;
-    if (oldSubscription != null) {
-      oldSubscription.cancel();
-    }
+    _practiceRecordsSubscription.resubscribe((collectionReference) =>
+        collectionReference
+            .where('isGraduation', isEqualTo: true)
+            .where('menteeUid', whereIn: getUserUids()));
+  }
 
-    // Build a list of user ids.
+  List<String> getUserUids() {
     List<String> userUids = [];
-    for (SessionParticipant participant in _sessionParticipants) {
+    for (SessionParticipant participant in sessionParticipants) {
       var participantId = participant.participantId;
       if (participantId != null) {
         User? user = getUser(participant);
@@ -198,34 +218,20 @@ class OrganizerSessionState extends ChangeNotifier {
         }
       }
     }
-
-    // Subscribe to Firebase changes.
-    print('_reconnectPracticeRecordSubscription: $userUids');
-    if (userUids.isNotEmpty) {
-      _practiceRecordsSubscription = FirebaseFirestore.instance
-          .collection('practiceRecords')
-          .where('isGraduation', isEqualTo: true)
-          .where('menteeUid', whereIn: userUids)
-          .snapshots()
-          .listen((snapshot) {
-        print('Received firebase update for practice records: ${snapshot.size}');
-        _practiceRecords =
-            snapshot.docs.map((e) => PracticeRecord.fromSnapshot(e)).toList();
-
-        notifyListeners();
-      });
-    } else {
-      _practiceRecords = List.empty();
-      notifyListeners();
-    }
+    return userUids;
   }
 
   List<Lesson> getGraduatedLessons(SessionParticipant sessionParticipant) {
-    User? user = getUser(sessionParticipant);
     List<Lesson> graduatedLessons = List.empty();
 
+    User? user = getUser(sessionParticipant);
     if (user != null) {
-      for (PracticeRecord practiceRecord in _practiceRecords) {
+      // Check if this is cached
+      if (_userToGraduatedLessons.containsKey(user)) {
+        return _userToGraduatedLessons[user]!;
+      }
+
+      for (PracticeRecord practiceRecord in practiceRecords) {
         if (practiceRecord.menteeUid == user.uid) {
           Lesson? lesson = _libraryState.findLesson(practiceRecord.lessonId.id);
           if (lesson != null) {
@@ -233,78 +239,58 @@ class OrganizerSessionState extends ChangeNotifier {
           }
         }
       }
+
+      _userToGraduatedLessons[user] = List.from(graduatedLessons);
     }
 
     return graduatedLessons;
   }
 
   _subscribeToSession(String sessionId) {
-    var oldSubscription = _sessionsSubscription;
-    if (oldSubscription != null) {
-      oldSubscription.cancel();
-      _sessionsSubscription = null;
-    }
+    _sessionsSubscription.resubscribe(() => '/sessions/$sessionId');
 
-    _sessionsSubscription = FirebaseFirestore.instance
-        .collection('sessions')
-        .doc(sessionId)
-        .snapshots()
-        .listen((snapshot) {
-      // if (event.size != 1) {
-      //   print(
-      //       'Id $sessionId returned an unexpected number of sessions: ${event.size}.');
-      //   snackbarKey.currentState?.showSnackBar(SnackBar(
-      //     content: Text(
-      //         'Id $sessionId returned an unexpected number of sessions: ${event.size}.'),
-      //   ));
-      // }
-      //
-      // if (event.size > 1) {
-      print('got session update ${snapshot.data()}');
-      print('got session meta ${snapshot.metadata.hasPendingWrites}');
-      if (!snapshot.metadata.hasPendingWrites) {
-        // TODO: Handle updates from partial snapshot data.
-        _currentSession = Session.fromSnapshot(snapshot);
-        notifyListeners();
-        print('got session update');
-      }
-    });
-  }
+    _sessionParticipantsSubscription.resubscribe((collectionReference) =>
+        collectionReference.where('sessionId',
+            isEqualTo: FirebaseFirestore.instance
+                .doc('/sessions/${currentSession?.id}')));
 
-  _subscribeToParticipants(String sessionId) {
-    var oldSubscription = _sessionParticipantsSubscription;
-    if (oldSubscription != null) {
-      oldSubscription.cancel();
-      _sessionParticipantsSubscription = null;
-    }
-
-    print('Connecting host to listen to session participants.');
-    _sessionParticipantsSubscription = FirebaseFirestore.instance
-        .collection('sessionParticipants')
-        .where('sessionId',
-            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId'))
-        .snapshots()
-        .listen((snapshot) {
-      print('Got new session participants for host: ${snapshot.docs.length}');
-      _sessionParticipants =
-          snapshot.docs.map((e) => SessionParticipant.fromSnapshot(e)).toList();
-
-      if ((_currentSession != null) &&
-          (_sessionParticipants.length != _currentSession?.participantCount)) {
-        // Update the session participant count.
-        FirebaseFirestore.instance.collection('sessions').doc(sessionId).set(
-            {'participantCount': _sessionParticipants.length},
-            SetOptions(merge: true));
-      }
-
-      _reconnectParticipantUsersSubscription();
-      _reconnectPracticeRecordSubscription();
-
-      notifyListeners();
-    });
+    _sessionPairingSubscription.resubscribe((collectionReference) =>
+        collectionReference.where('sessionId',
+            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
   }
 
   User? getUser(SessionParticipant participant) {
     return _uidToUserMap[participant.participantUid];
   }
+
+  void saveNextRound(PairedSession pairedSession) {
+    // TODO: Implement
+
+    // Determine the last round.
+
+    // Save pairings.
+
+    // Add unpaired students to the instructor session.
+  }
+
+  int getLatestRoundNumber() {
+    // TODO: Implement
+    return -1;
+  }
+
+  _handleSessionParticipantsUpdate(List<SessionParticipant> items) {
+    var session = currentSession;
+    if ((session != null) &&
+        (sessionParticipants.length != session?.participantCount)) {
+      // Update the session participant count.
+      FirebaseFirestore.instance.collection('sessions').doc(session.id).set(
+          {'participantCount': sessionParticipants.length},
+          SetOptions(merge: true));
+    }
+
+    _reconnectParticipantUsersSubscription();
+    _reconnectPracticeRecordSubscription();
+  }
 }
+
+// TODO: about the teach and learn count on participants.
