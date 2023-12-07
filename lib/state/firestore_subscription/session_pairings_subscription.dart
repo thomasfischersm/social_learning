@@ -20,7 +20,7 @@ class SessionPairingsSubscription extends FirestoreListSubscription<SessionPairi
   postProcess(List<SessionPairing> sessionPairings) {
     for (SessionPairing pairing in sessionPairings) {
       if (!_roundNumberToSessionPairings.containsKey(pairing.roundNumber)) {
-        _roundNumberToSessionPairings[pairing.roundNumber] = List.empty();
+        _roundNumberToSessionPairings[pairing.roundNumber] = [];
       }
       _roundNumberToSessionPairings[pairing.roundNumber]!.add(pairing);
     }

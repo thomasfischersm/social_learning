@@ -55,10 +55,10 @@ class SessionPairingAlgorithm {
         List.from(organizerSessionState.sessionParticipants);
 
     return _generatePairings(
-        allParticipants, List.empty(), organizerSessionState, libraryState);
+        allParticipants, [], organizerSessionState, libraryState);
   }
 
-  _generatePairings(
+  List<PairedSession> _generatePairings(
       List<SessionParticipant> remainingParticipants,
       List<LearnerPair> currentPairs,
       OrganizerSessionState organizerSessionState,
@@ -67,7 +67,7 @@ class SessionPairingAlgorithm {
       return List.from([PairedSession(currentPairs, remainingParticipants)]);
     }
 
-    List<PairedSession> pairings = List.empty();
+    List<PairedSession> pairings = [];
 
     for (int i = 1; i < remainingParticipants.length; i++) {
       List<SessionParticipant> thisParticipants =
@@ -288,11 +288,10 @@ class PairedSession {
 /// compare which offers the rarest lessons.
 class LessonCountList implements Comparable<LessonCountList> {
   PairedSession pairedSession;
-  List<LessonCountComparable> counts;
+  List<LessonCountComparable> counts = [];
 
   LessonCountList(this.pairedSession, List<Lesson> activeLessons,
-      Map<Lesson, int> graduatedLessonCounts)
-      : counts = List.empty(growable: true) {
+      Map<Lesson, int> graduatedLessonCounts) {
     Map<int, LessonCountComparable> graduatedCountToComparable = {};
     for (Lesson lesson in activeLessons.toSet()) {
       var graduatedLessonCount = graduatedLessonCounts[lesson] ?? 0;

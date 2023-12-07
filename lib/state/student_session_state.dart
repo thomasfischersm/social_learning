@@ -21,7 +21,7 @@ class StudentSessionState extends ChangeNotifier {
 
   get currentSession => _currentSession;
 
-  List<SessionParticipant> _sessionParticipants = List.empty();
+  List<SessionParticipant> _sessionParticipants = [];
 
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
       _sessionParticipantsSubscription;

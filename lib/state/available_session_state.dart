@@ -11,7 +11,7 @@ class AvailableSessionState extends ChangeNotifier {
 
   Course? _lastCourse;
   StreamSubscription? _lastSubscription;
-  List<Session> _availableSessions = List.empty();
+  List<Session> _availableSessions = [];
 
   List<Session> get availableSessions => _availableSessions;
 
