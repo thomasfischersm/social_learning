@@ -85,14 +85,26 @@ class OrganizerSessionState extends ChangeNotifier {
           .get()
           .then((snapshot) {
         print(
-            'Got active session where this user is the organiser: ${snapshot.docs.length}');
-        if (snapshot.size > 0) {
+            'Got active session where this user is the organiser: ${snapshot.docs.length}, incomplete: ${snapshot.metadata.hasPendingWrites}');
+        if ((snapshot.size > 0) && !snapshot.metadata.hasPendingWrites) {
           var session = Session.fromQuerySnapshot(snapshot.docs.first);
           String sessionId = session.id!;
           // _currentSession = session;
 
           _subscribeToSession(sessionId);
           _sessionsSubscription.loadItemManually(session);
+
+          // Check if the right course is selected and switch if necessary.
+          if (_libraryState.selectedCourse?.id != session.courseId.id) {
+            print('Need to select course: ${_libraryState.availableCourses.length}');
+            // TODO: There is a timing bug. Courses won't have loaded yet at startup.
+            var courses = _libraryState.availableCourses
+                .where((course) => course.id == session.courseId.id);
+            if (courses.isNotEmpty) {
+              _libraryState.selectedCourse = courses.first;
+              print('Auto-selected course because of active session: ${courses.first.title}');
+            }
+          }
         }
       });
     }

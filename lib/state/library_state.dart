@@ -95,6 +95,7 @@ class LibraryState extends ChangeNotifier {
         .listen((snapshot) {
       _availableCourses =
           snapshot.docs.map((e) => Course.fromSnapshot(e)).toList();
+      print('Loaded ${_availableCourses.length} courses');
       notifyListeners();
     });
   }
