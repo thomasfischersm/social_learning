@@ -40,11 +40,15 @@ class BottomBar extends StatelessWidget {
                           builder: (context, libraryState, child) => addIcon(
                             context,
                             Icons.groups,
-                            _getSessionNavigationTarget(applicationState, libraryState, studentSessionState, organizerSessionState),
-                            libraryState.isCourseSelected &&
-                                applicationState.isLoggedIn &&
-                                (studentSessionState.isInitialized ||
-                                organizerSessionState.isInitialized),
+                            _getSessionNavigationTarget(
+                                applicationState,
+                                libraryState,
+                                studentSessionState,
+                                organizerSessionState),
+                            applicationState.isLoggedIn &&
+                                (libraryState.isCourseSelected ||
+                                    studentSessionState.isInitialized ||
+                                    organizerSessionState.isInitialized),
                           ),
                         ),
                       ),
@@ -54,7 +58,7 @@ class BottomBar extends StatelessWidget {
                   ],
                 )));
   }
-
+// TODO: Bottom bar for session doesn't enable/disable properly.
   IconButton addIcon(BuildContext context, IconData? icon,
       NavigationEnum destination, bool isEnabled) {
     var isSelected = ModalRoute.of(context)?.settings.name == destination.route;
@@ -79,8 +83,8 @@ class BottomBar extends StatelessWidget {
       LibraryState libraryState,
       StudentSessionState studentSessionState,
       OrganizerSessionState organizerSessionState) {
-
-    print('bottom bar session button: host session ${organizerSessionState.isInitialized}, student session ${studentSessionState.isInitialized}, course selected ${libraryState.isCourseSelected}, logged in ${applicationState.isLoggedIn}');
+    print(
+        'bottom bar session button: host session ${organizerSessionState.isInitialized}, student session ${studentSessionState.isInitialized}, course selected ${libraryState.isCourseSelected}, logged in ${applicationState.isLoggedIn}');
 
     if (organizerSessionState.currentSession != null) {
       return NavigationEnum.sessionHost;
@@ -90,7 +94,7 @@ class BottomBar extends StatelessWidget {
       return NavigationEnum.sessionHome;
     } else {
       // The user needs to select a course first.
-      return NavigationEnum.home;
+      return NavigationEnum.sessionHome;
     }
   }
 }

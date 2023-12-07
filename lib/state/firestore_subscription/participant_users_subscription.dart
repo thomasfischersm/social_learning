@@ -26,6 +26,12 @@ class ParticipantUsersSubscription extends FirestoreListSubscription<User> {
             .where('menteeUid', whereIn: getUserUids()));
   }
 
+  @override
+  cancel() {
+    super.cancel();
+    _practiceRecordSubscription.cancel();
+  }
+
   List<String> getUserUids() =>
       items.map<String>((User user) => user.uid).toList();
 }

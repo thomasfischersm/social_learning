@@ -32,9 +32,13 @@ class SessionParticipantsSubscription
           SetOptions(merge: true));
     }
 
-    _participantUsersSubscription.resubscribe((collectionReference) =>
-        collectionReference.where(FieldPath.documentId, whereIn: getUserIds()));
-
+    var userIds = getUserIds();
+    if (userIds.isNotEmpty) {
+      _participantUsersSubscription.resubscribe((collectionReference) =>
+          collectionReference.where(FieldPath.documentId, whereIn: userIds));
+    } else {
+      _participantUsersSubscription.cancel();
+    }
   }
 
   List<String> getUserIds() {

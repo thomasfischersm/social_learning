@@ -11,6 +11,8 @@ import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/user_functions.dart';
 import 'package:social_learning/globals.dart';
+import 'package:social_learning/session_pairing/learner_pair.dart';
+import 'package:social_learning/session_pairing/paired_session.dart';
 import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/firestore_subscription/firestore_document_subscription.dart';
@@ -79,9 +81,11 @@ class OrganizerSessionState extends ChangeNotifier {
       FirebaseFirestore.instance
           .collection('sessions')
           .where('organizerUid', isEqualTo: uid)
-          .where('isActive')
+          .where('isActive', isEqualTo: true)
           .get()
           .then((snapshot) {
+        print(
+            'Got active session where this user is the organiser: ${snapshot.docs.length}');
         if (snapshot.size > 0) {
           var session = Session.fromQuerySnapshot(snapshot.docs.first);
           String sessionId = session.id!;
@@ -179,7 +183,7 @@ class OrganizerSessionState extends ChangeNotifier {
           .add(<String, dynamic>{
         'sessionId':
             FirebaseFirestore.instance.doc('/sessions/${currentSession?.id}'),
-        'round': currentRound,
+        'roundNumber': currentRound,
         'mentorId': FirebaseFirestore.instance
             .doc('/users/${pair.teachingParticipant.id}'),
         'menteeId': FirebaseFirestore.instance

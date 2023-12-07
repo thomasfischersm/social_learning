@@ -3,6 +3,10 @@ import 'dart:math';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/session_pairing/learner_pair.dart';
+import 'package:social_learning/session_pairing/lesson_count_list.dart';
+import 'package:social_learning/session_pairing/paired_session.dart';
+import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 
@@ -12,24 +16,35 @@ class SessionPairingAlgorithm {
     // Generate all possible pairings.
     List<PairedSession> possiblePairings =
         _generatePossiblePairings(organizerSessionState, libraryState);
+    print('(1) Generated possible pairings: ${possiblePairings.length}');
+    possiblePairings.forEach((element) {
+      element.debugPrint();
+    });
 
     // Remove pairs without a lesson.
     for (var pairedSession in possiblePairings) {
       pairedSession.removePairsWithoutLesson();
     }
+    print('(2) Removed pairs without a lesson: ${possiblePairings.length}');
 
     // Only keep the pairings with the least amount of unpaired participants.
     _keepOnlyPairingsWithTheLeastUnpairedParticipants(possiblePairings);
+    print(
+        '(3) Removed pairings with the least amount of unpaired participants: ${possiblePairings.length}');
 
     // Only keep the pairings that balance out the best how much students have
     // taught and learned.
     _keepOnlyPairingsWithTheMostBalancedLearnTeachCount(possiblePairings);
+    print(
+        '(4) Removed pairings that balance out the best how much students have taught and learned: ${possiblePairings.length}');
 
     // Only keep the pairings that spread the rarest lessons. In the ideal case,
     // the rarest lesson is a lesson that no student knows and the instructor
     // introduces to the first student.
     possiblePairings = _returnOnlyPairingsWithTheRarestLessons(
         possiblePairings, organizerSessionState);
+    print(
+        '(5) Removed pairings that spread the rarest lessons: ${possiblePairings.length}');
 
     // TODO: Consider diversity.
 
@@ -73,7 +88,7 @@ class SessionPairingAlgorithm {
       List<SessionParticipant> thisParticipants =
           List.from(remainingParticipants);
       SessionParticipant participantA = thisParticipants.removeAt(0);
-      SessionParticipant participantB = thisParticipants.removeAt(i);
+      SessionParticipant participantB = thisParticipants.removeAt(i - 1);
 
       // One way pair
       Lesson? lesson = _pickBestLesson(
@@ -96,8 +111,8 @@ class SessionPairingAlgorithm {
 
       // Reverse pair
       Lesson? reverseLesson = _pickBestLesson(
-          participantA, participantB, organizerSessionState, libraryState);
-      LearnerPair reversePair = pair.reverse(lesson);
+          participantB, participantA, organizerSessionState, libraryState);
+      LearnerPair reversePair = pair.reverse(reverseLesson);
       pairings.addAll(_generatePairings(
           List.from(thisParticipants),
           List.from(currentPairs)..add(reversePair),
@@ -113,6 +128,7 @@ class SessionPairingAlgorithm {
       SessionParticipant participantB,
       OrganizerSessionState organizerSessionState,
       LibraryState libraryState) {
+    print('Picking best lesson for ${participantA.id} and ${participantB.id}');
     User? userA = organizerSessionState.getUser(participantA);
     List<Lesson> teachableLessons =
         organizerSessionState.getGraduatedLessons(participantA);
@@ -128,12 +144,16 @@ class SessionPairingAlgorithm {
     } else if (userA?.isAdmin ?? false) {
       // If the teacher is an instructor, pick the lesson that's next for the
       // learner.
+      print('_pickBestLesson: instructor teaching');
       var tmp = libraryState.lessons;
       if (tmp != null) {
         List<Lesson> courseLessons = List.from(tmp);
         courseLessons.sort((lessonA, lessonB) =>
             lessonA.sortOrder.compareTo(lessonB.sortOrder));
         Set<Lesson> alreadyLearnedLessonsSet = alreadyLearnedLessons.toSet();
+        alreadyLearnedLessonsSet.forEach((element) {
+          print('lesson learned: ${element.title}');
+        });
         courseLessons
             .removeWhere((lesson) => alreadyLearnedLessonsSet.contains(lesson));
         return (courseLessons.isNotEmpty) ? courseLessons.first : null;
@@ -205,134 +225,5 @@ class SessionPairingAlgorithm {
     }
 
     return possiblePairings;
-  }
-}
-
-class LearnerPair {
-  SessionParticipant teachingParticipant;
-  User teachingUser;
-  SessionParticipant learningParticipant;
-  User learningUser;
-  Lesson? lesson;
-
-  LearnerPair(this.teachingParticipant, this.teachingUser,
-      this.learningParticipant, this.learningUser, this.lesson);
-
-  LearnerPair reverse(Lesson? reverseLesson) {
-    return LearnerPair(learningParticipant, learningUser, teachingParticipant,
-        teachingUser, reverseLesson);
-  }
-}
-
-class PairedSession {
-  List<LearnerPair> pairs;
-  List<SessionParticipant> unpairedParticipants;
-
-  PairedSession(this.pairs, this.unpairedParticipants);
-
-// TODO: Remove pairings that don't have a lesson to teach.
-
-  removePairsWithoutLesson() {
-    pairs.removeWhere((pair) {
-      if (pair.lesson == null) {
-        unpairedParticipants.add(pair.teachingParticipant);
-        unpairedParticipants.add(pair.learningParticipant);
-        return true;
-      } else {
-        return false;
-      }
-    });
-  }
-
-  int calculateLearnTeachImbalance() {
-    return pairs.fold<int>(
-        0,
-        (previousValue, pair) =>
-            previousValue +
-            (pair.teachingParticipant.learnCount -
-                    pair.teachingParticipant.teachCount)
-                .abs());
-  }
-
-  Set<Lesson> calculateActiveLessons() {
-    return pairs.map((pair) => pair.lesson!).toSet();
-  }
-
-  Map<Lesson, int> calculateGraduatedLessons(
-      OrganizerSessionState organizerSessionState) {
-    List<SessionParticipant> participants =
-        organizerSessionState.sessionParticipants;
-
-    Map<Lesson, int> graduatedLessons = {};
-
-    for (SessionParticipant participant in participants) {
-      User? user = organizerSessionState.getUser(participant);
-      if (user?.isAdmin ?? true) {
-        List<Lesson> lessons =
-            organizerSessionState.getGraduatedLessons(participant);
-        for (Lesson lesson in lessons) {
-          if (graduatedLessons.containsKey(lesson)) {
-            graduatedLessons[lesson] = graduatedLessons[lesson]! + 1;
-          } else {
-            graduatedLessons[lesson] = 1;
-          }
-        }
-      }
-    }
-
-    return graduatedLessons;
-  }
-}
-
-/// A holder for all the lesson counts of a pairing. This makes it easier to
-/// compare which offers the rarest lessons.
-class LessonCountList implements Comparable<LessonCountList> {
-  PairedSession pairedSession;
-  List<LessonCountComparable> counts = [];
-
-  LessonCountList(this.pairedSession, List<Lesson> activeLessons,
-      Map<Lesson, int> graduatedLessonCounts) {
-    Map<int, LessonCountComparable> graduatedCountToComparable = {};
-    for (Lesson lesson in activeLessons.toSet()) {
-      var graduatedLessonCount = graduatedLessonCounts[lesson] ?? 0;
-      if (graduatedCountToComparable.containsKey(graduatedLessonCounts)) {
-        LessonCountComparable comparable =
-            graduatedCountToComparable[graduatedLessonCount]!;
-        comparable.activeLessonCount++;
-      } else {
-        graduatedCountToComparable[graduatedLessonCount] =
-            LessonCountComparable(graduatedLessonCount, 1);
-      }
-    }
-
-    counts = graduatedCountToComparable.values.toList()..sort();
-  }
-
-  @override
-  int compareTo(LessonCountList other) {
-    for (int i = 0; i < counts.length; i++) {
-      if (counts[i].compareTo(other.counts[i]) != 0) {
-        return counts[i].compareTo(other.counts[i]);
-      }
-    }
-
-    return 0;
-  }
-}
-
-/// A Helper class to compare with pairing introduces rarer lessons.
-class LessonCountComparable implements Comparable<LessonCountComparable> {
-  int graduatedLessonCount;
-  int activeLessonCount;
-
-  LessonCountComparable(this.graduatedLessonCount, this.activeLessonCount);
-
-  @override
-  int compareTo(LessonCountComparable other) {
-    if (graduatedLessonCount == other.graduatedLessonCount) {
-      return activeLessonCount.compareTo(other.activeLessonCount);
-    } else {
-      return graduatedLessonCount.compareTo(other.graduatedLessonCount);
-    }
   }
 }

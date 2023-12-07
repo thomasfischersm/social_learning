@@ -16,6 +16,7 @@ class StudentSessionState extends ChangeNotifier {
 
   Session? _currentSession;
 
+  // TODO: Convert subscriptions to typed subscriptions.
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
       _sessionsSubscription;
 
@@ -85,7 +86,7 @@ class StudentSessionState extends ChangeNotifier {
         .doc(sessionId)
         .snapshots()
         .listen((snapshot) {
-      print('Got new session for student: ${snapshot.data()}');
+      print('Got new session ($sessionId) for student: ${snapshot.data()}');
       _currentSession = Session.fromSnapshot(snapshot);
       _isInitialized = true;
       notifyListeners();
@@ -128,6 +129,7 @@ class StudentSessionState extends ChangeNotifier {
       print(
           'containsSelf: $containsSelf; this.uid: ${_applicationState.currentUser?.uid}');
       if (!containsSelf) {
+        // TODO: This seems to create entries too aggressively.
         print('Student added itself as a participant');
         FirebaseFirestore.instance.collection('sessionParticipants').add({
           'sessionId': FirebaseFirestore.instance.doc(sessionPath),
