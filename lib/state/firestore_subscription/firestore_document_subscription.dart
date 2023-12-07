@@ -42,4 +42,10 @@ class FirestoreDocumentSubscription<T> {
     _item = null;
     _notifyChange();
   }
+
+  loadItemManually(T item) {
+    _item = item;
+    _isInitialized = true;
+    _notifyChange();
+  }
 }

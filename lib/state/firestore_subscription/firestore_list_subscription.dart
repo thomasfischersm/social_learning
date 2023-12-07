@@ -8,7 +8,6 @@ class FirestoreListSubscription<T> {
   final String _collectionName;
   final T Function(QueryDocumentSnapshot<Map<String, dynamic>> e)
       _convertSnapshot;
-  final Function(List<T> items)? _postProcess;
   final Function() _notifyChange;
   List<T> _items = [];
 
@@ -16,21 +15,24 @@ class FirestoreListSubscription<T> {
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _streamSubscription;
 
   get isInitialized => _isInitialized;
+
   get items => _items;
 
-  FirestoreListSubscription(this._collectionName,
-      this._convertSnapshot, this._postProcess, this._notifyChange) {
-  }
+  FirestoreListSubscription(
+      this._collectionName, this._convertSnapshot, this._notifyChange) {}
 
-  resubscribe(Query<Map<String, dynamic>> Function(
-      CollectionReference<Map<String, dynamic>> collectionReference)
-  whereFunction) {
+  resubscribe(
+      Query<Map<String, dynamic>> Function(
+              CollectionReference<Map<String, dynamic>> collectionReference)
+          whereFunction) {
     _streamSubscription?.cancel();
 
     _streamSubscription =
         whereFunction(FirebaseFirestore.instance.collection(_collectionName))
             .snapshots()
             .listen((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
+      print(
+          'FireStoreListSubscription got ${querySnapshot.docs.length} $_collectionName');
       _items = querySnapshot.docs
           .map((QueryDocumentSnapshot<Map<String, dynamic>> snapshot) =>
               _convertSnapshot(snapshot))
@@ -38,9 +40,7 @@ class FirestoreListSubscription<T> {
 
       _isInitialized = true;
 
-      if (_postProcess != null) {
-        _postProcess!(_items);
-      }
+      postProcess!(_items);
 
       _notifyChange();
     });
@@ -52,4 +52,6 @@ class FirestoreListSubscription<T> {
     _items = [];
     _notifyChange();
   }
+
+  postProcess(List<T> items) {}
 }
