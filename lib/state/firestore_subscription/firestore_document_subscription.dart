@@ -19,6 +19,7 @@ class FirestoreDocumentSubscription<T> {
   FirestoreDocumentSubscription(this._convertSnapshot, this._notifyChange) {}
 
   resubscribe(String Function() docPath) {
+    print('Attempting to subscribe to ${docPath()}');
     _streamSubscription?.cancel();
 
     _streamSubscription = FirebaseFirestore.instance

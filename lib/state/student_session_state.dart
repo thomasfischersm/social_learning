@@ -7,32 +7,42 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';
+import 'package:social_learning/state/firestore_subscription/session_pairings_subscription.dart';
+import 'package:social_learning/state/firestore_subscription/session_participants_subscription.dart';
+import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
 import 'package:social_learning/ui_foundation/navigation_enum.dart';
 import 'package:social_learning/data/user.dart';
 
 class StudentSessionState extends ChangeNotifier {
-  bool _isInitialized = false;
-  get isInitialized => _isInitialized;
+  get isInitialized => _sessionSubscription.isInitialized;
 
-  Session? _currentSession;
+  late SessionSubscription _sessionSubscription;
+  late SessionParticipantsSubscription _sessionParticipantsSubscription;
+  late ParticipantUsersSubscription _participantUsersSubscription;
+  late SessionPairingsSubscription _sessionPairingSubscription;
 
-  // TODO: Convert subscriptions to typed subscriptions.
-  StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
-      _sessionsSubscription;
+  get currentSession => _sessionSubscription.item;
 
-  get currentSession => _currentSession;
+  get sessionParticipants => _sessionParticipantsSubscription.items;
 
-  List<SessionParticipant> _sessionParticipants = [];
-
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
-      _sessionParticipantsSubscription;
-
-  get sessionParticipants => _sessionParticipants;
-
-  ApplicationState _applicationState;
+  final ApplicationState _applicationState;
   User? _lastUser;
 
   StudentSessionState(this._applicationState) {
+    _sessionSubscription = SessionSubscription(() => notifyListeners());
+    _participantUsersSubscription =
+        ParticipantUsersSubscription(() => notifyListeners(), null);
+    _sessionParticipantsSubscription = SessionParticipantsSubscription(
+        false,
+        true,
+        () => notifyListeners(),
+        _sessionSubscription,
+        _participantUsersSubscription,
+        _applicationState);
+    _sessionPairingSubscription =
+        SessionPairingsSubscription(() => notifyListeners());
+
     _applicationState.addListener(() {
       _checkForOngoingSession();
     });
@@ -40,8 +50,14 @@ class StudentSessionState extends ChangeNotifier {
     _checkForOngoingSession();
   }
 
+  get roundNumberToSessionPairing =>
+      _sessionPairingSubscription.roundNumberToSessionPairings;
+
+  User? getUserById(String id) => _participantUsersSubscription.getUserById(id);
+
   void _checkForOngoingSession() {
-    print('StudentSessionState._checkForOngoingSession() for user ${_applicationState.currentUser?.id}');
+    print(
+        'StudentSessionState._checkForOngoingSession() for user ${_applicationState.currentUser?.id}');
     var lastUser = _applicationState.currentUser;
     if (lastUser == _lastUser) {
       // No change. Ignore!
@@ -68,79 +84,23 @@ class StudentSessionState extends ChangeNotifier {
       if (snapshot.docs.isNotEmpty) {
         var sessionParticipant =
             SessionParticipant.fromSnapshot(snapshot.docs.first);
-        print('Trying to automatically log into session ${sessionParticipant.sessionId.id}');
-        attemptToJoin(sessionParticipant.sessionId.id, null);
+        print(
+            'Trying to automatically log into session ${sessionParticipant.sessionId.id}');
+        attemptToJoin(sessionParticipant.sessionId.id);
       }
     });
   }
 
-  void attemptToJoin(String sessionId, BuildContext? context) {
-    var oldSessionSubscription = _sessionsSubscription;
-    if (oldSessionSubscription != null) {
-      oldSessionSubscription.cancel();
-      _sessionsSubscription = null;
-    }
+  void attemptToJoin(String sessionId) {
+    _sessionSubscription.resubscribe(() => '/sessions/$sessionId');
 
-    _sessionsSubscription = FirebaseFirestore.instance
-        .collection('sessions')
-        .doc(sessionId)
-        .snapshots()
-        .listen((snapshot) {
-      print('Got new session ($sessionId) for student: ${snapshot.data()}');
-      _currentSession = Session.fromSnapshot(snapshot);
-      _isInitialized = true;
-      notifyListeners();
+    _sessionParticipantsSubscription.resubscribe((collectionReference) =>
+        collectionReference.where('sessionId',
+            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
 
-      // If the user is already the host, re-direct from the student to the
-      // host page.
-      if (_currentSession?.organizerUid == _applicationState.currentUser?.uid) {
-        if (context != null) {
-          Navigator.pushNamed(context, NavigationEnum.sessionHost.route);
-        }
-        return;
-      }
-    });
-
-    var oldSessionParticipantsSubscription = _sessionParticipantsSubscription;
-    if (oldSessionParticipantsSubscription != null) {
-      oldSessionParticipantsSubscription.cancel();
-      _sessionParticipantsSubscription = null;
-    }
-
-    String sessionPath = '/sessions/$sessionId';
-    _sessionParticipantsSubscription = FirebaseFirestore.instance
-        .collection('sessionParticipants')
-        .where('sessionId',
-            isEqualTo: FirebaseFirestore.instance.doc(sessionPath))
-        .snapshots()
-        .listen((snapshot) {
-      print(
-          'Got new session participants for student: ${snapshot.docs.length}');
-      _sessionParticipants =
-          snapshot.docs.map((e) => SessionParticipant.fromSnapshot(e)).toList();
-      notifyListeners();
-
-      // Check if self needs to be added.
-      var containsSelf = _sessionParticipants.any((element) {
-        print(
-            'Checking if ${element.participantUid} == ${_applicationState.currentUser?.uid} => ${element.participantUid == _applicationState.currentUser?.uid}');
-        return element.participantUid == _applicationState.currentUser?.uid;
-      });
-      print(
-          'containsSelf: $containsSelf; this.uid: ${_applicationState.currentUser?.uid}');
-      if (!containsSelf) {
-        // TODO: This seems to create entries too aggressively.
-        print('Student added itself as a participant');
-        FirebaseFirestore.instance.collection('sessionParticipants').add({
-          'sessionId': FirebaseFirestore.instance.doc(sessionPath),
-          'participantId': FirebaseFirestore.instance
-              .doc('/users/${_applicationState.currentUser?.id}'),
-          'participantUid': _applicationState.currentUser?.uid,
-          'isInstructor': false,
-          'isActive': true,
-        });
-      }
-    });
+    _sessionPairingSubscription.resubscribe((collectionReference) =>
+        collectionReference.where('sessionId',
+            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
 
     // TODO: Check if organizer and re-direct.
     // TODO: Add self as participant if needed.
@@ -149,12 +109,10 @@ class StudentSessionState extends ChangeNotifier {
   }
 
   _resetSession() {
-    _currentSession = null;
-    _sessionParticipants = List.empty();
-    _sessionsSubscription?.cancel();
-    _sessionsSubscription = null;
-    _sessionParticipantsSubscription?.cancel();
-    _sessionParticipantsSubscription = null;
+    _sessionSubscription.cancel();
+    _sessionParticipantsSubscription.cancel();
+    _participantUsersSubscription.cancel();
+    _sessionPairingSubscription.cancel();
 
     notifyListeners();
   }

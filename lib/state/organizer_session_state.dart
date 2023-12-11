@@ -27,10 +27,10 @@ import 'package:social_learning/state/library_state.dart';
 class OrganizerSessionState extends ChangeNotifier {
   final LibraryState _libraryState;
 
-  get isInitialized => _sessionsSubscription.isInitialized;
+  get isInitialized => _sessionSubscription.isInitialized;
 
   // new subscriptions
-  late SessionSubscription _sessionsSubscription;
+  late SessionSubscription _sessionSubscription;
 
   late SessionParticipantsSubscription _sessionParticipantsSubscription;
 
@@ -40,7 +40,7 @@ class OrganizerSessionState extends ChangeNotifier {
 
   late SessionPairingsSubscription _sessionPairingSubscription;
 
-  get currentSession => _sessionsSubscription.item;
+  get currentSession => _sessionSubscription.item;
 
   get sessionParticipants => _sessionParticipantsSubscription.items;
 
@@ -48,11 +48,12 @@ class OrganizerSessionState extends ChangeNotifier {
 
   get practiceRecords => _practiceRecordsSubscription.items;
 
-  get roundNumberToSessionPairing => _sessionPairingSubscription.roundNumberToSessionPairings;
+  get roundNumberToSessionPairing =>
+      _sessionPairingSubscription.roundNumberToSessionPairings;
 
   OrganizerSessionState(ApplicationState applicationState, this._libraryState) {
     // Start subscriptions.
-    _sessionsSubscription = SessionSubscription(() => notifyListeners());
+    _sessionSubscription = SessionSubscription(() => notifyListeners());
 
     _practiceRecordsSubscription =
         PracticeRecordsSubscription(() => notifyListeners(), _libraryState);
@@ -61,9 +62,12 @@ class OrganizerSessionState extends ChangeNotifier {
         () => notifyListeners(), _practiceRecordsSubscription);
 
     _sessionParticipantsSubscription = SessionParticipantsSubscription(
+        true,
+        false,
         () => notifyListeners(),
-        _sessionsSubscription,
-        _participantUsersSubscription);
+        _sessionSubscription,
+        _participantUsersSubscription,
+        null);
 
     _sessionPairingSubscription =
         SessionPairingsSubscription(() => notifyListeners());
@@ -94,17 +98,19 @@ class OrganizerSessionState extends ChangeNotifier {
           // _currentSession = session;
 
           _subscribeToSession(sessionId);
-          _sessionsSubscription.loadItemManually(session);
+          _sessionSubscription.loadItemManually(session);
 
           // Check if the right course is selected and switch if necessary.
           if (_libraryState.selectedCourse?.id != session.courseId.id) {
-            print('Need to select course: ${_libraryState.availableCourses.length}');
+            print(
+                'Need to select course: ${_libraryState.availableCourses.length}');
             // TODO: There is a timing bug. Courses won't have loaded yet at startup.
             var courses = _libraryState.availableCourses
                 .where((course) => course.id == session.courseId.id);
             if (courses.isNotEmpty) {
               _libraryState.selectedCourse = courses.first;
-              print('Auto-selected course because of active session: ${courses.first.title}');
+              print(
+                  'Auto-selected course because of active session: ${courses.first.title}');
             }
           }
         }
@@ -173,7 +179,7 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   _subscribeToSession(String sessionId) {
-    _sessionsSubscription.resubscribe(() => '/sessions/$sessionId');
+    _sessionSubscription.resubscribe(() => '/sessions/$sessionId');
 
     _sessionParticipantsSubscription.resubscribe((collectionReference) =>
         collectionReference.where('sessionId',

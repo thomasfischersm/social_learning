@@ -4,7 +4,7 @@ import 'package:social_learning/state/firestore_subscription/firestore_list_subs
 import 'package:social_learning/state/firestore_subscription/practice_records_subscription.dart';
 
 class ParticipantUsersSubscription extends FirestoreListSubscription<User> {
-  final PracticeRecordsSubscription _practiceRecordSubscription;
+  final PracticeRecordsSubscription? _practiceRecordSubscription;
 
   Map<String, User> _uidToUserMap = {};
   Map<String, User> _idToUserMap = {};
@@ -27,7 +27,7 @@ class ParticipantUsersSubscription extends FirestoreListSubscription<User> {
     _idToUserMap = {for (var user in participantUsers) user.id: user};
     print('_idToUserMap: $_idToUserMap');
 
-    _practiceRecordSubscription.resubscribe((collectionReference) =>
+    _practiceRecordSubscription?.resubscribe((collectionReference) =>
         collectionReference
             .where('isGraduation', isEqualTo: true)
             .where('menteeUid', whereIn: getUserUids()));
@@ -36,7 +36,7 @@ class ParticipantUsersSubscription extends FirestoreListSubscription<User> {
   @override
   cancel() {
     super.cancel();
-    _practiceRecordSubscription.cancel();
+    _practiceRecordSubscription?.cancel();
   }
 
   List<String> getUserUids() =>
