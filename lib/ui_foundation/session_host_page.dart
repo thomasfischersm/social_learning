@@ -6,6 +6,7 @@ import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/session_pairing/paired_session.dart';
 import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
+import 'package:social_learning/session_pairing/testing/session_pairing_algorithm_test.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
@@ -50,6 +51,12 @@ class SessionHostState extends State<SessionHostPage> {
                         onPressed: () =>
                             _pairNextSession(context, organizerSessionState),
                         child: const Text('Pair next session'))),
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                        onPressed: () =>
+                            SessionPairingAlgorithmTest().test2(),
+                        child: const Text('Test'))),
                 _createPairingTable(organizerSessionState, libraryState),
               ],
             );
