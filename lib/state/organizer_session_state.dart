@@ -48,6 +48,8 @@ class OrganizerSessionState extends ChangeNotifier {
 
   get practiceRecords => _practiceRecordsSubscription.items;
 
+  get roundNumberToSessionPairing => _sessionPairingSubscription.roundNumberToSessionPairings;
+
   OrganizerSessionState(ApplicationState applicationState, this._libraryState) {
     // Start subscriptions.
     _sessionsSubscription = SessionSubscription(() => notifyListeners());
@@ -187,6 +189,7 @@ class OrganizerSessionState extends ChangeNotifier {
 
     // Determine the last round.
     int currentRound = _sessionPairingSubscription.getLatestRoundNumber() + 1;
+    print('Next round number is $currentRound');
 
     // Save pairings.
     for (LearnerPair pair in pairedSession.pairs) {
@@ -197,12 +200,13 @@ class OrganizerSessionState extends ChangeNotifier {
             FirebaseFirestore.instance.doc('/sessions/${currentSession?.id}'),
         'roundNumber': currentRound,
         'mentorId': FirebaseFirestore.instance
-            .doc('/users/${pair.teachingParticipant.id}'),
+            .doc('/users/${pair.teachingParticipant.participantId.id}'),
         'menteeId': FirebaseFirestore.instance
-            .doc('/users/${pair.learningParticipant.id}'),
+            .doc('/users/${pair.learningParticipant.participantId.id}'),
         'lessonId':
             FirebaseFirestore.instance.doc('/lessons/${pair.lesson!.id}'),
       });
+      print('Saved session pair.');
     }
 
     // Add unpaired students to the instructor session.
@@ -211,6 +215,8 @@ class OrganizerSessionState extends ChangeNotifier {
 
   User? getUser(SessionParticipant sessionParticipant) =>
       _participantUsersSubscription.getUser(sessionParticipant);
+
+  User? getUserById(String id) => _participantUsersSubscription.getUserById(id);
 
   List<Lesson> getGraduatedLessons(SessionParticipant participant) {
     var user = getUser(participant);

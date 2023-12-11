@@ -7,6 +7,7 @@ class ParticipantUsersSubscription extends FirestoreListSubscription<User> {
   final PracticeRecordsSubscription _practiceRecordSubscription;
 
   Map<String, User> _uidToUserMap = {};
+  Map<String, User> _idToUserMap = {};
 
   ParticipantUsersSubscription(
       Function() notifyChange, this._practiceRecordSubscription)
@@ -16,9 +17,15 @@ class ParticipantUsersSubscription extends FirestoreListSubscription<User> {
     return _uidToUserMap[participant.participantUid];
   }
 
+  User? getUserById(String userId) {
+    return _idToUserMap[userId];
+  }
+
   @override
   postProcess(List<User> participantUsers) {
     _uidToUserMap = {for (var user in participantUsers) user.uid: user};
+    _idToUserMap = {for (var user in participantUsers) user.id: user};
+    print('_idToUserMap: $_idToUserMap');
 
     _practiceRecordSubscription.resubscribe((collectionReference) =>
         collectionReference

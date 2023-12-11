@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/session_pairing/paired_session.dart';
@@ -9,6 +11,8 @@ import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
+import 'package:social_learning/ui_foundation/navigation_enum.dart';
 
 class SessionHostPage extends StatefulWidget {
   const SessionHostPage({super.key});
@@ -28,24 +32,28 @@ class SessionHostState extends State<SessionHostPage> {
         body: Center(child: CustomUiConstants.framePage(
             Consumer<OrganizerSessionState>(
                 builder: (context, organizerSessionState, child) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomUiConstants.getTextPadding(Text(
-                  'Host Session: ${organizerSessionState.currentSession?.name}',
-                  style: CustomTextStyles.headline)),
-              CustomUiConstants.getTextPadding(Text(
-                  '${organizerSessionState.currentSession?.participantCount} Participants',
-                  style: CustomTextStyles.subHeadline)),
-              _createParticipantTable(organizerSessionState),
-              Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                      onPressed: () =>
-                          _pairNextSession(context, organizerSessionState),
-                      child: const Text('Pair next session')))
-            ],
-          );
+          return Consumer<LibraryState>(
+              builder: (context, libraryState, child) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomUiConstants.getTextPadding(Text(
+                    'Host Session: ${organizerSessionState.currentSession?.name}',
+                    style: CustomTextStyles.headline)),
+                CustomUiConstants.getTextPadding(Text(
+                    '${organizerSessionState.currentSession?.participantCount} Participants',
+                    style: CustomTextStyles.subHeadline)),
+                _createParticipantTable(organizerSessionState),
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                        onPressed: () =>
+                            _pairNextSession(context, organizerSessionState),
+                        child: const Text('Pair next session'))),
+                _createPairingTable(organizerSessionState, libraryState),
+              ],
+            );
+          });
         }))));
   }
 
@@ -69,6 +77,60 @@ class SessionHostState extends State<SessionHostPage> {
         children: tableRows);
   }
 
+  Table _createPairingTable(
+      OrganizerSessionState organizerSessionState, LibraryState libraryState) {
+    List<TableRow> tableRows = <TableRow>[];
+
+    var roundNumberToSessionPairing =
+        organizerSessionState.roundNumberToSessionPairing;
+    List<int> sortedRounds = roundNumberToSessionPairing.keys.toList()..sort();
+    sortedRounds = sortedRounds.reversed.toList();
+
+    for (int round in sortedRounds) {
+      tableRows.add(TableRow(children: <Widget>[
+        // TODO: Set dark background color and span the whole row.
+        CustomUiConstants.getTextPadding(Text('Session ${round + 1}')),
+        const Text(''),
+        const Text(''),
+      ]));
+      tableRows.add(TableRow(children: <Widget>[
+        CustomUiConstants.getTextPadding(const Text("Mentor")),
+        CustomUiConstants.getTextPadding(const Text('Mentee')),
+        CustomUiConstants.getTextPadding(const Text('Lesson')),
+      ]));
+
+      List<SessionPairing> sessionPairings =
+          roundNumberToSessionPairing[round]!;
+      for (SessionPairing sessionPairing in sessionPairings) {
+        print('mentorId = ${sessionPairing.mentorId.id}');
+        User? mentor =
+            organizerSessionState.getUserById(sessionPairing.mentorId.id);
+        User? mentee =
+            organizerSessionState.getUserById(sessionPairing.menteeId.id);
+        Lesson? lesson = libraryState.findLesson(sessionPairing.lessonId.id);
+
+        tableRows.add(TableRow(children: <Widget>[
+          CustomUiConstants.getTextPadding(
+              Text(mentor?.displayName ?? 'Error!!!')),
+          CustomUiConstants.getTextPadding(
+              Text(mentee?.displayName ?? 'Error!!!')),
+          InkWell(
+            onTap: () => _goToLesson(lesson),
+            child: CustomUiConstants.getTextPadding(
+                Text(lesson?.title ?? 'Error!!!')),
+          ),
+          // TODO: Create link.
+        ]));
+      }
+    }
+
+    return Table(columnWidths: const {
+      0: FlexColumnWidth(),
+      1: FlexColumnWidth(),
+      2: FlexColumnWidth()
+    }, children: tableRows);
+  }
+
   _pairNextSession(
       BuildContext context, OrganizerSessionState organizerSessionState) {
     // Match students.
@@ -78,5 +140,13 @@ class SessionHostState extends State<SessionHostPage> {
 
     // Save next round to the Firestore.
     organizerSessionState.saveNextRound(pairedSession);
+  }
+
+  _goToLesson(Lesson? lesson) {
+    String? lessonId = lesson?.id;
+    if (lessonId != null) {
+      Navigator.pushNamed(context, NavigationEnum.lessonDetail.route,
+          arguments: LessonDetailArgument(lessonId));
+    }
   }
 }

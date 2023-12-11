@@ -18,6 +18,8 @@ class SessionPairingsSubscription extends FirestoreListSubscription<SessionPairi
 
   @override
   postProcess(List<SessionPairing> sessionPairings) {
+    _roundNumberToSessionPairings.clear();
+
     for (SessionPairing pairing in sessionPairings) {
       if (!_roundNumberToSessionPairings.containsKey(pairing.roundNumber)) {
         _roundNumberToSessionPairings[pairing.roundNumber] = [];
