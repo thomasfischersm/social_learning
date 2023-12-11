@@ -89,9 +89,16 @@ class SessionHostState extends State<SessionHostPage> {
     for (int round in sortedRounds) {
       tableRows.add(TableRow(children: <Widget>[
         // TODO: Set dark background color and span the whole row.
-        CustomUiConstants.getTextPadding(Text('Session ${round + 1}')),
-        const Text(''),
-        const Text(''),
+        Container(
+            color: CustomUiConstants.accentedBackgroundColor,
+            child:
+                CustomUiConstants.getTextPadding(Text('Session ${round + 1}'))),
+        Container(
+            color: CustomUiConstants.accentedBackgroundColor,
+            child: CustomUiConstants.getTextPadding(const Text(''))),
+        Container(
+            color: CustomUiConstants.accentedBackgroundColor,
+            child: CustomUiConstants.getTextPadding(const Text(''))),
       ]));
       tableRows.add(TableRow(children: <Widget>[
         CustomUiConstants.getTextPadding(const Text("Mentor")),

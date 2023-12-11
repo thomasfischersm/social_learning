@@ -4,6 +4,8 @@ import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomUiConstants {
+  static Color accentedBackgroundColor = Colors.black12;
+
   static EdgeInsets getScreenPadding(BuildContext context) =>
       EdgeInsets.all(MediaQuery.of(context).size.width * .06);
 
