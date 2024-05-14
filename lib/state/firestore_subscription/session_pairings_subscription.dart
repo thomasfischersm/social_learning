@@ -5,7 +5,7 @@ import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/state/firestore_subscription/firestore_list_subscription.dart';
 
 class SessionPairingsSubscription extends FirestoreListSubscription<SessionPairing> {
-  Map<int, List<SessionPairing>> _roundNumberToSessionPairings = {};
+  final Map<int, List<SessionPairing>> _roundNumberToSessionPairings = {};
 
   get roundNumberToSessionPairings => _roundNumberToSessionPairings;
 

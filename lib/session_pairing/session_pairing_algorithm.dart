@@ -6,7 +6,6 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/session_pairing/learner_pair.dart';
 import 'package:social_learning/session_pairing/lesson_count_list.dart';
 import 'package:social_learning/session_pairing/paired_session.dart';
-import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 
@@ -17,9 +16,9 @@ class SessionPairingAlgorithm {
     List<PairedSession> possiblePairings =
         _generatePossiblePairings(organizerSessionState, libraryState);
     print('(1) Generated possible pairings: ${possiblePairings.length}');
-    possiblePairings.forEach((element) {
+    for (var element in possiblePairings) {
       element.debugPrint();
-    });
+    }
 
     // Remove pairs without a lesson.
     for (var pairedSession in possiblePairings) {
@@ -151,9 +150,9 @@ class SessionPairingAlgorithm {
         courseLessons.sort((lessonA, lessonB) =>
             lessonA.sortOrder.compareTo(lessonB.sortOrder));
         Set<Lesson> alreadyLearnedLessonsSet = alreadyLearnedLessons.toSet();
-        alreadyLearnedLessonsSet.forEach((element) {
+        for (var element in alreadyLearnedLessonsSet) {
           print('lesson learned: ${element.title}');
-        });
+        }
         courseLessons
             .removeWhere((lesson) => alreadyLearnedLessonsSet.contains(lesson));
         return (courseLessons.isNotEmpty) ? courseLessons.first : null;

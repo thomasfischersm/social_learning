@@ -2,7 +2,6 @@
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/session_pairing/lesson_count_comparable.dart';
 import 'package:social_learning/session_pairing/paired_session.dart';
-import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
 
 /// A holder for all the lesson counts of a pairing. This makes it easier to
 /// compare which offers the rarest lessons.

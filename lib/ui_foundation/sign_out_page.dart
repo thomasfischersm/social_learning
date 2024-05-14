@@ -10,7 +10,7 @@ class SignOutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text("Successfully signed out!"),
+        const Text("Successfully signed out!"),
         TextButton(
             onPressed: () {
               auth.FirebaseAuth.instance.signOut();

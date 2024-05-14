@@ -1,8 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/custom_firebase.dart';
 import 'package:social_learning/globals.dart';
@@ -21,7 +18,6 @@ import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/lesson_list_page.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_list_page.dart';
-import 'package:social_learning/ui_foundation/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/session_create_page.dart';
 import 'package:social_learning/ui_foundation/session_create_warning_page.dart';
 import 'package:social_learning/ui_foundation/session_home_page.dart';
@@ -84,7 +80,7 @@ class SocialLearningApp extends StatelessWidget {
         '/level_detail': (context) => const LevelDetailPage(),
         '/lesson_list': (context) => const LessonListPage(),
         '/lesson_detail': (context) => const LessonDetailPage(),
-        '/sign_in': (context) => SignInPage(),
+        '/sign_in': (context) => const SignInPage(),
         '/sign_out': (context) => const SignOutPage(),
         '/cms_home': (context) => const CmsHomePage(),
         '/cms_detail': (context) => const CmsDetailPage(),
@@ -170,12 +166,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Consumer<ApplicationState>(
                 builder: (context, applicationState, child) {
               return Text('defunc',
-                  style: Theme.of(context).textTheme.headline2);
+                  style: Theme.of(context).textTheme.displayMedium);
             }),
             Consumer<ApplicationState>(
                 builder: (context, applicationState, child) {
@@ -199,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // T
       bottomNavigationBar:
-          BottomBar(), // his trailing comma makes auto-formatting nicer for build methods.
+          const BottomBar(), // his trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

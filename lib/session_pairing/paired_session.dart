@@ -2,7 +2,6 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/session_pairing/learner_pair.dart';
-import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 
 class PairedSession {

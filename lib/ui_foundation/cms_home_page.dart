@@ -37,7 +37,7 @@ class CmsHomePageState extends State<CmsHomePage> {
                 return Column(
                   children: [
                     Text('Content Management',
-                        style: Theme.of(context).textTheme.headline5),
+                        style: Theme.of(context).textTheme.headlineSmall),
                     Expanded(
                         child: ListView.builder(
                             itemCount: libraryState.lessons?.length ?? 0,
@@ -283,9 +283,9 @@ class EditLessonRowState extends State<EditLessonRow> {
                       style: (widget.lesson.isLevel)
                           ? Theme.of(context)
                               .textTheme
-                              .bodyText1
+                              .bodyLarge
                               ?.copyWith(fontWeight: FontWeight.bold)
-                          : Theme.of(context).textTheme.bodyText1),
+                          : Theme.of(context).textTheme.bodyLarge),
                   onPressed: () {
                     Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
                         arguments: LessonDetailArgument(widget.lesson.id!));

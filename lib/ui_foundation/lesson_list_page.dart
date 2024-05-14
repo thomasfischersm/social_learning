@@ -33,7 +33,7 @@ class LessonListState extends State<LessonListPage> {
           Consumer<LibraryState>(builder: (context, libraryState, child) {
         return Text('Lessons: ${libraryState.selectedCourse?.title}');
       })),
-      bottomNavigationBar: BottomBar(),
+      bottomNavigationBar: const BottomBar(),
       body: Center(
           child: Container(
               constraints: const BoxConstraints(maxWidth: 310, maxHeight: 350),
@@ -57,7 +57,7 @@ class LessonListState extends State<LessonListPage> {
                                 child: Text(
                                     'Level ${_getLevelNumber(libraryState.lessons, index)}: ${libraryState.lessons?[index].title}',
                                     style:
-                                        Theme.of(context).textTheme.headline6))
+                                        Theme.of(context).textTheme.titleLarge))
                             : Text(
                                 libraryState.lessons?[index].title ?? 'error',
                                 style: TextStyle(

@@ -31,7 +31,7 @@ class BottomBar extends StatelessWidget {
                                     libraryState.isCourseSelected)
                                 ? addIcon(context, Icons.menu_book,
                                     NavigationEnum.cmsHome, true)
-                                : null ?? Spacer()),
+                                : const Spacer()),
                     Consumer<StudentSessionState>(
                       builder: (context, studentSessionState, child) =>
                           Consumer<OrganizerSessionState>(

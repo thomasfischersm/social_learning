@@ -1,6 +1,5 @@
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/practice_record.dart';
-import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/firestore_subscription/firestore_list_subscription.dart';
 import 'package:social_learning/state/library_state.dart';

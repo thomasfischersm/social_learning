@@ -1,10 +1,8 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
-import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
@@ -158,7 +156,7 @@ class LevelDetailState extends State<LevelDetailPage> {
     }
 
     print('Done generate lesson list');
-    if (1 == 2) return Text('Test');
+    if (1 == 2) return const Text('Test');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: children,

@@ -13,9 +13,9 @@ class User {
 
   User.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
-        uid = e.data()?['uid'] ?? '' as String,
-        displayName = e.data()?['displayName'] ?? '' as String,
-        sortName = e.data()?['sortName'] ?? '' as String,
-        isAdmin = e.data()?['isAdmin'] ?? false as bool,
+        uid = e.data()?['uid'] ?? '',
+        displayName = e.data()?['displayName'] ?? '',
+        sortName = e.data()?['sortName'] ?? '',
+        isAdmin = e.data()?['isAdmin'] ?? false,
         profileFireStoragePath = e.data()?['profileFireStoragePath'];
 }

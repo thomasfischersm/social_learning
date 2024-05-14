@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/state/available_session_state.dart';
-import 'package:social_learning/state/organizer_session_state.dart';
-import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';

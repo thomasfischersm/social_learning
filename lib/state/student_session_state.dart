@@ -1,17 +1,13 @@
-import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
-import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_pairings_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_participants_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
-import 'package:social_learning/ui_foundation/navigation_enum.dart';
 import 'package:social_learning/data/user.dart';
 
 class StudentSessionState extends ChangeNotifier {

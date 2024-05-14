@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
-import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
-import 'package:social_learning/ui_foundation/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/profile_image_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:social_learning/data/session.dart';
 import 'package:social_learning/state/application_state.dart';
-import 'package:social_learning/state/available_session_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';

@@ -232,7 +232,7 @@ class JsonCurriculumSync {
     Level currentLevel = Level.fromSnapshot(levelSnapshot);
 
     print(
-        ' EQ: course ${newLevel.courseId == currentLevel.courseId}, title ${newLevel.title == currentLevel.title}, description ${newLevel.description == currentLevel.description}, sortOrder ${levelSortOrder == currentLevel.sortOrder} (${levelSortOrder} - ${currentLevel.sortOrder}');
+        ' EQ: course ${newLevel.courseId == currentLevel.courseId}, title ${newLevel.title == currentLevel.title}, description ${newLevel.description == currentLevel.description}, sortOrder ${levelSortOrder == currentLevel.sortOrder} ($levelSortOrder - ${currentLevel.sortOrder}');
     if ((newLevel.courseId == currentLevel.courseId) &&
         (newLevel.title == currentLevel.title) &&
         (newLevel.description == currentLevel.description) &&

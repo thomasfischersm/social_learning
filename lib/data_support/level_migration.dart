@@ -1,4 +1,3 @@
-import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/Level.dart';
@@ -23,7 +22,7 @@ class LevelMigration {
 
     db.runTransaction((transaction) async {
       var docs = (await db.collection('lessons').get()).docs;
-      docs.forEach((element) {
+      for (var element in docs) {
         print('about to clear level ${element.get('title')}');
         if (element.data().keys.contains('levelId') &&
             element.get('levelId') is String) {
@@ -31,7 +30,7 @@ class LevelMigration {
               {'levelId': null, 'creatorId': element.get('creatorId')}, SetOptions(merge: true));
           print('Cleared level id ${element.get('title')}');
         }
-      });
+      }
 
       print('Done resetting levelId.');
     });

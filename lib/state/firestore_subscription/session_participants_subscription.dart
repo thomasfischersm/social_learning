@@ -64,13 +64,11 @@ class SessionParticipantsSubscription
     List<String> userIds = [];
     for (SessionParticipant participant in items) {
       var participantId = participant.participantId;
-      if (participantId != null) {
-        var rawUserId = UserFunctions.extractNumberId(participantId);
-        if (rawUserId != null) {
-          userIds.add(rawUserId);
-        }
+      var rawUserId = UserFunctions.extractNumberId(participantId);
+      if (rawUserId != null) {
+        userIds.add(rawUserId);
       }
-    }
+        }
     return userIds;
   }
 

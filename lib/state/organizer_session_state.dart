@@ -1,22 +1,15 @@
-import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
-import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/session.dart';
-import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
-import 'package:social_learning/data/user_functions.dart';
 import 'package:social_learning/globals.dart';
 import 'package:social_learning/session_pairing/learner_pair.dart';
 import 'package:social_learning/session_pairing/paired_session.dart';
-import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
 import 'package:social_learning/state/application_state.dart';
-import 'package:social_learning/state/firestore_subscription/firestore_document_subscription.dart';
-import 'package:social_learning/state/firestore_subscription/firestore_list_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/practice_records_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_pairings_subscription.dart';

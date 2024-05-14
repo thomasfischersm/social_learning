@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/docs/v1.dart';
 import 'package:intl/intl.dart';
-import 'package:social_learning/data_support/Json_curriculum_sync.dart';
 import 'package:social_learning/globals.dart';
 
 class GoogleDocExport {

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
-import 'package:social_learning/data/lesson_status.dart';
 import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;

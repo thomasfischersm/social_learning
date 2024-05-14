@@ -16,8 +16,8 @@ class CmsDetailPage extends StatefulWidget {
 
 class CmsDetailPageState extends State<CmsDetailPage> {
   String? _lessonId;
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _instructionsController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _instructionsController = TextEditingController();
   bool _isLevel = false;
   bool _isInitialized = false;
 
@@ -66,7 +66,7 @@ class CmsDetailPageState extends State<CmsDetailPage> {
                     children: [
                       Text(
                         'Title',
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       Expanded(
                           flex: 1,
@@ -76,7 +76,7 @@ class CmsDetailPageState extends State<CmsDetailPage> {
                       const Spacer(),
                       Text(
                         'Instructions',
-                        style: Theme.of(context).textTheme.bodyText1,
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       Expanded(
                           flex: 5,
@@ -88,7 +88,7 @@ class CmsDetailPageState extends State<CmsDetailPage> {
                         children: [
                           Text(
                             'Is Level?',
-                            style: Theme.of(context).textTheme.bodyText1,
+                            style: Theme.of(context).textTheme.bodyLarge,
                           ),
                           Checkbox(
                             value: _isLevel,
@@ -130,7 +130,7 @@ class CmsDetailPageState extends State<CmsDetailPage> {
 
                                 Navigator.pop(context);
                               },
-                              child: Text('Save'))
+                              child: const Text('Save'))
                         ],
                       ),
                     ],

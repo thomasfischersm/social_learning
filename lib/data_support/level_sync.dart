@@ -90,7 +90,7 @@ class LevelSync extends EntitySync<Level> {
 
     // print('Looking at  level\'s children ${children?.length}');
     if (children != null) {
-      print('handling level\'s children.' + fullId);
+      print('handling level\'s children.$fullId');
       await _lessonSync.sync(children, fullId, isLastInvocation);
     }
   }

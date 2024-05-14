@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 
 /// Helps subscribe to a collection in the Firestore.
 class FirestoreListSubscription<T> {
@@ -19,7 +18,7 @@ class FirestoreListSubscription<T> {
   get items => _items;
 
   FirestoreListSubscription(
-      this._collectionName, this._convertSnapshot, this._notifyChange) {}
+      this._collectionName, this._convertSnapshot, this._notifyChange);
 
   resubscribe(
       Query<Map<String, dynamic>> Function(
@@ -40,7 +39,7 @@ class FirestoreListSubscription<T> {
 
       _isInitialized = true;
 
-      postProcess!(_items);
+      postProcess(_items);
 
       _notifyChange();
     });

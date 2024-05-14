@@ -2,8 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
-import 'package:social_learning/data_support/Json_curriculum_sync.dart';
-import 'package:social_learning/data_support/level_migration.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';

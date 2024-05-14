@@ -50,7 +50,7 @@ class AvailableSessionState extends ChangeNotifier {
         .snapshots()
         .listen((snapshot) {
       _availableSessions = snapshot.docs.map((e) => Session.fromQuerySnapshot(e)).toList();
-      print('Loaded ${_availableSessions?.length} available sessions.');
+      print('Loaded ${_availableSessions.length} available sessions.');
       notifyListeners();
     });
   }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class ProfileImageWidget extends StatefulWidget {
   final String? profileFireStoragePath;
 
-  ProfileImageWidget(this.profileFireStoragePath, {super.key});
+  const ProfileImageWidget(this.profileFireStoragePath, {super.key});
 
   @override
   State<StatefulWidget> createState() {

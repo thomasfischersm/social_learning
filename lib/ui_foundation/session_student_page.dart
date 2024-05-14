@@ -21,6 +21,7 @@ class SessionStudentArgument {
 class SessionStudentPage extends StatefulWidget {
   const SessionStudentPage({super.key});
 
+  @override
   State<StatefulWidget> createState() {
     return SessionStudentState();
   }

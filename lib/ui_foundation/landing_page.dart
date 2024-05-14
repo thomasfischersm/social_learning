@@ -14,22 +14,22 @@ class LandingPage extends StatelessWidget {
               children: [
                 Text(
                   'Social Learning',
-                  style: Theme.of(context).textTheme.headline3,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
                 Text(
                   'A learning envirnonment where more more advanced students '
                   'teach you and you teach more beginning students.',
-                  style: Theme.of(context).textTheme.bodyText1,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const Spacer(),
                 Text(
                   'How to get started',
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 Text(
                   '1. Come to an event.\n'
                   '2. Sign-in to pair up.',
-                  style: Theme.of(context).textTheme.bodyText1,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const Spacer(),
                 const Divider(),
