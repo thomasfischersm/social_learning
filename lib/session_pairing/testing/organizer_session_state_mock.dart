@@ -29,6 +29,10 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
       _participantUsers.firstWhere((user) => user.id == id);
 
   @override
+  User? getUserByDisplayName(String displayName) =>
+      _participantUsers.firstWhere((user) => user.displayName == displayName);
+
+  @override
   List<Lesson> getGraduatedLessons(SessionParticipant participant) =>
       _graduatedLessons[participant] ?? [];
 

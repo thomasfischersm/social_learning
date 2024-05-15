@@ -49,6 +49,7 @@ class SessionPairingAlgorithm {
 
     // TODO: Determine the possible pairings.
     // TODO: Pick the best pairing.
+    // TODO: I think right now a teacher will teach the highest lesson, but it should be the highest connected lesson.
     return possiblePairings.first;
   }
 

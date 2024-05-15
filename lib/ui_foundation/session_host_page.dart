@@ -55,7 +55,7 @@ class SessionHostState extends State<SessionHostPage> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                         onPressed: () =>
-                            SessionPairingAlgorithmTest().test2(),
+                            SessionPairingAlgorithmTest().testAll(),
                         child: const Text('Test'))),
                 _createPairingTable(organizerSessionState, libraryState),
               ],
