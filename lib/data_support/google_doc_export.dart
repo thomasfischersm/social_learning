@@ -56,9 +56,6 @@ class GoogleDocExport {
     // Get and parse JSON.
     // String? rawJson = await JsonCurriculumSync.export();
     String? rawJson = await rootBundle.loadString('curriculum.json');
-    if (rawJson == null) {
-      return;
-    }
     var json = const JsonDecoder().convert(rawJson);
 
     // var structuralElements = <StructuralElement>[];
