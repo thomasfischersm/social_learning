@@ -41,6 +41,7 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
     var participant = SessionParticipant(nextId, sessionRef, userRef, user.uid,
         isAdmin, true, 0, 0, LearningStrategyEnum.completeBeforeAdvance);
     _sessionParticipants.add(participant);
+    print('$name has user id ${user.id} and participant id ${participant.id}');
 
     _graduatedLessons[participant] = graduatedLessons;
   }

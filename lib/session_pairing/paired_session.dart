@@ -66,7 +66,7 @@ class PairedSession {
   debugPrint() {
     print('PairedSession');
     for (LearnerPair pair in pairs) {
-      print('  ${pair.teachingParticipant.id} -> ${pair.learningParticipant.id}: Lesson: ${pair.lesson?.id}');
+      print('  ${pair.teachingParticipant.id} -> ${pair.learningParticipant.id}: Lesson: ${pair.lesson?.title}');
     }
     print('Unpaired participants');
     for (SessionParticipant participant in unpairedParticipants) {
