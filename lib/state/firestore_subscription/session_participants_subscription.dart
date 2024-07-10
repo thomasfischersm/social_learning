@@ -57,6 +57,7 @@ class SessionParticipantsSubscription
       FirebaseFirestore.instance.collection('sessions').doc(session.id).set(
           {'participantCount': sessionParticipants.length},
           SetOptions(merge: true));
+      print('_updateParticipantCount(${sessionParticipants.length}');
     }
   }
 
@@ -90,7 +91,7 @@ class SessionParticipantsSubscription
         'participantId':
             FirebaseFirestore.instance.doc('/users/${currentUser?.id}'),
         'participantUid': currentUser?.uid,
-        'isInstructor': false,
+        'isInstructor': currentUser?.isAdmin,
         'isActive': true,
       });
     }

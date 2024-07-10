@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -37,10 +38,15 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  CustomFirebase.init();
+  // CustomFirebase.init();
+  // FirebaseFirestore.instance.settings = const Settings(host: '127.0.0.1:8080', sslEnabled: false, persistenceEnabled: false);
 
   ApplicationState applicationState = ApplicationState();
   LibraryState libraryState = LibraryState();
+
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.dumpErrorToConsole(details);
+  };
 
   runApp(MultiProvider(
     providers: [

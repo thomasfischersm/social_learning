@@ -204,6 +204,8 @@ class OrganizerSessionState extends ChangeNotifier {
             .doc('/users/${pair.learningParticipant.participantId.id}'),
         'lessonId':
             FirebaseFirestore.instance.doc('/lessons/${pair.lesson!.id}'),
+      }).catchError((error) {
+        print('Failed to save session pairing: $error');
       });
       print('Saved session pair.');
     }
