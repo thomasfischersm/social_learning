@@ -64,6 +64,7 @@ class LessonSync extends EntitySync<Lesson> {
       'practiceVideo': jsonType.practiceVideo,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
       'isLevel': false,
+      'graduationRequirements': jsonType.graduationRequirements,
     });
 
     return ref.id;
@@ -90,6 +91,7 @@ class LessonSync extends EntitySync<Lesson> {
           'practiceVideo': jsonType.practiceVideo,
           'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
           'isLevel': false,
+          'graduationRequirements': jsonType.graduationRequirements,
         },
         SetOptions(merge: true));
   }

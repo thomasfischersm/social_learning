@@ -15,6 +15,7 @@ class Lesson {
   @Deprecated('Use Level class instead')
   bool isLevel;
   String creatorId;
+  List<String>? graduationRequirements;
 
   Lesson(
       this.id,
@@ -29,7 +30,8 @@ class Lesson {
       this.lessonVideo,
       this.practiceVideo,
       this.isLevel,
-      this.creatorId);
+      this.creatorId,
+      this.graduationRequirements);
 
   Lesson.fromQuerySnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -44,7 +46,9 @@ class Lesson {
         lessonVideo = e.data()['lessonVideo'] as String?,
         practiceVideo = e.data()['practiceVideo'] as String?,
         isLevel = e.data()['isLevel'] as bool,
-        creatorId = e.data()['creatorId'] as String;
+        creatorId = e.data()['creatorId'] as String,
+        graduationRequirements =
+            e.data()['graduationRequirements'] as List<String>?;
 
   Lesson.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -59,7 +63,10 @@ class Lesson {
         lessonVideo = e.data()?['lessonVideo'] as String?,
         practiceVideo = e.data()?['practiceVideo'] as String?,
         isLevel = e.data()?['isLevel'] as bool,
-        creatorId = e.data()?['creatorId'] as String;
+        creatorId = e.data()?['creatorId'] as String,
+        graduationRequirements = (e.data()?['graduationRequirements'] as List<dynamic>?)
+            ?.map((item) => item as String)
+            .toList();
 
   Lesson.fromJson(Map<String, dynamic> json, String fullLevelId)
       : id = json['id'],
@@ -75,5 +82,6 @@ class Lesson {
         lessonVideo = json['lessonVideo'],
         practiceVideo = json['practiceVideo'],
         isLevel = false,
-        creatorId = '';
+        creatorId = '',
+        graduationRequirements = json['graduationRequirements'];
 }

@@ -158,11 +158,10 @@ class LessonDetailState extends State<LessonDetailPage> {
 
     return Padding(
         padding: const EdgeInsets.only(top: 8),
-        child: SelectableText.rich(
-             TextSpan(
-                text: 'Instructions\n',
-                style: CustomTextStyles.subHeadline,
-                children: textSpans)));
+        child: SelectableText.rich(TextSpan(
+            text: 'Instructions\n',
+            style: CustomTextStyles.subHeadline,
+            children: textSpans)));
   }
 
   Widget _addVideoIcon(String videoUrl, String label, BuildContext context) {
@@ -314,16 +313,23 @@ class RecordDialogState extends State<RecordDialogContent> {
   Lesson lesson;
   List<User>? _students;
   bool _isReadyToGraduate = false;
+  List<bool> _graduationRequirements = [];
   TextEditingController textFieldController = TextEditingController();
 
-  RecordDialogState(this.lesson);
+  RecordDialogState(this.lesson){
+    if (lesson.graduationRequirements != null) {
+      _graduationRequirements = List.filled(lesson.graduationRequirements!.length, false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     if (_students?.length == 1) {
-      widget.onUserSelected(_students![0], _isReadyToGraduate);
+      widget.onUserSelected(
+          _students![0], _isReadyToGraduate && _checkGraduationRequirements());
     } else {
-      widget.onUserSelected(null, _isReadyToGraduate);
+      widget.onUserSelected(
+          null, _isReadyToGraduate && _checkGraduationRequirements());
     }
 
     return Column(
@@ -363,8 +369,7 @@ class RecordDialogState extends State<RecordDialogContent> {
                     },
                     controller: textFieldController,
                     decoration: const InputDecoration(
-                        hintText:
-                            'Start typing the name.'),
+                        hintText: 'Start typing the name.'),
                   ),
                   SizedBox(
                       width: 200,
@@ -410,6 +415,9 @@ class RecordDialogState extends State<RecordDialogContent> {
                 ])),
           ]),
         ]),
+        Column(
+          children: _generateGraduationRequirementsChecks(),
+        ),
         Row(
           children: [
             Checkbox(
@@ -422,10 +430,46 @@ class RecordDialogState extends State<RecordDialogContent> {
             ),
             Flexible(
                 child: Text('The learner is ready to teach this lesson.',
-                    style: CustomTextStyles.getBody(context))),
+                    style: CustomTextStyles.getBodyEmphasized(context))),
           ],
         )
       ],
     );
+  }
+
+  List<Row> _generateGraduationRequirementsChecks() {
+    List<Row> rows = [];
+    var graduationRequirements = lesson.graduationRequirements;
+    if (graduationRequirements == null) {
+      return rows;
+    }
+
+    for (String requirement in graduationRequirements) {
+      var index = rows.length;
+      rows.add(Row(
+        children: [
+          Checkbox(
+              value: index < _graduationRequirements.length ? _graduationRequirements[index] : false,
+              onChanged: (value) {
+                setState(() {
+                  _graduationRequirements[index] = value ?? false;
+                });
+              }),
+          Flexible(
+              child:
+                  Text(requirement, style: CustomTextStyles.getBody(context)))
+        ],
+      ));
+    }
+    return rows;
+  }
+
+  bool _checkGraduationRequirements() {
+    for (bool requirement in _graduationRequirements) {
+      if (!requirement) {
+        return false;
+      }
+    }
+    return true;
   }
 }

@@ -21,7 +21,8 @@ class LibraryStateMock extends LibraryState {
           null,
           null,
           false,
-          '0'));
+          '0',
+          null));
     }
   }
 

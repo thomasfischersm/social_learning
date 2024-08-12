@@ -69,7 +69,8 @@
               "cover": "assets/covers/level-1-pose-bird.png",
               "recapVideo": "https://youtube.com/shorts/XWuwJGM54RA",
               "lessonVideo": "https://youtu.be/KxMrnrqrM24",
-              "practiceVideo": null
+              "practiceVideo": null,
+              "graduationRequirements": ["The flyer doesn't bend at the hips.", "The base receives the weight of the flyer before pushing up.", "The base and flyer can hold bird comfortably for 30 seconds."]
             },
             {
               "id": "8AwOWx9Qw1XKeNZPDbYK",
