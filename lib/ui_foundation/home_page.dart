@@ -38,32 +38,53 @@ class HomePageState extends State<HomePage> {
         ),
         bottomNavigationBar: const BottomBar(),
         body: Center(
-            child: CustomUiConstants.framePage(
-                    Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            child: CustomUiConstants.framePage(Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomUiConstants.getTextPadding(Text(
+              'Learning Labs',
+              style: CustomTextStyles.headline,
+            )),
+            CustomUiConstants.getTextPadding(Text(
+              'Learning Labs are a format where you learn hands-on from '
+              'the student ahead of you. Then you teach the next '
+              'student after you to deepen your own grasp on the '
+              'material.\n\n'
+              'The app shows you the lessons, tracks your progress, and '
+              'matches you up with other students during sessions.',
+              style: CustomTextStyles.getBody(context),
+            )),
+            CustomUiConstants.getDivider(),
+            CustomUiConstants.getTextPadding(Text(
+              'Courses',
+              style: CustomTextStyles.headline,
+            )),
+            _generateCourseList(context),
+            CustomUiConstants.getTextPadding(Text(
+                'Create your own private course',
+                style: CustomTextStyles.subHeadline)),
+            GestureDetector(
+                onTap: () {
+                  _createCourse();
+                },
+                child: Row(
                   children: [
-                    CustomUiConstants.getTextPadding(Text(
-                      'Learning Labs',
-                      style: CustomTextStyles.headline,
-                    )),
-                    CustomUiConstants.getTextPadding(Text(
-                      'Learning Labs are a format where you learn hands-on from '
-                      'the student ahead of you. Then you teach the next '
-                      'student after you to deepen your own grasp on the '
-                      'material.\n\n'
-                      'The app shows you the lessons, tracks your progress, and '
-                      'matches you up with other students during sessions.',
-                      style: CustomTextStyles.getBody(context),
-                    )),
-                    CustomUiConstants.getDivider(),
-                    CustomUiConstants.getTextPadding(Text(
-                      'Courses',
-                      style: CustomTextStyles.headline,
-                    )),
-                    _generateCourseList(context),
-                    CustomUiConstants.getGeneralFooter(context, withDivider: false)
+                    Flexible(
+                        child: CustomUiConstants.getTextPadding(Text(
+                            'You can create your own course to teach a subject, for a special event workshop, or corporate in-house training. Your course will be private by default and only accessible through an invitation code.',
+                            style: CustomTextStyles.getBody(context)))),
+                    Column(children: [
+                      const Icon(Icons.start),
+                      Text(
+                        'create',
+                        style: CustomTextStyles.getBody(context),
+                      )
+                    ]),
                   ],
-                ))));
+                )),
+            CustomUiConstants.getGeneralFooter(context, withDivider: false)
+          ],
+        ))));
   }
 
   _generateCourseList(BuildContext context) {
@@ -132,5 +153,9 @@ class HomePageState extends State<HomePage> {
   _openCourse(Course course, LibraryState libraryState) {
     libraryState.selectedCourse = course;
     Navigator.pushNamed(context, NavigationEnum.levelList.route);
+  }
+
+  _createCourse() {
+    Navigator.pushNamed(context, NavigationEnum.createCourse.route);
   }
 }
