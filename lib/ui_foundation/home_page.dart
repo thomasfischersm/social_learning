@@ -82,6 +82,7 @@ class HomePageState extends State<HomePage> {
                     ]),
                   ],
                 )),
+            CustomUiConstants.getDivider(),
             CustomUiConstants.getGeneralFooter(context, withDivider: false)
           ],
         ))));
@@ -91,10 +92,17 @@ class HomePageState extends State<HomePage> {
     return Consumer<LibraryState>(builder: (context, libraryState, child) {
       var children = <Widget>[];
       for (Course course in libraryState.availableCourses) {
+        String pureText;
+        String? linkText;
+
         int index = course.description.indexOf('http');
-        String pureText =
-            course.description.substring(0, index).replaceAll('\\n', '\n');
-        String linkText = course.description.substring(index);
+        if (index >= 0) {
+          pureText =
+          course.description.substring(0, index).replaceAll('\\n', '\n');
+          linkText = course.description.substring(index);
+        } else {
+          pureText = course.description.replaceAll('\\n', '\n');
+        }
 
         Column textColumn =
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -108,14 +116,14 @@ class HomePageState extends State<HomePage> {
           CustomUiConstants.getRichTextPadding(RichText(
               text: TextSpan(children: [
             TextSpan(style: CustomTextStyles.getBody(context), text: pureText),
-            WidgetSpan(
+            if (linkText != null) WidgetSpan(
                 child: RichText(
                     text: TextSpan(
                         text: linkText,
                         style: CustomTextStyles.getLink(context),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            launchUrl(Uri.parse(linkText));
+                            launchUrl(Uri.parse(linkText!));
                           })))
           ]))),
           CustomUiConstants.getDivider(),

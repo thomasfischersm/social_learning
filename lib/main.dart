@@ -13,7 +13,7 @@ import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/cms_detail_page.dart';
 import 'package:social_learning/ui_foundation/cms_home_page.dart';
-import 'package:social_learning/ui_foundation/create_course_page.dart';
+import 'package:social_learning/ui_foundation/course_create_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';

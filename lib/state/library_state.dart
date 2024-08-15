@@ -7,6 +7,7 @@ import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:social_learning/state/application_state.dart';
 
 class LibraryState extends ChangeNotifier {
   bool get isCourseSelected => _selectedCourse != null;
@@ -293,4 +294,24 @@ class LibraryState extends ChangeNotifier {
 
   int findLevelPosition(Level? level) =>
       (level != null) ? levels?.indexOf(level) ?? -1 : -1;
+
+  Future<Course> createPrivateCourse(
+      String courseName,
+      String invitationCode,
+      String description,
+      ApplicationState applicationState,
+      LibraryState libraryState) async {
+    DocumentReference<Map<String, dynamic>> docRef = await FirebaseFirestore
+        .instance
+        .collection('courses')
+        .add(<String, dynamic>{
+      'title': courseName,
+      'description': description,
+      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
+      'isPrivate': true,
+      'invitationCode': invitationCode
+    });
+    var doc = await docRef.get();
+    return Course.fromDocument(doc);
+  }
 }
