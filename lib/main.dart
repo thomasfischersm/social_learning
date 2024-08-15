@@ -43,7 +43,7 @@ void main() async {
   // FirebaseFirestore.instance.settings = const Settings(host: '127.0.0.1:8080', sslEnabled: false, persistenceEnabled: false);
 
   ApplicationState applicationState = ApplicationState();
-  LibraryState libraryState = LibraryState();
+  LibraryState libraryState = LibraryState(applicationState);
 
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);

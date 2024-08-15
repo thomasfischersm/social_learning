@@ -1,8 +1,10 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/user_functions.dart';
 
@@ -71,6 +73,20 @@ class ApplicationState extends ChangeNotifier {
   }
 
   void invalidateProfilePhoto() {
+    _isCurrentUserInitialized = false;
+    _currentUser = null;
+
+    notifyListeners();
+  }
+
+  enrollInPrivateCourse(
+      Course course, ApplicationState applicationState) async {
+    var currentUser = applicationState.currentUser!;
+
+    await FirebaseFirestore.instance.doc('/users/${currentUser.id}').update({
+      'enrolledCourseIds': FieldValue.arrayUnion([course.docRef])
+    });
+
     _isCurrentUserInitialized = false;
     _currentUser = null;
 

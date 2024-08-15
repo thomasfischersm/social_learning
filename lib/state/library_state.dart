@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +11,8 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/state/application_state.dart';
 
 class LibraryState extends ChangeNotifier {
+  ApplicationState _applicationState;
+
   bool get isCourseSelected => _selectedCourse != null;
 
   Course? _selectedCourse;
@@ -50,6 +53,8 @@ class LibraryState extends ChangeNotifier {
   }
 
   var _availableCourses = <Course>[];
+  var _publicCourses = <Course>[];
+  var _enrolledPrivateCourses = <Course>[];
   bool _isCourseListLoaded = false;
 
   List<Course> get availableCourses {
@@ -82,6 +87,12 @@ class LibraryState extends ChangeNotifier {
     return _levels;
   }
 
+  LibraryState(this._applicationState) {
+    _applicationState.addListener(() {
+        _reloadEnrolledCourses();
+    });
+  }
+
   Future<void> loadCourseList() async {
     // Create courses.
     // FirebaseFirestore.instance.collection('courses').add(<String, dynamic>{
@@ -91,14 +102,52 @@ class LibraryState extends ChangeNotifier {
 
     FirebaseFirestore.instance
         .collection('courses')
-        .orderBy('title', descending: false)
+        .where('isPrivate', isEqualTo: false)
         .snapshots()
         .listen((snapshot) {
-      _availableCourses =
+      _publicCourses =
           snapshot.docs.map((e) => Course.fromSnapshot(e)).toList();
-      print('Loaded ${_availableCourses.length} courses');
+      _rebuildAvailableCourses();
+      print('Loaded ${_publicCourses.length} public courses');
       notifyListeners();
+    }).onError((error, stackTrace) {
+      print('Failed to load public courses: $error');
     });
+
+    _reloadEnrolledCourses();
+  }
+
+  void _reloadEnrolledCourses() {
+    var enrolledCourseIds =
+        _applicationState.currentUser?.enrolledCourseIds;
+
+    if (enrolledCourseIds == null) {
+      FirebaseFirestore.instance
+          .collection('courses')
+          .where(FieldPath.documentId, whereIn: enrolledCourseIds)
+          .where('isPrivate', isEqualTo: true)
+          .get()
+          .then((snapshot) {
+        _enrolledPrivateCourses =
+            snapshot.docs.map((e) => Course.fromSnapshot(e)).toList();
+        _rebuildAvailableCourses();
+        print('Loaded ${_enrolledPrivateCourses.length} enrolled courses');
+        notifyListeners();
+      }).onError((error, stackTrace) {
+        print('Failed to load enrolled courses: $error');
+      });
+    } else {
+      _enrolledPrivateCourses = [];
+      _rebuildAvailableCourses();
+      notifyListeners();
+    }
+  }
+
+  _rebuildAvailableCourses() {
+    _availableCourses = HashSet<Course>.from(_publicCourses)
+        .union(HashSet<Course>.from(_enrolledPrivateCourses))
+        .toList()
+      ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
   }
 
   Future<void> loadLessonList() async {
@@ -303,7 +352,7 @@ class LibraryState extends ChangeNotifier {
       LibraryState libraryState) async {
     DocumentReference<Map<String, dynamic>> docRef = await FirebaseFirestore
         .instance
-        .collection('courses')
+        .collection('/courses')
         .add(<String, dynamic>{
       'title': courseName,
       'description': description,
@@ -312,6 +361,11 @@ class LibraryState extends ChangeNotifier {
       'invitationCode': invitationCode
     });
     var doc = await docRef.get();
-    return Course.fromDocument(doc);
+    var course = Course.fromDocument(doc);
+
+    // Automatically enroll the creator in their own course.
+    _applicationState.enrollInPrivateCourse(course, applicationState);
+
+    return course;
   }
 }

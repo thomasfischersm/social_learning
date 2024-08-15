@@ -7,9 +7,10 @@ class User {
   String sortName;
   bool isAdmin;
   String? profileFireStoragePath;
+  List<DocumentReference>? enrolledCourseIds;
 
   User(this.id, this.uid, this.displayName, this.sortName, this.isAdmin,
-      this.profileFireStoragePath);
+      this.profileFireStoragePath, this.enrolledCourseIds);
 
   User.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -17,5 +18,7 @@ class User {
         displayName = e.data()?['displayName'] ?? '',
         sortName = e.data()?['sortName'] ?? '',
         isAdmin = e.data()?['isAdmin'] ?? false,
-        profileFireStoragePath = e.data()?['profileFireStoragePath'];
+        profileFireStoragePath = e.data()?['profileFireStoragePath'],
+        enrolledCourseIds = (e.data()?['enrolledCourseIds']) != null ? [for(var doc in e.data()?['enrolledCourseIds']) doc as DocumentReference] : [];
 }
+// enrolledCourseIds = (e.data()?['enrolledCourseIds']).map((doc) => doc as DocumentReference).toList();

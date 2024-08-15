@@ -26,4 +26,7 @@ class Course {
         description = doc.data()?['description'] as String,
         isPrivate = doc.data()?['isPrivate'] as bool? ?? false,
         invitationCode = doc.data()?['invitationCode'] as String?;
+
+  DocumentReference get docRef =>
+      FirebaseFirestore.instance.doc('/courses/$id');
 }
