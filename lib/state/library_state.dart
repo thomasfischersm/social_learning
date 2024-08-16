@@ -295,6 +295,13 @@ class LibraryState extends ChangeNotifier {
     }, SetOptions(merge: true));
   }
 
+  void _setLevelSortOrder(Level level, int newSortOrder) async {
+    await FirebaseFirestore.instance.doc('/levels/${level.id}').set({
+      'sortOrder': newSortOrder,
+      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid
+    }, SetOptions(merge: true));
+  }
+
   void deleteLesson(Lesson deletedLesson) {
     int sortOrder = deletedLesson.sortOrder;
     var lessons = _lessons;
@@ -325,13 +332,37 @@ class LibraryState extends ChangeNotifier {
     });
   }
 
-  void updateLesson(
+  @Deprecated('Don\'t use this anymore.')
+  void updateLessonLegacy(
       String lessonId, String title, String instructions, bool isLevel) {
     FirebaseFirestore.instance.doc('/lessons/$lessonId').set({
       'title': title,
       'instructions': instructions,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
       'isLevel': isLevel,
+    }, SetOptions(merge: true));
+  }
+
+  void updateLesson(Lesson lesson) {
+    FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
+      'levelId': lesson.levelId,
+      'sortOrder': lesson.sortOrder,
+      'title': lesson.title,
+      'synopsis': lesson.synopsis,
+      'instructions': lesson.instructions,
+      'cover': lesson.cover,
+      'recapVideo': lesson.recapVideo,
+      'lessonVideo': lesson.lessonVideo,
+      'practiceVideo': lesson.practiceVideo,
+      'graduationRequirements': lesson.graduationRequirements,
+    }, SetOptions(merge: true));
+  }
+
+  void updateLevel(Level level) async {
+    await FirebaseFirestore.instance.doc('levels/${level.id}').set({
+      'title': level.title,
+      'description': level.description,
+      'sortOrder': level.sortOrder,
     }, SetOptions(merge: true));
   }
 
@@ -367,5 +398,48 @@ class LibraryState extends ChangeNotifier {
     _applicationState.enrollInPrivateCourse(course, applicationState);
 
     return course;
+  }
+
+  void deleteLevel(Level level) {
+    int sortOrder = level.sortOrder;
+    var levels = _levels;
+    if (levels == null) {
+      return;
+    }
+
+    // Delete level.
+    FirebaseFirestore.instance.doc('/levels/${level.id}').delete();
+
+    // Update sortOrder for following levels.
+    for (Level otherLevel in levels) {
+      if ((level != otherLevel) && (otherLevel.sortOrder > sortOrder)) {
+        _setLevelSortOrder(otherLevel, otherLevel.sortOrder - 1);
+      }
+    }
+  }
+
+  void addLevel(String title, String description) async {
+    var sortOrder = _findHighestLevelSortOrder();
+
+    await FirebaseFirestore.instance.collection('/levels').add({
+      'courseId': FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
+      'title': title,
+      'description': description,
+      'sortOrder': sortOrder,
+      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
+    });
+  }
+
+  _findHighestLevelSortOrder() {
+    var localLevels = levels;
+    if ((localLevels == null) || localLevels.isEmpty) {
+      return 0; // Or handle empty list as needed
+    }
+
+    int maxSortOrder = localLevels.first.sortOrder;
+    for (final level in localLevels.skip(1)) {
+      maxSortOrder = max(maxSortOrder, level.sortOrder);
+    }
+    return maxSortOrder;
   }
 }

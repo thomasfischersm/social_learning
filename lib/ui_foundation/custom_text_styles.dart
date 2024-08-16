@@ -29,4 +29,8 @@ class CustomTextStyles {
 
   static TextStyle? getLink(BuildContext context) => getBody(context)
       ?.copyWith(color: Colors.blue, decoration: TextDecoration.underline);
+
+
+  static TextStyle? getLinkNoUnderline(BuildContext context) => getBody(context)
+      ?.copyWith(color: Colors.blue);
 }

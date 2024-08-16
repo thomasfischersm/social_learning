@@ -73,7 +73,7 @@ class CourseCreateState extends State<CourseCreatePage> {
                           invitationCodeController.text,
                           descriptionController.text);
                     },
-                    child: const Text('Continue')),
+                    child: const Text('Create')),
                 TextButton(
                     onPressed: () => Navigator.pushNamed(
                         context, NavigationEnum.sessionHome.route),
@@ -96,8 +96,8 @@ class CourseCreateState extends State<CourseCreatePage> {
         .createPrivateCourse(courseName, invitationCode, description,
             applicationState, libraryState)
         .then((course) {
-      // TODO: Change destination to the CMS home page.
-      // Navigator.pushNamed(context, NavigationEnum.sessionHost.route);
+
+      Navigator.pushNamed(context, NavigationEnum.cmsSyllabus.route);
     });
   }
 }

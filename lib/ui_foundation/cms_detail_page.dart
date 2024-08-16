@@ -121,7 +121,7 @@ class CmsDetailPageState extends State<CmsDetailPage> {
                                       _instructionsController.text,
                                       _isLevel);
                                 } else {
-                                  libraryState.updateLesson(
+                                  libraryState.updateLessonLegacy(
                                       _lessonId!,
                                       _titleController.text,
                                       _instructionsController.text,
