@@ -13,6 +13,7 @@ import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/cms_detail_page.dart';
 import 'package:social_learning/ui_foundation/cms_home_page.dart';
+import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/cms_syllabus_page.dart';
 import 'package:social_learning/ui_foundation/course_create_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
@@ -93,6 +94,7 @@ class SocialLearningApp extends StatelessWidget {
         '/cms_home': (context) => const CmsHomePage(),
         '/cms_detail': (context) => const CmsDetailPage(),
         '/cms_syllabus': (context) => const CmsSyllabusPage(),
+        '/cms_lesson': (context) => const CmsLessonPage(),
         '/session_home': (context) => const SessionHomePage(),
         '/session_create_warning': (context) =>
             const SessionCreateWarningPage(),

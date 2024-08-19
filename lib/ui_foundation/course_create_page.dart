@@ -56,7 +56,7 @@ class CourseCreateState extends State<CourseCreatePage> {
                     TableRow(children: <Widget>[
                       CustomUiConstants.getTextPadding(
                           const Text('Description:')),
-                      TextField(controller: descriptionController),
+                      TextField(controller: descriptionController, minLines: 5, maxLines: null,),
                     ]),
                   ]);
                 });

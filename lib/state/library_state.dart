@@ -117,7 +117,7 @@ class LibraryState extends ChangeNotifier {
     _reloadEnrolledCourses();
   }
 
-  void _reloadEnrolledCourses() {
+  void _reloadEnrolledCourses() async {
     var enrolledCourseIds =
         _applicationState.currentUser?.enrolledCourseIds;
 
@@ -222,6 +222,15 @@ class LibraryState extends ChangeNotifier {
     }
   }
 
+  Iterable<Lesson> getUnattachedLessons() {
+    var lessonsRef = lessons;
+    if (lessonsRef != null) {
+      return lessonsRef.where((element) => element.levelId == null);
+    } else {
+      return [];
+    }
+  }
+
   Lesson? findLesson(String lessonId) {
     return _lessons?.firstWhere((lesson) => lesson.id == lessonId);
   }
@@ -320,7 +329,8 @@ class LibraryState extends ChangeNotifier {
     }
   }
 
-  void createLesson(
+  @Deprecated('Left over from the first version of the CMS.')
+  void createLessonLegacy(
       String courseId, String title, String instructions, bool isLevel) {
     FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
       'courseId': FirebaseFirestore.instance.doc('/courses/$courseId'),
@@ -332,7 +342,32 @@ class LibraryState extends ChangeNotifier {
     });
   }
 
-  @Deprecated('Don\'t use this anymore.')
+  Future<void> createLesson(DocumentReference? levelId,
+  String title,
+  String? synopsis,
+  String instructions,
+  // String? cover,
+  String? recapVideo,
+  String? lessonVideo,
+  String? practiceVideo,
+  List<String>? graduationRequirements) async {
+    await FirebaseFirestore.instance.collection('lessons').add(<String, dynamic> {
+      'courseId': selectedCourse?.id,
+      'levelId': levelId,
+      'sortOrder': _findHighestLessonSortOrder() + 1,
+      'title': title,
+      'synopsis': synopsis,
+      'instructions': instructions,
+      // 'cover': cover, // TODO: Implement image upload.
+      'recapVideo': recapVideo,
+      'lessonVideo': lessonVideo,
+      'practiceVideo': practiceVideo,
+      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
+      'graduationRequirements': graduationRequirements,
+    });
+  }
+
+  @Deprecated('Left over from the first version of the CMS.')
   void updateLessonLegacy(
       String lessonId, String title, String instructions, bool isLevel) {
     FirebaseFirestore.instance.doc('/lessons/$lessonId').set({
@@ -343,8 +378,8 @@ class LibraryState extends ChangeNotifier {
     }, SetOptions(merge: true));
   }
 
-  void updateLesson(Lesson lesson) {
-    FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
+  Future<void> updateLesson(Lesson lesson) async {
+    await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
       'levelId': lesson.levelId,
       'sortOrder': lesson.sortOrder,
       'title': lesson.title,
@@ -425,7 +460,7 @@ class LibraryState extends ChangeNotifier {
       'courseId': FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
       'title': title,
       'description': description,
-      'sortOrder': sortOrder,
+      'sortOrder': sortOrder + 1,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
     });
   }
@@ -433,7 +468,7 @@ class LibraryState extends ChangeNotifier {
   _findHighestLevelSortOrder() {
     var localLevels = levels;
     if ((localLevels == null) || localLevels.isEmpty) {
-      return 0; // Or handle empty list as needed
+      return 0;
     }
 
     int maxSortOrder = localLevels.first.sortOrder;
@@ -441,5 +476,32 @@ class LibraryState extends ChangeNotifier {
       maxSortOrder = max(maxSortOrder, level.sortOrder);
     }
     return maxSortOrder;
+  }
+
+  _findHighestLessonSortOrder() {
+    var localLessons = lessons;
+    if ((localLessons == null) || localLessons.isEmpty) {
+      return 0;
+    }
+
+    int maxSortOrder = localLessons.first.sortOrder;
+    for (final lesson in localLessons.skip(1)) {
+      maxSortOrder = max(maxSortOrder, lesson.sortOrder);
+    }
+    return maxSortOrder;
+  }
+
+  void detachLesson(Lesson lesson) async {
+    await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
+      'levelId': null,
+    }, SetOptions(merge: true));
+  }
+
+  void attachLesson(Level level, Lesson selectedLesson, int sortOrder) async{
+    await FirebaseFirestore.instance.doc('/lessons/${selectedLesson.id}').set({
+      'levelId': FirebaseFirestore.instance.doc('/levels/${level.id}'),
+    }, SetOptions(merge: true));
+
+    updateSortOrder(selectedLesson, sortOrder);
   }
 }

@@ -115,7 +115,7 @@ class CmsDetailPageState extends State<CmsDetailPage> {
                                     listen: false);
 
                                 if (_lessonId == null) {
-                                  libraryState.createLesson(
+                                  libraryState.createLessonLegacy(
                                       libraryState.selectedCourse!.id!,
                                       _titleController.text,
                                       _instructionsController.text,
