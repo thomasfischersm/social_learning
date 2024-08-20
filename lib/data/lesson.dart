@@ -13,7 +13,7 @@ class Lesson {
   String? lessonVideo;
   String? practiceVideo;
   @Deprecated('Use Level class instead')
-  bool isLevel;
+  bool? isLevel;
   String creatorId;
   List<String>? graduationRequirements;
 
@@ -45,7 +45,7 @@ class Lesson {
         recapVideo = e.data()['recapVideo'] as String?,
         lessonVideo = e.data()['lessonVideo'] as String?,
         practiceVideo = e.data()['practiceVideo'] as String?,
-        isLevel = e.data()['isLevel'] as bool,
+        isLevel = e.data()['isLevel'] as bool?,
         creatorId = e.data()['creatorId'] as String,
         graduationRequirements =
             e.data()['graduationRequirements'] as List<String>?;
@@ -62,7 +62,7 @@ class Lesson {
         recapVideo = e.data()?['recapVideo'] as String?,
         lessonVideo = e.data()?['lessonVideo'] as String?,
         practiceVideo = e.data()?['practiceVideo'] as String?,
-        isLevel = e.data()?['isLevel'] as bool,
+        isLevel = e.data()?['isLevel'] as bool?,
         creatorId = e.data()?['creatorId'] as String,
         graduationRequirements = (e.data()?['graduationRequirements'] as List<dynamic>?)
             ?.map((item) => item as String)

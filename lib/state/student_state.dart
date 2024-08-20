@@ -165,11 +165,11 @@ class StudentState extends ChangeNotifier {
     }
 
     for (Lesson lesson in lessons) {
-      if (lesson.isLevel) {
+      if (lesson.isLevel == true) {
         continue;
       }
 
-      String levelId = UserFunctions.extractNumberId(lesson.levelId)!;
+      String levelId = UserFunctions.extractNumberId(lesson.levelId) ?? 'uncategorized';
       LevelCompletion? levelCompletion = levelIdToCompletionMap[levelId];
 
       if (levelCompletion != null) {

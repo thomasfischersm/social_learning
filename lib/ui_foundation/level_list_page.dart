@@ -130,7 +130,7 @@ class LevelListState extends State<LevelListPage> {
 
     int currentLevel = 1;
     for (int i = 0; i < min(index, lessons.length); i++) {
-      if (lessons[i].isLevel) {
+      if (lessons[i].isLevel == true) {
         currentLevel++;
       }
     }

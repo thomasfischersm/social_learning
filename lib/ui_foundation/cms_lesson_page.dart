@@ -160,12 +160,12 @@ class CmsLessonState extends State<CmsLessonPage> {
               children: [
                 TextButton(
                     onPressed: () {
-                      _createLesson(context);
+                      _createUpdateLesson(context);
                     },
-                    child: const Text('Create')),
+                    child: Text(_isAdd ? 'Create' : 'Update')),
                 TextButton(
                     onPressed: () => Navigator.pushNamed(
-                        context, NavigationEnum.sessionHome.route),
+                        context, NavigationEnum.cmsSyllabus.route),
                     child: const Text('Cancel'))
               ],
             )
@@ -258,7 +258,7 @@ class CmsLessonState extends State<CmsLessonPage> {
     });
   }
 
-  void _createLesson(BuildContext context) async {
+  void _createUpdateLesson(BuildContext context) async {
     var libraryState = Provider.of<LibraryState>(context, listen: false);
 
     if (_isAdd) {

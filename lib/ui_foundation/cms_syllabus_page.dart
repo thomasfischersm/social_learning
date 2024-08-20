@@ -2,6 +2,7 @@ import 'dart:js_interop';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:googleapis/apigeeregistry/v1.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
@@ -67,6 +68,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                             child: Text('Add level',
                                 style: CustomTextStyles.getLinkNoUnderline(
                                     context))),
+                        _generateUnattachedLessons(context, libraryState),
                         CustomUiConstants.getGeneralFooter(context)
                       ],
                     ));
@@ -124,8 +126,8 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             onTap: () {
               _insertLesson(level, lesson.sortOrder, context, libraryState);
             },
-            child: Text('Insert',
-                style: CustomTextStyles.getLinkNoUnderline(context))));
+            child: CustomUiConstants.getIndentationTextPadding(Text('Insert',
+                style: CustomTextStyles.getLinkNoUnderline(context)))));
       }
 
       children.add(Row(children: [
@@ -134,10 +136,11 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
               Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
                   arguments: CmsLessonDetailArgument(levelId, lesson.id));
             },
-            child: Text(
+            child: CustomUiConstants.getIndentationTextPadding(Text(
+              softWrap: true,
               lesson.title,
               style: CustomTextStyles.getBody(context),
-            )),
+            ))),
         InkWell(
             onTap: () {
               _detachLesson(lesson, context, libraryState);
@@ -150,26 +153,63 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
     if (level != null) {
       children.add(InkWell(
           onTap: () {
-            _insertLesson(level, lessons.last.sortOrder + 1, context, libraryState);
-            // TODO: Handle case where the level doesn't have a lesson yet.
+            int sortOrder = lessons.isNotEmpty
+                ? lessons.last.sortOrder + 1
+                : libraryState.findSortLessonOrderForEmptyLevel(level);
+            _insertLesson(level, sortOrder, context, libraryState);
           },
-          child: Text('Insert',
-              style: CustomTextStyles.getLinkNoUnderline(context))));
+          child: CustomUiConstants.getIndentationTextPadding(Text('Insert',
+              style: CustomTextStyles.getLinkNoUnderline(context)))));
     }
-
 
     return children;
   }
 
-  Widget _generateAttachLesson(Level level, Lesson lesson, int sortOrder,
+  Column _generateUnattachedLessons(
       BuildContext context, LibraryState libraryState) {
-    return InkWell(
-        onTap: () {
-          _insertLesson(level, sortOrder, context, libraryState);
-        },
-        child: Text('Insert',
-            style: CustomTextStyles.getLinkNoUnderline(context)));
+    List<Widget> children = [];
+
+    children.add(Text(
+      'Unattached Lessons',
+      style: CustomTextStyles.subHeadline,
+    ));
+
+    Iterable<Lesson> lessons = libraryState.getUnattachedLessons();
+    for (Lesson lesson in lessons) {
+      children.add(Row(children: [
+        InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
+                  arguments: CmsLessonDetailArgument(null, lesson.id));
+            },
+            child: CustomUiConstants.getIndentationTextPadding(Text(
+              lesson.title,
+              style: CustomTextStyles.getBody(context),
+            ))),
+        InkWell(
+            onTap: () {
+              _deleteLesson(lesson, context, libraryState);
+            },
+            child: Text(' delete',
+                style: CustomTextStyles.getLinkNoUnderline(context)))
+      ]));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
+    );
   }
+
+  // Widget _generateAttachLesson(Level level, Lesson lesson, int sortOrder,
+  //     BuildContext context, LibraryState libraryState) {
+  //   return InkWell(
+  //       onTap: () {
+  //         _insertLesson(level, sortOrder, context, libraryState);
+  //       },
+  //       child: Text('Insert',
+  //           style: CustomTextStyles.getLinkNoUnderline(context)));
+  // }
 
   _editLevelTitle(Level level, LibraryState libraryState) async {
     TextEditingController controller = TextEditingController(text: level.title);
@@ -283,7 +323,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
-                  child: const Text('Delete')),
+                  child: const Text('Detach')),
             ],
           );
         });
@@ -307,6 +347,38 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
         libraryState.attachLesson(level, selectedLesson, sortOrder);
       }
     });
+  }
+
+  void _deleteLesson(
+      Lesson lesson, BuildContext context, LibraryState libraryState) async {
+    bool? confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          String abbreviatedTitle = (lesson.title.length > 7)
+              ? '${lesson.title.substring(0, 7)}...'
+              : lesson.title;
+          return AlertDialog(
+            title: Text('Lesson: $abbreviatedTitle'),
+            content: const Text('Are you sure you want to delete this lesson?'),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  child: const Text('Cancel')),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, true);
+                },
+                child: const Text('Delete'),
+              ),
+            ],
+          );
+        });
+
+    if (confirmed == true) {
+      libraryState.deleteLesson(lesson);
+    }
   }
 }
 
@@ -332,7 +404,7 @@ class LessonSelectionDialogState extends State<LessonSelectionDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Select an lesson'),
+      title: const Text('Select an lesson'),
       content: DropdownButton<Lesson>(
         value: _selectedLesson,
         onChanged: (Lesson? newValue) {

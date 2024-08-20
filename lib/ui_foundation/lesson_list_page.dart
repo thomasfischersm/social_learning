@@ -44,7 +44,7 @@ class LessonListState extends State<LessonListPage> {
                     itemBuilder: (context, index) {
                       return InkWell(onTap: () {
                         Lesson? lesson = libraryState.lessons?[index];
-                        if ((lesson != null) && (!lesson.isLevel)) {
+                        if ((lesson != null) && (lesson.isLevel == false)) {
                           Navigator.pushNamed(
                               context, NavigationEnum.lessonDetail.route,
                               arguments: LessonDetailArgument(lesson.id!));
@@ -79,7 +79,7 @@ class LessonListState extends State<LessonListPage> {
 
     int currentLevel = 1;
     for (int i = 0; i < min(index, lessons.length); i++) {
-      if (lessons[i].isLevel) {
+      if (lessons[i].isLevel == true) {
         currentLevel++;
       }
     }

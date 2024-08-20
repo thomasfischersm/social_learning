@@ -280,7 +280,7 @@ class EditLessonRowState extends State<EditLessonRow> {
                 child: TextButton(
                   child: Text(widget.lesson.title,
                       overflow: TextOverflow.ellipsis,
-                      style: (widget.lesson.isLevel)
+                      style: (widget.lesson.isLevel == true)
                           ? Theme.of(context)
                               .textTheme
                               .bodyLarge

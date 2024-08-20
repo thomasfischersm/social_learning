@@ -9,6 +9,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/state/application_state.dart';
+import 'package:collection/collection.dart';
 
 class LibraryState extends ChangeNotifier {
   ApplicationState _applicationState;
@@ -22,9 +23,11 @@ class LibraryState extends ChangeNotifier {
       () async {
         var prefs = await SharedPreferences.getInstance();
         var tmp = prefs.getString('selectedCourseId');
-        if (tmp != null && tmp.isNotEmpty) {
+        if (tmp != null &&
+            tmp.isNotEmpty &&
+            _availableCourses.isNotEmpty) {
           selectedCourse =
-              _availableCourses.firstWhere((element) => element.id == tmp);
+              _availableCourses.firstWhereOrNull((element) => element.id == tmp);
         }
       }();
     }
@@ -89,7 +92,7 @@ class LibraryState extends ChangeNotifier {
 
   LibraryState(this._applicationState) {
     _applicationState.addListener(() {
-        _reloadEnrolledCourses();
+      _reloadEnrolledCourses();
     });
   }
 
@@ -118,8 +121,7 @@ class LibraryState extends ChangeNotifier {
   }
 
   void _reloadEnrolledCourses() async {
-    var enrolledCourseIds =
-        _applicationState.currentUser?.enrolledCourseIds;
+    var enrolledCourseIds = _applicationState.currentUser?.enrolledCourseIds;
 
     if (enrolledCourseIds == null) {
       FirebaseFirestore.instance
@@ -137,9 +139,14 @@ class LibraryState extends ChangeNotifier {
         print('Failed to load enrolled courses: $error');
       });
     } else {
-      _enrolledPrivateCourses = [];
-      _rebuildAvailableCourses();
-      notifyListeners();
+      if (_enrolledPrivateCourses.isNotEmpty) {
+        _enrolledPrivateCourses = [];
+        _rebuildAvailableCourses();
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          notifyListeners();
+        });
+      }
     }
   }
 
@@ -239,7 +246,7 @@ class LibraryState extends ChangeNotifier {
     List<Lesson>? lessons = _lessons;
     if (lessons != null && currentLesson != null) {
       var currentIndex = lessons.indexOf(currentLesson) - 1;
-      while (currentIndex >= 0 && lessons[currentIndex].isLevel) {
+      while (currentIndex >= 0 && lessons[currentIndex].isLevel == true) {
         currentIndex--;
       }
       if (currentIndex > 0) {
@@ -253,7 +260,8 @@ class LibraryState extends ChangeNotifier {
     List<Lesson>? lessons = _lessons;
     if (lessons != null && currentLesson != null) {
       var currentIndex = lessons.indexOf(currentLesson) + 1;
-      while (currentIndex < lessons.length && lessons[currentIndex].isLevel) {
+      while (currentIndex < lessons.length &&
+          lessons[currentIndex].isLevel == true) {
         currentIndex++;
       }
       if (currentIndex < lessons.length) {
@@ -342,17 +350,21 @@ class LibraryState extends ChangeNotifier {
     });
   }
 
-  Future<void> createLesson(DocumentReference? levelId,
-  String title,
-  String? synopsis,
-  String instructions,
-  // String? cover,
-  String? recapVideo,
-  String? lessonVideo,
-  String? practiceVideo,
-  List<String>? graduationRequirements) async {
-    await FirebaseFirestore.instance.collection('lessons').add(<String, dynamic> {
-      'courseId': selectedCourse?.id,
+  Future<void> createLesson(
+      DocumentReference? levelId,
+      String title,
+      String? synopsis,
+      String instructions,
+      // String? cover,
+      String? recapVideo,
+      String? lessonVideo,
+      String? practiceVideo,
+      List<String>? graduationRequirements) async {
+    await FirebaseFirestore.instance
+        .collection('lessons')
+        .add(<String, dynamic>{
+      'courseId':
+          FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
       'levelId': levelId,
       'sortOrder': _findHighestLessonSortOrder() + 1,
       'title': title,
@@ -442,6 +454,11 @@ class LibraryState extends ChangeNotifier {
       return;
     }
 
+    // Detach lessons first.
+    for (Lesson lesson in getLessonsByLevel(level.id!)) {
+      detachLesson(lesson);
+    }
+
     // Delete level.
     FirebaseFirestore.instance.doc('/levels/${level.id}').delete();
 
@@ -457,7 +474,8 @@ class LibraryState extends ChangeNotifier {
     var sortOrder = _findHighestLevelSortOrder();
 
     await FirebaseFirestore.instance.collection('/levels').add({
-      'courseId': FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
+      'courseId':
+          FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
       'title': title,
       'description': description,
       'sortOrder': sortOrder + 1,
@@ -495,13 +513,37 @@ class LibraryState extends ChangeNotifier {
     await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
       'levelId': null,
     }, SetOptions(merge: true));
+
+    updateSortOrder(lesson, lessons?.length ?? 0);
   }
 
-  void attachLesson(Level level, Lesson selectedLesson, int sortOrder) async{
+  void attachLesson(Level level, Lesson selectedLesson, int sortOrder) async {
     await FirebaseFirestore.instance.doc('/lessons/${selectedLesson.id}').set({
       'levelId': FirebaseFirestore.instance.doc('/levels/${level.id}'),
     }, SetOptions(merge: true));
 
     updateSortOrder(selectedLesson, sortOrder);
+  }
+
+  /// Returns the sort order for a specified level, which doesn't have any
+  /// lessons yet. The trick is that the lesson in a previous level has to be
+  /// found.
+  int findSortLessonOrderForEmptyLevel(Level level) {
+    int? levelIndex = levels?.indexOf(level);
+    if (levelIndex == null) {
+      return 0;
+    }
+
+    while ((levelIndex != null) && (levelIndex > 0)) {
+      levelIndex--;
+      Level previousLevel = levels![levelIndex];
+      var lessons = getLessonsByLevel(previousLevel.id!);
+      if (lessons.isNotEmpty) {
+        return lessons.last.sortOrder + 1;
+      }
+    }
+
+    // No lesson found in any previous level.
+    return 0;
   }
 }
