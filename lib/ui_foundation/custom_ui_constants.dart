@@ -20,8 +20,8 @@ class CustomUiConstants {
   static Padding getRichTextPadding(RichText text) =>
       Padding(padding: const EdgeInsets.only(bottom: 8), child: text);
 
-  static Padding getIndentationTextPadding(Text text) =>
-      Padding(padding: const EdgeInsets.only(left: 8), child: text);
+  static Padding getIndentationTextPadding(Widget widget) =>
+      Padding(padding: const EdgeInsets.only(left: 8), child: widget);
 
   static Widget getGeneralFooter(BuildContext context,
       {bool withDivider = true}) {

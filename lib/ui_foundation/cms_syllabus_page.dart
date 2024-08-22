@@ -46,7 +46,10 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
               Navigator.pushNamed(context, NavigationEnum.cmsLesson.route);
             });
           },
-          child: const Text('Add lesson'),
+          child: const Text(
+            'Add lesson',
+            textAlign: TextAlign.center,
+          ),
         ),
         body: Center(
           child: CustomUiConstants.framePage(Consumer<LibraryState>(
@@ -82,22 +85,24 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
     for (int i = 0; i < levels.length; i++) {
       Level level = levels[i];
       String levelText = 'Level ${i + 1}: ${level.title}';
-      children.add(Row(children: [
-        InkWell(
-            onTap: () {
-              _editLevelTitle(level, libraryState);
-            },
-            child: Text(
-              levelText,
-              style: CustomTextStyles.subHeadline,
-            )),
-        InkWell(
-            onTap: () {
-              _deleteLevel(level, context, libraryState);
-            },
-            child: Text(' delete',
-                style: CustomTextStyles.getLinkNoUnderline(context)))
-      ]));
+      children.add(Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Row(children: [
+            InkWell(
+                onTap: () {
+                  _editLevelTitle(level, libraryState);
+                },
+                child: Text(
+                  levelText,
+                  style: CustomTextStyles.subHeadline,
+                )),
+            InkWell(
+                onTap: () {
+                  _deleteLevel(level, context, libraryState);
+                },
+                child: Text(' delete',
+                    style: CustomTextStyles.getLinkNoUnderline(context)))
+          ])));
 
       children.addAll(_generateLessonList(context, level, libraryState));
     }
@@ -126,8 +131,11 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             onTap: () {
               _insertLesson(level, lesson.sortOrder, context, libraryState);
             },
-            child: CustomUiConstants.getIndentationTextPadding(Text('Insert',
-                style: CustomTextStyles.getLinkNoUnderline(context)))));
+            child: CustomUiConstants.getIndentationTextPadding(Icon(
+                Icons.add_circle_outline_rounded,
+                color: Colors.blue,
+                size:
+                    Theme.of(context).textTheme.bodyLarge?.fontSize ?? 16.0))));
       }
 
       children.add(Row(children: [
@@ -145,8 +153,12 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             onTap: () {
               _detachLesson(lesson, context, libraryState);
             },
-            child: Text(' detach',
-                style: CustomTextStyles.getLinkNoUnderline(context)))
+            child: Padding(
+                padding: const EdgeInsets.only(left: 4),
+                child: Icon(Icons.remove_circle_outline_rounded,
+                    color: Colors.blue,
+                    size: Theme.of(context).textTheme.bodyLarge?.fontSize ??
+                        16.0)))
       ]));
     }
 
@@ -158,8 +170,10 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                 : libraryState.findSortLessonOrderForEmptyLevel(level);
             _insertLesson(level, sortOrder, context, libraryState);
           },
-          child: CustomUiConstants.getIndentationTextPadding(Text('Insert',
-              style: CustomTextStyles.getLinkNoUnderline(context)))));
+          child: CustomUiConstants.getIndentationTextPadding(Icon(
+              Icons.add_circle_outline_rounded,
+              color: Colors.blue,
+              size: Theme.of(context).textTheme.bodyLarge?.fontSize ?? 16.0))));
     }
 
     return children;
@@ -169,10 +183,12 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
       BuildContext context, LibraryState libraryState) {
     List<Widget> children = [];
 
-    children.add(Text(
-      'Unattached Lessons',
-      style: CustomTextStyles.subHeadline,
-    ));
+    children.add(Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Text(
+          'Flex Lessons',
+          style: CustomTextStyles.subHeadline,
+        )));
 
     Iterable<Lesson> lessons = libraryState.getUnattachedLessons();
     for (Lesson lesson in lessons) {
