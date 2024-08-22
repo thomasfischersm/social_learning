@@ -239,7 +239,7 @@ class LibraryState extends ChangeNotifier {
   }
 
   Lesson? findLesson(String lessonId) {
-    return lessons?.firstWhere((lesson) => lesson.id == lessonId);
+    return lessons?.firstWhereOrNull((lesson) => lesson.id == lessonId);
   }
 
   Lesson? findPreviousLesson(Lesson? currentLesson) {
