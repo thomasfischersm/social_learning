@@ -156,6 +156,7 @@ class OrganizerSessionState extends ChangeNotifier {
       'sessionId': FirebaseFirestore.instance.doc('/sessions/$sessionId'),
       'participantId': FirebaseFirestore.instance.doc('/users/${organizer.id}'),
       'participantUid': organizer.uid,
+      'courseId': FirebaseFirestore.instance.doc('/courses/${course.id}'),
       'isInstructor': organizer.isAdmin,
       'isActive': true,
     });

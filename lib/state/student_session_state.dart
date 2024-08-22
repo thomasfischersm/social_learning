@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';
@@ -9,6 +10,7 @@ import 'package:social_learning/state/firestore_subscription/session_pairings_su
 import 'package:social_learning/state/firestore_subscription/session_participants_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/state/library_state.dart';
 
 class StudentSessionState extends ChangeNotifier {
   get isInitialized => _sessionSubscription.isInitialized;
@@ -23,9 +25,11 @@ class StudentSessionState extends ChangeNotifier {
   get sessionParticipants => _sessionParticipantsSubscription.items;
 
   final ApplicationState _applicationState;
+  final LibraryState _libraryState;
   User? _lastUser;
+  Course? _lastCourse;
 
-  StudentSessionState(this._applicationState) {
+  StudentSessionState(this._applicationState, this._libraryState) {
     _sessionSubscription = SessionSubscription(() => notifyListeners());
     _participantUsersSubscription =
         ParticipantUsersSubscription(() => notifyListeners(), null);
@@ -43,6 +47,10 @@ class StudentSessionState extends ChangeNotifier {
       _checkForOngoingSession();
     });
 
+    _libraryState.addListener(() {
+      _checkForOngoingSession();
+    });
+
     _checkForOngoingSession();
   }
 
@@ -54,23 +62,25 @@ class StudentSessionState extends ChangeNotifier {
   void _checkForOngoingSession() {
     print(
         'StudentSessionState._checkForOngoingSession() for user ${_applicationState.currentUser?.id}');
-    var lastUser = _applicationState.currentUser;
-    if (lastUser == _lastUser) {
+    var currentUser = _applicationState.currentUser;
+    var currentCourse = _libraryState.selectedCourse;
+    if ((currentUser == _lastUser) && (currentCourse == _lastCourse)) {
       // No change. Ignore!
       print('User hasn\'t changed.');
       return;
     }
-    _lastUser = lastUser;
+    _lastUser = currentUser;
+    _lastCourse = currentCourse;
 
-    if (lastUser == null) {
+    if (currentUser == null) {
       // Clear any session.
       print('User is gone.');
       _resetSession();
       return;
     }
 
-    print('Checking active session for user ${lastUser.id}');
-    var userIdRef = FirebaseFirestore.instance.doc('/users/${lastUser.id}');
+    print('Checking active session for user ${currentUser.id}');
+    var userIdRef = FirebaseFirestore.instance.doc('/users/${currentUser.id}');
     FirebaseFirestore.instance
         .collection('sessionParticipants')
         .where('participantId', isEqualTo: userIdRef)
@@ -82,7 +92,11 @@ class StudentSessionState extends ChangeNotifier {
             SessionParticipant.fromSnapshot(snapshot.docs.first);
         print(
             'Trying to automatically log into session ${sessionParticipant.sessionId.id}');
-        attemptToJoin(sessionParticipant.sessionId.id);
+        if (sessionParticipant.courseId.id == currentCourse?.id) {
+          attemptToJoin(sessionParticipant.sessionId.id);
+        } else {
+          _resetSession();
+        }
       }
     });
   }

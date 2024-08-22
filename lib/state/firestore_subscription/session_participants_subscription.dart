@@ -91,6 +91,7 @@ class SessionParticipantsSubscription
         'participantId':
             FirebaseFirestore.instance.doc('/users/${currentUser?.id}'),
         'participantUid': currentUser?.uid,
+        'courseId': FirebaseFirestore.instance.doc('/courses/${session.courseId.id}'),
         'isInstructor': currentUser?.isAdmin,
         'isActive': true,
       });

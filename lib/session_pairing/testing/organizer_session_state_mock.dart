@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/learning_strategy_enum.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
@@ -9,6 +10,9 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
   final List<SessionParticipant> _sessionParticipants = [];
   final List<User> _participantUsers = [];
   final Map<SessionParticipant, List<Lesson>> _graduatedLessons = {};
+  final _course = Course(
+      '/courses/malta', 'Malta', 'u58', 'A beautiful island', false, null);
+  final _courseRef = FirebaseFirestore.instance.doc('/courses/malta');
 
   int _uniqueIdGenerator = 2;
 
@@ -21,8 +25,8 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
   get sessionParticipants => _sessionParticipants;
 
   @override
-  User? getUser(SessionParticipant participant) =>
-      _participantUsers.firstWhere((user) => user.id == participant.participantId.id);
+  User? getUser(SessionParticipant participant) => _participantUsers
+      .firstWhere((user) => user.id == participant.participantId.id);
 
   @override
   User? getUserById(String id) =>
@@ -42,8 +46,17 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
 
     var userRef = FirebaseFirestore.instance.doc('/users/${user.id}');
     var sessionRef = FirebaseFirestore.instance.doc('/sessions/$_sessionId');
-    var participant = SessionParticipant(nextId, sessionRef, userRef, user.uid,
-        isAdmin, true, 0, 0, LearningStrategyEnum.completeBeforeAdvance);
+    var participant = SessionParticipant(
+        nextId,
+        sessionRef,
+        userRef,
+        user.uid,
+        _courseRef,
+        isAdmin,
+        true,
+        0,
+        0,
+        LearningStrategyEnum.completeBeforeAdvance);
     _sessionParticipants.add(participant);
     print('$name has user id ${user.id} and participant id ${participant.id}');
 

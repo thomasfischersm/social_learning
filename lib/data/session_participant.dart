@@ -6,6 +6,7 @@ class SessionParticipant {
   DocumentReference sessionId;
   DocumentReference participantId;
   String participantUid;
+  DocumentReference courseId;
   bool isInstructor;
   bool isActive;
   int teachCount;
@@ -17,6 +18,7 @@ class SessionParticipant {
       this.sessionId,
       this.participantId,
       this.participantUid,
+      this.courseId,
       this.isInstructor,
       this.isActive,
       this.teachCount,
@@ -28,6 +30,7 @@ class SessionParticipant {
         sessionId = e.data()['sessionId'] as DocumentReference,
         participantId = e.data()['participantId'] as DocumentReference,
         participantUid = e.data()['participantUid'] as String,
+        courseId = e.data()['courseId'] as DocumentReference,
         isInstructor = e.data()['isInstructor'] as bool,
         isActive = e.data()['isActive'] as bool,
         teachCount = e.data()['teachCount'] as int? ?? 0,
