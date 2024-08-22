@@ -20,7 +20,7 @@ class BottomBar extends StatelessWidget {
                     Consumer<LibraryState>(
                       builder: (context, libraryState, child) => addIcon(
                           context,
-                          Icons.school,
+                          Icons.list_alt_rounded,
                           NavigationEnum.levelList,
                           libraryState.isCourseSelected &&
                               applicationState.isLoggedIn),
@@ -29,7 +29,7 @@ class BottomBar extends StatelessWidget {
                         builder: (context, libraryState, child) =>
                             ((applicationState.currentUser?.isAdmin ?? false) &&
                                     libraryState.isCourseSelected)
-                                ? addIcon(context, Icons.menu_book,
+                                ? addIcon(context, Icons.settings,
                                     NavigationEnum.cmsSyllabus, true)
                                 : const Spacer()),
                     Consumer<StudentSessionState>(
@@ -39,7 +39,7 @@ class BottomBar extends StatelessWidget {
                             Consumer<LibraryState>(
                           builder: (context, libraryState, child) => addIcon(
                             context,
-                            Icons.groups,
+                            Icons.calendar_today,
                             _getSessionNavigationTarget(
                                 applicationState,
                                 libraryState,
