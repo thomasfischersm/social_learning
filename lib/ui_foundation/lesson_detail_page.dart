@@ -11,6 +11,7 @@ import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/profile_image_widget.dart';
+import 'package:social_learning/util/string_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LessonDetailArgument {
@@ -90,12 +91,12 @@ class LessonDetailState extends State<LessonDetailPage> {
                               ),
                             ],
                           )),
-                          if (lesson.recapVideo != null)
+                          if (StringUtil.isNotEmpty(lesson.recapVideo))
                             _addVideoIcon(lesson.recapVideo!, 'Recap', context),
-                          if (lesson.lessonVideo != null)
+                          if (StringUtil.isNotEmpty(lesson.lessonVideo))
                             _addVideoIcon(
                                 lesson.lessonVideo!, 'Lesson', context),
-                          if (lesson.practiceVideo != null)
+                          if (StringUtil.isNotEmpty(lesson.practiceVideo))
                             _addVideoIcon(
                                 lesson.practiceVideo!, 'Practice', context),
                         ],
