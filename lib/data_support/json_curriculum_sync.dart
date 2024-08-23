@@ -52,6 +52,7 @@ class JsonCurriculumSync {
         'synopsis': lesson.synopsis,
         'instructions': lesson.instructions,
         'cover': lesson.cover,
+        'coverFireStoragePath': lesson.coverFireStoragePath,
         'recapVideo': lesson.recapVideo,
         'lessonVideo': lesson.lessonVideo,
         'practiceVideo': lesson.practiceVideo,

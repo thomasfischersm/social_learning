@@ -1,7 +1,9 @@
 import 'dart:js_interop';
 import 'dart:math';
 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:googleapis/apigeeregistry/v1.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
@@ -94,7 +96,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                 },
                 child: Text(
                   levelText,
-                  style: CustomTextStyles.subHeadline,
+                  style: CustomTextStyles.subHeadline, softWrap: true,
                 )),
             InkWell(
                 onTap: () {
@@ -200,7 +202,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             },
             child: CustomUiConstants.getIndentationTextPadding(Text(
               lesson.title,
-              style: CustomTextStyles.getBody(context),
+              style: CustomTextStyles.getBody(context), softWrap: true,
             ))),
         InkWell(
             onTap: () {
@@ -394,6 +396,38 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
 
     if (confirmed == true) {
       libraryState.deleteLesson(lesson);
+    }
+  }
+}
+
+void _migrateCoverPhotos(
+    BuildContext context, LibraryState libraryState) async {
+  var lessons = libraryState.lessons;
+  for (var lesson in lessons!) {
+    if (lesson.cover != null) {
+      // Upload the photo to Firebase.
+
+      final ByteData data = await rootBundle.load(lesson.cover!);
+      final imageData =
+          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      if (imageData != null) {
+        var fireStoragePath = '/lesson_covers/${lesson.id}/coverPhoto';
+        var storageRef = FirebaseStorage.instance.ref(fireStoragePath);
+        try {
+          // var imageData = await file.readAsBytes();
+          await storageRef.putData(
+              imageData, SettableMetadata(contentType: 'image/png'));
+
+          // Save the path to the lesson.
+          lesson.coverFireStoragePath = fireStoragePath;
+          libraryState.updateLesson(lesson);
+        } catch (e) {
+          print('Error uploading photo: $e');
+        }
+
+        print(
+            'Uploaded photo of length ${imageData.length} to $fireStoragePath for lesson ${lesson.title}');
+      }
     }
   }
 }
