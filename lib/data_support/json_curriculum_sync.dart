@@ -39,7 +39,7 @@ class JsonCurriculumSync {
       var levelPath =
           (lesson.levelId != null) ? '/${lesson.levelId!.path}' : null;
 
-      if (lesson.isLevel || (levelPath == null)) {
+      if (lesson.isLevel == true || (levelPath == null)) {
         // Skip.
         continue;
       }

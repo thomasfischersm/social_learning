@@ -382,6 +382,7 @@ class LibraryState extends ChangeNotifier {
       'synopsis': synopsis,
       'instructions': instructions,
       // 'cover': cover, // TODO: Implement image upload.
+      // 'coverFireStoragePath': coverFireStoragePath,
       'recapVideo': recapVideo,
       'lessonVideo': lessonVideo,
       'practiceVideo': practiceVideo,
@@ -413,6 +414,7 @@ class LibraryState extends ChangeNotifier {
       'synopsis': lesson.synopsis,
       'instructions': lesson.instructions,
       'cover': lesson.cover,
+      'coverFireStoragePath': lesson.coverFireStoragePath,
       'recapVideo': lesson.recapVideo,
       'lessonVideo': lesson.lessonVideo,
       'practiceVideo': lesson.practiceVideo,

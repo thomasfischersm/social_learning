@@ -8,7 +8,9 @@ class Lesson {
   String title;
   String? synopsis;
   String instructions;
+  @Deprecated('Use fire storage instead')
   String? cover;
+  String? coverFireStoragePath;
   String? recapVideo;
   String? lessonVideo;
   String? practiceVideo;
@@ -26,6 +28,7 @@ class Lesson {
       this.synopsis,
       this.instructions,
       this.cover,
+      this.coverFireStoragePath,
       this.recapVideo,
       this.lessonVideo,
       this.practiceVideo,
@@ -42,6 +45,7 @@ class Lesson {
         synopsis = e.data()['synopsis'] as String?,
         instructions = e.data()['instructions'] as String,
         cover = e.data()['cover'] as String?,
+        coverFireStoragePath = e.data()['coverFireStoragePath'] as String?,
         recapVideo = e.data()['recapVideo'] as String?,
         lessonVideo = e.data()['lessonVideo'] as String?,
         practiceVideo = e.data()['practiceVideo'] as String?,
@@ -59,14 +63,16 @@ class Lesson {
         synopsis = e.data()?['synopsis'] as String?,
         instructions = e.data()?['instructions'] as String,
         cover = e.data()?['cover'] as String?,
+        coverFireStoragePath = e.data()?['coverFireStoragePath'] as String?,
         recapVideo = e.data()?['recapVideo'] as String?,
         lessonVideo = e.data()?['lessonVideo'] as String?,
         practiceVideo = e.data()?['practiceVideo'] as String?,
         isLevel = e.data()?['isLevel'] as bool?,
         creatorId = e.data()?['creatorId'] as String,
-        graduationRequirements = (e.data()?['graduationRequirements'] as List<dynamic>?)
-            ?.map((item) => item as String)
-            .toList();
+        graduationRequirements =
+            (e.data()?['graduationRequirements'] as List<dynamic>?)
+                ?.map((item) => item as String)
+                .toList();
 
   Lesson.fromJson(Map<String, dynamic> json, String fullLevelId)
       : id = json['id'],
@@ -78,6 +84,7 @@ class Lesson {
         synopsis = json['synopsis'],
         instructions = json['instructions'],
         cover = json['cover'],
+        coverFireStoragePath = json['coverFireStoragePath'],
         recapVideo = json['recapVideo'],
         lessonVideo = json['lessonVideo'],
         practiceVideo = json['practiceVideo'],

@@ -153,6 +153,9 @@ class ProfilePageState extends State<ProfilePage> {
       UserFunctions.updateProfilePhoto(fireStoragePath);
 
       applicationState.invalidateProfilePhoto();
+
+      // Note: Old photos don't have to be deleted because the new photo is
+      // saved to the same cloud storage path.
     }
   }
 }

@@ -10,6 +10,7 @@ import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/lesson_cover_image_widget.dart';
 import 'package:social_learning/ui_foundation/profile_image_widget.dart';
 import 'package:social_learning/util/string_util.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -66,13 +67,11 @@ class LessonDetailState extends State<LessonDetailPage> {
                           child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (lesson.cover != null)
-                        Expanded(
-                            child: Padding(
+                      if (lesson.coverFireStoragePath != null)
+                        /* Expanded(
+                            child:*/ Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
-                                child: Image(
-                                    image: AssetImage(lesson.cover!),
-                                    fit: BoxFit.contain))),
+                                child: LessonCoverImageWidget(lesson.coverFireStoragePath)),
                       Text('Level ${levelPosition + 1}',
                           style: CustomTextStyles.getBody(context)),
                       Text('Lesson: ${lesson.title}',
