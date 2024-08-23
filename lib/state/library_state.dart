@@ -17,17 +17,19 @@ class LibraryState extends ChangeNotifier {
   bool get isCourseSelected => _selectedCourse != null;
 
   Course? _selectedCourse;
+  bool _isSelectedCourseInitializedFromPrefs = false;
 
   Course? get selectedCourse {
-    if (_selectedCourse == null && _availableCourses.isNotEmpty) {
+    if (_selectedCourse == null &&
+        _availableCourses.isNotEmpty &&
+        !_isSelectedCourseInitializedFromPrefs) {
       () async {
         var prefs = await SharedPreferences.getInstance();
         var tmp = prefs.getString('selectedCourseId');
-        if (tmp != null &&
-            tmp.isNotEmpty &&
-            _availableCourses.isNotEmpty) {
-          selectedCourse =
-              _availableCourses.firstWhereOrNull((element) => element.id == tmp);
+        if (tmp != null && tmp.isNotEmpty && _availableCourses.isNotEmpty) {
+          selectedCourse = _availableCourses
+              .firstWhereOrNull((element) => element.id == tmp);
+          _isSelectedCourseInitializedFromPrefs = true;
         }
       }();
     }
@@ -232,7 +234,10 @@ class LibraryState extends ChangeNotifier {
   Iterable<Lesson> getUnattachedLessons() {
     var lessonsRef = lessons;
     if (lessonsRef != null) {
-      return lessonsRef.where((element) => element.levelId == null);
+      var unsortedLessons =
+          lessonsRef.where((element) => element.levelId == null);
+      unsortedLessons.sortedBy<num>((element) => element.sortOrder);
+      return unsortedLessons;
     } else {
       return [];
     }
@@ -271,7 +276,7 @@ class LibraryState extends ChangeNotifier {
     return null;
   }
 
-  void updateSortOrder(Lesson touchedLesson, int newSortOrder) {
+  void updateSortOrder(Lesson touchedLesson, int newSortOrder) async {
     int oldSortOrder = touchedLesson.sortOrder;
     var lessons = _lessons;
 
@@ -305,11 +310,16 @@ class LibraryState extends ChangeNotifier {
     _setSortOrder(touchedLesson, newSortOrder);
   }
 
-  void _setSortOrder(Lesson lesson, int newSortOrder) {
-    FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
+  void _setSortOrder(Lesson lesson, int newSortOrder) async {
+    print(
+        '### Set sort order for ${lesson.title} from ${lesson.sortOrder} to $newSortOrder');
+    await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
       'sortOrder': newSortOrder,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid
-    }, SetOptions(merge: true));
+    }, SetOptions(merge: true)).onError((error, stackTrace) {
+      print('Failed to set sort order: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    });
   }
 
   void _setLevelSortOrder(Level level, int newSortOrder) async {
@@ -367,6 +377,7 @@ class LibraryState extends ChangeNotifier {
           FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
       'levelId': levelId,
       'sortOrder': _findHighestLessonSortOrder() + 1,
+      // TODO: If levelId is null, use the highest sort order of the level.
       'title': title,
       'synopsis': synopsis,
       'instructions': instructions,
@@ -377,6 +388,10 @@ class LibraryState extends ChangeNotifier {
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
       'graduationRequirements': graduationRequirements,
     });
+
+    if (levelId == null) {
+      sortUnattachedLessons();
+    }
   }
 
   @Deprecated('Left over from the first version of the CMS.')
@@ -510,11 +525,32 @@ class LibraryState extends ChangeNotifier {
   }
 
   void detachLesson(Lesson lesson) async {
+    // Remove the level.
     await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
       'levelId': null,
     }, SetOptions(merge: true));
 
-    updateSortOrder(lesson, lessons?.length ?? 0);
+    // Sort the unattached lessons.
+    var unattachedLessons = getUnattachedLessons().toList();
+    unattachedLessons
+        .sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+
+    // Find the right spot in the alphabetically sorted unattached lessons.
+    // Or if there are no unattached lessons, find the highest sort order.
+    int? followingLessonSortOrder = unattachedLessons
+        .firstWhereOrNull((otherLesson) =>
+            otherLesson.title
+                .toLowerCase()
+                .compareTo(lesson.title.toLowerCase()) >
+            0)
+        ?.sortOrder;
+    int newSortOrder = (followingLessonSortOrder != null)
+        ? followingLessonSortOrder - 1
+        : _findHighestLessonSortOrder();
+
+    updateSortOrder(lesson, newSortOrder);
+
+    // sortUnattachedLessons();
   }
 
   void attachLesson(Level level, Lesson selectedLesson, int sortOrder) async {
@@ -523,6 +559,9 @@ class LibraryState extends ChangeNotifier {
     }, SetOptions(merge: true));
 
     updateSortOrder(selectedLesson, sortOrder);
+
+    // TODO: Remove
+    _fixSortOrderForDebugging();
   }
 
   /// Returns the sort order for a specified level, which doesn't have any
@@ -545,5 +584,54 @@ class LibraryState extends ChangeNotifier {
 
     // No lesson found in any previous level.
     return 0;
+  }
+
+  sortUnattachedLessons() {
+    // Get the highest sort order of attached lessons.
+    var attachedLessons = lessons?.where((lesson) => lesson.levelId != null);
+    int highestSortOrder =
+        attachedLessons?.fold(0, (int? previousValue, lesson) {
+              return max(previousValue!, lesson.sortOrder);
+            }) ??
+            0;
+
+    // Sort the unattached lessons.
+    var unattachedLessons = getUnattachedLessons().toList();
+    unattachedLessons
+        .sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+
+    // Update the sort order if necessary.
+    for (int i = 0; i < unattachedLessons.length; i++) {
+      var newSortOrder = i + highestSortOrder + 1;
+      if (unattachedLessons[i].sortOrder != newSortOrder) {
+        _setSortOrder(unattachedLessons[i], newSortOrder);
+      }
+    }
+  }
+
+  _fixSortOrderForDebugging() {
+    int sortOrder = 0;
+    for (Level level in levels!) {
+      for (Lesson lesson in getLessonsByLevel(level.id!)) {
+        if (lesson.sortOrder != sortOrder) {
+          print(
+              '!!! Fixing sort order for ${lesson.title} from ${lesson.sortOrder} to $sortOrder');
+          _setSortOrder(lesson, sortOrder);
+        }
+        sortOrder++;
+      }
+    }
+
+    var unattachedLessons = getUnattachedLessons().toList();
+    unattachedLessons
+        .sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    for (Lesson lesson in unattachedLessons) {
+      if (lesson.sortOrder != sortOrder) {
+        print(
+            '!!! Fixing sort order for ${lesson.title} from ${lesson.sortOrder} to $sortOrder');
+        _setSortOrder(lesson, sortOrder);
+      }
+      sortOrder++;
+    }
   }
 }

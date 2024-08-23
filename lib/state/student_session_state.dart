@@ -62,11 +62,12 @@ class StudentSessionState extends ChangeNotifier {
   void _checkForOngoingSession() {
     print(
         'StudentSessionState._checkForOngoingSession() for user ${_applicationState.currentUser?.id}');
+
     var currentUser = _applicationState.currentUser;
     var currentCourse = _libraryState.selectedCourse;
     if ((currentUser == _lastUser) && (currentCourse == _lastCourse)) {
       // No change. Ignore!
-      print('User hasn\'t changed.');
+      print('User and course haven\'t changed.');
       return;
     }
     _lastUser = currentUser;

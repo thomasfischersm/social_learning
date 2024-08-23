@@ -146,7 +146,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             },
             child: CustomUiConstants.getIndentationTextPadding(Text(
               softWrap: true,
-              lesson.title,
+              lesson.title + ' ' + lesson.sortOrder.toString(),
               style: CustomTextStyles.getBody(context),
             ))),
         InkWell(
@@ -199,7 +199,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                   arguments: CmsLessonDetailArgument(null, lesson.id));
             },
             child: CustomUiConstants.getIndentationTextPadding(Text(
-              lesson.title,
+              lesson.title + ' ' + lesson.sortOrder.toString(),
               style: CustomTextStyles.getBody(context),
             ))),
         InkWell(
