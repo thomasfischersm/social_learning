@@ -141,7 +141,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
       }
 
       children.add(Row(children: [
-        InkWell(
+        Expanded(child:InkWell(
             onTap: () {
               Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
                   arguments: CmsLessonDetailArgument(levelId, lesson.id));
@@ -150,7 +150,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
               softWrap: true,
               lesson.title,
               style: CustomTextStyles.getBody(context),
-            ))),
+            )))),
         InkWell(
             onTap: () {
               _detachLesson(lesson, context, libraryState);
@@ -195,7 +195,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
     Iterable<Lesson> lessons = libraryState.getUnattachedLessons();
     for (Lesson lesson in lessons) {
       children.add(Row(children: [
-        InkWell(
+        Expanded(child:InkWell(
             onTap: () {
               Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
                   arguments: CmsLessonDetailArgument(null, lesson.id));
@@ -203,7 +203,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             child: CustomUiConstants.getIndentationTextPadding(Text(
               lesson.title,
               style: CustomTextStyles.getBody(context), softWrap: true,
-            ))),
+            )))),
         InkWell(
             onTap: () {
               _deleteLesson(lesson, context, libraryState);
