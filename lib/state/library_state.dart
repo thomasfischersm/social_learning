@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_learning/data/Level.dart';
@@ -344,6 +345,20 @@ class LibraryState extends ChangeNotifier {
       if ((deletedLesson != lesson) && (lesson.sortOrder > sortOrder)) {
         _setSortOrder(lesson, lesson.sortOrder - 1);
       }
+    }
+
+    // TODO: Delete cover photo.
+    _deleteCoverPhoto(deletedLesson);
+  }
+
+  void _deleteCoverPhoto(Lesson lesson) async {
+    var fireStoragePath = '/lesson_covers/${lesson.id}/coverPhoto';
+    var storageRef = FirebaseStorage.instance.ref(fireStoragePath);
+    try {
+      // var imageData = await file.readAsBytes();
+      await storageRef.delete();
+    } catch (e) {
+      print('Error deleting photo: $e');
     }
   }
 
