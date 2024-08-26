@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
@@ -12,9 +11,14 @@ import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/navigation_enum.dart';
 
 class LevelDetailArgument {
-  String levelId;
+  String? levelId;
+  bool isFlexLessons = false;
 
   LevelDetailArgument(this.levelId);
+
+  LevelDetailArgument.flexLessons() {
+    isFlexLessons = true;
+  }
 }
 
 class LevelDetailPage extends StatefulWidget {
@@ -49,63 +53,104 @@ class LevelDetailState extends State<LevelDetailPage> {
               int levelPosition = libraryState.findLevelPosition(level);
               return Text('Level ${levelPosition + 1}: ${level.title}');
             }
+          } else if (argument?.isFlexLessons == true) {
+            return const Text('Flex Lessons');
           }
           return const Text('Failed to load');
         })),
         bottomNavigationBar: const BottomBar(),
         body: Center(
           child: CustomUiConstants.framePage(Consumer<LibraryState>(
-                  builder: (context, libraryState, child) =>
-                      Consumer<StudentState>(
-                          builder: (context, studentState, child) {
-                        LevelDetailArgument? argument = ModalRoute.of(context)!
-                            .settings
-                            .arguments as LevelDetailArgument?;
-                        var levelId = argument?.levelId;
-                        if (levelId == null) {
-                          return const Text('Failed to load (1).');
-                        }
-                        Level? level = libraryState.findLevel(levelId);
-                        if (level == null) {
-                          return const Text('Failed to load (2).');
-                        }
-                        int levelPosition =
-                            libraryState.findLevelPosition(level);
+              builder: (context, libraryState, child) => Consumer<StudentState>(
+                      builder: (context, studentState, child) {
+                    LevelDetailArgument? argument = ModalRoute.of(context)!
+                        .settings
+                        .arguments as LevelDetailArgument?;
+                    var levelId = argument?.levelId;
+                    var isFlexLessons = argument?.isFlexLessons;
+                    if ((levelId == null) && (isFlexLessons != true)) {
+                      return const Text('Failed to load (1).');
+                    }
 
-                        return SingleChildScrollView(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomUiConstants.getTextPadding(Text(
-                              'Level ${levelPosition + 1}: ${level.title}',
-                              style: CustomTextStyles.subHeadline,
-                            )),
-                            CustomUiConstants.getTextPadding(Text(
-                              level.description ?? '',
-                              style: CustomTextStyles.getBody(context),
-                            )),
-                            generateLessonList(
-                                level, libraryState, studentState),
-                            CustomUiConstants.getTextPadding(Text(
-                              '',
-                              style: CustomTextStyles.getBody(context),
-                            )),
-                            CustomUiConstants.getDivider(),
-                            CustomUiConstants.getTextPadding(Text(
-                              'P = Practiced lesson, T = Taught lesson',
-                              style: CustomTextStyles.getBody(context),
-                            )),
-                            CustomUiConstants.getGeneralFooter(context)
-                          ],
-                        ));
-                      }))),
+                    if (isFlexLessons == true) {
+                      return _generateFlexLessonView(
+                          libraryState, studentState);
+                    } else {
+                      return _generateRegularLessonView(
+                          levelId!, libraryState, studentState);
+                    }
+                  }))),
         ));
   }
 
-  Widget generateLessonList(
-      Level level, LibraryState libraryState, StudentState studentState) {
+  _generateRegularLessonView(
+      String levelId, LibraryState libraryState, StudentState studentState) {
+    Level? level = libraryState.findLevel(levelId);
+    if (level == null) {
+      return const Text('Failed to load (2).');
+    }
+    int levelPosition = libraryState.findLevelPosition(level);
     Iterable<Lesson> lessons = libraryState.getLessonsByLevel(level.id!);
 
+    return SingleChildScrollView(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomUiConstants.getTextPadding(Text(
+          'Level ${levelPosition + 1}: ${level.title}',
+          style: CustomTextStyles.subHeadline,
+        )),
+        CustomUiConstants.getTextPadding(Text(
+          level.description ?? '',
+          style: CustomTextStyles.getBody(context),
+        )),
+        generateLessonList(lessons, libraryState, studentState),
+        CustomUiConstants.getTextPadding(Text(
+          '',
+          style: CustomTextStyles.getBody(context),
+        )),
+        CustomUiConstants.getDivider(),
+        CustomUiConstants.getTextPadding(Text(
+          'P = Practiced lesson, T = Taught lesson',
+          style: CustomTextStyles.getBody(context),
+        )),
+        CustomUiConstants.getGeneralFooter(context)
+      ],
+    ));
+  }
+
+  _generateFlexLessonView(
+      LibraryState libraryState, StudentState studentState) {
+    Iterable<Lesson> lessons = libraryState.getUnattachedLessons();
+
+    return SingleChildScrollView(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CustomUiConstants.getTextPadding(Text(
+          'Flex Lessons',
+          style: CustomTextStyles.subHeadline,
+        )),
+        CustomUiConstants.getTextPadding(const Text(
+          'These are optional lessons that enrich the learning experience, allow deeper dives into topics, or supplement specific student needs.',
+        )),
+        generateLessonList(lessons, libraryState, studentState),
+        CustomUiConstants.getTextPadding(Text(
+          '',
+          style: CustomTextStyles.getBody(context),
+        )),
+        CustomUiConstants.getDivider(),
+        CustomUiConstants.getTextPadding(Text(
+          'P = Practiced lesson, T = Taught lesson',
+          style: CustomTextStyles.getBody(context),
+        )),
+        CustomUiConstants.getGeneralFooter(context)
+      ],
+    ));
+  }
+
+  Widget generateLessonList(
+      Iterable<Lesson> lessons, LibraryState libraryState, StudentState studentState) {
     List<Widget> children = [];
     for (Lesson lesson in lessons) {
       List<Widget> columnChildren = [];
@@ -132,11 +177,14 @@ class LevelDetailState extends State<LevelDetailPage> {
       }
       columnChildren.add(Row(
         children: [
-          Flexible(child: Text(
+          Flexible(
+              child: Text(
             text,
             style: emphasizedTextStyle,
           )),
-          if (lessonCount.isGraduated) Icon(Icons.workspace_premium, color: CustomTextStyles.fullyLearnedColor)
+          if (lessonCount.isGraduated)
+            Icon(Icons.workspace_premium,
+                color: CustomTextStyles.fullyLearnedColor)
         ],
       ));
       // if ((lesson.synopsis != null) && (lesson.synopsis!.isNotEmpty)) {

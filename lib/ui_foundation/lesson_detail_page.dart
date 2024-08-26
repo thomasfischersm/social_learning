@@ -43,12 +43,9 @@ class LessonDetailState extends State<LessonDetailPage> {
           if (argument != null) {
             String lessonId = argument.lessonId;
             Lesson? lesson = libraryState.findLesson(lessonId);
-            Level? level = (lesson != null)
-                ? libraryState.findLevelByDocRef(lesson.levelId!)
-                : null;
-            int levelPosition = libraryState.findLevelPosition(level);
+            int? levelPosition = _findLevelPosition(lesson, libraryState);
 
-            if ((lesson != null) && (level != null)) {
+            if (lesson != null) {
               var counts = studentState.getCountsForLesson(lesson);
 
               return Scaffold(
@@ -69,11 +66,17 @@ class LessonDetailState extends State<LessonDetailPage> {
                     children: [
                       if (lesson.coverFireStoragePath != null)
                         /* Expanded(
-                            child:*/ Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: LessonCoverImageWidget(lesson.coverFireStoragePath)),
-                      Text('Level ${levelPosition + 1}',
-                          style: CustomTextStyles.getBody(context)),
+                            child:*/
+                        Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: LessonCoverImageWidget(
+                                lesson.coverFireStoragePath)),
+                      if (levelPosition != null)
+                        Text('Level ${levelPosition + 1}',
+                            style: CustomTextStyles.getBody(context))
+                      else
+                        Text('Flex Lessons',
+                            style: CustomTextStyles.getBody(context)),
                       Text('Lesson: ${lesson.title}',
                           style: CustomTextStyles.subHeadline),
                       Row(
@@ -114,6 +117,15 @@ class LessonDetailState extends State<LessonDetailPage> {
         });
       });
     });
+  }
+
+  int? _findLevelPosition(Lesson? lesson, LibraryState libraryState) {
+    var levelId = lesson?.levelId;
+    Level? level =
+        (levelId != null) ? libraryState.findLevelByDocRef(levelId) : null;
+    int? levelPosition =
+        (level != null) ? libraryState.findLevelPosition(level) : null;
+    return levelPosition;
   }
 
   String _generateLessonStatus(StudentState studentState, LessonCount counts) {
@@ -316,9 +328,10 @@ class RecordDialogState extends State<RecordDialogContent> {
   List<bool> _graduationRequirements = [];
   TextEditingController textFieldController = TextEditingController();
 
-  RecordDialogState(this.lesson){
+  RecordDialogState(this.lesson) {
     if (lesson.graduationRequirements != null) {
-      _graduationRequirements = List.filled(lesson.graduationRequirements!.length, false);
+      _graduationRequirements =
+          List.filled(lesson.graduationRequirements!.length, false);
     }
   }
 
@@ -449,7 +462,9 @@ class RecordDialogState extends State<RecordDialogContent> {
       rows.add(Row(
         children: [
           Checkbox(
-              value: index < _graduationRequirements.length ? _graduationRequirements[index] : false,
+              value: index < _graduationRequirements.length
+                  ? _graduationRequirements[index]
+                  : false,
               onChanged: (value) {
                 setState(() {
                   _graduationRequirements[index] = value ?? false;
