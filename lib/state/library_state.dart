@@ -123,24 +123,25 @@ class LibraryState extends ChangeNotifier {
     _reloadEnrolledCourses();
   }
 
-  void _reloadEnrolledCourses() async {
+  Future<void> _reloadEnrolledCourses() async {
     var enrolledCourseIds = _applicationState.currentUser?.enrolledCourseIds;
 
-    if (enrolledCourseIds == null) {
-      FirebaseFirestore.instance
+    if (enrolledCourseIds != null) {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
           .collection('courses')
           .where(FieldPath.documentId, whereIn: enrolledCourseIds)
           .where('isPrivate', isEqualTo: true)
           .get()
-          .then((snapshot) {
-        _enrolledPrivateCourses =
-            snapshot.docs.map((e) => Course.fromSnapshot(e)).toList();
-        _rebuildAvailableCourses();
-        print('Loaded ${_enrolledPrivateCourses.length} enrolled courses');
-        notifyListeners();
-      }).onError((error, stackTrace) {
-        print('Failed to load enrolled courses: $error');
+          .onError((Object error, StackTrace stackTrace) {
+        print('Failed to load private courses: $error');
+        return Future.error(error, stackTrace);
       });
+      _enrolledPrivateCourses =
+          snapshot.docs.map((e) => Course.fromSnapshot(e)).toList();
+      _rebuildAvailableCourses();
+      print('Loaded ${_enrolledPrivateCourses.length} enrolled courses');
+      notifyListeners();
     } else {
       if (_enrolledPrivateCourses.isNotEmpty) {
         _enrolledPrivateCourses = [];
@@ -482,6 +483,29 @@ class LibraryState extends ChangeNotifier {
     _applicationState.enrollInPrivateCourse(course, applicationState);
 
     return course;
+  }
+
+  Future<Course> joinPrivateCourse(String invitationCode) async {
+    var snapshot = await FirebaseFirestore.instance
+        .collection('courses')
+        .where('invitationCode', isEqualTo: invitationCode)
+        .get();
+    if (snapshot.docs.isNotEmpty) {
+      var course = Course.fromSnapshot(snapshot.docs.first);
+
+      // Enroll in the private course.
+      await _applicationState.enrollInPrivateCourse(course, _applicationState);
+
+      // Load the enrolled course into LibraryState.
+      await _reloadEnrolledCourses();
+
+      // Select the private course.
+      selectedCourse = _availableCourses.firstWhereOrNull((element) => element.id == course.id);
+
+      return course;
+    } else {
+      throw Exception('Course not found. Invitation code: $invitationCode');
+    }
   }
 
   void deleteLevel(Level level) {

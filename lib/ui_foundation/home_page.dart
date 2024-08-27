@@ -21,6 +21,8 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  TextEditingController _invitationCodeController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     // LevelMigration.migrate();
@@ -61,6 +63,22 @@ class HomePageState extends State<HomePage> {
               style: CustomTextStyles.headline,
             )),
             _generateCourseList(context),
+            CustomUiConstants.getTextPadding(Text('Join a private course',
+                style: CustomTextStyles.subHeadline)),
+            Row(
+              children: [
+                Expanded(child:TextField(
+                  controller: _invitationCodeController,
+                  decoration:
+                      const InputDecoration(hintText: 'Invitation code'),
+                )),
+                TextButton(
+                  onPressed: () => _joinPrivateCourse(context),
+                  child: const Text('Join'),
+                )
+              ],
+            ),
+            CustomUiConstants.getDivider(),
             CustomUiConstants.getTextPadding(Text(
                 'Create your own private course',
                 style: CustomTextStyles.subHeadline)),
@@ -99,7 +117,7 @@ class HomePageState extends State<HomePage> {
         int index = course.description.indexOf('http');
         if (index >= 0) {
           pureText =
-          course.description.substring(0, index).replaceAll('\\n', '\n');
+              course.description.substring(0, index).replaceAll('\\n', '\n');
           linkText = course.description.substring(index);
         } else {
           pureText = course.description.replaceAll('\\n', '\n');
@@ -117,15 +135,16 @@ class HomePageState extends State<HomePage> {
           CustomUiConstants.getRichTextPadding(RichText(
               text: TextSpan(children: [
             TextSpan(style: CustomTextStyles.getBody(context), text: pureText),
-            if (linkText != null) WidgetSpan(
-                child: RichText(
-                    text: TextSpan(
-                        text: linkText,
-                        style: CustomTextStyles.getLink(context),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            launchUrl(Uri.parse(linkText!));
-                          })))
+            if (linkText != null)
+              WidgetSpan(
+                  child: RichText(
+                      text: TextSpan(
+                          text: linkText,
+                          style: CustomTextStyles.getLink(context),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              launchUrl(Uri.parse(linkText!));
+                            })))
           ]))),
           CustomUiConstants.getDivider(),
         ]);
@@ -166,5 +185,15 @@ class HomePageState extends State<HomePage> {
 
   _createCourse() {
     Navigator.pushNamed(context, NavigationEnum.createCourse.route);
+  }
+
+  _joinPrivateCourse(BuildContext context) async {
+    // Join the private course.
+    LibraryState libraryState = Provider.of<LibraryState>(context, listen: false);
+    await libraryState.joinPrivateCourse(_invitationCodeController.text);
+
+    // Navigate to the curriculum of the private course.
+    Navigator.pushNamed(context, NavigationEnum.levelList.route);
+    // TODO: The page switch isn't working yet.
   }
 }
