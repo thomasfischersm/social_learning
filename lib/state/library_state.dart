@@ -422,6 +422,11 @@ class LibraryState extends ChangeNotifier {
   }
 
   Future<void> updateLesson(Lesson lesson) async {
+    // Clean up graduation requirements.
+    if (lesson.graduationRequirements != null) {
+      lesson.graduationRequirements!.removeWhere((element) => element.isEmpty);
+    }
+
     await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
       'levelId': lesson.levelId,
       'sortOrder': lesson.sortOrder,
