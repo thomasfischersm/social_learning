@@ -31,6 +31,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
   Widget build(BuildContext context) {
     if (Provider.of<LibraryState>(context, listen: false).selectedCourse ==
         null) {
+      print('No course selected. Redirecting to home page.');
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         Navigator.pushNamed(context, NavigationEnum.home.route);
       });
@@ -65,6 +66,9 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                           '${libraryState.selectedCourse?.title} Curriculum',
                           style: CustomTextStyles.headline,
                         )),
+                        CustomUiConstants.getTextPadding(Text(
+                            'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
+                            style: CustomTextStyles.getBody(context))),
                         generateLevelList(context, libraryState),
                         InkWell(
                             onTap: () {
@@ -96,7 +100,8 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                 },
                 child: Text(
                   levelText,
-                  style: CustomTextStyles.subHeadline, softWrap: true,
+                  style: CustomTextStyles.subHeadline,
+                  softWrap: true,
                 )),
             InkWell(
                 onTap: () {
@@ -141,16 +146,17 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
       }
 
       children.add(Row(children: [
-        Expanded(child:InkWell(
-            onTap: () {
-              Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
-                  arguments: CmsLessonDetailArgument(levelId, lesson.id));
-            },
-            child: CustomUiConstants.getIndentationTextPadding(Text(
-              softWrap: true,
-              lesson.title,
-              style: CustomTextStyles.getBody(context),
-            )))),
+        Flexible(
+            child: InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
+                      arguments: CmsLessonDetailArgument(levelId, lesson.id));
+                },
+                child: CustomUiConstants.getIndentationTextPadding(Text(
+                  overflow: TextOverflow.ellipsis,
+                  lesson.title,
+                  style: CustomTextStyles.getBody(context),
+                )))),
         InkWell(
             onTap: () {
               _detachLesson(lesson, context, libraryState);
@@ -195,15 +201,17 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
     Iterable<Lesson> lessons = libraryState.getUnattachedLessons();
     for (Lesson lesson in lessons) {
       children.add(Row(children: [
-        Expanded(child:InkWell(
-            onTap: () {
-              Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
-                  arguments: CmsLessonDetailArgument(null, lesson.id));
-            },
-            child: CustomUiConstants.getIndentationTextPadding(Text(
-              lesson.title,
-              style: CustomTextStyles.getBody(context), softWrap: true,
-            )))),
+        Flexible(
+            child: InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
+                      arguments: CmsLessonDetailArgument(null, lesson.id));
+                },
+                child: CustomUiConstants.getIndentationTextPadding(Text(
+                  lesson.title,
+                  style: CustomTextStyles.getBody(context),
+                  overflow: TextOverflow.ellipsis,
+                )))),
         InkWell(
             onTap: () {
               _deleteLesson(lesson, context, libraryState);

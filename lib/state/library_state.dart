@@ -126,7 +126,7 @@ class LibraryState extends ChangeNotifier {
   Future<void> _reloadEnrolledCourses() async {
     var enrolledCourseIds = _applicationState.currentUser?.enrolledCourseIds;
 
-    if (enrolledCourseIds != null) {
+    if (enrolledCourseIds != null && enrolledCourseIds.isNotEmpty) {
       QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
           .instance
           .collection('courses')
@@ -485,7 +485,7 @@ class LibraryState extends ChangeNotifier {
     return course;
   }
 
-  Future<Course> joinPrivateCourse(String invitationCode) async {
+  Future<Course?> joinPrivateCourse(String invitationCode) async {
     var snapshot = await FirebaseFirestore.instance
         .collection('courses')
         .where('invitationCode', isEqualTo: invitationCode)
@@ -504,7 +504,8 @@ class LibraryState extends ChangeNotifier {
 
       return course;
     } else {
-      throw Exception('Course not found. Invitation code: $invitationCode');
+      // Course not found.
+      return Future.value(null);
     }
   }
 

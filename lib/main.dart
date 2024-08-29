@@ -67,6 +67,28 @@ void main() async {
   ));
 }
 
+class DebugObserver extends NavigatorObserver {
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    print('didPush ${route.settings.name}');
+  }
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    print('didPop ${route.settings.name}');
+  }
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    print('didRemove ${route.settings.name}');
+  }
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
+    print('didReplace ${newRoute?.settings.name}');
+  }
+}
+
 class SocialLearningApp extends StatelessWidget {
   const SocialLearningApp({super.key});
 
@@ -74,6 +96,7 @@ class SocialLearningApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [DebugObserver()],
       title: 'Learning Lab',
       scaffoldMessengerKey: snackbarKey,
       theme: ThemeData(

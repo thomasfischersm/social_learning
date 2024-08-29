@@ -88,7 +88,7 @@ class ApplicationState extends ChangeNotifier {
     });
 
     _isCurrentUserInitialized = false;
-    _currentUser = null;
+    _currentUser = await UserFunctions.getCurrentUser();
 
     notifyListeners();
   }

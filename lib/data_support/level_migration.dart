@@ -77,7 +77,7 @@ class LevelMigration {
         }
         Lesson lesson = Lesson.fromSnapshot(lessonDoc);
 
-        if (lesson.isLevel) {
+        if (lesson.isLevel == true) {
           // Create a new level.
           print('Creating level: ${lesson.title}');
           var newLevelRef = db.collection('levels').doc();

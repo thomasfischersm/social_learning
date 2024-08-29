@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data_support/json_curriculum_sync.dart';
@@ -190,10 +191,27 @@ class HomePageState extends State<HomePage> {
   _joinPrivateCourse(BuildContext context) async {
     // Join the private course.
     LibraryState libraryState = Provider.of<LibraryState>(context, listen: false);
-    await libraryState.joinPrivateCourse(_invitationCodeController.text);
+    Course? course = await libraryState.joinPrivateCourse(_invitationCodeController.text);
+    print('Joined course: ${course?.title}');
+
+    if (course == null) {
+      Fluttertoast.showToast(
+        msg: "The invitation code doesn't exist.",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return;
+    }
 
     // Navigate to the curriculum of the private course.
-    Navigator.pushNamed(context, NavigationEnum.levelList.route);
+    if (context.mounted) {
+      print('The currently selected course is ${libraryState.selectedCourse?.title}');
+      Navigator.pushNamed(context, NavigationEnum.levelList.route);
+      print('Navigated to curriculum');
+    }
     // TODO: The page switch isn't working yet.
   }
 }
