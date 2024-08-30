@@ -27,8 +27,7 @@ class BottomBar extends StatelessWidget {
                     ),
                     Consumer<LibraryState>(
                         builder: (context, libraryState, child) =>
-                            ((applicationState.currentUser?.isAdmin ?? false) &&
-                                    libraryState.isCourseSelected)
+                            _isCourseAdmin(applicationState, libraryState)
                                 ? addIcon(context, Icons.settings,
                                     NavigationEnum.cmsSyllabus, true)
                                 : const Spacer()),
@@ -97,4 +96,25 @@ class BottomBar extends StatelessWidget {
       return NavigationEnum.sessionHome;
     }
   }
+}
+
+bool _isCourseAdmin(ApplicationState applicationState, LibraryState libraryState) {
+  print('isCourseAdmin: ${applicationState.currentUser?.displayName}');
+  // Must be logged in.
+  if (applicationState.currentUser == null) {
+    return false;
+  }
+  
+  // Must have a course selected.
+  if (!libraryState.isCourseSelected) {
+    return false;
+  }
+  
+  // Admins can edit all courses.
+  if (applicationState.currentUser?.isAdmin == true) {
+    return true;
+  }
+
+  print('isCourseAdmin: ${libraryState.selectedCourse?.creatorId} == ${applicationState.currentUser?.uid}');
+  return libraryState.selectedCourse?.creatorId == applicationState.currentUser?.uid;
 }
