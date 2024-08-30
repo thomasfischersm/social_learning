@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
 
 import 'navigation_enum.dart';
@@ -8,6 +10,16 @@ class LandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Redirect to home page if user is already signed in.
+    ApplicationState applicationState = Provider.of<ApplicationState>(context);
+    if (applicationState.currentUser != null) {
+      Future.microtask(() {
+        if (context.mounted) {
+          Navigator.of(context).pushReplacementNamed(NavigationEnum.home.route);
+        }
+      });
+    }
+
     return Center(
         child: CustomUiConstants.framePage(
             Column(

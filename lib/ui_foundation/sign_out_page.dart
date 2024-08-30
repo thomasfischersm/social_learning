@@ -14,7 +14,7 @@ class SignOutPage extends StatelessWidget {
         TextButton(
             onPressed: () {
               auth.FirebaseAuth.instance.signOut();
-              Navigator.pushNamed(context, NavigationEnum.landing_page.route);
+              Navigator.pushNamed(context, NavigationEnum.landing.route);
             },
             child: const Text("Ghost myself"))
       ],
