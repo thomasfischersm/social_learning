@@ -60,56 +60,91 @@ class LessonDetailState extends State<LessonDetailPage> {
                     child: const Text('Record'),
                   ),
                   body: Center(
-                      child: CustomUiConstants.framePage(IntrinsicHeight(
-                          child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (lesson.coverFireStoragePath != null)
-                        /* Expanded(
-                            child:*/
-                        Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: LessonCoverImageWidget(
-                                lesson.coverFireStoragePath)),
-                      if (levelPosition != null)
-                        Text('Level ${levelPosition + 1}',
-                            style: CustomTextStyles.getBody(context))
-                      else
-                        Text('Flex Lessons',
-                            style: CustomTextStyles.getBody(context)),
-                      Text('Lesson: ${lesson.title}',
-                          style: CustomTextStyles.subHeadline),
-                      Row(
-                        children: [
-                          Expanded(
-                              child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(lesson.synopsis ?? '',
-                                  style: CustomTextStyles.getBody(context)),
-                              Text(
-                                _generateLessonStatus(studentState, counts),
-                                style: CustomTextStyles.getBody(context),
+                      child: CustomUiConstants.framePage(
+                          enableScrolling: false,
+                          DefaultTabController(
+                            length: 4, // Number of tabs
+                            child: NestedScrollView(
+                              headerSliverBuilder: (BuildContext context,
+                                  bool innerBoxIsScrolled) {
+                                return <Widget>[
+                                  SliverToBoxAdapter(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ..._generateLessonHeader(
+                                            lesson,
+                                            levelPosition,
+                                            counts,
+                                            context,
+                                            studentState)
+                                      ],
+                                    ),
+                                  ),
+                                  SliverPersistentHeader(
+                                    pinned: true,
+                                    delegate: _SliverAppBarDelegate(
+                                      const TabBar(
+                                        labelColor: Colors.black,
+                                        tabs: [
+                                          Tab(text: 'Learn'),
+                                          Tab(text: 'Discuss'),
+                                          Tab(text: 'Showcase'),
+                                          Tab(text: 'Connect')
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ];
+                              },
+                              body: Column(
+                                children: [
+                                  Expanded(
+                                    child: TabBarView(
+                                      children: <Widget>[
+                                        SingleChildScrollView(
+                                          child: /*IntrinsicHeight(child:*/
+                                              Column(
+                                            children: <Widget>[
+                                              _generateInstructionText(
+                                                  lesson, context)
+                                            ],
+                                          ),
+                                        ),
+                                        /*),*/
+                                        SingleChildScrollView(
+                                          child: Column(
+                                            children: <Widget>[
+                                              Text("Content for Tab 2"),
+                                            ],
+                                          ),
+                                        ),
+                                        SingleChildScrollView(
+                                          child: Column(
+                                            children: <Widget>[
+                                              Text("Content for Tab 3"),
+                                            ],
+                                          ),
+                                        ),
+                                        SingleChildScrollView(
+                                          child: Column(
+                                            children: <Widget>[
+                                              Text("Content for Tab 4"),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  CustomUiConstants.getGeneralFooter(context),
+                                ],
                               ),
-                            ],
-                          )),
-                          if (StringUtil.isNotEmpty(lesson.recapVideo))
-                            _addVideoIcon(lesson.recapVideo!, 'Recap', context),
-                          if (StringUtil.isNotEmpty(lesson.lessonVideo))
-                            _addVideoIcon(
-                                lesson.lessonVideo!, 'Lesson', context),
-                          if (StringUtil.isNotEmpty(lesson.practiceVideo))
-                            _addVideoIcon(
-                                lesson.practiceVideo!, 'Practice', context),
-                        ],
-                      ),
-                      CustomUiConstants.getDivider(),
-                      _generateInstructionText(lesson, context),
-                      CustomUiConstants.getGeneralFooter(context)
-                    ],
-                  )))));
+                            ),
+                          ))));
             }
           }
+
           return Scaffold(
               appBar: AppBar(title: const Text('Nothing loaded')),
               bottomNavigationBar: const BottomBar(),
@@ -126,6 +161,47 @@ class LessonDetailState extends State<LessonDetailPage> {
     int? levelPosition =
         (level != null) ? libraryState.findLevelPosition(level) : null;
     return levelPosition;
+  }
+
+  Iterable<Widget> _generateLessonHeader(Lesson lesson, int? levelPosition,
+      LessonCount counts, BuildContext context, StudentState studentState) {
+    return [
+      if (lesson.coverFireStoragePath != null)
+        /* Expanded(
+                            child:*/
+        Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: LessonCoverImageWidget(lesson.coverFireStoragePath)),
+      if (levelPosition != null)
+        Text('Level ${levelPosition + 1}',
+            style: CustomTextStyles.getBody(context))
+      else
+        Text('Flex Lessons', style: CustomTextStyles.getBody(context)),
+      Text('Lesson: ${lesson.title}', style: CustomTextStyles.subHeadline),
+      Padding(padding: const EdgeInsets.only(bottom: 8),child:Row(
+        children: [
+          Expanded(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(lesson.synopsis ?? '',
+                  style: CustomTextStyles.getBody(context)),
+              Text(
+                _generateLessonStatus(studentState, counts),
+                style: CustomTextStyles.getBody(context),
+              ),
+            ],
+          )),
+          if (StringUtil.isNotEmpty(lesson.recapVideo))
+            _addVideoIcon(lesson.recapVideo!, 'Recap', context),
+          if (StringUtil.isNotEmpty(lesson.lessonVideo))
+            _addVideoIcon(lesson.lessonVideo!, 'Lesson', context),
+          if (StringUtil.isNotEmpty(lesson.practiceVideo))
+            _addVideoIcon(lesson.practiceVideo!, 'Practice', context),
+        ],
+      ),),
+      /*CustomUiConstants.getDivider()*/
+    ];
   }
 
   String _generateLessonStatus(StudentState studentState, LessonCount counts) {
@@ -488,3 +564,80 @@ class RecordDialogState extends State<RecordDialogContent> {
     return true;
   }
 }
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar _tabBar;
+
+  _SliverAppBarDelegate(this._tabBar);
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Colors.white,
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
+  }
+}
+
+/*
+
+        /*IntrinsicHeight(
+                          child: */DefaultTabController(
+        length: 4,
+        child:NestedScrollView(headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              title: Text("Lesson Page"),
+              pinned: true,
+              floating: true,
+              bottom: TabBar(
+                tabs: [
+                  Tab(text: 'Learn'),
+                  Tab(text: 'Discuss'),
+                  Tab(text: 'Showcase'),
+                  Tab(text: 'Connect'),
+                ],
+              ),
+            ),
+          ];
+        }, body: Column(mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ..._generateLessonHeader(
+                lesson, levelPosition, counts, context, studentState),
+            /*DefaultTabController(
+                          length: 4,
+                          child: Column(
+                            children: [
+                              const TabBar(tabs: [
+                                Tab(text: 'Learn'),
+                                Tab(text: 'Discuss'),
+                                Tab(text: 'Showcase'),
+                                Tab(text: 'Connect')
+                              ]),*/
+            TabBarView(
+              children: [
+                /*_generateInstructionText(lesson, context)*/Text('dsfdsf'),
+                Text('Placeholder 2'),
+                Text('Placeholder 3'),
+                Text('Placeholder 4')
+              ],
+            ),
+            // )),
+            CustomUiConstants.getGeneralFooter(context),
+          ],
+        ))))));
+  }
+}*/
