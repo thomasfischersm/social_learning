@@ -66,9 +66,10 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                           '${libraryState.selectedCourse?.title} Curriculum',
                           style: CustomTextStyles.headline,
                         )),
-                        CustomUiConstants.getTextPadding(Text(
-                            'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
-                            style: CustomTextStyles.getBody(context))),
+                        if (libraryState.selectedCourse?.invitationCode != null)
+                          CustomUiConstants.getTextPadding(Text(
+                              'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
+                              style: CustomTextStyles.getBody(context))),
                         generateLevelList(context, libraryState),
                         InkWell(
                             onTap: () {
