@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data/lesson_comment.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
@@ -31,6 +34,8 @@ class LessonDetailPage extends StatefulWidget {
 }
 
 class LessonDetailState extends State<LessonDetailPage> {
+  final TextEditingController _commentController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ApplicationState>(
@@ -113,13 +118,8 @@ class LessonDetailState extends State<LessonDetailPage> {
                                           ),
                                         ),
                                         /*),*/
-                                        SingleChildScrollView(
-                                          child: Column(
-                                            children: <Widget>[
-                                              Text("Content for Tab 2"),
-                                            ],
-                                          ),
-                                        ),
+                                        _createCommentsView(
+                                            lesson, context, libraryState),
                                         SingleChildScrollView(
                                           child: Column(
                                             children: <Widget>[
@@ -148,7 +148,7 @@ class LessonDetailState extends State<LessonDetailPage> {
           return Scaffold(
               appBar: AppBar(title: const Text('Nothing loaded')),
               bottomNavigationBar: const BottomBar(),
-              body: const Spacer());
+              body: const SizedBox.shrink());
         });
       });
     });
@@ -178,28 +178,31 @@ class LessonDetailState extends State<LessonDetailPage> {
       else
         Text('Flex Lessons', style: CustomTextStyles.getBody(context)),
       Text('Lesson: ${lesson.title}', style: CustomTextStyles.subHeadline),
-      Padding(padding: const EdgeInsets.only(bottom: 8),child:Row(
-        children: [
-          Expanded(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(lesson.synopsis ?? '',
-                  style: CustomTextStyles.getBody(context)),
-              Text(
-                _generateLessonStatus(studentState, counts),
-                style: CustomTextStyles.getBody(context),
-              ),
-            ],
-          )),
-          if (StringUtil.isNotEmpty(lesson.recapVideo))
-            _addVideoIcon(lesson.recapVideo!, 'Recap', context),
-          if (StringUtil.isNotEmpty(lesson.lessonVideo))
-            _addVideoIcon(lesson.lessonVideo!, 'Lesson', context),
-          if (StringUtil.isNotEmpty(lesson.practiceVideo))
-            _addVideoIcon(lesson.practiceVideo!, 'Practice', context),
-        ],
-      ),),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Row(
+          children: [
+            Expanded(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(lesson.synopsis ?? '',
+                    style: CustomTextStyles.getBody(context)),
+                Text(
+                  _generateLessonStatus(studentState, counts),
+                  style: CustomTextStyles.getBody(context),
+                ),
+              ],
+            )),
+            if (StringUtil.isNotEmpty(lesson.recapVideo))
+              _addVideoIcon(lesson.recapVideo!, 'Recap', context),
+            if (StringUtil.isNotEmpty(lesson.lessonVideo))
+              _addVideoIcon(lesson.lessonVideo!, 'Lesson', context),
+            if (StringUtil.isNotEmpty(lesson.practiceVideo))
+              _addVideoIcon(lesson.practiceVideo!, 'Practice', context),
+          ],
+        ),
+      ),
       /*CustomUiConstants.getDivider()*/
     ];
   }
@@ -339,6 +342,156 @@ class LessonDetailState extends State<LessonDetailPage> {
             }),
           );
         });
+  }
+
+  Widget _createCommentsView(
+      Lesson lesson, BuildContext context, LibraryState libraryState) {
+    DocumentReference lessonId =
+        FirebaseFirestore.instance.doc('/lessons/${lesson.id}');
+    print('Querying for comments for lesson: $lessonId');
+    Widget commentColumn = StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: FirebaseFirestore.instance
+            .collection('lessonComments')
+            .where('lessonId', isEqualTo: lessonId)
+            // .orderBy('createdAt', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          print(
+              'StreamBuilder came back with ${snapshot.connectionState} and ${snapshot.data} and ${snapshot.data?.docs.length}');
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+            return const Text('No comments yet.');
+          }
+
+          List<LessonComment> comments = snapshot.data!.docs
+              .map((snapshot) => LessonComment.fromQuerySnapshot(snapshot))
+              .toList();
+          comments.sort((a, b) {
+            if (a.createdAt == null && b.createdAt == null) return 0;
+            if (a.createdAt == null) return -1;
+            if (b.createdAt == null) return 1;
+            return b.createdAt!.compareTo(a.createdAt!);
+          });
+          var userIds =
+              comments.map((comment) => comment.creatorId.id).toSet().toList();
+          print('UserIds: $userIds');
+
+          return FutureBuilder(
+              future: FirebaseFirestore.instance
+                  .collection('users')
+                  .where(FieldPath.documentId, whereIn: userIds)
+                  .get(),
+              builder: (context, userSnapshot) {
+                print(
+                    'FutureBuilder is called with userSnapshot $userSnapshot');
+                if (userSnapshot.data == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                Map<String, User> userMap = userSnapshot.data!.docs
+                    .map((e) => User.fromSnapshot(e))
+                    .fold({}, (map, user) {
+                  map[user.id] = user;
+                  return map;
+                });
+
+                List<Widget> commentWidgets = [];
+                for (LessonComment comment in comments) {
+                  User? commenter = userMap[comment.creatorId.id];
+                  commentWidgets.add(Container(
+                      padding: const EdgeInsets.only(top: 4, bottom: 4),
+                      child: Row(children: [
+                        if (commenter != null)
+                          SizedBox(
+                              width: 50,
+                              height: 50,
+                              child: ProfileImageWidget(
+                                  commenter.profileFireStoragePath)),
+                        Expanded(
+                            child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12.0)),
+                          child: RichText(
+                              text: TextSpan(children: [
+                            TextSpan(
+                                text: commenter?.displayName,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                            const WidgetSpan(child: SizedBox(width: 8)),
+                            TextSpan(text: comment.text),
+                            if (comment.createdAt != null)
+                              const WidgetSpan(child: SizedBox(width: 16)),
+                            TextSpan(
+                              text: _formatCommentTimestamp(
+                                  comment.createdAt?.toLocal()),
+                              style:
+                                  const TextStyle(fontStyle: FontStyle.italic),
+                            ),
+                          ])),
+                        ))
+                      ])));
+                }
+
+                return Column(children: commentWidgets);
+              });
+        });
+
+    // Add row to leave a new comment.
+    Row sendRow = Row(
+      children: [
+        Expanded(
+            child: TextField(
+              onSubmitted: (_) => _sendComment(lesson, libraryState),
+          controller: _commentController,
+          decoration: const InputDecoration(
+              hintText: 'Leave a comment...',
+              contentPadding: EdgeInsets.all(8.0)),
+        )),
+        IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: () => _sendComment(lesson, libraryState)
+            )
+      ],
+    );
+
+    return Column(
+        children: [Expanded(child:SingleChildScrollView(child: commentColumn)), sendRow]);
+  }
+
+  void _sendComment(Lesson lesson, LibraryState libraryState) {
+    // Send the comment
+    print('send clicked');
+    if (_commentController.text.isNotEmpty) {
+      String comment = _commentController.text;
+      _commentController.clear();
+
+      print('attempting to create comment');
+      libraryState.addLessonComment(lesson, comment);
+    }
+  }
+
+  String _formatCommentTimestamp(DateTime? date) {
+    if (date == null) {
+      return '';
+    }
+
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} min ago';
+    } else if (difference.inDays == 0) {
+      return DateFormat.jm().format(date);
+    } else if (now.year == date.year) {
+      return DateFormat.MMMd().format(date);
+    } else {
+      return DateFormat.yMMMd().format(date);
+    }
   }
 }
 

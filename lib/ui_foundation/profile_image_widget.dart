@@ -30,9 +30,9 @@ class ProfileImageWidgetState extends State<ProfileImageWidget> {
     var profilePhotoUrl = _profilePhotoUrl;
     if (profilePhotoUrl != null) {
       return CircleAvatar(
-            backgroundImage: NetworkImage(profilePhotoUrl),
-            maxRadius: 100,
-          );
+        backgroundImage: NetworkImage(profilePhotoUrl),
+        maxRadius: 100,
+      );
     } else {
       return const Icon(Icons.photo);
     }
@@ -44,9 +44,11 @@ class ProfileImageWidgetState extends State<ProfileImageWidget> {
       String url = await FirebaseStorage.instance
           .ref(widget.profileFireStoragePath)
           .getDownloadURL();
-      setState(() {
-        _profilePhotoUrl = url;
-      });
+      if (mounted) {
+        setState(() {
+          _profilePhotoUrl = url;
+        });
+      }
     }
   }
 }
