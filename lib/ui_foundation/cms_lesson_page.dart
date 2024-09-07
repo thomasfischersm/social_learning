@@ -5,6 +5,7 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
@@ -260,7 +261,10 @@ class CmsLessonState extends State<CmsLessonPage> {
   }
 
   void _createUpdateLesson(BuildContext context) async {
-    var libraryState = Provider.of<LibraryState>(context, listen: false);
+    LibraryState libraryState =
+        Provider.of<LibraryState>(context, listen: false);
+    StudentState studentState =
+        Provider.of<StudentState>(context, listen: false);
 
     if (_isAdd) {
       libraryState.createLesson(
@@ -271,7 +275,8 @@ class CmsLessonState extends State<CmsLessonPage> {
           _recapVideoController.text,
           _lessonVideoController.text,
           _practiceVideoController.text,
-          _graduationRequirementsController.map((e) => e.text).toList());
+          _graduationRequirementsController.map((e) => e.text).toList(),
+          studentState);
     } else {
       var lesson = _lesson;
 

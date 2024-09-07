@@ -52,7 +52,7 @@ class LevelListState extends State<LevelListPage> {
                           '${libraryState.selectedCourse?.title} Curriculum',
                           style: CustomTextStyles.headline,
                         )),
-                        generateLevelList(levelCompletions),
+                        generateLevelList(levelCompletions, libraryState),
                         CustomUiConstants.getTextPadding(Text(
                           '\nStats',
                           style: CustomTextStyles.headline,
@@ -76,7 +76,7 @@ class LevelListState extends State<LevelListPage> {
         ));
   }
 
-  Widget generateLevelList(List<LevelCompletion> levelCompletions) {
+  Widget generateLevelList(List<LevelCompletion> levelCompletions, LibraryState libraryState) {
     if (levelCompletions.isEmpty) {
       return Text(
         'Undergoing maintenance - no levels!',
@@ -97,7 +97,7 @@ class LevelListState extends State<LevelListPage> {
       } else if (levelCompletion.graduatedLessonRawIds.isNotEmpty) {
         levelText +=
             ' - ${levelCompletion.lessonsGraduatedCount}/${levelCompletion.lessonCount} '
-            '(${levelCompletion.lessonsGraduatedCount * 100 / levelCompletion.lessonCount}%)';
+            '(${(levelCompletion.lessonsGraduatedCount * 100 / levelCompletion.lessonCount).round()}%)';
         levelTextStyle = CustomTextStyles.getPartiallyLearned(context);
       } else {
         levelTextStyle = CustomTextStyles.getBody(context);
@@ -118,13 +118,15 @@ class LevelListState extends State<LevelListPage> {
     }
 
     // Show Flex lessons.
-    children.add(InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, NavigationEnum.levelDetail.route,
-            arguments: LevelDetailArgument.flexLessons());
-      },
-      child: Text('Flex Lessons', style: CustomTextStyles.getBody(context)),
-    ));
+    if (libraryState.getUnattachedLessons().isNotEmpty) {
+      children.add(InkWell(
+        onTap: () {
+          Navigator.pushNamed(context, NavigationEnum.levelDetail.route,
+              arguments: LevelDetailArgument.flexLessons());
+        },
+        child: Text('Flex Lessons', style: CustomTextStyles.getBody(context)),
+      ));
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

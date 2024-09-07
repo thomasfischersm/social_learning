@@ -15,6 +15,7 @@ import 'package:social_learning/data/lesson_comment.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:collection/collection.dart';
+import 'package:social_learning/state/student_state.dart';
 
 class LibraryState extends ChangeNotifier {
   final ApplicationState _applicationState;
@@ -394,8 +395,11 @@ class LibraryState extends ChangeNotifier {
       String? recapVideo,
       String? lessonVideo,
       String? practiceVideo,
-      List<String>? graduationRequirements) async {
-    await FirebaseFirestore.instance
+      List<String>? graduationRequirements,
+      StudentState studentState) async {
+    var currentUser = _applicationState.currentUser;
+
+    DocumentReference newLessonRef = await FirebaseFirestore.instance
         .collection('lessons')
         .add(<String, dynamic>{
       'courseId':
@@ -411,12 +415,18 @@ class LibraryState extends ChangeNotifier {
       'recapVideo': recapVideo,
       'lessonVideo': lessonVideo,
       'practiceVideo': practiceVideo,
-      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
+      'creatorId': currentUser!.uid,
       'graduationRequirements': graduationRequirements,
     });
 
     if (levelId == null) {
       sortUnattachedLessons();
+    }
+
+    // If it's a private course, create a practiceRecords entry so that the
+    // creator can teach it.
+    if (selectedCourse?.isPrivate == true) {
+      studentState.recordTeaching(newLessonRef.id, currentUser, true);
     }
   }
 

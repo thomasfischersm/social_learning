@@ -69,21 +69,21 @@ class StudentState extends ChangeNotifier {
         false);
     if (hasGraduated || isAdmin) {
       print('Recording practiceRecord.');
-      recordTeaching(lesson, mentee, isGraduation);
+      recordTeaching(lesson.id!, mentee, isGraduation);
     } else {
       print('Silently discarding practiceRecord ${getLessonStatus(lesson)}');
     }
   }
 
-  void recordTeaching(Lesson lesson, User mentee, bool isGraduation) {
+  void recordTeaching(String lessonId, User mentee, bool isGraduation) async {
     var data = <String, dynamic>{
-      'lessonId': FirebaseFirestore.instance.doc('lessons/${lesson.id}'),
+      'lessonId': FirebaseFirestore.instance.doc('lessons/$lessonId'),
       'menteeUid': mentee.uid,
       'mentorUid': auth.FirebaseAuth.instance.currentUser?.uid,
       'isGraduation': isGraduation,
       'timestamp': FieldValue.serverTimestamp(),
     };
-    FirebaseFirestore.instance.collection('practiceRecords').add(data);
+    await FirebaseFirestore.instance.collection('practiceRecords').add(data);
   }
 
   int getPracticeCount() => _learnRecords?.length ?? 0;
