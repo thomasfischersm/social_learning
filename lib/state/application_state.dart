@@ -105,6 +105,7 @@ class ApplicationState extends ChangeNotifier {
     auth.FirebaseAuth.instance.signOut();
     print('FirebaseAuth signOut done');
 
+    _isLoggedIn = false;
     _isCurrentUserInitialized = false;
     _currentUser = null;
 

@@ -42,6 +42,14 @@ class UserFunctions {
     });
   }
 
+  static void updateCurrentCourse(User currentUser, String courseId) async {
+    var courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
+    currentUser.currentCourseId = courseRef;
+    FirebaseFirestore.instance.collection('users').doc(currentUser.id).set({
+      'currentCourseId': courseRef
+    }, SetOptions(merge: true));
+  }
+
   static Future<List<User>> findUsersByPartialDisplayName(
       String partialDisplayName, int resultLimit) async {
     // Protect against charges.

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +16,8 @@ class StudentState extends ChangeNotifier {
   bool _isInitialized = false;
   List<PracticeRecord>? _learnRecords;
   List<PracticeRecord>? _teachRecords;
+  StreamSubscription? _menteeSubscription;
+  StreamSubscription? _mentorSubscription;
 
   // List<LessonStatus>? _lessonStatuses;
 
@@ -21,7 +25,7 @@ class StudentState extends ChangeNotifier {
     if (!_isInitialized) {
       _isInitialized = true;
 
-      FirebaseFirestore.instance
+      _menteeSubscription = FirebaseFirestore.instance
           .collection('practiceRecords')
           .where('menteeUid',
               isEqualTo: auth.FirebaseAuth.instance.currentUser?.uid)
@@ -32,7 +36,7 @@ class StudentState extends ChangeNotifier {
         notifyListeners();
       });
 
-      FirebaseFirestore.instance
+      _mentorSubscription = FirebaseFirestore.instance
           .collection('practiceRecords')
           .where('mentorUid',
               isEqualTo: auth.FirebaseAuth.instance.currentUser?.uid)
@@ -225,6 +229,9 @@ class StudentState extends ChangeNotifier {
   }
 
   void signOut() {
+    _menteeSubscription?.cancel();
+    _mentorSubscription?.cancel();
+
     _isInitialized = false;
     _learnRecords = null;
     _teachRecords = null;
