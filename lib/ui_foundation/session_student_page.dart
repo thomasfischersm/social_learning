@@ -52,9 +52,13 @@ class SessionStudentState extends State<SessionStudentPage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (studentSessionState.currentSession?.isActive == false)
+                    CustomUiConstants.getTextPadding(Text(
+                        'The session has ended!',
+                        style: CustomTextStyles.subHeadline)),
                   CustomUiConstants.getTextPadding(Text(
                       'Attending Session: ${studentSessionState.currentSession?.name}',
-                      style: CustomTextStyles.headline)),
+                      style: CustomTextStyles.subHeadline)),
                   _createPairingTable(
                       studentSessionState, libraryState, applicationState),
                 ],

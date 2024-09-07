@@ -49,8 +49,14 @@ class SessionHostState extends State<SessionHostPage> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                         onPressed: () =>
-                            _pairNextSession(context, organizerSessionState),
-                        child: const Text('Pair next session'))),
+                            _pairNextRound(context, organizerSessionState),
+                        child: const Text('Pair the next round'))),
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                        onPressed: () =>
+                            _endSession(context, organizerSessionState),
+                        child: const Text('End the session'))),
                 Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -145,7 +151,7 @@ class SessionHostState extends State<SessionHostPage> {
     }, children: tableRows);
   }
 
-  _pairNextSession(
+  _pairNextRound(
       BuildContext context, OrganizerSessionState organizerSessionState) {
     // Match students.
     var libraryState = Provider.of<LibraryState>(context, listen: false);
@@ -154,6 +160,12 @@ class SessionHostState extends State<SessionHostPage> {
 
     // Save next round to the Firestore.
     organizerSessionState.saveNextRound(pairedSession);
+  }
+
+  _endSession(BuildContext context, OrganizerSessionState organizerSessionState) {
+    organizerSessionState.endSession();
+
+    Navigator.pushNamed(context, NavigationEnum.levelList.route);
   }
 
   _goToLesson(Lesson? lesson) {

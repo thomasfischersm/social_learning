@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -30,7 +29,13 @@ class StudentSessionState extends ChangeNotifier {
   Course? _lastCourse;
 
   StudentSessionState(this._applicationState, this._libraryState) {
-    _sessionSubscription = SessionSubscription(() => notifyListeners());
+    _sessionSubscription = SessionSubscription(() {
+      // Unsubscribe if the session ended.
+      if (_sessionSubscription.item?.isActive == false) {
+        _resetSession();
+      }
+      notifyListeners();
+    });
     _participantUsersSubscription =
         ParticipantUsersSubscription(() => notifyListeners(), null);
     _sessionParticipantsSubscription = SessionParticipantsSubscription(
@@ -99,6 +104,9 @@ class StudentSessionState extends ChangeNotifier {
           _resetSession();
         }
       }
+    }).onError((error, stackTrace) {
+      print('Error getting active participants for the current session: $error');
+      _resetSession();
     });
   }
 

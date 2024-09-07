@@ -107,6 +107,8 @@ class OrganizerSessionState extends ChangeNotifier {
             }
           }
         }
+      }).onError((error, stackTrace) {
+        print('Failed to get active session from Firestore: $error');
       });
     }
   }
@@ -230,6 +232,19 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void signOut() {
+    _sessionSubscription.cancel();
+    _sessionParticipantsSubscription.cancel();
+    _participantUsersSubscription.cancel();
+    _practiceRecordsSubscription.cancel();
+    _sessionPairingSubscription.cancel();
+  }
+
+  void endSession() {
+    // Set the session to inactive.
+    FirebaseFirestore.instance
+        .doc('/sessions/${currentSession?.id}')
+        .update({'isActive': false});
+
     _sessionSubscription.cancel();
     _sessionParticipantsSubscription.cancel();
     _participantUsersSubscription.cancel();
