@@ -703,4 +703,14 @@ class LibraryState extends ChangeNotifier {
     });
     print('finished firebase call to create comment');
   }
+
+  void signOut() {
+    _selectedCourse = null;
+    _isSelectedCourseInitializedFromPrefs = false;
+    _selectedCourse = null;
+    _enrolledPrivateCourses = [];
+    _isCourseListLoaded = false;
+    _isLevelListLoaded = false;
+    _isLessonListLoaded = false;
+  }
 }

@@ -228,6 +228,14 @@ class OrganizerSessionState extends ChangeNotifier {
       return [];
     }
   }
+
+  void signOut() {
+    _sessionSubscription.cancel();
+    _sessionParticipantsSubscription.cancel();
+    _participantUsersSubscription.cancel();
+    _practiceRecordsSubscription.cancel();
+    _sessionPairingSubscription.cancel();
+  }
 }
 
 // TODO: about the teach and learn count on participants.

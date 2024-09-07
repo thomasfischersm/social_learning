@@ -127,4 +127,11 @@ class StudentSessionState extends ChangeNotifier {
 
     notifyListeners();
   }
+
+  void signOut() {
+    _sessionSubscription.cancel();
+    _sessionParticipantsSubscription.cancel();
+    _participantUsersSubscription.cancel();
+    _sessionPairingSubscription.cancel();
+  }
 }

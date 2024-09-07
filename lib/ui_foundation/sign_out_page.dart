@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:provider/provider.dart';
+import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/library_state.dart';
 
 import 'navigation_enum.dart';
 
@@ -13,7 +16,9 @@ class SignOutPage extends StatelessWidget {
         const Text("Successfully signed out!"),
         TextButton(
             onPressed: () {
-              auth.FirebaseAuth.instance.signOut();
+              ApplicationState applicationState =
+                  Provider.of<ApplicationState>(context, listen: false);
+              applicationState.signOut(context);
               Navigator.pushNamed(context, NavigationEnum.landing.route);
             },
             child: const Text("Ghost myself"))

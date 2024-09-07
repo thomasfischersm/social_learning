@@ -1,12 +1,17 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/user_functions.dart';
+import 'package:social_learning/state/available_session_state.dart';
+import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/state/student_session_state.dart';
+import 'package:social_learning/state/student_state.dart';
 
 import '../firebase_options.dart';
 
@@ -35,6 +40,7 @@ class ApplicationState extends ChangeNotifier {
 
   bool _isCurrentUserInitialized = false;
   User? _currentUser;
+
   User? get currentUser {
     if (_isLoggedIn && !_isCurrentUserInitialized) {
       var start = DateTime.now().millisecondsSinceEpoch;
@@ -59,6 +65,7 @@ class ApplicationState extends ChangeNotifier {
     ]);
 
     auth.FirebaseAuth.instance.idTokenChanges().listen((auth.User? user) {
+      print('FirebaseAuth state changed: user=$user');
       if (user == null) {
         _isLoggedIn = false;
       } else {
@@ -91,5 +98,35 @@ class ApplicationState extends ChangeNotifier {
     _currentUser = await UserFunctions.getCurrentUser();
 
     notifyListeners();
+  }
+
+  void signOut(BuildContext context) {
+    print('Start signOut');
+    auth.FirebaseAuth.instance.signOut();
+    print('FirebaseAuth signOut done');
+
+    _isCurrentUserInitialized = false;
+    _currentUser = null;
+
+    LibraryState libraryState =
+        Provider.of<LibraryState>(context, listen: false);
+    libraryState.signOut();
+
+    StudentState studentState =
+        Provider.of<StudentState>(context, listen: false);
+    studentState.signOut();
+
+    AvailableSessionState availableSessionState =
+        Provider.of<AvailableSessionState>(context, listen: false);
+    availableSessionState.signOut();
+
+    StudentSessionState studentSessionState =
+        Provider.of<StudentSessionState>(context, listen: false);
+    studentSessionState.signOut();
+
+    OrganizerSessionState organizerSessionState =
+        Provider.of<OrganizerSessionState>(context, listen: false);
+    organizerSessionState.signOut();
+    print('End signOut');
   }
 }

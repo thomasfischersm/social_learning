@@ -54,4 +54,11 @@ class AvailableSessionState extends ChangeNotifier {
       notifyListeners();
     });
   }
+
+  void signOut() {
+    _lastSubscription?.cancel();
+    _lastSubscription = null;
+    _lastCourse = null;
+    _availableSessions = List.empty();
+  }
 }

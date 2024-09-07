@@ -223,6 +223,12 @@ class StudentState extends ChangeNotifier {
 
     return lessonCount;
   }
+
+  void signOut() {
+    _isInitialized = false;
+    _learnRecords = null;
+    _teachRecords = null;
+  }
 }
 
 class LevelCompletion {
