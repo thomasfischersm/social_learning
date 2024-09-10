@@ -21,6 +21,9 @@ class CustomTextStyles {
   static TextStyle? getBodyNote(BuildContext context) =>
       Theme.of(context).textTheme.bodyMedium;
 
+  static TextStyle? getBodySmall(BuildContext context) =>
+      Theme.of(context).textTheme.bodySmall;
+
   static TextStyle? getPartiallyLearned(BuildContext context) =>
       getBody(context)?.copyWith(color: partiallyLearnedColor);
 

@@ -130,4 +130,13 @@ class ApplicationState extends ChangeNotifier {
     organizerSessionState.signOut();
     print('End signOut');
   }
+
+  void setIsProfilePrivate(bool isProfilePrivate) {
+    FirebaseFirestore.instance.doc('/users/${currentUser?.id}').update({
+      'isProfilePrivate': isProfilePrivate,
+    });
+    currentUser!.isProfilePrivate = isProfilePrivate;
+
+    notifyListeners();
+  }
 }

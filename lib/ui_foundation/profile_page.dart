@@ -1,4 +1,3 @@
-
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +8,7 @@ import 'package:social_learning/data/user_functions.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/profile_image_widget.dart';
+import 'package:social_learning/data/user.dart';
 
 import '../state/application_state.dart';
 import 'bottom_bar.dart';
@@ -33,57 +33,90 @@ class ProfilePageState extends State<ProfilePage> {
         title: const Text('Social Learning'),
       ),
       bottomNavigationBar: const BottomBar(),
-      body: Center(
-          child: CustomUiConstants.framePage(Consumer<ApplicationState>(
-                  builder: (context, applicationState, child) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+      body: Center(child: CustomUiConstants.framePage(
+          Consumer<ApplicationState>(
+              builder: (context, applicationState, child) {
+        User? currentUser = applicationState.currentUser;
+        if (currentUser == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.pushNamed(context, NavigationEnum.landing.route);
+          });
+          return const Text('No logged in user!');
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: ProfileImageWidget(
+                          currentUser?.profileFireStoragePath),
+                    )),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    applicationState.userDisplayName ?? '<pick a display name>',
+                    style: CustomTextStyles.subHeadline,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              'Settings',
+              style: CustomTextStyles.subHeadline,
+            ),
+            TextButton(
+                onPressed: () {
+                  _pickProfileImage(context);
+                },
+                child: const Text('Upload profile image.')),
+            TextButton(
+              onPressed: () {
+                showDisplayNameDialog(context, applicationState);
+              },
+              child: const Text('Change display name.'),
+            ),
+            Row(
+              children: [
+                Checkbox(
+                    value: currentUser.isProfilePrivate,
+                    onChanged: (isChecked) =>
+                        _toogleIsPrivateProfile(context, applicationState)),
+                // Flexible(child:Text(
+                //     'Enable private profile. (Your profile will still be visible in session and to instructors.',softWrap: true,
+                //     style: CustomTextStyles.getBody(context))),
+                Flexible(
+                    child: RichText(
+                  text: TextSpan(
+                      // text: 'Enable private profile.',
+                      // style: CustomTextStyles.getBody(context),
                       children: [
-                        Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 4),
-                              child: ProfileImageWidget(applicationState
-                                  .currentUser?.profileFireStoragePath),
-                            )),
-                        Expanded(
-                          flex: 1,
-                          child: Text(
-                            applicationState.userDisplayName ??
-                                '<pick a display name>',
-                            style: CustomTextStyles.subHeadline,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      'Settings',
-                      style: CustomTextStyles.subHeadline,
-                    ),
-                    TextButton(
-                        onPressed: () {
-                          _pickProfileImage(context);
-                        },
-                        child: const Text('Upload profile image.')),
-                    TextButton(
-                      onPressed: () {
-                        showDisplayNameDialog(context, applicationState);
-                      },
-                      child: const Text('Change display name.'),
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: CustomUiConstants.getDivider()),
-                    TextButton(
-                        onPressed: () => Navigator.pushNamed(
-                            context, NavigationEnum.signOut.route),
-                        child: const Text("Sign out.")),
-                    CustomUiConstants.getGeneralFooter(context)
-                  ],
-                );
-              }))),
+                        TextSpan(
+                            text: 'Enable private profile. ',
+                            style: CustomTextStyles.getBodyNote(context)),
+                        TextSpan(
+                            text:
+                                '(Your profile will still be visible in session and to instructors.)',
+                            style: CustomTextStyles.getBodySmall(context))
+                      ]),
+                )),
+              ],
+            ),
+            Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: CustomUiConstants.getDivider()),
+            TextButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, NavigationEnum.signOut.route),
+                child: const Text("Sign out.")),
+            CustomUiConstants.getGeneralFooter(context)
+          ],
+        );
+      }))),
     );
   }
 
@@ -157,5 +190,11 @@ class ProfilePageState extends State<ProfilePage> {
       // Note: Old photos don't have to be deleted because the new photo is
       // saved to the same cloud storage path.
     }
+  }
+
+  _toogleIsPrivateProfile(
+      BuildContext context, ApplicationState applicationState) {
+    applicationState
+        .setIsProfilePrivate(!applicationState.currentUser!.isProfilePrivate);
   }
 }

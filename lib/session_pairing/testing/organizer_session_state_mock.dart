@@ -41,7 +41,7 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
       _graduatedLessons[participant] ?? [];
 
   addTestUser(String name, bool isAdmin, List<Lesson> graduatedLessons) {
-    var user = User(nextId, nextId, name, name, isAdmin, 'n/a', null, null);
+    var user = User(nextId, nextId, name, name, isAdmin, 'n/a', null, null, false);
     _participantUsers.add(user);
 
     var userRef = FirebaseFirestore.instance.doc('/users/${user.id}');
