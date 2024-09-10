@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/lesson_comment.dart';
+import 'package:social_learning/data/progress_video_functions.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
@@ -15,6 +17,7 @@ import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/lesson_cover_image_widget.dart';
 import 'package:social_learning/ui_foundation/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/youtube_video_widget.dart';
 import 'package:social_learning/util/string_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -35,6 +38,9 @@ class LessonDetailPage extends StatefulWidget {
 
 class LessonDetailState extends State<LessonDetailPage> {
   final TextEditingController _commentController = TextEditingController();
+  final TextEditingController _youtubeUploadUrlController =
+      TextEditingController();
+  String? _youtubeUploadEror = null;
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +129,8 @@ class LessonDetailState extends State<LessonDetailPage> {
                                         SingleChildScrollView(
                                           child: Column(
                                             children: <Widget>[
-                                              Text("Content for Tab 3"),
+                                              _createShowcaseView(context,
+                                                  lesson, applicationState),
                                             ],
                                           ),
                                         ),
@@ -446,7 +453,7 @@ class LessonDetailState extends State<LessonDetailPage> {
       children: [
         Expanded(
             child: TextField(
-              onSubmitted: (_) => _sendComment(lesson, libraryState),
+          onSubmitted: (_) => _sendComment(lesson, libraryState),
           controller: _commentController,
           decoration: const InputDecoration(
               hintText: 'Leave a comment...',
@@ -454,13 +461,14 @@ class LessonDetailState extends State<LessonDetailPage> {
         )),
         IconButton(
             icon: const Icon(Icons.send),
-            onPressed: () => _sendComment(lesson, libraryState)
-            )
+            onPressed: () => _sendComment(lesson, libraryState))
       ],
     );
 
-    return Column(
-        children: [Expanded(child:SingleChildScrollView(child: commentColumn)), sendRow]);
+    return Column(children: [
+      Expanded(child: SingleChildScrollView(child: commentColumn)),
+      sendRow
+    ]);
   }
 
   void _sendComment(Lesson lesson, LibraryState libraryState) {
@@ -492,6 +500,125 @@ class LessonDetailState extends State<LessonDetailPage> {
     } else {
       return DateFormat.yMMMd().format(date);
     }
+  }
+
+  Widget _createShowcaseView(
+      BuildContext context, Lesson lesson, ApplicationState applicationState) {
+    return Column(
+      children: [
+        ..._createShowcaseUploadView(lesson, applicationState),
+        _createMyShowcaseView(lesson),
+        _createShowcaseFeed()
+      ],
+    );
+  }
+
+  List<Widget> _createShowcaseUploadView(
+      Lesson lesson, ApplicationState applicationState) {
+    return [
+      Text('Upload a video of today\'s progress.',
+          style: CustomTextStyles.subHeadline),
+      RichText(
+        text: TextSpan(
+          style: CustomTextStyles.getBodyNote(context), // Base style for the text
+          children: [
+            TextSpan(
+              text: 'Upload on YouTube',
+              style: const TextStyle(
+                color: Colors.blue,
+              ),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () async {
+                  Uri url = Uri.parse('https://www.youtube.com/upload');
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url); // Launch the YouTube upload page
+                  } else {
+                    throw 'Could not launch $url';
+                  }
+                },
+            ),
+            const TextSpan(
+              text: ' and copy the URL here.',
+            ),
+          ],
+        ),
+      ),
+      Row(children: [
+        Expanded(child: TextField(controller: _youtubeUploadUrlController)),
+        TextButton(
+            onPressed: () =>
+                _submitYoutubeUrl(context, lesson, applicationState),
+            child: const Text('Submit'))
+      ]),
+      if (_youtubeUploadEror != null)
+        Text(_youtubeUploadEror!,
+            style:
+                CustomTextStyles.getBody(context)?.copyWith(color: Colors.red))
+    ];
+  }
+
+  Widget _createMyShowcaseView(Lesson lesson) {
+    return ProgressVideoFunctions.createProgressVideosForLessonStream(
+        lesson.id!, (context, progressVideos) {
+      if (progressVideos.isEmpty) {
+        return SizedBox.shrink();
+      }
+      return Column(children: [
+        Text(
+          'My Progress',
+          style: CustomTextStyles.subHeadline,
+        ),
+        GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3),
+          itemCount: progressVideos.length,
+          itemBuilder: (context, index) {
+            var progressVideo = progressVideos[index];
+            final String? timeDiff;
+            if (progressVideo.timestamp != null) {
+              timeDiff = DateTime.now()
+                  .difference(progressVideo.timestamp!.toDate())
+                  .inDays
+                  .toString();
+            } else {
+              timeDiff = null;
+            }
+
+            return Column(
+              children: [
+                if (progressVideo.youtubeVideoId != null)
+                  YouTubeVideoWidget(videoId: progressVideo.youtubeVideoId!),
+                if (timeDiff != null)
+                  Align(
+                      alignment: Alignment.center,
+                      child: Text('$timeDiff days ago')),
+              ],
+            );
+          },
+        ),
+      ]);
+    });
+  }
+
+  Widget _createShowcaseFeed() {return Text('todo');}
+
+  _submitYoutubeUrl(
+      BuildContext context, Lesson lesson, ApplicationState applicationState) {
+    var youtubeUrl = _youtubeUploadUrlController.text;
+    if (youtubeUrl.trim().isEmpty) {
+      _youtubeUploadEror = 'Please enter a URL.';
+    }
+
+    if (!ProgressVideoFunctions.isValidYouTubeUrl(youtubeUrl)) {
+      _youtubeUploadEror = 'Invalid Youtube URL.';
+    }
+
+    ProgressVideoFunctions.createProgressVideo(
+        lesson.id!, applicationState.currentUser!, youtubeUrl);
+    setState(() {
+      _youtubeUploadEror = null;
+      _youtubeUploadUrlController.text = '';
+    });
   }
 }
 
