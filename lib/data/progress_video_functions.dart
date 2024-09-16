@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:social_learning/data/progress_video.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/state/application_state.dart';
 
 class ProgressVideoFunctions {
   static bool isValidYouTubeUrl(String url) {
@@ -108,6 +110,15 @@ class ProgressVideoFunctions {
 
           List<ProgressVideo> progressVideos =
               convertSnapshotToSortedProgressVideos(snapshot).reversed.toList();
+
+          // Remove self videos
+          ApplicationState applicationState =
+              Provider.of<ApplicationState>(context, listen: false);
+          String? currentUserUid = applicationState.currentUser?.uid;
+          if (currentUserUid != null) {
+            progressVideos
+                .removeWhere((element) => element.userUid == currentUserUid);
+          }
 
           return builder(context, progressVideos);
         });

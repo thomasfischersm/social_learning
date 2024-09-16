@@ -508,7 +508,7 @@ class LessonDetailState extends State<LessonDetailPage> {
     return Column(
       children: [
         ..._createShowcaseUploadView(lesson, applicationState),
-        _createMyShowcaseView(lesson),
+        _createMyShowcaseView(lesson, applicationState),
         _createShowcaseFeed(lesson)
       ],
     );
@@ -559,9 +559,14 @@ class LessonDetailState extends State<LessonDetailPage> {
     ];
   }
 
-  Widget _createMyShowcaseView(Lesson lesson) {
-    return ProgressVideoFunctions.createProgressVideosForLessonStream(
-        lesson.id!, (context, progressVideos) {
+  Widget _createMyShowcaseView(Lesson lesson, ApplicationState applicationState) {
+    var currentUser = applicationState.currentUser;
+    if (currentUser == null) {
+      return const SizedBox.shrink();
+    }
+
+    return ProgressVideoFunctions.createMyProgressVideosForLessonStream(
+        lesson.id!, currentUser, (context, progressVideos) {
       if (progressVideos.isEmpty) {
         return const SizedBox.shrink();
       }

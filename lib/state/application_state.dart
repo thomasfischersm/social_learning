@@ -43,14 +43,11 @@ class ApplicationState extends ChangeNotifier {
 
   User? get currentUser {
     if (_isLoggedIn && !_isCurrentUserInitialized) {
-      var start = DateTime.now().millisecondsSinceEpoch;
       _isCurrentUserInitialized = true;
       () async {
         _currentUser = await UserFunctions.getCurrentUser();
 
         notifyListeners();
-        var end = DateTime.now().millisecondsSinceEpoch;
-        // await Future.delayed(Duration(seconds: 5));
       }();
     }
     return _currentUser;
