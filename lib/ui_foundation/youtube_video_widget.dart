@@ -22,10 +22,11 @@ class YouTubeVideoWidgetState extends State<YouTubeVideoWidget> {
       videoId: widget.videoId,
       autoPlay: false,
       params: const YoutubePlayerParams(
-        mute: false,
-        showControls: false,
-        showFullscreenButton: true,
-      ),
+          mute: false,
+          showControls: false,
+          showFullscreenButton: true,
+          showVideoAnnotations: false,
+          enableCaption: false),
     );
   }
 

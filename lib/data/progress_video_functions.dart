@@ -107,7 +107,7 @@ class ProgressVideoFunctions {
           }
 
           List<ProgressVideo> progressVideos =
-              convertSnapshotToSortedProgressVideos(snapshot);
+              convertSnapshotToSortedProgressVideos(snapshot).reversed.toList();
 
           return builder(context, progressVideos);
         });
@@ -127,7 +127,9 @@ class ProgressVideoFunctions {
     ).toList();
 
     progressVideos.sort((a, b) {
-      return a.timestamp!.compareTo(b.timestamp!);
+      Timestamp timeStampA = a.timestamp ?? Timestamp.now();
+      Timestamp timestampB = b.timestamp ?? Timestamp.now();
+      return timeStampA.compareTo(timestampB);
     });
 
     return progressVideos;

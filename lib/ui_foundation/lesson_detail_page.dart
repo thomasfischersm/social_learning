@@ -16,6 +16,7 @@ import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/lesson_cover_image_widget.dart';
+import 'package:social_learning/ui_foundation/profile_image_by_user_id_widget.dart';
 import 'package:social_learning/ui_foundation/profile_image_widget.dart';
 import 'package:social_learning/ui_foundation/youtube_video_widget.dart';
 import 'package:social_learning/util/string_util.dart';
@@ -508,7 +509,7 @@ class LessonDetailState extends State<LessonDetailPage> {
       children: [
         ..._createShowcaseUploadView(lesson, applicationState),
         _createMyShowcaseView(lesson),
-        _createShowcaseFeed()
+        _createShowcaseFeed(lesson)
       ],
     );
   }
@@ -520,7 +521,8 @@ class LessonDetailState extends State<LessonDetailPage> {
           style: CustomTextStyles.subHeadline),
       RichText(
         text: TextSpan(
-          style: CustomTextStyles.getBodyNote(context), // Base style for the text
+          style: CustomTextStyles.getBodyNote(context),
+          // Base style for the text
           children: [
             TextSpan(
               text: 'Upload on YouTube',
@@ -561,46 +563,90 @@ class LessonDetailState extends State<LessonDetailPage> {
     return ProgressVideoFunctions.createProgressVideosForLessonStream(
         lesson.id!, (context, progressVideos) {
       if (progressVideos.isEmpty) {
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       }
       return Column(children: [
-        Text(
-          'My Progress',
-          style: CustomTextStyles.subHeadline,
-        ),
-        GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3),
-          itemCount: progressVideos.length,
-          itemBuilder: (context, index) {
-            var progressVideo = progressVideos[index];
-            final String? timeDiff;
-            if (progressVideo.timestamp != null) {
-              timeDiff = DateTime.now()
-                  .difference(progressVideo.timestamp!.toDate())
-                  .inDays
-                  .toString();
-            } else {
-              timeDiff = null;
-            }
+        Padding(
+            padding: const EdgeInsets.only(top: 12),
+            child: Text(
+              'My Progress',
+              style: CustomTextStyles.subHeadline,
+            )),
+        LayoutBuilder(builder: (context, constraints) {
+          return SizedBox(
+              width: constraints.maxWidth,
+              child: Wrap(
+                  spacing: 10,
+                  alignment: WrapAlignment.start,
+                  runSpacing: 10,
+                  children: progressVideos.map((progressVideo) {
+                    final String? timeDiff;
+                    if (progressVideo.timestamp != null) {
+                      timeDiff = DateTime.now()
+                          .difference(progressVideo.timestamp!.toDate())
+                          .inDays
+                          .toString();
+                    } else {
+                      timeDiff = null;
+                    }
 
-            return Column(
-              children: [
-                if (progressVideo.youtubeVideoId != null)
-                  YouTubeVideoWidget(videoId: progressVideo.youtubeVideoId!),
-                if (timeDiff != null)
-                  Align(
-                      alignment: Alignment.center,
-                      child: Text('$timeDiff days ago')),
-              ],
-            );
-          },
-        ),
+                    return SizedBox(
+                        width: (constraints.maxWidth ~/ 3 - 20).toDouble(),
+                        child: Column(
+                          children: [
+                            if (progressVideo.youtubeVideoId != null)
+                              YouTubeVideoWidget(
+                                  videoId: progressVideo.youtubeVideoId!),
+                            if (timeDiff != null)
+                              Align(
+                                  alignment: Alignment.center,
+                                  child: Text('$timeDiff days ago')),
+                          ],
+                        ));
+                  }).toList()));
+        })
       ]);
     });
   }
 
-  Widget _createShowcaseFeed() {return Text('todo');}
+  Widget _createShowcaseFeed(Lesson lesson) {
+    return Column(children: [
+      Padding(
+          padding: const EdgeInsets.only(top: 12),
+          child: Text(
+            'Student Progress',
+            style: CustomTextStyles.subHeadline,
+          )),
+      ProgressVideoFunctions.createProgressVideosForLessonStream(lesson.id!,
+          (context, progressVideos) {
+        if (progressVideos.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Column(children: [
+          ...progressVideos.map((progressVideo) => Column(children: [
+                YouTubeVideoWidget(videoId: progressVideo.youtubeVideoId!),
+                Row(children: [
+                  Padding(
+                      padding: const EdgeInsets.only(
+                        top: 4,
+                        bottom: 6,
+                        right: 4,
+                      ),
+                      child: SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: ProfileImageByUserIdWidget(
+                              progressVideo.userId))),
+                  Text(
+                      DateFormat.yMd().format(
+                          progressVideo.timestamp?.toDate() ?? DateTime.now()),
+                      style: CustomTextStyles.getBody(context))
+                ]),
+              ]))
+        ]);
+      })
+    ]);
+  }
 
   _submitYoutubeUrl(
       BuildContext context, Lesson lesson, ApplicationState applicationState) {
