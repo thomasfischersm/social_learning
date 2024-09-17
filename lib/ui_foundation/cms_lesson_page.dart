@@ -275,7 +275,7 @@ class CmsLessonState extends State<CmsLessonPage> {
           _recapVideoController.text,
           _lessonVideoController.text,
           _practiceVideoController.text,
-          _graduationRequirementsController.map((e) => e.text).toList(),
+          _graduationRequirementsController.map((e) => e.text).toList().removeBlankStrings(),
           studentState);
     } else {
       var lesson = _lesson;
@@ -287,7 +287,7 @@ class CmsLessonState extends State<CmsLessonPage> {
         lesson.lessonVideo = _lessonVideoController.text;
         lesson.practiceVideo = _practiceVideoController.text;
         lesson.graduationRequirements =
-            _graduationRequirementsController.map((e) => e.text).toList();
+            _graduationRequirementsController.map((e) => e.text).toList().removeBlankStrings();
         lesson.instructions = _instructionsController.text;
 
         libraryState.updateLesson(lesson);
@@ -295,5 +295,11 @@ class CmsLessonState extends State<CmsLessonPage> {
     }
 
     Navigator.pushNamed(context, NavigationEnum.cmsSyllabus.route);
+  }
+}
+
+extension on List<String> {
+  List<String>? removeBlankStrings() {
+    return where((element) => element.trim().isNotEmpty).toList();
   }
 }
