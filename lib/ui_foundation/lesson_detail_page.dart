@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +43,50 @@ class LessonDetailState extends State<LessonDetailPage> {
   final TextEditingController _commentController = TextEditingController();
   final TextEditingController _youtubeUploadUrlController =
       TextEditingController();
-  String? _youtubeUploadEror = null;
+  String? _youtubeUploadError;
+  List<bool> _isSectionExpanded = [];
+
+  @override
+  void initState() {
+    print('LessonDetailState.initState');
+    super.initState();
+
+    Future.microtask(() {
+      setState(() {
+        print('LessonDetailState.initState Future.microtask');
+        Lesson? lesson = _getLesson(null, context);
+        if (lesson != null) {
+          setState(() {
+            var sectionCount = lesson.instructions.split('---').length;
+            if (!lesson.instructions
+                .toLowerCase()
+                .startsWith('instructions---')) {
+              sectionCount++;
+            }
+            print(
+                'LessonDetailState.initState Future.microtask setState $sectionCount');
+            _isSectionExpanded = List.filled(max(1, sectionCount), false);
+            _isSectionExpanded[0] = true;
+            print('Size of _isSectionExpanded: ${_isSectionExpanded.length}');
+          });
+        }
+      });
+    });
+  }
+
+  Lesson? _getLesson(LibraryState? libraryState, BuildContext context) {
+    libraryState ??= Provider.of<LibraryState>(context, listen: false);
+
+    LessonDetailArgument? argument =
+        ModalRoute.of(context)?.settings.arguments as LessonDetailArgument?;
+
+    if (argument != null) {
+      String lessonId = argument.lessonId;
+      return libraryState.findLesson(lessonId);
+    } else {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,108 +94,104 @@ class LessonDetailState extends State<LessonDetailPage> {
         builder: (context, applicationState, child) {
       return Consumer<StudentState>(builder: (context, studentState, child) {
         return Consumer<LibraryState>(builder: (context, libraryState, child) {
-          LessonDetailArgument? argument = ModalRoute.of(context)!
-              .settings
-              .arguments as LessonDetailArgument?;
-          if (argument != null) {
-            String lessonId = argument.lessonId;
-            Lesson? lesson = libraryState.findLesson(lessonId);
-            int? levelPosition = _findLevelPosition(lesson, libraryState);
+          Lesson? lesson = _getLesson(libraryState, context);
+          int? levelPosition = _findLevelPosition(lesson, libraryState);
 
-            if (lesson != null) {
-              var counts = studentState.getCountsForLesson(lesson);
+          if (lesson != null) {
+            var counts = studentState.getCountsForLesson(lesson);
 
-              return Scaffold(
-                  appBar: AppBar(title: Text('Lesson: ${lesson.title}')),
-                  bottomNavigationBar: const BottomBar(),
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: () {
-                      setState(() {
-                        _showDialog(context, lesson, counts, applicationState);
-                      });
-                    },
-                    child: const Text('Record'),
-                  ),
-                  body: Center(
-                      child: CustomUiConstants.framePage(
-                          enableScrolling: false,
-                          DefaultTabController(
-                            length: 4, // Number of tabs
-                            child: NestedScrollView(
-                              headerSliverBuilder: (BuildContext context,
-                                  bool innerBoxIsScrolled) {
-                                return <Widget>[
-                                  SliverToBoxAdapter(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        ..._generateLessonHeader(
-                                            lesson,
-                                            levelPosition,
-                                            counts,
-                                            context,
-                                            studentState)
+            return Scaffold(
+                appBar: AppBar(title: Text('Lesson: ${lesson.title}')),
+                bottomNavigationBar: const BottomBar(),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: () {
+                    setState(() {
+                      _showDialog(context, lesson, counts, applicationState);
+                    });
+                  },
+                  child: const Text('Record'),
+                ),
+                body: Center(
+                    child: CustomUiConstants.framePage(
+                        enableScrolling: false,
+                        DefaultTabController(
+                          length: 4, // Number of tabs
+                          child: NestedScrollView(
+                            headerSliverBuilder: (BuildContext context,
+                                bool innerBoxIsScrolled) {
+                              return <Widget>[
+                                SliverToBoxAdapter(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ..._generateLessonHeader(
+                                          lesson,
+                                          levelPosition,
+                                          counts,
+                                          context,
+                                          studentState)
+                                    ],
+                                  ),
+                                ),
+                                SliverPersistentHeader(
+                                  pinned: true,
+                                  delegate: _SliverAppBarDelegate(
+                                    const TabBar(
+                                      labelColor: Colors.black,
+                                      tabs: [
+                                        Tab(text: 'Learn'),
+                                        Tab(text: 'Discuss'),
+                                        Tab(text: 'Showcase'),
+                                        Tab(text: 'Connect')
                                       ],
                                     ),
                                   ),
-                                  SliverPersistentHeader(
-                                    pinned: true,
-                                    delegate: _SliverAppBarDelegate(
-                                      const TabBar(
-                                        labelColor: Colors.black,
-                                        tabs: [
-                                          Tab(text: 'Learn'),
-                                          Tab(text: 'Discuss'),
-                                          Tab(text: 'Showcase'),
-                                          Tab(text: 'Connect')
-                                        ],
+                                ),
+                              ];
+                            },
+                            body: Column(
+                              children: [
+                                Expanded(
+                                  child: TabBarView(
+                                    children: <Widget>[
+                                      SingleChildScrollView(
+                                        child: /*IntrinsicHeight(child:*/
+                                            Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            _generateInstructionText(
+                                                lesson, context)
+                                          ],
+                                        ),
                                       ),
-                                    ),
+                                      /*),*/
+                                      _createCommentsView(
+                                          lesson, context, libraryState),
+                                      SingleChildScrollView(
+                                        child: Column(
+                                          children: <Widget>[
+                                            _createShowcaseView(context, lesson,
+                                                applicationState),
+                                          ],
+                                        ),
+                                      ),
+                                      SingleChildScrollView(
+                                        child: Column(
+                                          children: <Widget>[
+                                            Text("Content for Tab 4"),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ];
-                              },
-                              body: Column(
-                                children: [
-                                  Expanded(
-                                    child: TabBarView(
-                                      children: <Widget>[
-                                        SingleChildScrollView(
-                                          child: /*IntrinsicHeight(child:*/
-                                              Column(
-                                            children: <Widget>[
-                                              _generateInstructionText(
-                                                  lesson, context)
-                                            ],
-                                          ),
-                                        ),
-                                        /*),*/
-                                        _createCommentsView(
-                                            lesson, context, libraryState),
-                                        SingleChildScrollView(
-                                          child: Column(
-                                            children: <Widget>[
-                                              _createShowcaseView(context,
-                                                  lesson, applicationState),
-                                            ],
-                                          ),
-                                        ),
-                                        SingleChildScrollView(
-                                          child: Column(
-                                            children: <Widget>[
-                                              Text("Content for Tab 4"),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  CustomUiConstants.getGeneralFooter(context),
-                                ],
-                              ),
+                                ),
+                                CustomUiConstants.getGeneralFooter(context),
+                              ],
                             ),
-                          ))));
-            }
+                          ),
+                        ))));
           }
 
           return Scaffold(
@@ -238,29 +279,74 @@ class LessonDetailState extends State<LessonDetailPage> {
   }
 
   Widget _generateInstructionText(Lesson lesson, BuildContext context) {
-    List<TextSpan> textSpans = [];
+    List<InlineSpan> textSpans = [];
 
     List<String> instructions =
         lesson.instructions.replaceAll('\r', '').split('\n');
 
+    if (!instructions[0].toLowerCase().startsWith('instructions---')) {
+      instructions.insert(0, 'Instructions---');
+    }
+
+    int sectionIndex = -1;
+    bool isExpanded =
+        _isSectionExpanded.isNotEmpty ? _isSectionExpanded[0] : true;
     for (String str in instructions) {
       str = str.trim();
+      final int savedIndex = sectionIndex;
+
       if (str.endsWith('---')) {
+        sectionIndex++;
+        isExpanded = _isSectionExpanded.length > sectionIndex
+            ? _isSectionExpanded[sectionIndex]
+            : false;
+        final int savedIndex = sectionIndex;
+        print(
+            'Size of _isSectionExpanded: ${_isSectionExpanded.length} and sectionIndex: $sectionIndex and savedIndex: $savedIndex and isExpanded: $isExpanded');
+
         str = str.substring(0, str.length - 3);
         textSpans
-            .add(TextSpan(text: '$str\n', style: CustomTextStyles.subHeadline));
+          ..add(WidgetSpan(
+              child: GestureDetector(
+                  onTap: () => _toggleSectionExpanded(savedIndex),
+                  child: Icon(
+                      isExpanded ? Icons.arrow_drop_down : Icons.arrow_right))))
+          ..add(TextSpan(
+              text: '$str\n',
+              style: CustomTextStyles.subHeadline,
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => _toggleSectionExpanded(savedIndex)));
       } else {
-        textSpans.add(
-            TextSpan(text: '$str\n', style: CustomTextStyles.getBody(context)));
+        if (isExpanded) {
+          textSpans.add(TextSpan(
+              text: '$str\n',
+              style: CustomTextStyles.getBody(context),
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => _toggleSectionExpanded(savedIndex)));
+        }
       }
     }
 
     return Padding(
         padding: const EdgeInsets.only(top: 8),
-        child: SelectableText.rich(TextSpan(
-            text: 'Instructions\n',
-            style: CustomTextStyles.subHeadline,
-            children: textSpans)));
+        child: SelectableText.rich(TextSpan(children: textSpans)));
+  }
+
+  _toggleSectionExpanded(int sectionIndex) {
+    print('Toggling section $sectionIndex');
+    setState(() {
+      if (_isSectionExpanded.length > sectionIndex) {
+        if (_isSectionExpanded[sectionIndex]) {
+          _isSectionExpanded[sectionIndex] = false;
+        } else {
+          for (int i = 0; i < _isSectionExpanded.length; i++) {
+            _isSectionExpanded[i] = (i == sectionIndex);
+          }
+        }
+      } else {
+        print('Section index $sectionIndex out of bounds');
+      }
+    });
   }
 
   Widget _addVideoIcon(String videoUrl, String label, BuildContext context) {
@@ -552,14 +638,15 @@ class LessonDetailState extends State<LessonDetailPage> {
                 _submitYoutubeUrl(context, lesson, applicationState),
             child: const Text('Submit'))
       ]),
-      if (_youtubeUploadEror != null)
-        Text(_youtubeUploadEror!,
+      if (_youtubeUploadError != null)
+        Text(_youtubeUploadError!,
             style:
                 CustomTextStyles.getBody(context)?.copyWith(color: Colors.red))
     ];
   }
 
-  Widget _createMyShowcaseView(Lesson lesson, ApplicationState applicationState) {
+  Widget _createMyShowcaseView(
+      Lesson lesson, ApplicationState applicationState) {
     var currentUser = applicationState.currentUser;
     if (currentUser == null) {
       return const SizedBox.shrink();
@@ -657,17 +744,17 @@ class LessonDetailState extends State<LessonDetailPage> {
       BuildContext context, Lesson lesson, ApplicationState applicationState) {
     var youtubeUrl = _youtubeUploadUrlController.text;
     if (youtubeUrl.trim().isEmpty) {
-      _youtubeUploadEror = 'Please enter a URL.';
+      _youtubeUploadError = 'Please enter a URL.';
     }
 
     if (!ProgressVideoFunctions.isValidYouTubeUrl(youtubeUrl)) {
-      _youtubeUploadEror = 'Invalid Youtube URL.';
+      _youtubeUploadError = 'Invalid Youtube URL.';
     }
 
     ProgressVideoFunctions.createProgressVideo(
         lesson.id!, applicationState.currentUser!, youtubeUrl);
     setState(() {
-      _youtubeUploadEror = null;
+      _youtubeUploadError = null;
       _youtubeUploadUrlController.text = '';
     });
   }
