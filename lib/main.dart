@@ -57,7 +57,7 @@ void main() async {
       ChangeNotifierProvider(create: (context) => applicationState),
       ChangeNotifierProvider(create: (context) => libraryState),
       ChangeNotifierProvider(create: (context) => GraduationState()),
-      ChangeNotifierProvider(create: (context) => StudentState()),
+      ChangeNotifierProvider(create: (context) => StudentState(applicationState, libraryState)),
       ChangeNotifierProvider(
           create: (context) => AvailableSessionState(libraryState)),
       ChangeNotifierProvider(

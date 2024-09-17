@@ -173,7 +173,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                                         child: Column(
                                           children: <Widget>[
                                             _createShowcaseView(context, lesson,
-                                                applicationState),
+                                                applicationState, libraryState),
                                           ],
                                         ),
                                       ),
@@ -503,7 +503,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                               width: 50,
                               height: 50,
                               child: ProfileImageWidget(
-                                  commenter.profileFireStoragePath)),
+                                  commenter, context)),
                         Expanded(
                             child: Container(
                           padding: const EdgeInsets.all(8.0),
@@ -590,12 +590,12 @@ class LessonDetailState extends State<LessonDetailPage> {
   }
 
   Widget _createShowcaseView(
-      BuildContext context, Lesson lesson, ApplicationState applicationState) {
+      BuildContext context, Lesson lesson, ApplicationState applicationState, LibraryState libraryState) {
     return Column(
       children: [
         ..._createShowcaseUploadView(lesson, applicationState),
         _createMyShowcaseView(lesson, applicationState),
-        _createShowcaseFeed(lesson)
+        _createShowcaseFeed(lesson, libraryState),
       ],
     );
   }
@@ -701,7 +701,7 @@ class LessonDetailState extends State<LessonDetailPage> {
     });
   }
 
-  Widget _createShowcaseFeed(Lesson lesson) {
+  Widget _createShowcaseFeed(Lesson lesson, LibraryState libraryState) {
     return Column(children: [
       Padding(
           padding: const EdgeInsets.only(top: 12),
@@ -728,7 +728,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                           width: 50,
                           height: 50,
                           child: ProfileImageByUserIdWidget(
-                              progressVideo.userId))),
+                              progressVideo.userId, libraryState))),
                   Text(
                       DateFormat.yMd().format(
                           progressVideo.timestamp?.toDate() ?? DateTime.now()),
@@ -907,8 +907,7 @@ class RecordDialogState extends State<RecordDialogContent> {
                                                 child: AspectRatio(
                                                     aspectRatio: 1,
                                                     child: ProfileImageWidget(
-                                                        _students![index]
-                                                            .profileFireStoragePath)))),
+                                                        _students![index], context)))),
                                       Expanded(
                                           flex: 3,
                                           child: Text(

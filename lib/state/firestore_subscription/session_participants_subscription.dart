@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
-import 'package:social_learning/data/user_functions.dart';
+import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/firestore_subscription/firestore_list_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';

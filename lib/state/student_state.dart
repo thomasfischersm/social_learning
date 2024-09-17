@@ -1,25 +1,30 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
+import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:social_learning/data/user_functions.dart';
+import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 
 class StudentState extends ChangeNotifier {
+  final ApplicationState _applicationState;
+  final LibraryState _libraryState;
+
   bool _isInitialized = false;
   List<PracticeRecord>? _learnRecords;
   List<PracticeRecord>? _teachRecords;
   StreamSubscription? _menteeSubscription;
   StreamSubscription? _mentorSubscription;
 
-  // List<LessonStatus>? _lessonStatuses;
+  StudentState(this._applicationState, this._libraryState);
 
   void _init() {
     if (!_isInitialized) {
@@ -33,6 +38,16 @@ class StudentState extends ChangeNotifier {
           .listen((snapshot) {
         _learnRecords =
             snapshot.docs.map((e) => PracticeRecord.fromSnapshot(e)).toList();
+
+        _libraryState.addListener(
+          () {
+            UserFunctions.updateCourseProficiency(
+                _applicationState, _libraryState, this);
+
+            notifyListeners();
+          },
+        );
+
         notifyListeners();
       });
 
@@ -173,7 +188,8 @@ class StudentState extends ChangeNotifier {
         continue;
       }
 
-      String levelId = UserFunctions.extractNumberId(lesson.levelId) ?? 'uncategorized';
+      String levelId =
+          UserFunctions.extractNumberId(lesson.levelId) ?? 'uncategorized';
       LevelCompletion? levelCompletion = levelIdToCompletionMap[levelId];
 
       if (levelCompletion != null) {
@@ -187,7 +203,7 @@ class StudentState extends ChangeNotifier {
       for (PracticeRecord practiceRecord in learnRecords) {
         if (practiceRecord.isGraduation) {
           String lessonRawId =
-          UserFunctions.extractNumberId(practiceRecord.lessonId)!;
+              UserFunctions.extractNumberId(practiceRecord.lessonId)!;
           lessonIdToCompletionMap[lessonRawId.toString()]
               ?.graduatedLessonRawIds
               .add(lessonRawId);
@@ -206,12 +222,13 @@ class StudentState extends ChangeNotifier {
     var learnRecords = _learnRecords;
     if (learnRecords != null) {
       for (PracticeRecord record in learnRecords) {
-        if (record.lessonId.id==lesson.id) {
+        if (record.lessonId.id == lesson.id) {
           lessonCount.practiceCount++;
           lessonCount.isGraduated =
               lessonCount.isGraduated || record.isGraduation;
         } else {
-          print('lesson id didn\'t match ${record.lessonId.id} and ${lesson.id}');
+          print(
+              'lesson id didn\'t match ${record.lessonId.id} and ${lesson.id}');
         }
       }
     }
@@ -219,7 +236,7 @@ class StudentState extends ChangeNotifier {
     var teachRecords = _teachRecords;
     if (teachRecords != null) {
       for (PracticeRecord record in teachRecords) {
-        if (record.lessonId.id==lesson.id) {
+        if (record.lessonId.id == lesson.id) {
           lessonCount.teachCount++;
         }
       }
@@ -235,6 +252,23 @@ class StudentState extends ChangeNotifier {
     _isInitialized = false;
     _learnRecords = null;
     _teachRecords = null;
+  }
+
+  int getLessonsLearned(Course course, LibraryState libraryState) {
+    int learnCount = 0;
+    for (PracticeRecord record in _learnRecords!) {
+      Lesson? lesson = libraryState.lessons
+          ?.firstWhereOrNull((element) => element.id == record.lessonId.id);
+
+      if ((lesson == null) || (lesson.courseId.id != course.id)) {
+        continue;
+      }
+
+      if (record.isGraduation) {
+        learnCount++;
+      }
+    }
+    return learnCount;
   }
 }
 

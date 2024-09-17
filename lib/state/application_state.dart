@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
-import 'package:social_learning/data/user_functions.dart';
+import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/available_session_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';

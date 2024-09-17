@@ -1,6 +1,14 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/student_state.dart';
 
 class UserFunctions {
   static void createUser(String uid, String? displayName, String? email) {
@@ -45,9 +53,10 @@ class UserFunctions {
   static void updateCurrentCourse(User currentUser, String courseId) async {
     var courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
     currentUser.currentCourseId = courseRef;
-    FirebaseFirestore.instance.collection('users').doc(currentUser.id).set({
-      'currentCourseId': courseRef
-    }, SetOptions(merge: true));
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.id)
+        .set({'currentCourseId': courseRef}, SetOptions(merge: true));
   }
 
   static Future<List<User>> findUsersByPartialDisplayName(
@@ -97,5 +106,69 @@ class UserFunctions {
     }
 
     return null;
+  }
+
+  static void updateCourseProficiency(ApplicationState applicationState,
+      LibraryState libraryState, StudentState studentState) async {
+    // Calculate proficiency.
+    Course? course = libraryState.selectedCourse;
+    if (course == null) {
+      return;
+    }
+    int lessons = max(libraryState.lessons?.length ?? 1, 1);
+    int completedLessons = studentState.getLessonsLearned(course, libraryState);
+    double proficiency = completedLessons / lessons.toDouble();
+    proficiency = double.parse((proficiency.toStringAsFixed(2)));
+    if (lessons == 0 || completedLessons == 0) {
+      print(
+          'Not updating proficiency because learned lessons or lesson count has not been loaded.');
+      return;
+    }
+
+    // Check if the proficiency has changed.
+    User? user = applicationState.currentUser;
+    if (user == null) {
+      return;
+    }
+    CourseProficiency? courseProficiency = user.getCourseProficiency(course);
+    if (courseProficiency != null &&
+        ((courseProficiency.proficiency - proficiency).abs() < 0.01)) {
+      print(
+          'Proficiency has not changed $proficiency. Completed lessons: $completedLessons, total lessons: $lessons.');
+      return;
+    }
+
+    // Update course proficiency.
+    if (courseProficiency != null) {
+      // Remove the old entry.
+      await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+        'courseProficiencies': FieldValue.arrayRemove([
+          {
+            'courseId': courseProficiency.courseId,
+            'proficiency': courseProficiency.proficiency,
+          }
+        ]),
+      });
+    }
+
+    // Add the new entry.
+    await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+      'courseProficiencies': FieldValue.arrayUnion([
+        {
+          'courseId': FirebaseFirestore.instance.doc('/courses/${course.id}'),
+          'proficiency': proficiency,
+        }
+      ]),
+    });
+
+    // Update the local value.
+    if (courseProficiency != null) {
+      courseProficiency.proficiency = proficiency;
+    } else {
+      user.courseProficiencies?.add(CourseProficiency(
+          FirebaseFirestore.instance.doc('/courses/${course.id}'), proficiency));
+    }
+
+    print('Updated proficiency to $proficiency.');
   }
 }

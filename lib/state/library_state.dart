@@ -471,7 +471,7 @@ class LibraryState extends ChangeNotifier {
   }
 
   Level? findLevel(String levelId) =>
-      levels?.firstWhere((element) => element.id == levelId);
+      levels?.firstWhereOrNull((element) => element.id == levelId);
 
   Level? findLevelByDocRef(DocumentReference levelRef) =>
       findLevel(levelRef.id);

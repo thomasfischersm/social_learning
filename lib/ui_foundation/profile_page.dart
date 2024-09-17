@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:social_learning/data/user_functions.dart';
+import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/ui_foundation/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/profile_image_widget.dart';
@@ -53,8 +53,7 @@ class ProfilePageState extends State<ProfilePage> {
                     flex: 1,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 4),
-                      child: ProfileImageWidget(
-                          currentUser?.profileFireStoragePath),
+                      child: ProfileImageWidget(currentUser, context),
                     )),
                 Expanded(
                   flex: 1,
