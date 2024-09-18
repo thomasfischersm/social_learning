@@ -7,10 +7,18 @@ class ProgressVideo {
   DocumentReference lessonId;
   String youtubeUrl;
   String? youtubeVideoId;
+  bool isProfilePrivate;
   Timestamp? timestamp;
 
-  ProgressVideo(this.id, this.userId, this.userUid, this.lessonId,
-      this.youtubeUrl, this.youtubeVideoId, this.timestamp);
+  ProgressVideo(
+      this.id,
+      this.userId,
+      this.userUid,
+      this.lessonId,
+      this.youtubeUrl,
+      this.youtubeVideoId,
+      this.isProfilePrivate,
+      this.timestamp);
 
   ProgressVideo.fromQuerySnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -19,6 +27,7 @@ class ProgressVideo {
         lessonId = e.data()['lessonId'] as DocumentReference,
         youtubeUrl = e.data()['youtubeUrl'] as String,
         youtubeVideoId = e.data()['youtubeVideoId'] as String?,
+        isProfilePrivate = e.data()['isProfilePrivate'] as bool? ?? false,
         timestamp = e.data()['timestamp'] as Timestamp?;
 
   ProgressVideo.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> data)
@@ -28,5 +37,9 @@ class ProgressVideo {
         lessonId = data['lessonId'] as DocumentReference,
         youtubeUrl = data['youtubeUrl'] as String,
         youtubeVideoId = data['youtubeVideoId'] as String?,
+        isProfilePrivate =
+            (data.data()?.containsKey('isProfilePrivate') ?? false)
+                ? data['isProfilePrivate'] as bool
+                : false,
         timestamp = data['timestamp'] as Timestamp?;
 }

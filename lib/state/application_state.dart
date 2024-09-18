@@ -134,6 +134,24 @@ class ApplicationState extends ChangeNotifier {
     });
     currentUser!.isProfilePrivate = isProfilePrivate;
 
+    // Update any owned documents to private.
+    _setProgressVideosPrivate(isProfilePrivate);
+    // TODO: Comments
+
     notifyListeners();
+  }
+
+  void _setProgressVideosPrivate(bool isProfilePrivate) {
+    FirebaseFirestore.instance
+        .collection('progressVideos')
+        .where('userId', isEqualTo: FirebaseFirestore.instance.doc('/users/${currentUser?.id}'))
+        .get()
+        .then((snapshot) {
+      for (var doc in snapshot.docs) {
+        doc.reference.update({
+          'isProfilePrivate': isProfilePrivate,
+        });
+      }
+    });
   }
 }

@@ -35,6 +35,7 @@ class ProgressVideoFunctions {
       'lessonId': FirebaseFirestore.instance.doc('/lessons/$lessonId'),
       'youtubeUrl': youtubeUrl,
       'youtubeVideoId': extractYouTubeVideoId(youtubeUrl),
+      'isProfilePrivate': user.isProfilePrivate,
       'timestamp': FieldValue.serverTimestamp(),
     });
   }
@@ -100,6 +101,7 @@ class ProgressVideoFunctions {
             .collection('progressVideos')
             .where('lessonId',
                 isEqualTo: FirebaseFirestore.instance.doc('/lessons/$lessonId'))
+            .where('isProfilePrivate', isNotEqualTo: true)
             .snapshots(),
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {

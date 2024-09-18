@@ -17,6 +17,7 @@ class UserFunctions {
       'displayName': displayName,
       'sortName': displayName?.toLowerCase(),
       'email': email,
+      'isProfilePrivate': false,
     });
   }
 
