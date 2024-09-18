@@ -1,9 +1,13 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/progress_video.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/library_state.dart';
 
 class ProgressVideoFunctions {
   static bool isValidYouTubeUrl(String url) {
@@ -26,13 +30,14 @@ class ProgressVideoFunctions {
   }
 
   static void createProgressVideo(
-      String lessonId, User user, String youtubeUrl) async {
+      Lesson lesson, User user, String youtubeUrl) async {
     await FirebaseFirestore.instance
         .collection('progressVideos')
         .add(<String, dynamic>{
       'userId': FirebaseFirestore.instance.doc('/users/${user.id}'),
       'userUid': user.uid,
-      'lessonId': FirebaseFirestore.instance.doc('/lessons/$lessonId'),
+      'courseId': FirebaseFirestore.instance.doc('/courses/${lesson.courseId.id}'),
+      'lessonId': FirebaseFirestore.instance.doc('/lessons/${lesson.id}'),
       'youtubeUrl': youtubeUrl,
       'youtubeVideoId': extractYouTubeVideoId(youtubeUrl),
       'isProfilePrivate': user.isProfilePrivate,
@@ -111,7 +116,7 @@ class ProgressVideoFunctions {
           }
 
           List<ProgressVideo> progressVideos =
-              convertSnapshotToSortedProgressVideos(snapshot).reversed.toList();
+              convertSnapshotToSortedProgressVideos(snapshot);
 
           // Remove self videos
           ApplicationState applicationState =
@@ -140,11 +145,55 @@ class ProgressVideoFunctions {
     ).toList();
 
     progressVideos.sort((a, b) {
-      Timestamp timeStampA = a.timestamp ?? Timestamp.now();
+      Timestamp timestampA = a.timestamp ?? Timestamp.now();
       Timestamp timestampB = b.timestamp ?? Timestamp.now();
-      return timeStampA.compareTo(timestampB);
+      return timestampB.compareTo(timestampA);
     });
 
     return progressVideos;
+  }
+
+  static StreamBuilder createProfileProgressVideoStream(
+      ApplicationState applicationState,
+      LibraryState libraryState,
+      Widget Function(
+              BuildContext context, List<List<ProgressVideo>> progressVideos)
+          builder) {
+    var currentUserRef = FirebaseFirestore.instance
+        .doc('/users/${applicationState.currentUser?.id}');
+    var currentDocRef = FirebaseFirestore.instance
+        .doc('/courses/${libraryState.selectedCourse?.id}');
+
+    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+        stream: FirebaseFirestore.instance
+            .collection('progressVideos')
+            .where('userId', isEqualTo: currentUserRef)
+            .where('courseId', isEqualTo: currentDocRef)
+            .snapshots(),
+        builder: (BuildContext context,
+            AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+          if (snapshot.hasError) {
+            print('Something went wrong: ${snapshot.error}');
+            return const Text('Something went wrong.');
+          }
+
+          List<ProgressVideo> progressVideos =
+              convertSnapshotToSortedProgressVideos(snapshot);
+
+          // Group by lessonId
+          Map<String, List<ProgressVideo>> progressVideosByLessonId =
+              LinkedHashMap();
+          for (var progressVideo in progressVideos) {
+            String lessonId = progressVideo.lessonId.id;
+            if (!progressVideosByLessonId.containsKey(lessonId)) {
+              progressVideosByLessonId[lessonId] = [];
+            }
+            progressVideosByLessonId[lessonId]!.add(progressVideo);
+          }
+
+          List<List<ProgressVideo>> progressVideosList =
+              progressVideosByLessonId.values.toList();
+          return builder(context, progressVideosList);
+        });
   }
 }

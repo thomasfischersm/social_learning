@@ -4,6 +4,7 @@ class ProgressVideo {
   String id;
   DocumentReference userId;
   String userUid;
+  DocumentReference courseId;
   DocumentReference lessonId;
   String youtubeUrl;
   String? youtubeVideoId;
@@ -14,6 +15,7 @@ class ProgressVideo {
       this.id,
       this.userId,
       this.userUid,
+      this.courseId,
       this.lessonId,
       this.youtubeUrl,
       this.youtubeVideoId,
@@ -24,6 +26,7 @@ class ProgressVideo {
       : id = e.id,
         userId = e.data()['userId'] as DocumentReference,
         userUid = e.data()['userUid'] as String,
+        courseId = e.data()['courseId'] as DocumentReference,
         lessonId = e.data()['lessonId'] as DocumentReference,
         youtubeUrl = e.data()['youtubeUrl'] as String,
         youtubeVideoId = e.data()['youtubeVideoId'] as String?,
@@ -35,6 +38,7 @@ class ProgressVideo {
         userId = data['userId'] as DocumentReference,
         userUid = data['userUid'] as String,
         lessonId = data['lessonId'] as DocumentReference,
+        courseId = data['courseId'] as DocumentReference,
         youtubeUrl = data['youtubeUrl'] as String,
         youtubeVideoId = data['youtubeVideoId'] as String?,
         isProfilePrivate =

@@ -752,7 +752,7 @@ class LessonDetailState extends State<LessonDetailPage> {
     }
 
     ProgressVideoFunctions.createProgressVideo(
-        lesson.id!, applicationState.currentUser!, youtubeUrl);
+        lesson, applicationState.currentUser!, youtubeUrl);
     setState(() {
       _youtubeUploadError = null;
       _youtubeUploadUrlController.text = '';
