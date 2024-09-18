@@ -19,7 +19,6 @@ class StudentState extends ChangeNotifier {
   final LibraryState _libraryState;
 
   bool _isInitialized = false;
-  bool _isProficiencyListenerAdded = false;
   List<PracticeRecord>? _learnRecords;
   List<PracticeRecord>? _teachRecords;
   StreamSubscription? _menteeSubscription;
@@ -40,19 +39,8 @@ class StudentState extends ChangeNotifier {
         _learnRecords =
             snapshot.docs.map((e) => PracticeRecord.fromSnapshot(e)).toList();
 
-        // TODO: Make this smarter so that it updates when lessons are added/
-        // removed and the user gains no lesson graduations.
-        if (!_isProficiencyListenerAdded) {
-          _isProficiencyListenerAdded = true;
-          _libraryState.addListener(
-                () {
-              UserFunctions.updateCourseProficiency(
-                  _applicationState, _libraryState, this);
-
-              notifyListeners();
-            },
-          );
-        }
+        UserFunctions.updateCourseProficiency(
+            _applicationState, _libraryState, this);
 
         notifyListeners();
       });
@@ -67,6 +55,15 @@ class StudentState extends ChangeNotifier {
             snapshot.docs.map((e) => PracticeRecord.fromSnapshot(e)).toList();
         notifyListeners();
       });
+
+      _libraryState.addListener(
+            () {
+          UserFunctions.updateCourseProficiency(
+              _applicationState, _libraryState, this);
+
+          notifyListeners();
+        },
+      );
     }
   }
 

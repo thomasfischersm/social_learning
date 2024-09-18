@@ -119,7 +119,7 @@ class UserFunctions {
     int completedLessons = studentState.getLessonsLearned(course, libraryState);
     double proficiency = completedLessons / lessons.toDouble();
     proficiency = double.parse((proficiency.toStringAsFixed(2)));
-    if (lessons == 0 || completedLessons == 0) {
+    if (lessons == 1 || completedLessons == 0) {
       print(
           'Not updating proficiency because learned lessons or lesson count has not been loaded.');
       return;
