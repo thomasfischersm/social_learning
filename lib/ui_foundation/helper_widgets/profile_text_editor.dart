@@ -13,6 +13,7 @@ class ProfileTextEditor extends StatefulWidget {
 
 class _ProfileTextEditorState extends State<ProfileTextEditor>
     with SingleTickerProviderStateMixin {
+  static const int defaultVisibleLines = 5;
   bool _isExpanded = false;
   bool _isEditing = false;
   bool _isTruncated = false;
@@ -85,7 +86,7 @@ class _ProfileTextEditorState extends State<ProfileTextEditor>
                     overflow: _isExpanded
                         ? TextOverflow.visible
                         : TextOverflow.ellipsis,
-                    maxLines: _isExpanded ? null : 3,
+                    maxLines: _isExpanded ? null : defaultVisibleLines,
                     style: hasProfileText
                         ? const TextStyle(fontSize: 16)
                         : const TextStyle(
@@ -137,7 +138,7 @@ class _ProfileTextEditorState extends State<ProfileTextEditor>
   void _checkIfTextIsTruncated(double maxWidth) {
     final textPainter = TextPainter(
       text: TextSpan(text: _profileText, style: const TextStyle(fontSize: 16)),
-      maxLines: 3,
+      maxLines: defaultVisibleLines,
       textDirection: TextDirection.ltr,
     );
 

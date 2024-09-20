@@ -58,36 +58,41 @@ class ProfilePageState extends State<ProfilePage> {
                 Expanded(
                     flex: 1,
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: ProfileImageWidget(currentUser, context),
-                    )),
+                        padding: const EdgeInsets.only(right: 4),
+                        child: InkWell(
+                          onTap: () => _pickProfileImage(context),
+                          child: Stack(children: [
+                            ProfileImageWidget(currentUser, context),
+                            const Positioned(
+                                bottom: 0, right: 0, child: Icon(Icons.edit))
+                          ]),
+                        ))),
+                const SizedBox(width: 4),
                 Expanded(
-                  flex: 1,
-                  child: Text(
-                    applicationState.userDisplayName ?? '<pick a display name>',
-                    style: CustomTextStyles.subHeadline,
-                  ),
-                ),
+                    flex: 1,
+                    child: Column(
+                      children: [
+                        InkWell(
+                            onTap: () => showDisplayNameDialog(
+                                context, applicationState),
+                            child: Row(children: [
+                              Text(
+                                applicationState.userDisplayName ??
+                                    '<pick a display name>',
+                                style: CustomTextStyles.subHeadline,
+                              ),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.edit),
+                            ])),
+                        ProfileTextEditor(applicationState)
+                      ],
+                    )),
               ],
             ),
             Text(
               'Settings',
               style: CustomTextStyles.subHeadline,
             ),
-            TextButton(
-                onPressed: () {
-                  _pickProfileImage(context);
-                },
-                child: const Text('Upload profile image.')),
-            TextButton(
-              onPressed: () {
-                showDisplayNameDialog(context, applicationState);
-              },
-              child: const Text('Change display name.'),
-            ),
-            Padding(
-                padding: const EdgeInsets.only(left: 10, right: 4),
-                child: ProfileTextEditor(applicationState)),
             Row(
               children: [
                 Checkbox(
@@ -117,14 +122,14 @@ class ProfilePageState extends State<ProfilePage> {
             Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: CustomUiConstants.getDivider()),
-            _createProgressVideos(context, applicationState),
-            Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: CustomUiConstants.getDivider()),
             TextButton(
                 onPressed: () =>
                     Navigator.pushNamed(context, NavigationEnum.signOut.route),
                 child: const Text("Sign out.")),
+            Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: CustomUiConstants.getDivider()),
+            _createProgressVideos(context, applicationState),
             CustomUiConstants.getGeneralFooter(context)
           ],
         );
