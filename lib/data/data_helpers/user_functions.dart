@@ -2,7 +2,10 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
@@ -19,6 +22,7 @@ class UserFunctions {
       'profileText': '',
       'email': email,
       'isProfilePrivate': false,
+      'isGeoLocationEnabled': false,
     });
   }
 
@@ -168,13 +172,15 @@ class UserFunctions {
       courseProficiency.proficiency = proficiency;
     } else {
       user.courseProficiencies?.add(CourseProficiency(
-          FirebaseFirestore.instance.doc('/courses/${course.id}'), proficiency));
+          FirebaseFirestore.instance.doc('/courses/${course.id}'),
+          proficiency));
     }
 
     print('Updated proficiency to $proficiency.');
   }
 
-  static void updateProfileText(ApplicationState applicationState, String profileText) {
+  static void updateProfileText(
+      ApplicationState applicationState, String profileText) {
     User? user = applicationState.currentUser;
     if (user == null) {
       return;
@@ -186,5 +192,113 @@ class UserFunctions {
     FirebaseFirestore.instance.doc('/users/${user.id}').update({
       'profileText': profileText,
     });
+  }
+
+  static Future<void> disableGeoLocation(ApplicationState applicationState) async {
+    User? user = applicationState.currentUser;
+    if (user == null) {
+      return;
+    }
+
+    user.isGeoLocationEnabled = false;
+
+    await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+      'isGeoLocationEnabled': false,
+    });
+  }
+
+  static Future<bool> enableGeoLocation(ApplicationState applicationState) async {
+    User? user = applicationState.currentUser;
+    if (user == null) {
+      return false;
+    }
+
+    if (kIsWeb) {
+      if (! await updateGeoLocation(applicationState)) {
+        return false;
+      }
+    } else {
+      // for iOS and Android
+      PermissionStatus status = await Permission.locationWhenInUse.status;
+      if (status.isGranted) {
+        print("Mobile: Location permission granted.");
+      } else if (status.isDenied) {
+        var permissionStatus = await Permission.locationWhenInUse.request();
+        if (!permissionStatus.isGranted) {
+          return false;
+        }
+      } else if (status.isPermanentlyDenied) {
+        openAppSettings(); // Guide user to app settings
+        return false;
+      }
+    }
+
+    if (!kIsWeb && !await updateGeoLocation(applicationState)) {
+      // Failed to update the geo location.
+      return false;
+    }
+
+    user.isGeoLocationEnabled = true;
+
+    await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+      'isGeoLocationEnabled': true,
+    });
+
+    return true;
+  }
+
+  /// Tries to get the current location and returns false if the user denied
+  /// permission.
+  static Future<bool> updateGeoLocation(
+      ApplicationState applicationState) async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled, return or handle accordingly
+      print("Location services are disabled.");
+      return false;
+    }
+
+    // Check if location permission is granted
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      // Request permission if it is denied
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permission denied, handle it here
+        print("Location permission denied.");
+        return false;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are permanently denied
+      print("Location permission is permanently denied.");
+      return false;
+    }
+
+    // If permissions are granted, get the current location
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings:
+            const LocationSettings(accuracy: LocationAccuracy.high),
+      );
+      print(
+          "Current location: Lat: ${position.latitude}, Lon: ${position.longitude}");
+
+      await FirebaseFirestore.instance
+          .doc('/users/${applicationState.currentUser!.id}')
+          .update({
+        'location': GeoPoint(position.latitude, position.longitude),
+      });
+
+      return true;
+    } catch (e) {
+      print("Error getting location: $e");
+      return false;
+    }
   }
 }

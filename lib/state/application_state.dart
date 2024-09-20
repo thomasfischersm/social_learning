@@ -47,6 +47,13 @@ class ApplicationState extends ChangeNotifier {
       () async {
         _currentUser = await UserFunctions.getCurrentUser();
 
+        // Update the geo location if the user allows it.
+        if (_isCurrentUserInitialized) {
+          if (_currentUser?.isGeoLocationEnabled ?? false) {
+            UserFunctions.updateGeoLocation(this);
+          }
+        }
+
         notifyListeners();
       }();
     }
@@ -92,7 +99,7 @@ class ApplicationState extends ChangeNotifier {
     });
 
     _isCurrentUserInitialized = false;
-    _currentUser = await UserFunctions.getCurrentUser();
+    _currentUser = await UserFunctions.getCurrentUser(); // TODO: Figure out if this is correct.
 
     notifyListeners();
   }

@@ -9,6 +9,7 @@ import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/progress_video.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/enable_location_button.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_text_editor.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
@@ -105,8 +106,6 @@ class ProfilePageState extends State<ProfilePage> {
                 Flexible(
                     child: RichText(
                   text: TextSpan(
-                      // text: 'Enable private profile.',
-                      // style: CustomTextStyles.getBody(context),
                       children: [
                         TextSpan(
                             text: 'Enable private profile. ',
@@ -119,6 +118,7 @@ class ProfilePageState extends State<ProfilePage> {
                 )),
               ],
             ),
+            EnableLocationButton(applicationState),
             Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: CustomUiConstants.getDivider()),
