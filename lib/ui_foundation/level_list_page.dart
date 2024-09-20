@@ -7,10 +7,10 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
-import 'package:social_learning/ui_foundation/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
-import 'package:social_learning/ui_foundation/navigation_enum.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class LevelListPage extends StatefulWidget {
   const LevelListPage({super.key});

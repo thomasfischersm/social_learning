@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
-import 'navigation_enum.dart';
+import 'ui_constants/navigation_enum.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});

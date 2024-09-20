@@ -6,11 +6,11 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data_support/json_curriculum_sync.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
-import 'package:social_learning/ui_foundation/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'navigation_enum.dart';
+import 'ui_constants/navigation_enum.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

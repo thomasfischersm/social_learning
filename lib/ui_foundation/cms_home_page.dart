@@ -10,7 +10,7 @@ import 'package:social_learning/data_support/google_doc_export.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
-import 'package:social_learning/ui_foundation/navigation_enum.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CmsHomePage extends StatefulWidget {
   const CmsHomePage({super.key});

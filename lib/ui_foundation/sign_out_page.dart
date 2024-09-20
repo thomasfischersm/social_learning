@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 
-import 'navigation_enum.dart';
+import 'ui_constants/navigation_enum.dart';
 
 class SignOutPage extends StatelessWidget {
   const SignOutPage({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:social_learning/ui_foundation/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomUiConstants {

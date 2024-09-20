@@ -22,7 +22,7 @@ import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/lesson_list_page.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_list_page.dart';
-import 'package:social_learning/ui_foundation/navigation_enum.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/session_create_page.dart';
 import 'package:social_learning/ui_foundation/session_create_warning_page.dart';
 import 'package:social_learning/ui_foundation/session_home_page.dart';
@@ -57,12 +57,16 @@ void main() async {
       ChangeNotifierProvider(create: (context) => applicationState),
       ChangeNotifierProvider(create: (context) => libraryState),
       ChangeNotifierProvider(create: (context) => GraduationState()),
-      ChangeNotifierProvider(create: (context) => StudentState(applicationState, libraryState)),
+      ChangeNotifierProvider(
+          create: (context) => StudentState(applicationState, libraryState)),
       ChangeNotifierProvider(
           create: (context) => AvailableSessionState(libraryState)),
       ChangeNotifierProvider(
-          create: (context) => OrganizerSessionState(applicationState, libraryState)),
-      ChangeNotifierProvider(create: (context) => StudentSessionState(applicationState, libraryState))
+          create: (context) =>
+              OrganizerSessionState(applicationState, libraryState)),
+      ChangeNotifierProvider(
+          create: (context) =>
+              StudentSessionState(applicationState, libraryState))
     ],
     builder: ((context, child) => const SocialLearningApp()),
   ));

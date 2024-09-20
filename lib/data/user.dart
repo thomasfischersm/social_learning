@@ -8,6 +8,7 @@ class User {
   String uid;
   String displayName;
   String sortName;
+  String profileText;
   bool isAdmin;
   String? profileFireStoragePath;
   List<DocumentReference>? enrolledCourseIds;
@@ -15,23 +16,45 @@ class User {
   bool isProfilePrivate;
   List<CourseProficiency>? courseProficiencies;
 
-  User(this.id, this.uid, this.displayName, this.sortName, this.isAdmin,
-      this.profileFireStoragePath, this.enrolledCourseIds, this.currentCourseId, this.isProfilePrivate, this.courseProficiencies);
+  User(
+      this.id,
+      this.uid,
+      this.displayName,
+      this.sortName,
+      this.profileText,
+      this.isAdmin,
+      this.profileFireStoragePath,
+      this.enrolledCourseIds,
+      this.currentCourseId,
+      this.isProfilePrivate,
+      this.courseProficiencies);
 
   User.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
         uid = e.data()?['uid'] ?? '',
         displayName = e.data()?['displayName'] ?? '',
         sortName = e.data()?['sortName'] ?? '',
+        profileText = e.data()?['profileText'] ?? '',
         isAdmin = e.data()?['isAdmin'] ?? false,
         profileFireStoragePath = e.data()?['profileFireStoragePath'],
-        enrolledCourseIds = (e.data()?['enrolledCourseIds']) != null ? [for(var doc in e.data()?['enrolledCourseIds']) doc as DocumentReference] : [],
+        enrolledCourseIds = (e.data()?['enrolledCourseIds']) != null
+            ? [
+                for (var doc in e.data()?['enrolledCourseIds'])
+                  doc as DocumentReference
+              ]
+            : [],
         currentCourseId = e.data()?['currentCourseId'],
         isProfilePrivate = e.data()?['isProfilePrivate'] ?? false,
-        courseProficiencies = (e.data()?['courseProficiencies']) != null ? [for(var doc in e.data()?['courseProficiencies']) CourseProficiency(doc['courseId'], doc['proficiency'])] : [];
+        courseProficiencies = (e.data()?['courseProficiencies']) != null
+            ? [
+                for (var doc in e.data()?['courseProficiencies'])
+                  CourseProficiency(doc['courseId'], doc['proficiency'])
+              ]
+            : [];
 
   CourseProficiency? getCourseProficiency(Course course) {
-    return courseProficiencies?.firstWhereOrNull((element) => element.courseId.id == course.id);
+    return courseProficiencies
+        ?.firstWhereOrNull((element) => element.courseId.id == course.id);
   }
 }
 

@@ -5,7 +5,7 @@ import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 
 import '../state/application_state.dart';
-import 'navigation_enum.dart';
+import 'ui_constants/navigation_enum.dart';
 
 class BottomBar extends StatelessWidget {
   const BottomBar({super.key});

@@ -15,12 +15,12 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
-import 'package:social_learning/ui_foundation/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/lesson_cover_image_widget.dart';
-import 'package:social_learning/ui_foundation/profile_image_by_user_id_widget.dart';
-import 'package:social_learning/ui_foundation/profile_image_widget.dart';
-import 'package:social_learning/ui_foundation/youtube_video_widget.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/lesson_cover_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/profile_image_by_user_id_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/youtube_video_widget.dart';
 import 'package:social_learning/util/string_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 

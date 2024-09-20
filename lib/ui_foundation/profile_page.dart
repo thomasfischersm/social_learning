@@ -9,15 +9,16 @@ import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/progress_video.dart';
 import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/ui_foundation/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/profile_text_editor.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 import 'package:social_learning/data/user.dart';
-import 'package:social_learning/ui_foundation/youtube_video_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/youtube_video_widget.dart';
 
 import '../state/application_state.dart';
 import 'bottom_bar.dart';
-import 'navigation_enum.dart';
+import 'ui_constants/navigation_enum.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -84,6 +85,9 @@ class ProfilePageState extends State<ProfilePage> {
               },
               child: const Text('Change display name.'),
             ),
+            Padding(
+                padding: const EdgeInsets.only(left: 10, right: 4),
+                child: ProfileTextEditor(applicationState)),
             Row(
               children: [
                 Checkbox(

@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/state/available_session_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
-import 'package:social_learning/ui_foundation/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/navigation_enum.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/session_student_page.dart';
 
 class SessionHomePage extends StatefulWidget {

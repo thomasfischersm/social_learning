@@ -16,6 +16,7 @@ class UserFunctions {
       'uid': auth.FirebaseAuth.instance.currentUser!.uid,
       'displayName': displayName,
       'sortName': displayName?.toLowerCase(),
+      'profileText': '',
       'email': email,
       'isProfilePrivate': false,
     });
@@ -171,5 +172,19 @@ class UserFunctions {
     }
 
     print('Updated proficiency to $proficiency.');
+  }
+
+  static void updateProfileText(ApplicationState applicationState, String profileText) {
+    User? user = applicationState.currentUser;
+    if (user == null) {
+      return;
+    }
+
+    profileText = profileText.trim();
+    user.profileText = profileText;
+
+    FirebaseFirestore.instance.doc('/users/${user.id}').update({
+      'profileText': profileText,
+    });
   }
 }
