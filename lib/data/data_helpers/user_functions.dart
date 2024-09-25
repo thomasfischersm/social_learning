@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/foundation.dart';
@@ -8,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
@@ -194,7 +194,8 @@ class UserFunctions {
     });
   }
 
-  static Future<void> disableGeoLocation(ApplicationState applicationState) async {
+  static Future<void> disableGeoLocation(
+      ApplicationState applicationState) async {
     User? user = applicationState.currentUser;
     if (user == null) {
       return;
@@ -202,19 +203,24 @@ class UserFunctions {
 
     user.isGeoLocationEnabled = false;
 
+    _removeGeoFromPracticeRecords(user);
+
     await FirebaseFirestore.instance.doc('/users/${user.id}').update({
       'isGeoLocationEnabled': false,
+      'geoLocation': null,
+      'roughUserLocation': null,
     });
   }
 
-  static Future<bool> enableGeoLocation(ApplicationState applicationState) async {
+  static Future<bool> enableGeoLocation(
+      ApplicationState applicationState) async {
     User? user = applicationState.currentUser;
     if (user == null) {
       return false;
     }
 
     if (kIsWeb) {
-      if (! await updateGeoLocation(applicationState)) {
+      if (!await updateGeoLocation(applicationState)) {
         return false;
       }
     } else {
@@ -289,16 +295,96 @@ class UserFunctions {
       print(
           "Current location: Lat: ${position.latitude}, Lon: ${position.longitude}");
 
+      var userData = {
+        'location': GeoPoint(position.latitude, position.longitude),
+      };
+
+      if (_updatePracticeRecordsGeoLocation(applicationState, position)) {
+        userData['roughUserLocation'] =
+            GeoPoint(position.latitude, position.longitude);
+      }
+
       await FirebaseFirestore.instance
           .doc('/users/${applicationState.currentUser!.id}')
-          .update({
-        'location': GeoPoint(position.latitude, position.longitude),
-      });
+          .update(userData);
 
       return true;
     } catch (e) {
       print("Error getting location: $e");
       return false;
     }
+  }
+
+  static bool _updatePracticeRecordsGeoLocation(
+      ApplicationState applicationState, Position position) {
+    GeoPoint? roughUserLocation =
+        applicationState.currentUser?.roughUserLocation;
+    GeoPoint currentLocation = GeoPoint(position.latitude, position.longitude);
+
+    // Calculate distance between the points.
+    double minDistanceToUpdate = 20;
+    if ((roughUserLocation != null) &&
+        _haversineDistance(currentLocation, roughUserLocation) <
+            minDistanceToUpdate) {
+      // Don't update the practice records. The user hasn't moved enough.
+      print('User has not moved enough to update practice records.');
+      return false;
+    }
+
+    // Update the practice records.
+    // DocumentReference userRef = FirebaseFirestore.instance
+    //     .doc('users/${applicationState.currentUser!.id}');
+    FirebaseFirestore.instance
+        .collection('practiceRecords')
+        .where('menteeUid', isEqualTo: applicationState.currentUser!.uid)
+        .where('isGraduation', isEqualTo: true)
+        .get()
+        .then((snapshot) {
+      for (var doc in snapshot.docs) {
+        var record = PracticeRecord.fromSnapshot(doc);
+        FirebaseFirestore.instance.doc('practiceRecords/${record.id}').update({
+          'roughUserLocation': currentLocation,
+        });
+      }
+      print('Updated ${snapshot.docs.length} practice records with a new geo location.');
+    });
+
+    return true;
+  }
+
+  static double _haversineDistance(GeoPoint point1, GeoPoint point2) {
+    const R = 6371; // Earth radius in kilometers
+
+    double lat1Rad = _radians(point1.latitude);
+    double lat2Rad = _radians(point2.latitude);
+    double dLatRad = _radians(point2.latitude - point1.latitude);
+    double dLonRad = _radians(point2.longitude - point1.longitude);
+
+    double a = sin(dLatRad / 2) * sin(dLatRad / 2) +
+        cos(lat1Rad) * cos(lat2Rad) * sin(dLonRad / 2) * sin(dLonRad / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return R * c;
+  }
+
+  static double _radians(double degrees) {
+    return degrees * pi / 180;
+  }
+
+  static void _removeGeoFromPracticeRecords(User user) {
+    FirebaseFirestore.instance
+        .collection('practiceRecords')
+        .where('menteeUid', isEqualTo: user.uid)
+        .where('isGraduation', isEqualTo: true)
+        .get()
+        .then((snapshot) {
+      for (var doc in snapshot.docs) {
+        var record = PracticeRecord.fromSnapshot(doc);
+        FirebaseFirestore.instance.doc('practiceRecords/${record.id}').update({
+          'roughUserLocation': null,
+        });
+      }
+      print('Removed ${snapshot.docs.length} practice records geo location.');
+    });
   }
 }

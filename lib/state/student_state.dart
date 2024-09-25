@@ -101,6 +101,11 @@ class StudentState extends ChangeNotifier {
       'isGraduation': isGraduation,
       'timestamp': FieldValue.serverTimestamp(),
     };
+
+    if (mentee.isGeoLocationEnabled && mentee.location != null && isGraduation) {
+      data['roughUserLocation'] = mentee.location;
+    }
+
     await FirebaseFirestore.instance.collection('practiceRecords').add(data);
   }
 

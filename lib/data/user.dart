@@ -17,6 +17,7 @@ class User {
   List<CourseProficiency>? courseProficiencies;
   bool isGeoLocationEnabled;
   GeoPoint? location;
+  GeoPoint? roughUserLocation;
 
   User(
       this.id,
@@ -31,7 +32,8 @@ class User {
       this.isProfilePrivate,
       this.courseProficiencies,
       this.isGeoLocationEnabled,
-      this.location);
+      this.location,
+      this.roughUserLocation);
 
   User.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -56,7 +58,8 @@ class User {
               ]
             : [],
         isGeoLocationEnabled = e.data()?['isGeoLocationEnabled'] ?? false,
-        location = e.data()?['location'];
+        location = e.data()?['location'],
+        roughUserLocation = e.data()?['roughUserLocation'];
 
   CourseProficiency? getCourseProficiency(Course course) {
     return courseProficiencies
