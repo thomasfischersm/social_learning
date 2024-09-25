@@ -9,6 +9,7 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data_support/google_doc_export.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
@@ -28,7 +29,7 @@ class CmsHomePageState extends State<CmsHomePage> {
       appBar: AppBar(
         title: const Text('Social Learning'),
       ),
-      bottomNavigationBar: const BottomBar(),
+      bottomNavigationBar: BottomBarV2.build(context),
       body: Center(
           child: Container(
               constraints: const BoxConstraints(maxWidth: 310, maxHeight: 350),

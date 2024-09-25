@@ -9,6 +9,7 @@ import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/progress_video.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/enable_location_button.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_text_editor.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -39,7 +40,7 @@ class ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: const Text('Social Learning'),
       ),
-      bottomNavigationBar: const BottomBar(),
+      bottomNavigationBar: BottomBarV2.build(context),
       body: Center(child: CustomUiConstants.framePage(
           Consumer<ApplicationState>(
               builder: (context, applicationState, child) {

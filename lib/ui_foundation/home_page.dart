@@ -6,6 +6,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data_support/json_curriculum_sync.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -22,7 +23,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  TextEditingController _invitationCodeController = TextEditingController();
+  final TextEditingController _invitationCodeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +41,7 @@ class HomePageState extends State<HomePage> {
         appBar: AppBar(
           title: const Text('Learning Lab'),
         ),
-        bottomNavigationBar: const BottomBar(),
+        bottomNavigationBar: BottomBarV2.build(context),
         body: Center(
             child: CustomUiConstants.framePage(Column(
           crossAxisAlignment: CrossAxisAlignment.start,

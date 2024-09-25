@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/state/available_session_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -24,7 +25,7 @@ class SessionHomeState extends State<SessionHomePage> {
         appBar: AppBar(
           title: const Text('Learning Lab'),
         ),
-        bottomNavigationBar: const BottomBar(),
+        bottomNavigationBar: BottomBarV2.build(context),
         body: Center(
             child: CustomUiConstants.framePage(Column(
           crossAxisAlignment: CrossAxisAlignment.start,
