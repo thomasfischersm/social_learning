@@ -463,8 +463,23 @@ class LessonSelectionDialogState extends State<LessonSelectionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.possibleLessons.isEmpty) {
+      return AlertDialog(
+        title: const Text('No lessons available'),
+        content: const Text('Either create a lesson or detach a lesson from a level.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      );
+    }
+
     return AlertDialog(
-      title: const Text('Select an lesson'),
+      title: const Text('Select a lesson'),
       content: DropdownButton<Lesson>(
         value: _selectedLesson,
         onChanged: (Lesson? newValue) {
