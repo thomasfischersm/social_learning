@@ -186,13 +186,19 @@ class StudentState extends ChangeNotifier {
       }
     }
 
+    // Handle flex lessons.
+    const String flexLessonsLevelId = 'flex Lessons';
+    var flexLevelCompletion = LevelCompletion(Level(flexLessonsLevelId, FirebaseFirestore.instance.doc('/courses/${libraryState.selectedCourse!.id}'), 'Flex Lessons', '', 999999, ''));
+    levelCompletions.add(flexLevelCompletion);
+    levelIdToCompletionMap[flexLessonsLevelId] = flexLevelCompletion;
+
     for (Lesson lesson in lessons) {
       if (lesson.isLevel == true) {
         continue;
       }
 
       String levelId =
-          UserFunctions.extractNumberId(lesson.levelId) ?? 'uncategorized';
+          UserFunctions.extractNumberId(lesson.levelId) ?? flexLessonsLevelId;
       LevelCompletion? levelCompletion = levelIdToCompletionMap[levelId];
 
       if (levelCompletion != null) {
@@ -212,6 +218,11 @@ class StudentState extends ChangeNotifier {
               .add(lessonRawId);
         }
       }
+    }
+
+    // Remove Flex lessons if it is empty.
+    if (flexLevelCompletion.lessonCount == 0) {
+      levelCompletions.remove(flexLevelCompletion);
     }
 
     return levelCompletions;

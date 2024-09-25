@@ -77,7 +77,8 @@ class LevelListState extends State<LevelListPage> {
         ));
   }
 
-  Widget generateLevelList(List<LevelCompletion> levelCompletions, LibraryState libraryState) {
+  Widget generateLevelList(
+      List<LevelCompletion> levelCompletions, LibraryState libraryState) {
     if (levelCompletions.isEmpty) {
       return Text(
         'Undergoing maintenance - no levels!',
@@ -91,6 +92,9 @@ class LevelListState extends State<LevelListPage> {
       Level level = levelCompletion.level;
 
       String levelText = 'Level ${i + 1}: ${level.title}';
+      if (level.title == 'Flex Lessons') {
+        levelText = levelText;
+      }
       TextStyle? levelTextStyle;
       if (levelCompletion.isLevelGraduated) {
         levelText += ' - Complete';
@@ -108,8 +112,11 @@ class LevelListState extends State<LevelListPage> {
           onTap: () {
             var levelId = level.id;
             if (levelId != null) {
+              var routeArgument = level.title != 'Flex Lessons'
+                  ? LevelDetailArgument(levelId)
+                  : LevelDetailArgument.flexLessons();
               Navigator.pushNamed(context, NavigationEnum.levelDetail.route,
-                  arguments: LevelDetailArgument(levelId));
+                  arguments: routeArgument);
             }
           },
           child: Text(
@@ -119,15 +126,15 @@ class LevelListState extends State<LevelListPage> {
     }
 
     // Show Flex lessons.
-    if (libraryState.getUnattachedLessons().isNotEmpty) {
-      children.add(InkWell(
-        onTap: () {
-          Navigator.pushNamed(context, NavigationEnum.levelDetail.route,
-              arguments: LevelDetailArgument.flexLessons());
-        },
-        child: Text('Flex Lessons', style: CustomTextStyles.getBody(context)),
-      ));
-    }
+    // if (libraryState.getUnattachedLessons().isNotEmpty) {
+    //   children.add(InkWell(
+    //     onTap: () {
+    //       Navigator.pushNamed(context, NavigationEnum.levelDetail.route,
+    //           arguments: LevelDetailArgument.flexLessons());
+    //     },
+    //     child: Text('Flex Lessons', style: CustomTextStyles.getBody(context)),
+    //   ));
+    // }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
