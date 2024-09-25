@@ -202,12 +202,14 @@ class UserFunctions {
     }
 
     user.isGeoLocationEnabled = false;
+    user.location = null;
+    user.roughUserLocation = null;
 
     _removeGeoFromPracticeRecords(user);
 
     await FirebaseFirestore.instance.doc('/users/${user.id}').update({
       'isGeoLocationEnabled': false,
-      'geoLocation': null,
+      'location': null,
       'roughUserLocation': null,
     });
   }
@@ -295,15 +297,18 @@ class UserFunctions {
       print(
           "Current location: Lat: ${position.latitude}, Lon: ${position.longitude}");
 
+      var newLocation = GeoPoint(position.latitude, position.longitude);
       var userData = {
-        'location': GeoPoint(position.latitude, position.longitude),
+        'location': newLocation,
       };
+      User user = applicationState.currentUser!;
 
       if (_updatePracticeRecordsGeoLocation(applicationState, position)) {
-        userData['roughUserLocation'] =
-            GeoPoint(position.latitude, position.longitude);
+        user.roughUserLocation = newLocation;
+        userData['roughUserLocation'] = newLocation;
       }
 
+      user.location = newLocation;
       await FirebaseFirestore.instance
           .doc('/users/${applicationState.currentUser!.id}')
           .update(userData);
@@ -332,21 +337,24 @@ class UserFunctions {
     }
 
     // Update the practice records.
-    // DocumentReference userRef = FirebaseFirestore.instance
-    //     .doc('users/${applicationState.currentUser!.id}');
     FirebaseFirestore.instance
         .collection('practiceRecords')
         .where('menteeUid', isEqualTo: applicationState.currentUser!.uid)
         .where('isGraduation', isEqualTo: true)
         .get()
         .then((snapshot) {
+      // TODO: Perhaps batch the writes.
+      WriteBatch batch = FirebaseFirestore.instance.batch();
       for (var doc in snapshot.docs) {
         var record = PracticeRecord.fromSnapshot(doc);
-        FirebaseFirestore.instance.doc('practiceRecords/${record.id}').update({
+        batch.update(
+            FirebaseFirestore.instance.doc('practiceRecords/${record.id}'), {
           'roughUserLocation': currentLocation,
         });
       }
-      print('Updated ${snapshot.docs.length} practice records with a new geo location.');
+      batch.commit();
+      print(
+          'Updated ${snapshot.docs.length} practice records with a new geo location.');
     });
 
     return true;
@@ -378,12 +386,18 @@ class UserFunctions {
         .where('isGraduation', isEqualTo: true)
         .get()
         .then((snapshot) {
+      WriteBatch batch = FirebaseFirestore.instance.batch();
       for (var doc in snapshot.docs) {
+        // TODO: Perhaps batch the writes.
         var record = PracticeRecord.fromSnapshot(doc);
-        FirebaseFirestore.instance.doc('practiceRecords/${record.id}').update({
-          'roughUserLocation': null,
-        });
+        if (record.roughUserLocation != null) {
+          batch.update(
+              FirebaseFirestore.instance.doc('practiceRecords/${record.id}'), {
+            'roughUserLocation': null,
+          });
+        }
       }
+      batch.commit();
       print('Removed ${snapshot.docs.length} practice records geo location.');
     });
   }
