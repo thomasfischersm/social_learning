@@ -12,6 +12,7 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
+import 'package:social_learning/data/user.dart';
 
 class UserFunctions {
   static void createUser(String uid, String? displayName, String? email) {
@@ -329,7 +330,7 @@ class UserFunctions {
     // Calculate distance between the points.
     double minDistanceToUpdate = 20;
     if ((roughUserLocation != null) &&
-        _haversineDistance(currentLocation, roughUserLocation) <
+        haversineDistance(currentLocation, roughUserLocation) <
             minDistanceToUpdate) {
       // Don't update the practice records. The user hasn't moved enough.
       print('User has not moved enough to update practice records.');
@@ -360,7 +361,7 @@ class UserFunctions {
     return true;
   }
 
-  static double _haversineDistance(GeoPoint point1, GeoPoint point2) {
+  static double haversineDistance(GeoPoint point1, GeoPoint point2) {
     const R = 6371; // Earth radius in kilometers
 
     double lat1Rad = _radians(point1.latitude);
@@ -373,6 +374,10 @@ class UserFunctions {
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
     return R * c;
+  }
+
+  static double toMiles(double kilometers) {
+    return kilometers * 0.621371;
   }
 
   static double _radians(double degrees) {

@@ -42,6 +42,9 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  // Test if enabling persistence caching is a good thing.
+  FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
+
   // CustomFirebase.init();
   // FirebaseFirestore.instance.settings = const Settings(host: '127.0.0.1:8080', sslEnabled: false, persistenceEnabled: false);
 

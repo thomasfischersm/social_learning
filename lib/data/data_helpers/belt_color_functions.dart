@@ -26,10 +26,10 @@ class BeltColorFunctions {
   ];
 
   static Color getBeltColor(double proficiency) {
-
     // Handle edge cases
     if (proficiency < 0 || proficiency > 1) {
-      throw ArgumentError('Progress must be between 0 and 1');
+      throw ArgumentError(
+          'Progress must be between 0 and 1 but was $proficiency');
     }
 
     // Find the index of the color that corresponds to the progress
@@ -40,7 +40,8 @@ class BeltColorFunctions {
     int upperIndex = colorIndex.ceil();
 
     // Calculate the interpolation factor
-    double interpolationFactor = (colorIndex - lowerIndex) * (colors.length - 1);
+    double interpolationFactor =
+        (colorIndex - lowerIndex) * (colors.length - 1);
 
     // Interpolate between the two colors
     Color lowerColor = colors[lowerIndex];

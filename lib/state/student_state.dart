@@ -275,6 +275,9 @@ class StudentState extends ChangeNotifier {
 
   int getLessonsLearned(Course course, LibraryState libraryState) {
     int learnCount = 0;
+
+    Set<String> alreadyCountedLessonIds = {};
+
     for (PracticeRecord record in _learnRecords!) {
       Lesson? lesson = libraryState.lessons
           ?.firstWhereOrNull((element) => element.id == record.lessonId.id);
@@ -283,7 +286,12 @@ class StudentState extends ChangeNotifier {
         continue;
       }
 
+      if (alreadyCountedLessonIds.contains(lesson.id)) {
+        continue;
+      }
+
       if (record.isGraduation) {
+        alreadyCountedLessonIds.add(lesson.id!);
         learnCount++;
       }
     }

@@ -8,8 +8,9 @@ import 'package:provider/provider.dart';
 class ProfileImageWidget extends StatefulWidget {
   final User _user;
   final LibraryState _libraryState;
+  final double? maxRadius;
 
-  ProfileImageWidget(this._user, BuildContext context, {super.key})
+  ProfileImageWidget(this._user, BuildContext context, {super.key, this.maxRadius})
       : _libraryState = Provider.of<LibraryState>(context, listen: false);
 
   @override
@@ -57,7 +58,7 @@ class ProfileImageWidgetState extends State<ProfileImageWidget> {
   CircleAvatar _createCircleAvatar() {
     return CircleAvatar(
       backgroundImage: NetworkImage(_profilePhotoUrl!),
-      maxRadius: 100,
+      maxRadius: widget.maxRadius ?? 100,
     );
   }
 

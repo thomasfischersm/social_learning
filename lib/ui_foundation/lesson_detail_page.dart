@@ -16,6 +16,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/nearby_mentors_list_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/lesson_cover_image_widget.dart';
@@ -181,7 +182,8 @@ class LessonDetailState extends State<LessonDetailPage> {
                                       SingleChildScrollView(
                                         child: Column(
                                           children: <Widget>[
-                                            Text("Content for Tab 4"),
+                                            _createConnectView(context, lesson,
+                                                applicationState, libraryState),
                                           ],
                                         ),
                                       ),
@@ -503,8 +505,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                           SizedBox(
                               width: 50,
                               height: 50,
-                              child: ProfileImageWidget(
-                                  commenter, context)),
+                              child: ProfileImageWidget(commenter, context)),
                         Expanded(
                             child: Container(
                           padding: const EdgeInsets.all(8.0),
@@ -590,8 +591,8 @@ class LessonDetailState extends State<LessonDetailPage> {
     }
   }
 
-  Widget _createShowcaseView(
-      BuildContext context, Lesson lesson, ApplicationState applicationState, LibraryState libraryState) {
+  Widget _createShowcaseView(BuildContext context, Lesson lesson,
+      ApplicationState applicationState, LibraryState libraryState) {
     return Column(
       children: [
         ..._createShowcaseUploadView(lesson, applicationState),
@@ -759,6 +760,46 @@ class LessonDetailState extends State<LessonDetailPage> {
       _youtubeUploadUrlController.text = '';
     });
   }
+
+  _createConnectView(BuildContext context, Lesson lesson,
+      ApplicationState applicationState, LibraryState libraryState) {
+    DocumentReference lessonId =
+        FirebaseFirestore.instance.doc('/lessons/${lesson.id}');
+    User? currentUser = applicationState.currentUser;
+    GeoPoint? currentLocation = currentUser?.location;
+
+    if (currentUser == null) {
+      return const Text('Please sign in to connect with other students.');
+    }
+
+    if (!currentUser.isGeoLocationEnabled || currentLocation == null) {
+      return Center(
+          child: Column(children: [
+        InkWell(
+            onTap: () => _enableLocation(applicationState),
+            child: const Text(
+                'Please enable location services to connect with other students.')),
+        TextButton(
+            onPressed: () => _enableLocation(applicationState),
+            child: const Text('Enable location'))
+      ]));
+    }
+
+    return SingleChildScrollView(
+        child: Column(
+      children: [
+        Text('Find students who can teach you this lesson',
+            style: CustomTextStyles.subHeadline),
+        NearbyMentorsListWidget(
+            lessonId: lessonId, currentLocation: currentLocation),
+      ],
+    ));
+  }
+
+  void _enableLocation(ApplicationState applicationState) {
+    UserFunctions.enableGeoLocation(applicationState);
+    setState(() {});
+  }
 }
 
 class DisabledDialogContent extends StatefulWidget {
@@ -908,7 +949,8 @@ class RecordDialogState extends State<RecordDialogContent> {
                                                 child: AspectRatio(
                                                     aspectRatio: 1,
                                                     child: ProfileImageWidget(
-                                                        _students![index], context)))),
+                                                        _students![index],
+                                                        context)))),
                                       Expanded(
                                           flex: 3,
                                           child: Text(
