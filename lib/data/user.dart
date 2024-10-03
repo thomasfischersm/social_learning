@@ -18,6 +18,7 @@ class User {
   bool isGeoLocationEnabled;
   GeoPoint? location;
   GeoPoint? roughUserLocation;
+  String? instagramHandle;
 
   User(
       this.id,
@@ -33,7 +34,8 @@ class User {
       this.courseProficiencies,
       this.isGeoLocationEnabled,
       this.location,
-      this.roughUserLocation);
+      this.roughUserLocation,
+      this.instagramHandle);
 
   User.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -59,7 +61,8 @@ class User {
             : [],
         isGeoLocationEnabled = e.data()?['isGeoLocationEnabled'] ?? false,
         location = e.data()?['location'],
-        roughUserLocation = e.data()?['roughUserLocation'];
+        roughUserLocation = e.data()?['roughUserLocation'],
+        instagramHandle = e.data()?['instagramHandle'];
 
   CourseProficiency? getCourseProficiency(Course course) {
     return courseProficiencies

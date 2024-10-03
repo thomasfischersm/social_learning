@@ -17,6 +17,7 @@ import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/youtube_video_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../state/application_state.dart';
 import 'bottom_bar.dart';
@@ -91,12 +92,26 @@ class ProfilePageState extends State<ProfilePage> {
                     )),
               ],
             ),
+            const SizedBox(height: 8),
             Text(
-              'Settings',
-              style: CustomTextStyles.subHeadline,
-            ),
+                  'Settings',
+                  style: CustomTextStyles.subHeadline,
+                ),
+            Row(children: [
+              const SizedBox(width: 10),
+              Text('Instagram: ', style: CustomTextStyles.getBody(context)),
+              InkWell(
+                  onTap: () => _openInstagram(context, applicationState),
+                  child: Text(currentUser.instagramHandle ?? '<enter>',
+                      style: CustomTextStyles.getBody(context))),
+              IconButton(
+                  onPressed: () =>
+                      _editInstagramHandle(context, applicationState),
+                  icon: const Icon(Icons.edit)),
+            ]),
             Row(
               children: [
+                const SizedBox(width: 4),
                 Checkbox(
                     value: currentUser.isProfilePrivate,
                     onChanged: (isChecked) =>
@@ -292,5 +307,66 @@ class ProfilePageState extends State<ProfilePage> {
         children: children,
       );
     });
+  }
+
+  _editInstagramHandle(
+      BuildContext context, ApplicationState applicationState) {
+    TextEditingController textFieldController = TextEditingController(
+        text: applicationState.currentUser?.instagramHandle);
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Enter a new Instagram handle"),
+            content: TextField(
+              onChanged: (value) {
+                setState(() {
+                  _newDisplayName = value;
+                });
+              },
+              controller: textFieldController,
+              decoration: const InputDecoration(hintText: '@princessfedora'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  UserFunctions.updateInstagramHandle(
+                      textFieldController.value.text, applicationState);
+
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        });
+  }
+
+  _openInstagram(
+      BuildContext context, ApplicationState applicationState) async {
+    User? currentUser = applicationState.currentUser;
+    if ((currentUser == null) || (currentUser.instagramHandle == null)) {
+      return;
+    }
+
+    final url =
+        Uri.parse('https://www.instagram.com/${currentUser.instagramHandle}/');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

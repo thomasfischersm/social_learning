@@ -412,4 +412,30 @@ class UserFunctions {
       print('Removed ${snapshot.docs.length} practice records geo location.');
     });
   }
+
+  static void updateInstagramHandle(
+      String? newInstagramHandle, ApplicationState applicationState) async {
+    // Clean up the input
+    newInstagramHandle = newInstagramHandle?.trim();
+    if (newInstagramHandle?.startsWith('@') ?? false) {
+      newInstagramHandle = newInstagramHandle!.substring(1);
+    }
+
+    // Convert to null if necessary.
+    if (newInstagramHandle?.isEmpty ?? false) {
+      newInstagramHandle = null;
+    }
+
+    // Update the user's Instagram handle
+    User? user = applicationState.currentUser;
+    if (user == null) {
+      return;
+    }
+
+    user.instagramHandle = newInstagramHandle;
+
+    await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+      'instagramHandle': newInstagramHandle,
+    });
+  }
 }
