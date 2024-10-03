@@ -135,7 +135,7 @@ class ApplicationState extends ChangeNotifier {
     print('End signOut');
   }
 
-  void setIsProfilePrivate(bool isProfilePrivate) {
+  void setIsProfilePrivate(bool isProfilePrivate, ApplicationState applicationState) {
     FirebaseFirestore.instance.doc('/users/${currentUser?.id}').update({
       'isProfilePrivate': isProfilePrivate,
     });
@@ -144,6 +144,14 @@ class ApplicationState extends ChangeNotifier {
     // Update any owned documents to private.
     _setProgressVideosPrivate(isProfilePrivate);
     // TODO: Comments
+
+    // Hide/show the user in Geo searches.
+    User user = applicationState.currentUser!;
+    if (isProfilePrivate && user.isGeoLocationEnabled) {
+      UserFunctions.removeGeoFromPracticeRecords(user);
+    } else if (!isProfilePrivate && user.isGeoLocationEnabled) {
+      UserFunctions.updateGeoLocation(applicationState);
+    }
 
     notifyListeners();
   }

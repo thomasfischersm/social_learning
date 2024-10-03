@@ -106,16 +106,15 @@ class ProfilePageState extends State<ProfilePage> {
                 //     style: CustomTextStyles.getBody(context))),
                 Flexible(
                     child: RichText(
-                  text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: 'Enable private profile. ',
-                            style: CustomTextStyles.getBodyNote(context)),
-                        TextSpan(
-                            text:
-                                '(Your profile will still be visible in session and to instructors.)',
-                            style: CustomTextStyles.getBodySmall(context))
-                      ]),
+                  text: TextSpan(children: [
+                    TextSpan(
+                        text: 'Enable private profile. ',
+                        style: CustomTextStyles.getBodyNote(context)),
+                    TextSpan(
+                        text:
+                            '(Your profile will still be visible in session and to instructors.)',
+                        style: CustomTextStyles.getBodySmall(context))
+                  ]),
                 )),
               ],
             ),
@@ -212,8 +211,8 @@ class ProfilePageState extends State<ProfilePage> {
 
   _toogleIsPrivateProfile(
       BuildContext context, ApplicationState applicationState) {
-    applicationState
-        .setIsProfilePrivate(!applicationState.currentUser!.isProfilePrivate);
+    applicationState.setIsProfilePrivate(
+        !applicationState.currentUser!.isProfilePrivate, applicationState);
   }
 
   Widget _createProgressVideos(

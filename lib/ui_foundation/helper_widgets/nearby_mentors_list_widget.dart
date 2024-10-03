@@ -52,7 +52,7 @@ class NearbyMentorsListWidget extends StatelessWidget {
             .removeWhere((uid) => uid == applicationState.currentUser!.uid);
 
         print(
-            'Found ${practiceRecords.length} practice records and ${menteeUids.length} mentors for lessonId: $lessonId');
+            'Found ${practiceRecords.length} practice records and ${menteeUids.length} mentors for lessonId: $lessonId.id');
 
         if (menteeUids.isEmpty) {
           return Center(
@@ -66,6 +66,7 @@ class NearbyMentorsListWidget extends StatelessWidget {
             .collection('users')
             .where('uid', whereIn: menteeUids)
             .where('isGeoLocationEnabled', isEqualTo: true)
+            .where('isProfilePrivate', isEqualTo: false)
             .get();
 
         return FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -99,26 +100,6 @@ class NearbyMentorsListWidget extends StatelessWidget {
             nearbyMentors.sort((a, b) => a.distance.compareTo(b.distance));
 
             double screenWidth = MediaQuery.of(context).size.width;
-
-            // return Column(
-            //   children: nearbyMentors.map((mentor) {
-            //     double distanceInMiles = UserFunctions.toMiles(mentor.distance);
-            //     return Row(
-            //       children: [
-            //         Text('${distanceInMiles.toStringAsFixed(0)} miles',
-            //             style: CustomTextStyles.getBody(context)),
-            //         const SizedBox(width: 8),
-            //         SizedBox(
-            //             width: 50,
-            //             height: 50,
-            //             child: ProfileImageWidget(mentor.user, context, maxRadius: screenWidth * 0.10 / 2,)),
-            //         const SizedBox(width: 8),
-            //         Text(mentor.user.displayName,
-            //             style: CustomTextStyles.getBody(context)),
-            //       ],
-            //     );
-            //   }).toList(),
-            // );
 
             return Table(
               columnWidths: const {

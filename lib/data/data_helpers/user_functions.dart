@@ -206,7 +206,7 @@ class UserFunctions {
     user.location = null;
     user.roughUserLocation = null;
 
-    _removeGeoFromPracticeRecords(user);
+    removeGeoFromPracticeRecords(user);
 
     await FirebaseFirestore.instance.doc('/users/${user.id}').update({
       'isGeoLocationEnabled': false,
@@ -327,6 +327,12 @@ class UserFunctions {
         applicationState.currentUser?.roughUserLocation;
     GeoPoint currentLocation = GeoPoint(position.latitude, position.longitude);
 
+    // Skip if the profile is private.
+    if (applicationState.currentUser?.isProfilePrivate ?? true) {
+      print('User profile is private. Not updating practice records.');
+      return false;
+    }
+
     // Calculate distance between the points.
     double minDistanceToUpdate = 20;
     if ((roughUserLocation != null) &&
@@ -384,7 +390,7 @@ class UserFunctions {
     return degrees * pi / 180;
   }
 
-  static void _removeGeoFromPracticeRecords(User user) {
+  static void removeGeoFromPracticeRecords(User user) {
     FirebaseFirestore.instance
         .collection('practiceRecords')
         .where('menteeUid', isEqualTo: user.uid)
