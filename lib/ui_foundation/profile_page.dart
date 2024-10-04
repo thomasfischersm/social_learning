@@ -99,9 +99,9 @@ class ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 8),
             Text(
-                  'Settings',
-                  style: CustomTextStyles.subHeadline,
-                ),
+              'Settings',
+              style: CustomTextStyles.subHeadline,
+            ),
             Row(children: [
               const SizedBox(width: 10),
               Text('Instagram: ', style: CustomTextStyles.getBody(context)),
@@ -324,15 +324,20 @@ class ProfilePageState extends State<ProfilePage> {
         builder: (context) {
           return AlertDialog(
             title: const Text("Enter a new Instagram handle"),
-            content: TextField(
-              onChanged: (value) {
-                setState(() {
-                  _newDisplayName = value;
-                });
-              },
-              controller: textFieldController,
-              decoration: const InputDecoration(hintText: '@princessfedora'),
-            ),
+            content: Column(mainAxisSize: MainAxisSize.min, children: [
+              TextField(
+                onChanged: (value) {
+                  setState(() {
+                    _newDisplayName = value;
+                  });
+                },
+                controller: textFieldController,
+                decoration: const InputDecoration(hintText: '@princessfedora'),
+              ),
+              Text(
+                  'Tip: Slip into DMs to arrange study/practice sessions with other students.',
+                  style: CustomTextStyles.getBodySmall(context))
+            ]),
             actions: [
               TextButton(
                 onPressed: () {
