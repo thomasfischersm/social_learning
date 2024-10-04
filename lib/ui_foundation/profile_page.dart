@@ -21,7 +21,6 @@ import 'package:social_learning/ui_foundation/helper_widgets/youtube_video_widge
 import 'package:url_launcher/url_launcher.dart';
 
 import '../state/application_state.dart';
-import 'bottom_bar.dart';
 import 'ui_constants/navigation_enum.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -366,17 +365,7 @@ class ProfilePageState extends State<ProfilePage> {
   _openInstagram(
       BuildContext context, ApplicationState applicationState) async {
     User? currentUser = applicationState.currentUser;
-    if ((currentUser == null) || (currentUser.instagramHandle == null)) {
-      return;
-    }
 
-    final url =
-        Uri.parse('https://www.instagram.com/${currentUser.instagramHandle}/');
-
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url);
-    } else {
-      throw 'Could not launch $url';
-    }
+    await UserFunctions.openInstaProfile(currentUser);
   }
 }

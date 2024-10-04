@@ -3,6 +3,7 @@ enum NavigationEnum {
   landing('/landing'),
   home('/home'),
   profile('/profile'),
+  otherProfile('/other_profile'),
   levelList('/level_list'),
   levelDetail('/level_detail'),
   lessonList('/lesson_list'),

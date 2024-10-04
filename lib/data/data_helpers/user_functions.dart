@@ -13,6 +13,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserFunctions {
   static void createUser(String uid, String? displayName, String? email) {
@@ -437,5 +438,19 @@ class UserFunctions {
     await FirebaseFirestore.instance.doc('/users/${user.id}').update({
       'instagramHandle': newInstagramHandle,
     });
+  }
+
+  static Future<void> openInstaProfile(User? user) async {
+    if ((user == null) || (user.instagramHandle == null)) {
+      return;
+    }
+
+    final url = Uri.parse('https://www.instagram.com/${user.instagramHandle}/');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
