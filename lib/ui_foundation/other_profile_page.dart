@@ -7,7 +7,9 @@ import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/expanding_text_box.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/profile_progress_video_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/data/user.dart';
@@ -163,10 +165,9 @@ class OtherProfileState extends State<OtherProfilePage> {
                       ))
                 ],
               ),
-              CustomUiConstants.getTextPadding(Text(otherUser.profileText,
-                  maxLines: null,
-                  overflow: TextOverflow.visible,
-                  style: CustomTextStyles.getBody(context))),
+              CustomUiConstants.getIndentationTextPadding(
+                  ExpandingTextBox(otherUser.profileText, 5)),
+              ProfileProgressVideoWidget(otherUser),
             ],
           ))));
     }

@@ -34,6 +34,8 @@ class ProfileLookupWidgetState extends State<ProfileLookupWidget> {
 
   // Perform the Firestore query based on search input
   Future<void> _searchUsers(String query) async {
+    query = query.trim().toLowerCase();
+
     // Only search after 3 characters
     if (query.trim().length < _minChars) {
       // Clear search results.

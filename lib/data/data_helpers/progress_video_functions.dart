@@ -36,7 +36,8 @@ class ProgressVideoFunctions {
         .add(<String, dynamic>{
       'userId': FirebaseFirestore.instance.doc('/users/${user.id}'),
       'userUid': user.uid,
-      'courseId': FirebaseFirestore.instance.doc('/courses/${lesson.courseId.id}'),
+      'courseId':
+          FirebaseFirestore.instance.doc('/courses/${lesson.courseId.id}'),
       'lessonId': FirebaseFirestore.instance.doc('/lessons/${lesson.id}'),
       'youtubeUrl': youtubeUrl,
       'youtubeVideoId': extractYouTubeVideoId(youtubeUrl),
@@ -64,7 +65,7 @@ class ProgressVideoFunctions {
           }
 
           List<ProgressVideo> progressVideos =
-              convertSnapshotToSortedProgressVideos(snapshot);
+              convertAsyncSnapshotToSortedProgressVideos(snapshot);
 
           return builder(context, progressVideos);
         });
@@ -91,7 +92,7 @@ class ProgressVideoFunctions {
           }
 
           List<ProgressVideo> progressVideos =
-              convertSnapshotToSortedProgressVideos(snapshot);
+              convertAsyncSnapshotToSortedProgressVideos(snapshot);
 
           return builder(context, progressVideos);
         });
@@ -116,7 +117,7 @@ class ProgressVideoFunctions {
           }
 
           List<ProgressVideo> progressVideos =
-              convertSnapshotToSortedProgressVideos(snapshot);
+              convertAsyncSnapshotToSortedProgressVideos(snapshot);
 
           // Remove self videos
           ApplicationState applicationState =
@@ -131,14 +132,20 @@ class ProgressVideoFunctions {
         });
   }
 
-  static List<ProgressVideo> convertSnapshotToSortedProgressVideos(
-      AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-    print('convertSnapshotToSortedProgressVideos data: ${snapshot.data}');
-    if (snapshot.data == null) {
+  static List<ProgressVideo> convertAsyncSnapshotToSortedProgressVideos(
+      AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> asyncSnapshot) {
+    var snapshot = asyncSnapshot.data;
+    print('convertSnapshotToSortedProgressVideos data: $snapshot');
+    if (snapshot == null) {
       return [];
     }
 
-    List<ProgressVideo> progressVideos = snapshot.data!.docs.map(
+    return convertSnapshotToSortedProgressVideos(snapshot);
+  }
+
+  static List<ProgressVideo> convertSnapshotToSortedProgressVideos(
+      QuerySnapshot<Map<String, dynamic>> snapshot) {
+    List<ProgressVideo> progressVideos = snapshot.docs.map(
       (DocumentSnapshot<Map<String, dynamic>> document) {
         return ProgressVideo.fromSnapshot(document);
       },
@@ -178,7 +185,7 @@ class ProgressVideoFunctions {
           }
 
           List<ProgressVideo> progressVideos =
-              convertSnapshotToSortedProgressVideos(snapshot);
+              convertAsyncSnapshotToSortedProgressVideos(snapshot);
 
           // Group by lessonId
           Map<String, List<ProgressVideo>> progressVideosByLessonId =
@@ -195,5 +202,38 @@ class ProgressVideoFunctions {
               progressVideosByLessonId.values.toList();
           return builder(context, progressVideosList);
         });
+  }
+
+  static Future<List<List<ProgressVideo>>> createProfileProgressVideoFuture(
+      User user,
+      LibraryState libraryState) async {
+    var currentUserRef = FirebaseFirestore.instance
+        .doc('/users/${user.id}');
+    var currentDocRef = FirebaseFirestore.instance
+        .doc('/courses/${libraryState.selectedCourse?.id}');
+
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('progressVideos')
+        .where('userId', isEqualTo: currentUserRef)
+        .where('courseId', isEqualTo: currentDocRef)
+        .get();
+
+    List<ProgressVideo> progressVideos =
+        convertSnapshotToSortedProgressVideos(snapshot);
+
+    // Group by lessonId
+    Map<String, List<ProgressVideo>> progressVideosByLessonId = LinkedHashMap();
+    for (var progressVideo in progressVideos) {
+      String lessonId = progressVideo.lessonId.id;
+      if (!progressVideosByLessonId.containsKey(lessonId)) {
+        progressVideosByLessonId[lessonId] = [];
+      }
+      progressVideosByLessonId[lessonId]!.add(progressVideo);
+    }
+
+    List<List<ProgressVideo>> progressVideosList =
+        progressVideosByLessonId.values.toList();
+    return progressVideosList;
   }
 }
