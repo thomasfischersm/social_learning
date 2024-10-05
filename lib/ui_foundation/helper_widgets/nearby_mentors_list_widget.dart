@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
-import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
@@ -17,8 +15,8 @@ class NearbyMentorsListWidget extends StatelessWidget {
   const NearbyMentorsListWidget({
     required this.lessonId,
     required this.currentLocation,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +125,7 @@ class NearbyMentorsListWidget extends StatelessWidget {
                               mentor.user,
                               context,
                               maxRadius: screenWidth * 0.10 / 2,
+                              linkToOtherProfile: true,
                             ))),
                     // const SizedBox(width: 8),
                     TableCell(

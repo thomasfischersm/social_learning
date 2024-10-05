@@ -6,12 +6,16 @@ import 'package:social_learning/data/data_helpers/belt_color_functions.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/other_profile_page.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class ProfileImageByUserIdWidget extends StatefulWidget {
   final DocumentReference userId;
   final LibraryState libraryState;
+  final bool linkToOtherProfile;
 
-  const ProfileImageByUserIdWidget(this.userId, this.libraryState, {super.key});
+  const ProfileImageByUserIdWidget(this.userId, this.libraryState,
+      {super.key, this.linkToOtherProfile = false});
 
   @override
   State<StatefulWidget> createState() {
@@ -19,10 +23,11 @@ class ProfileImageByUserIdWidget extends StatefulWidget {
   }
 }
 
-class ProfileImageByUserIdWidgetState extends State<ProfileImageByUserIdWidget> {
+class ProfileImageByUserIdWidgetState
+    extends State<ProfileImageByUserIdWidget> {
   String? _profilePhotoUrl;
   Color? _borderColor;
-  // String? _lastProfileFireStoragePath;
+  User? _user;
 
   @override
   void initState() {
@@ -32,21 +37,29 @@ class ProfileImageByUserIdWidgetState extends State<ProfileImageByUserIdWidget> 
 
   @override
   Widget build(BuildContext context) {
+    Widget avatar;
+
     String? profilePhotoUrl = _profilePhotoUrl;
     if (profilePhotoUrl != null) {
       Color? borderColor = _borderColor;
       if (borderColor != null) {
-        return Container(
-          // padding: const EdgeInsets.all(2.0),
+        avatar = Container(
+            // padding: const EdgeInsets.all(2.0),
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(color: borderColor, width: 2.0)),
             child: _createCircleAvatar());
       } else {
-        return _createCircleAvatar();
+        avatar = _createCircleAvatar();
       }
     } else {
-      return const Icon(Icons.photo);
+      avatar = const Icon(Icons.photo);
+    }
+
+    if (widget.linkToOtherProfile) {
+      return InkWell(onTap: _goToOtherProfile, child: avatar);
+    } else {
+      return avatar;
     }
   }
 
@@ -64,12 +77,15 @@ class ProfileImageByUserIdWidgetState extends State<ProfileImageByUserIdWidget> 
 
     if (userSnapshot.exists) {
       User user = User.fromSnapshot(userSnapshot);
+      _user = user;
       Course? course = widget.libraryState.selectedCourse;
       Color? borderColor;
       if (course != null) {
-        CourseProficiency? courseProficiency = user.getCourseProficiency(course);
+        CourseProficiency? courseProficiency =
+            user.getCourseProficiency(course);
         if (courseProficiency != null) {
-          borderColor = BeltColorFunctions.getBeltColor(courseProficiency.proficiency);
+          borderColor =
+              BeltColorFunctions.getBeltColor(courseProficiency.proficiency);
         }
       }
 
@@ -84,6 +100,18 @@ class ProfileImageByUserIdWidgetState extends State<ProfileImageByUserIdWidget> 
           });
         }
       }
+    }
+  }
+
+  void _goToOtherProfile() {
+    User? user = _user;
+
+    if (user != null) {
+      Navigator.pushNamed(
+        context,
+        NavigationEnum.otherProfile.route,
+        arguments: OtherProfileArgument(user.id, user.uid),
+      );
     }
   }
 }

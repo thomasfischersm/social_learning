@@ -505,7 +505,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                           SizedBox(
                               width: 50,
                               height: 50,
-                              child: ProfileImageWidget(commenter, context)),
+                              child: ProfileImageWidget(commenter, context, linkToOtherProfile: true,)),
                         Expanded(
                             child: Container(
                           padding: const EdgeInsets.all(8.0),
@@ -730,7 +730,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                           width: 50,
                           height: 50,
                           child: ProfileImageByUserIdWidget(
-                              progressVideo.userId, libraryState))),
+                              progressVideo.userId, libraryState, linkToOtherProfile: true))),
                   Text(
                       DateFormat.yMd().format(
                           progressVideo.timestamp?.toDate() ?? DateTime.now()),
