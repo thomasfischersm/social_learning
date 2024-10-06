@@ -32,7 +32,8 @@ class SessionHostState extends State<SessionHostPage> {
     return Scaffold(
         appBar: AppBar(title: const Text('Learning Lab')),
         bottomNavigationBar: BottomBarV2.build(context),
-        body: Center(child: CustomUiConstants.framePage(
+        body: Align(
+            alignment: Alignment.topCenter,child: CustomUiConstants.framePage(
             Consumer<OrganizerSessionState>(
                 builder: (context, organizerSessionState, child) {
           return Consumer<LibraryState>(

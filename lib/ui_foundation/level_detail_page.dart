@@ -60,7 +60,8 @@ class LevelDetailState extends State<LevelDetailPage> {
           return const Text('Failed to load');
         })),
         bottomNavigationBar: BottomBarV2.build(context),
-        body: Center(
+        body: Align(
+          alignment: Alignment.topCenter,
           child: CustomUiConstants.framePage(Consumer<LibraryState>(
               builder: (context, libraryState, child) => Consumer<StudentState>(
                       builder: (context, studentState, child) {

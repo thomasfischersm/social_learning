@@ -43,30 +43,31 @@ class SessionStudentState extends State<SessionStudentPage> {
     return Scaffold(
         appBar: AppBar(title: const Text('Learning Lab')),
         bottomNavigationBar: BottomBarV2.build(context),
-        body: Center(child: CustomUiConstants.framePage(
-            Consumer<ApplicationState>(
+        body: Align(
+            alignment: Alignment.topCenter,
+            child: CustomUiConstants.framePage(Consumer<ApplicationState>(
                 builder: (context, applicationState, child) {
-          return Consumer<LibraryState>(
-              builder: (context, libraryState, child) {
-            return Consumer<StudentSessionState>(
-                builder: (context, studentSessionState, child) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (studentSessionState.currentSession?.isActive == false)
-                    CustomUiConstants.getTextPadding(Text(
-                        'The session has ended!',
-                        style: CustomTextStyles.subHeadline)),
-                  CustomUiConstants.getTextPadding(Text(
-                      'Attending Session: ${studentSessionState.currentSession?.name}',
-                      style: CustomTextStyles.subHeadline)),
-                  _createPairingTable(
-                      studentSessionState, libraryState, applicationState),
-                ],
-              );
-            });
-          });
-        }))));
+              return Consumer<LibraryState>(
+                  builder: (context, libraryState, child) {
+                return Consumer<StudentSessionState>(
+                    builder: (context, studentSessionState, child) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (studentSessionState.currentSession?.isActive == false)
+                        CustomUiConstants.getTextPadding(Text(
+                            'The session has ended!',
+                            style: CustomTextStyles.subHeadline)),
+                      CustomUiConstants.getTextPadding(Text(
+                          'Attending Session: ${studentSessionState.currentSession?.name}',
+                          style: CustomTextStyles.subHeadline)),
+                      _createPairingTable(
+                          studentSessionState, libraryState, applicationState),
+                    ],
+                  );
+                });
+              });
+            }))));
   }
 
   Table _createPairingTable(StudentSessionState studentSessionState,

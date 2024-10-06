@@ -43,7 +43,8 @@ class ProfilePageState extends State<ProfilePage> {
         title: const Text('Social Learning'),
       ),
       bottomNavigationBar: BottomBarV2.build(context),
-      body: Center(child: CustomUiConstants.framePage(
+      body: Align(
+          alignment: Alignment.topCenter,child: CustomUiConstants.framePage(
           Consumer<ApplicationState>(
               builder: (context, applicationState, child) {
         User? currentUser = applicationState.currentUser;

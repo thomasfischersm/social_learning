@@ -38,7 +38,8 @@ class LevelListState extends State<LevelListPage> {
           return Text('${libraryState.selectedCourse?.title} Curriculum');
         })),
         bottomNavigationBar: BottomBarV2.build(context),
-        body: Center(
+        body: Align(
+          alignment: Alignment.topCenter,
           child: CustomUiConstants.framePage(Consumer<LibraryState>(
               builder: (context, libraryState, child) => Consumer<StudentState>(
                       builder: (context, studentState, child) {

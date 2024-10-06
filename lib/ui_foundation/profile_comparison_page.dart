@@ -88,19 +88,20 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
           title: const Text('Learning Lab'),
         ),
         bottomNavigationBar: BottomBarV2.build(context),
-        body: Center(
+        body: Align(
+            alignment: Alignment.topCenter,
             child: CustomUiConstants.framePage(Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomUiConstants.getIndentationTextPadding(
-                CustomUiConstants.getTextPadding(Text(
-                    'You and ${_otherUser?.displayName}',
-                    style: CustomTextStyles.headline))),
-            Consumer<LibraryState>(builder: (context, libraryState, child) {
-              return _createComparisonTable(context, libraryState);
-            }),
-          ],
-        ))));
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomUiConstants.getIndentationTextPadding(
+                    CustomUiConstants.getTextPadding(Text(
+                        'You and ${_otherUser?.displayName}',
+                        style: CustomTextStyles.headline))),
+                Consumer<LibraryState>(builder: (context, libraryState, child) {
+                  return _createComparisonTable(context, libraryState);
+                }),
+              ],
+            ))));
   }
 
   Widget _createComparisonTable(

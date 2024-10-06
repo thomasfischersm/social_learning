@@ -113,7 +113,8 @@ class LessonDetailState extends State<LessonDetailPage> {
                   },
                   child: const Text('Record'),
                 ),
-                body: Center(
+                body: Align(
+                    alignment: Alignment.topCenter,
                     child: CustomUiConstants.framePage(
                         enableScrolling: false,
                         DefaultTabController(

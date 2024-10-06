@@ -55,7 +55,8 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             textAlign: TextAlign.center,
           ),
         ),
-        body: Center(
+        body: Align(
+          alignment: Alignment.topCenter,
           child: CustomUiConstants.framePage(Consumer<LibraryState>(
               builder: (context, libraryState, child) => Consumer<StudentState>(
                       builder: (context, studentState, child) {

@@ -75,7 +75,8 @@ class OtherProfileState extends State<OtherProfilePage> {
             title: const Text('Loading profile...'),
           ),
           bottomNavigationBar: BottomBarV2.build(context),
-          body: Center(
+          body: Align(
+              alignment: Alignment.topCenter,
               child: CustomUiConstants.framePage(Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -90,7 +91,8 @@ class OtherProfileState extends State<OtherProfilePage> {
             title: Text('Profile ${otherUser.displayName}'),
           ),
           bottomNavigationBar: BottomBarV2.build(context),
-          body: Center(
+          body: Align(
+              alignment: Alignment.topCenter,
               child: CustomUiConstants.framePage(Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -122,7 +124,8 @@ class OtherProfileState extends State<OtherProfilePage> {
             },
           ),
           bottomNavigationBar: BottomBarV2.build(context),
-          body: Center(
+          body: Align(
+              alignment: Alignment.topCenter,
               child: CustomUiConstants.framePage(Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

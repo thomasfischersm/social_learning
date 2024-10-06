@@ -26,7 +26,8 @@ class SessionHomeState extends State<SessionHomePage> {
           title: const Text('Learning Lab'),
         ),
         bottomNavigationBar: BottomBarV2.build(context),
-        body: Center(
+        body: Align(
+            alignment: Alignment.topCenter,
             child: CustomUiConstants.framePage(Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
