@@ -297,6 +297,37 @@ class StudentState extends ChangeNotifier {
     }
     return learnCount;
   }
+
+  List<String> getGraduatedLessonIds() {
+    if (!_libraryState.isCourseSelected) {
+      return [];
+    }
+
+    _init();
+
+    List<String> graduatedLessonIds = [];
+    List<PracticeRecord>? learnRecords = _learnRecords;
+    Course? selectedCourse = _libraryState.selectedCourse;
+
+    if ((learnRecords == null) || (selectedCourse == null)) {
+      return [];
+    }
+
+    for (PracticeRecord record in learnRecords) {
+      Lesson? lesson = _libraryState.findLesson(record.lessonId.id);
+
+      if ((lesson == null) || (lesson.courseId.id != selectedCourse.id)) {
+        // The PracticeRecord is not relevant.
+        continue;
+      }
+
+      if (record.isGraduation) {
+        graduatedLessonIds.add(lesson.id!);
+      }
+    }
+
+    return graduatedLessonIds;
+  }
 }
 
 class LevelCompletion {

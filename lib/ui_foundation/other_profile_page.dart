@@ -10,6 +10,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart'
 import 'package:social_learning/ui_foundation/helper_widgets/expanding_text_box.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_progress_video_widget.dart';
+import 'package:social_learning/ui_foundation/profile_comparison_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/data/user.dart';
@@ -86,15 +87,14 @@ class OtherProfileState extends State<OtherProfilePage> {
       // Private profile view
       return Scaffold(
           appBar: AppBar(
-            title: Text('Profile: ${otherUser.displayName}'),
+            title: Text('Profile ${otherUser.displayName}'),
           ),
           bottomNavigationBar: BottomBarV2.build(context),
           body: Center(
               child: CustomUiConstants.framePage(Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomUiConstants.getTextPadding(Text(
-                  'Profile: ${otherUser.displayName}',
+              CustomUiConstants.getTextPadding(Text(otherUser.displayName,
                   style: CustomTextStyles.headline)),
               CustomUiConstants.getTextPadding(Text(
                   'This profile is set to private.',
@@ -113,7 +113,13 @@ class OtherProfileState extends State<OtherProfilePage> {
       // Regular profile view
       return Scaffold(
           appBar: AppBar(
-            title: Text('Profile: ${otherUser.displayName}'),
+            title: Text(otherUser.displayName),
+          ),
+          floatingActionButton: FloatingActionButton(
+            child: const Text('Together'),
+            onPressed: () {
+              _goToProfileComparison(otherUser, context);
+            },
           ),
           bottomNavigationBar: BottomBarV2.build(context),
           body: Center(
@@ -175,5 +181,10 @@ class OtherProfileState extends State<OtherProfilePage> {
 
   void _openInstaProfile() {
     UserFunctions.openInstaProfile(_otherUser);
+  }
+
+  void _goToProfileComparison(User otherUser, BuildContext context) {
+    Navigator.pushNamed(context, NavigationEnum.profileComparison.route,
+        arguments: ProfileComparisonArgument(otherUser.id, otherUser.uid));
   }
 }

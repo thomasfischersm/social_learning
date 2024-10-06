@@ -23,6 +23,7 @@ import 'package:social_learning/ui_foundation/lesson_list_page.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_list_page.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
+import 'package:social_learning/ui_foundation/profile_comparison_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/session_create_page.dart';
 import 'package:social_learning/ui_foundation/session_create_warning_page.dart';
@@ -118,6 +119,7 @@ class SocialLearningApp extends StatelessWidget {
         '/home': (context) => const HomePage(),
         '/profile': (context) => const ProfilePage(),
         '/other_profile': (context) => const OtherProfilePage(),
+        '/profile_comparison': (context) => const ProfileComparisonPage(),
         '/level_list': (context) => const LevelListPage(),
         '/level_detail': (context) => const LevelDetailPage(),
         '/lesson_list': (context) => const LessonListPage(),

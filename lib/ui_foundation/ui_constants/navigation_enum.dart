@@ -4,6 +4,7 @@ enum NavigationEnum {
   home('/home'),
   profile('/profile'),
   otherProfile('/other_profile'),
+  profileComparison('/profile_comparison'),
   levelList('/level_list'),
   levelDetail('/level_detail'),
   lessonList('/lesson_list'),
