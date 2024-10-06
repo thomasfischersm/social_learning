@@ -64,8 +64,18 @@ class ProfileImageByUserIdWidgetState
   }
 
   CircleAvatar _createCircleAvatar() {
+    print('Creating circle avatar with url: $_profilePhotoUrl');
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // TODO: Use the cacheSize parameter to be better with memory usage.
+
     return CircleAvatar(
-      backgroundImage: NetworkImage(_profilePhotoUrl!),
+      backgroundImage: ResizeImage(
+          NetworkImage(
+            _profilePhotoUrl!,
+          ),
+          width: (screenWidth * .2).toInt(),
+          policy: ResizeImagePolicy.fit),
       maxRadius: 100,
     );
   }
