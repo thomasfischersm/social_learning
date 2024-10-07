@@ -65,7 +65,9 @@ class ProfileImageByUserIdWidgetState
 
   CircleAvatar _createCircleAvatar() {
     print('Creating circle avatar with url: $_profilePhotoUrl');
-    double screenWidth = MediaQuery.of(context).size.width;
+    double logicalScreenWidth = MediaQuery.of(context).size.width;
+    double pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    double physicalScreenWidth = logicalScreenWidth * pixelRatio;
 
     // TODO: Use the cacheSize parameter to be better with memory usage.
 
@@ -74,7 +76,7 @@ class ProfileImageByUserIdWidgetState
           NetworkImage(
             _profilePhotoUrl!,
           ),
-          width: (screenWidth * .2).toInt(),
+          width: (physicalScreenWidth * .34).toInt(),
           policy: ResizeImagePolicy.fit),
       maxRadius: 100,
     );
