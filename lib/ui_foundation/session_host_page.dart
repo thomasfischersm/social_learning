@@ -108,6 +108,10 @@ class SessionHostState extends State<SessionHostPage> {
 
         if (proficiencyA != null && proficiencyB != null) {
           return proficiencyB.compareTo(proficiencyA);
+        } else if (proficiencyA != null) {
+          return -1;
+        } else if (proficiencyB != null) {
+          return 1;
         }
       }
 
@@ -121,6 +125,30 @@ class SessionHostState extends State<SessionHostPage> {
 
       return 0;
     });
+
+    // Create header row.
+    tableRows.add(TableRow(children: <Widget>[
+      CustomUiConstants.getIndentationTextPadding(
+          CustomUiConstants.getTextPadding(Text(
+        'Name',
+        style: CustomTextStyles.getBodyNote(context)
+            ?.copyWith(fontWeight: FontWeight.bold),
+      ))),
+      // CustomUiConstants.getIndentationTextPadding(
+      //     CustomUiConstants.getTextPadding(const Text('Role'))),
+      Align(
+          alignment: Alignment.centerRight,
+          child: CustomUiConstants.getIndentationTextPadding(
+              CustomUiConstants.getTextPadding(Text('Teaching Deficit',
+                  style: CustomTextStyles.getBodyNote(context)
+                      ?.copyWith(fontWeight: FontWeight.bold))))),
+      Align(
+          alignment: Alignment.centerRight,
+          child: CustomUiConstants.getIndentationTextPadding(
+              CustomUiConstants.getTextPadding(Text('Proficiency',
+                  style: CustomTextStyles.getBodyNote(context)
+                      ?.copyWith(fontWeight: FontWeight.bold))))),
+    ]));
 
     for (SessionParticipant sessionParticipant in sessionParticipants) {
       User? participantUser = organizerSessionState.getUser(sessionParticipant);
@@ -145,11 +173,15 @@ class SessionHostState extends State<SessionHostPage> {
       //         ? Colors.black
       //         : Colors.white);
 
+      String displayName = participantUser?.displayName ?? '';
+      if (participantUser?.isAdmin ?? false) {
+        displayName += ' (Instructor)';
+      }
+
       tableRows.add(TableRow(children: <Widget>[
-        CustomUiConstants.getIndentationTextPadding(
-            Text(participantUser?.displayName ?? 'Error!!!')),
-        CustomUiConstants.getIndentationTextPadding(
-            Text(sessionParticipant.isInstructor ? 'Instructor' : 'Student')),
+        CustomUiConstants.getIndentationTextPadding(Text(displayName)),
+        // CustomUiConstants.getIndentationTextPadding(
+        //     Text(sessionParticipant.isInstructor ? 'Instructor' : 'Student')),
         CustomUiConstants.getIndentationTextPadding(Align(
             alignment: Alignment.centerRight,
             child: Text('$teachDeficit',
@@ -166,9 +198,11 @@ class SessionHostState extends State<SessionHostPage> {
       ]));
     }
 
-    return Table(
-        columnWidths: const {0: FlexColumnWidth(), 1: IntrinsicColumnWidth()},
-        children: tableRows);
+    return Table(columnWidths: const {
+      0: FlexColumnWidth(),
+      1: IntrinsicColumnWidth(),
+      2: IntrinsicColumnWidth()
+    }, children: tableRows);
   }
 
   Table _createPairingTable(
@@ -195,7 +229,8 @@ class SessionHostState extends State<SessionHostPage> {
       tableRows.add(TableRow(children: <Widget>[
         CustomUiConstants.getIndentationTextPadding(
             CustomUiConstants.getTextPadding(const Text('Mentor'))),
-        CustomUiConstants.getTextPadding(const Text('Mentee')),
+        CustomUiConstants.getIndentationTextPadding(
+            CustomUiConstants.getTextPadding(const Text('Mentee'))),
         CustomUiConstants.getTextPadding(const Text('Lesson')),
       ]));
 

@@ -90,17 +90,19 @@ class SessionStudentState extends State<SessionStudentPage> {
             CustomUiConstants.getIndentationTextPadding(Text(
                 'Session ${round + 1}',
                 style: CustomTextStyles.subHeadline)),
-            CustomUiConstants.getIndentationTextPadding(
-                Text('', style: CustomTextStyles.subHeadline)),
-            CustomUiConstants.getIndentationTextPadding(
-                Text('', style: CustomTextStyles.subHeadline)),
+            SizedBox.shrink(),
+            SizedBox.shrink(),
           ]));
       tableRows.add(TableRow(children: <Widget>[
-        CustomUiConstants.getTextPadding(const Text("Mentor")),
-        CustomUiConstants.getTextPadding(const Text('Mentee')),
-        CustomUiConstants.getTextPadding(const Text('Lesson')),
+        CustomUiConstants.getIndentationTextPadding(
+            CustomUiConstants.getTextPadding(const Text("Mentor"))),
+        CustomUiConstants.getIndentationTextPadding(
+            CustomUiConstants.getTextPadding(const Text('Mentee'))),
+        CustomUiConstants.getIndentationTextPadding(
+            CustomUiConstants.getTextPadding(const Text('Lesson'))),
       ]));
 
+      bool hasAtLeastOnePairing = false;
       List<SessionPairing> sessionPairings =
           roundNumberToSessionPairing[round]!;
       for (SessionPairing sessionPairing in sessionPairings) {
@@ -112,9 +114,11 @@ class SessionStudentState extends State<SessionStudentPage> {
         Lesson? lesson = libraryState.findLesson(sessionPairing.lessonId.id);
 
         if ((mentor?.id != currentUserId) && (mentee?.id != currentUserId)) {
-          // Only show pairings if the involve the current student.
+          // Only show pairings if they involve the current student.
           continue;
         }
+
+        hasAtLeastOnePairing = true;
 
         tableRows.add(TableRow(children: <Widget>[
           CustomUiConstants.getTextPadding(
@@ -127,6 +131,18 @@ class SessionStudentState extends State<SessionStudentPage> {
                 Text(lesson?.title ?? 'Error!!!')),
           ),
           // TODO: Create link.
+        ]));
+      }
+
+      if (!hasAtLeastOnePairing) {
+        // Remove the header row if there are no pairings.
+        tableRows.removeLast();
+        tableRows.add(TableRow(children: <Widget>[
+          CustomUiConstants.getIndentationTextPadding(
+              CustomUiConstants.getTextPadding(
+                  Text('No pairings for this round'))),
+          SizedBox.shrink(),
+          SizedBox.shrink(),
         ]));
       }
     }
