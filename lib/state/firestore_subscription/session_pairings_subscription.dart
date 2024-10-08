@@ -37,4 +37,9 @@ class SessionPairingsSubscription extends FirestoreListSubscription<SessionPairi
 
     return latestRoundNumber;
   }
+
+  List<SessionPairing>? getLastRound() {
+    int latestRoundNumber = getLatestRoundNumber();
+    return _roundNumberToSessionPairings[latestRoundNumber];
+  }
 }

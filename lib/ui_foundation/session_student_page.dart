@@ -82,19 +82,19 @@ class SessionStudentState extends State<SessionStudentPage> {
     sortedRounds = sortedRounds.reversed.toList();
 
     for (int round in sortedRounds) {
-      tableRows.add(TableRow(children: <Widget>[
-        // TODO: Set dark background color and span the whole row.
-        Container(
-            color: CustomUiConstants.accentedBackgroundColor,
-            child:
-                CustomUiConstants.getTextPadding(Text('Session ${round + 1}'))),
-        Container(
-            color: CustomUiConstants.accentedBackgroundColor,
-            child: CustomUiConstants.getTextPadding(const Text(''))),
-        Container(
-            color: CustomUiConstants.accentedBackgroundColor,
-            child: CustomUiConstants.getTextPadding(const Text(''))),
-      ]));
+      tableRows.add(TableRow(
+          decoration:
+              BoxDecoration(color: CustomUiConstants.accentedBackgroundColor),
+          children: <Widget>[
+            // TODO: Set dark background color and span the whole row.
+            CustomUiConstants.getIndentationTextPadding(Text(
+                'Session ${round + 1}',
+                style: CustomTextStyles.subHeadline)),
+            CustomUiConstants.getIndentationTextPadding(
+                Text('', style: CustomTextStyles.subHeadline)),
+            CustomUiConstants.getIndentationTextPadding(
+                Text('', style: CustomTextStyles.subHeadline)),
+          ]));
       tableRows.add(TableRow(children: <Widget>[
         CustomUiConstants.getTextPadding(const Text("Mentor")),
         CustomUiConstants.getTextPadding(const Text('Mentee')),

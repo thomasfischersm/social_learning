@@ -13,6 +13,7 @@ class FirestoreDocumentSubscription<T> {
       _streamSubscription;
 
   get isInitialized => _isInitialized;
+
   get item => _item;
 
   FirestoreDocumentSubscription(this._convertSnapshot, this._notifyChange);
@@ -23,15 +24,20 @@ class FirestoreDocumentSubscription<T> {
 
     _streamSubscription = FirebaseFirestore.instance
         .doc(docPath())
-        .snapshots()
+        .snapshots(includeMetadataChanges: true)
         .listen((DocumentSnapshot<Map<String, dynamic>> docSnapshot) {
+      print('Got a new snapshot for ${docPath()}');
       if (!docSnapshot.metadata.hasPendingWrites) {
         _item = _convertSnapshot(docSnapshot);
+      } else {
+        print('Ignoring update to ${docPath()} because it is pending writes.');
       }
 
       _isInitialized = true;
 
       _notifyChange();
+    }, onError: (error) {
+      print('Error subscribing to ${docPath()}: $error');
     });
   }
 

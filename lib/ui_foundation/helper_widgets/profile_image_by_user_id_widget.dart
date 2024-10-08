@@ -119,11 +119,7 @@ class ProfileImageByUserIdWidgetState
     User? user = _user;
 
     if (user != null) {
-      Navigator.pushNamed(
-        context,
-        NavigationEnum.otherProfile.route,
-        arguments: OtherProfileArgument(user.id, user.uid),
-      );
+      OtherProfileArgument.goToOtherProfile(context, user.id, user.uid);
     }
   }
 }

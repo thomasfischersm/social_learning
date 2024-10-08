@@ -21,6 +21,11 @@ class OtherProfileArgument {
   String userUid;
 
   OtherProfileArgument(this.userId, this.userUid);
+
+  static goToOtherProfile(BuildContext context, String userId, String userUid) {
+    Navigator.pushNamed(context, NavigationEnum.otherProfile.route,
+        arguments: OtherProfileArgument(userId, userUid));
+  }
 }
 
 class OtherProfilePage extends StatefulWidget {

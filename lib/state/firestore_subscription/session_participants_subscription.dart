@@ -54,9 +54,10 @@ class SessionParticipantsSubscription
     if ((session != null) &&
         (sessionParticipants.length != session?.participantCount)) {
       // Update the session participant count.
-      FirebaseFirestore.instance.collection('sessions').doc(session.id).set(
-          {'participantCount': sessionParticipants.length},
-          SetOptions(merge: true));
+      FirebaseFirestore.instance
+          .collection('sessions')
+          .doc(session.id)
+          .update({'participantCount': sessionParticipants.length});
       print('_updateParticipantCount(${sessionParticipants.length}');
     }
   }
@@ -69,7 +70,7 @@ class SessionParticipantsSubscription
       if (rawUserId != null) {
         userIds.add(rawUserId);
       }
-        }
+    }
     return userIds;
   }
 
@@ -91,9 +92,12 @@ class SessionParticipantsSubscription
         'participantId':
             FirebaseFirestore.instance.doc('/users/${currentUser?.id}'),
         'participantUid': currentUser?.uid,
-        'courseId': FirebaseFirestore.instance.doc('/courses/${session.courseId.id}'),
+        'courseId':
+            FirebaseFirestore.instance.doc('/courses/${session.courseId.id}'),
         'isInstructor': currentUser?.isAdmin,
         'isActive': true,
+        'teachCount': 0,
+        'learnCount': 0,
       });
     }
   }

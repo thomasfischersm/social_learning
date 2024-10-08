@@ -180,10 +180,6 @@ class ProfileLookupWidgetState extends State<ProfileLookupWidget> {
   }
 
   _goToProfile(User otherUser) {
-    Navigator.pushNamed(
-      context,
-      NavigationEnum.otherProfile.route,
-      arguments: OtherProfileArgument(otherUser.id, otherUser.uid),
-    );
+    OtherProfileArgument.goToOtherProfile(context,otherUser.id, otherUser.uid);
   }
 }

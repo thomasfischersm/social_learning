@@ -117,10 +117,6 @@ class ProfileImageWidgetState extends State<ProfileImageWidget> {
   }
 
   void _goToOtherProfile() {
-    Navigator.pushNamed(
-      context,
-      NavigationEnum.otherProfile.route,
-      arguments: OtherProfileArgument(widget._user.id, widget._user.uid),
-    );
+    OtherProfileArgument.goToOtherProfile(context, widget._user.id, widget._user.uid);
   }
 }

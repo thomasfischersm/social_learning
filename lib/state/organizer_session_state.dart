@@ -1,9 +1,9 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session.dart';
+import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/globals.dart';
@@ -161,6 +161,8 @@ class OrganizerSessionState extends ChangeNotifier {
       'courseId': FirebaseFirestore.instance.doc('/courses/${course.id}'),
       'isInstructor': organizer.isAdmin,
       'isActive': true,
+      'teachCount': 0,
+      'learnCount': 0,
     });
     print('after creating participant');
 
@@ -250,6 +252,49 @@ class OrganizerSessionState extends ChangeNotifier {
     _participantUsersSubscription.cancel();
     _practiceRecordsSubscription.cancel();
     _sessionPairingSubscription.cancel();
+  }
+
+  void endCurrentRound() async {
+    // TODO: This doesn't really work because we can't modify the SessionParticipant
+    // documents that are owned by the session participants!
+
+
+  //   print('Ending the current round');
+  //
+  //   List<SessionPairing>? currentRound =
+  //       _sessionPairingSubscription.getLastRound();
+  //
+  //   if (currentRound != null) {
+  //     List<Future<void>> updateFutures = [];
+  //
+  //     for (SessionPairing pairing in currentRound) {
+  //       // Increase the teach count for the mentor.
+  //       print('Incrementing teach count for ${pairing.mentorId.id}');
+  //       updateFutures.add(FirebaseFirestore.instance
+  //           .doc('/sessionParticipants/${pairing.mentorId.id}')
+  //           .update({'teachCount': FieldValue.increment(1)}));
+  //
+  //       // Increase the learn count for the mentee.
+  //       print('Incrementing learn count for ${pairing.menteeId.id}');
+  //       updateFutures.add(FirebaseFirestore.instance
+  //           .doc('/sessionParticipants/${pairing.menteeId.id}')
+  //           .update({'learnCount': FieldValue.increment(1)}));
+  //     }
+  //
+  //     await Future.wait(updateFutures);
+  //   }
+  }
+
+  int getTeachCountForUser(String userId) {
+    return _sessionPairingSubscription.items
+        .where((pairing) => pairing.mentorId.id == userId)
+        .length;
+  }
+
+  int getLearnCountForUser(String userId) {
+    return _sessionPairingSubscription.items
+        .where((pairing) => pairing.menteeId.id == userId)
+        .length;
   }
 }
 
