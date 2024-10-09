@@ -16,10 +16,17 @@ class SessionRoundCard extends StatelessWidget {
   final SessionPairing? sessionPairing;
   late User? _mentor;
   late User? _mentee;
+  late User? _otherUser;
   late Lesson? _lesson;
+  late bool _isTeaching;
+  late bool _isLearning;
 
-  SessionRoundCard(this.roundNumber, this.sessionPairing,
-      StudentSessionState studentSessionState, LibraryState libraryState,
+  SessionRoundCard(
+      this.roundNumber,
+      this.sessionPairing,
+      StudentSessionState studentSessionState,
+      LibraryState libraryState,
+      ApplicationState applicationState,
       {super.key}) {
     String? mentorId = sessionPairing?.mentorId?.id;
     if (mentorId != null) {
@@ -41,30 +48,41 @@ class SessionRoundCard extends StatelessWidget {
     } else {
       _lesson = null;
     }
+
+    if (_mentor?.id == applicationState.currentUser?.id) {
+      _otherUser = _mentee;
+      _isTeaching = true;
+      _isLearning = false;
+    } else if (_mentee?.id == applicationState.currentUser?.id) {
+      _otherUser = _mentor;
+      _isTeaching = false;
+      _isLearning = true;
+    } else {
+      _otherUser = null;
+      _isTeaching = false;
+      _isLearning = false;
+    }
+    print('_otherUser: $_otherUser');
   }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      // shape: RoundedRectangleBorder(
-      //   borderRadius: BorderRadius.circular(16.0),
-      // ),
-      // elevation: 4.0,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        // mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          _createRoundBand(context),
-          if (sessionPairing != null)
-            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Flexible(flex: 1, child: _createProfileColumn(context)),
-              Flexible(flex: 2, child: _createLessonColumn(context))
-            ])
-          else
-            Text('No pairing this round.', textAlign: TextAlign.center)
-        ],
-      ),
-    );
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            // mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _createRoundBand(context),
+              if (sessionPairing != null)
+                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Flexible(flex: 1, child: _createProfileColumn(context)),
+                  Flexible(flex: 2, child: _createLessonColumn(context))
+                ])
+              else
+                Text('No pairing this round.', textAlign: TextAlign.center)
+            ],
+          ),
+        );
   }
 
   Widget _createRoundBand(BuildContext context) {
@@ -73,7 +91,7 @@ class SessionRoundCard extends StatelessWidget {
       teachOrLearnString = '';
     } else if ((_mentor == null) || (_mentee == null)) {
       teachOrLearnString = ' - Awaiting partner';
-    } else if (_mentor == getOtherUser(context)) {
+    } else if (_mentor == _otherUser) {
       teachOrLearnString = ' - Your turn to learn';
     } else {
       teachOrLearnString = ' - Your turn to teach';
@@ -96,7 +114,7 @@ class SessionRoundCard extends StatelessWidget {
   }
 
   Widget _createProfileColumn(BuildContext context) {
-    User? otherUser = getOtherUser(context);
+    User? otherUser = _otherUser;
 
     if (otherUser != null) {
       return Padding(
@@ -141,12 +159,5 @@ class SessionRoundCard extends StatelessWidget {
     } else {
       return Text('<Not assigned>', style: CustomTextStyles.getBody(context));
     }
-  }
-
-  User? getOtherUser(BuildContext context) {
-    ApplicationState applicationState = Provider.of<ApplicationState>(context);
-    return (_mentor?.id == applicationState.currentUser?.id)
-        ? _mentee
-        : _mentor;
   }
 }

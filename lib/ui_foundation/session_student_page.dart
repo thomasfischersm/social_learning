@@ -59,9 +59,15 @@ class SessionStudentState extends State<SessionStudentPage> {
                         CustomUiConstants.getTextPadding(Text(
                             'The session has ended!',
                             style: CustomTextStyles.subHeadline)),
-                      CustomUiConstants.getTextPadding(Text(
-                          'Attending Session: ${studentSessionState.currentSession?.name}',
-                          style: CustomTextStyles.subHeadline)),
+                      Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Session: ${studentSessionState.currentSession?.name ?? ''}',
+                                style: CustomTextStyles.headline,
+                                textAlign: TextAlign.center,
+                              ))),
                       _createPairingTable2(
                           studentSessionState, libraryState, applicationState),
                     ],
@@ -94,141 +100,17 @@ class SessionStudentState extends State<SessionStudentPage> {
           continue;
         }
 
-        children.add(SessionRoundCard(
-            '${round + 1}', sessionPairing, studentSessionState, libraryState));
+        children.add(SessionRoundCard('${round + 1}', sessionPairing,
+            studentSessionState, libraryState, applicationState));
         hasAtLeastOnePairing = true;
       }
 
       if (!hasAtLeastOnePairing) {
-        children.add(SessionRoundCard(
-            '${round + 1}', null, studentSessionState, libraryState));
+        children.add(SessionRoundCard('${round + 1}', null, studentSessionState,
+            libraryState, applicationState));
       }
     }
 
     return Column(children: children);
-  }
-
-  Table _createPairingTable(StudentSessionState studentSessionState,
-      LibraryState libraryState, ApplicationState applicationState) {
-    List<TableRow> tableRows = <TableRow>[];
-
-    String? currentUserId = applicationState.currentUser?.id;
-
-    var roundNumberToSessionPairing =
-        studentSessionState.roundNumberToSessionPairing;
-    List<int> sortedRounds = roundNumberToSessionPairing.keys.toList()..sort();
-    sortedRounds = sortedRounds.reversed.toList();
-
-    for (int round in sortedRounds) {
-      tableRows.add(TableRow(
-          decoration:
-              BoxDecoration(color: CustomUiConstants.accentedBackgroundColor),
-          children: <Widget>[
-            // TODO: Set dark background color and span the whole row.
-            CustomUiConstants.getIndentationTextPadding(Text(
-                'Round ${round + 1}',
-                style: CustomTextStyles.subHeadline)),
-            SizedBox.shrink(),
-            SizedBox.shrink(),
-          ]));
-      tableRows.add(TableRow(children: <Widget>[
-        CustomUiConstants.getIndentationTextPadding(
-            CustomUiConstants.getTextPadding(const Text("Mentor"))),
-        CustomUiConstants.getIndentationTextPadding(
-            CustomUiConstants.getTextPadding(const Text('Mentee'))),
-        CustomUiConstants.getIndentationTextPadding(
-            CustomUiConstants.getTextPadding(const Text('Lesson'))),
-      ]));
-
-      bool hasAtLeastOnePairing = false;
-      List<SessionPairing> sessionPairings =
-          roundNumberToSessionPairing[round]!;
-      for (SessionPairing sessionPairing in sessionPairings) {
-        print('mentorId = ${sessionPairing.mentorId?.id}');
-        User? mentor =
-            studentSessionState.getUserById(sessionPairing.mentorId?.id);
-        User? mentee =
-            studentSessionState.getUserById(sessionPairing.menteeId?.id);
-        Lesson? lesson = libraryState.findLesson(sessionPairing.lessonId?.id);
-
-        if ((mentor?.id != currentUserId) && (mentee?.id != currentUserId)) {
-          // Only show pairings if they involve the current student.
-          continue;
-        }
-
-        hasAtLeastOnePairing = true;
-
-        tableRows.add(TableRow(children: <Widget>[
-          Padding(
-              padding: EdgeInsets.only(
-                left: 8,
-                bottom: 8,
-              ),
-              child: InkWell(
-                  onTap: () => _goToUser(mentor, context),
-                  child: Text(mentor?.displayName ?? '<Unassigned>'))),
-          Padding(
-              padding: EdgeInsets.only(
-                left: 8,
-                bottom: 8,
-              ),
-              child: InkWell(
-                  onTap: () => _goToUser(mentee, context),
-                  child: Text(mentee?.displayName ?? '<Unassigned>'))),
-          Padding(
-              padding: EdgeInsets.only(
-                left: 8,
-                bottom: 8,
-              ),
-              child: InkWell(
-                onTap: () => _goToLesson(lesson),
-                child: Text(lesson?.title ?? '<Unassigned>'),
-              )),
-          // TODO: Create link.
-        ]));
-      }
-
-      if (!hasAtLeastOnePairing) {
-        // Remove the header row if there are no pairings.
-        tableRows.removeLast();
-        tableRows.add(TableRow(children: <Widget>[
-          CustomUiConstants.getIndentationTextPadding(
-              CustomUiConstants.getTextPadding(
-                  Text('No pairings for this round'))),
-          SizedBox.shrink(),
-          SizedBox.shrink(),
-        ]));
-      }
-    }
-
-    return Table(columnWidths: const {
-      0: FlexColumnWidth(),
-      1: FlexColumnWidth(),
-      2: FlexColumnWidth()
-    }, children: tableRows);
-  }
-
-  _goToLesson(Lesson? lesson) {
-    String? lessonId = lesson?.id;
-    if (lessonId != null) {
-      Navigator.pushNamed(context, NavigationEnum.lessonDetail.route,
-          arguments: LessonDetailArgument(lessonId));
-    }
-  }
-
-  _goToUser(User? user, BuildContext context) {
-    String? userId = user?.id;
-    String? userUid = user?.uid;
-    if (userId != null && userUid != null) {
-      // Avoid going to self.
-      ApplicationState applicationState =
-          Provider.of<ApplicationState>(context, listen: false);
-      User? currentUser = applicationState.currentUser;
-      if (currentUser?.id == userId) {
-        return;
-      }
-
-      OtherProfileArgument.goToOtherProfile(context, userId, userUid);
-    }
   }
 }
