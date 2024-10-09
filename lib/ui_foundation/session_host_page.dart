@@ -226,7 +226,7 @@ class SessionHostState extends State<SessionHostPage> {
           children: <Widget>[
             // TODO: Set dark background color and span the whole row.
             CustomUiConstants.getIndentationTextPadding(
-              Text('Session ${round + 1}', style: CustomTextStyles.subHeadline),
+              Text('Round ${round + 1}', style: CustomTextStyles.subHeadline),
             ),
             SizedBox.shrink(),
             SizedBox.shrink(),

@@ -7,6 +7,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/session_round_card.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
@@ -61,13 +62,50 @@ class SessionStudentState extends State<SessionStudentPage> {
                       CustomUiConstants.getTextPadding(Text(
                           'Attending Session: ${studentSessionState.currentSession?.name}',
                           style: CustomTextStyles.subHeadline)),
-                      _createPairingTable(
+                      _createPairingTable2(
                           studentSessionState, libraryState, applicationState),
                     ],
                   );
                 });
               });
             }))));
+  }
+
+  Widget _createPairingTable2(StudentSessionState studentSessionState,
+      LibraryState libraryState, ApplicationState applicationState) {
+    List<Widget> children = <Widget>[];
+
+    String? currentUserId = applicationState.currentUser?.id;
+
+    var roundNumberToSessionPairing =
+        studentSessionState.roundNumberToSessionPairing;
+    List<int> sortedRounds = roundNumberToSessionPairing.keys.toList()..sort();
+    sortedRounds = sortedRounds.reversed.toList();
+
+    for (int round in sortedRounds) {
+      bool hasAtLeastOnePairing = false;
+
+      List<SessionPairing> sessionPairings =
+          roundNumberToSessionPairing[round]!;
+      for (SessionPairing sessionPairing in sessionPairings) {
+        if ((sessionPairing.mentorId?.id != currentUserId) &&
+            (sessionPairing.menteeId?.id != currentUserId)) {
+          // Only show pairings if they involve the current student.
+          continue;
+        }
+
+        children.add(SessionRoundCard(
+            '${round + 1}', sessionPairing, studentSessionState, libraryState));
+        hasAtLeastOnePairing = true;
+      }
+
+      if (!hasAtLeastOnePairing) {
+        children.add(SessionRoundCard(
+            '${round + 1}', null, studentSessionState, libraryState));
+      }
+    }
+
+    return Column(children: children);
   }
 
   Table _createPairingTable(StudentSessionState studentSessionState,
@@ -88,7 +126,7 @@ class SessionStudentState extends State<SessionStudentPage> {
           children: <Widget>[
             // TODO: Set dark background color and span the whole row.
             CustomUiConstants.getIndentationTextPadding(Text(
-                'Session ${round + 1}',
+                'Round ${round + 1}',
                 style: CustomTextStyles.subHeadline)),
             SizedBox.shrink(),
             SizedBox.shrink(),
