@@ -255,7 +255,11 @@ class LibraryState extends ChangeNotifier {
     }
   }
 
-  Lesson? findLesson(String lessonId) {
+  Lesson? findLesson(String? lessonId) {
+    if (lessonId == null) {
+      return null;
+    }
+
     return lessons?.firstWhereOrNull((lesson) => lesson.id == lessonId);
   }
 

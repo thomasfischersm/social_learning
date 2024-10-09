@@ -29,8 +29,9 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
       .firstWhere((user) => user.id == participant.participantId.id);
 
   @override
-  User? getUserById(String id) =>
-      _participantUsers.firstWhere((user) => user.id == id);
+  User? getUserById(String? id) => (id == null)
+      ? null
+      : _participantUsers.firstWhere((user) => user.id == id);
 
   @override
   User? getUserByDisplayName(String displayName) =>

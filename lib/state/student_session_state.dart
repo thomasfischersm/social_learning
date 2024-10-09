@@ -62,7 +62,8 @@ class StudentSessionState extends ChangeNotifier {
   get roundNumberToSessionPairing =>
       _sessionPairingSubscription.roundNumberToSessionPairings;
 
-  User? getUserById(String id) => _participantUsersSubscription.getUserById(id);
+  User? getUserById(String? id) =>
+      (id == null) ? null : _participantUsersSubscription.getUserById(id);
 
   void _checkForOngoingSession() {
     print(
@@ -105,7 +106,8 @@ class StudentSessionState extends ChangeNotifier {
         }
       }
     }).onError((error, stackTrace) {
-      print('Error getting active participants for the current session: $error');
+      print(
+          'Error getting active participants for the current session: $error');
       _resetSession();
     });
   }

@@ -42,4 +42,8 @@ class PracticeRecordsSubscription
 
     return graduatedLessons;
   }
+
+  bool hasUserGraduatedLesson(User user, Lesson lesson) {
+    return getGraduatedLessons(user).contains(lesson);
+  }
 }

@@ -14,6 +14,8 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/mentee_table_cell.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/mentor_table_cell.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
@@ -215,6 +217,8 @@ class SessionHostState extends State<SessionHostPage> {
     sortedRounds = sortedRounds.reversed.toList();
 
     for (int round in sortedRounds) {
+      bool isCurrentRound = round == sortedRounds.first;
+
       tableRows.add(TableRow(
           decoration:
               BoxDecoration(color: CustomUiConstants.accentedBackgroundColor),
@@ -237,24 +241,19 @@ class SessionHostState extends State<SessionHostPage> {
       List<SessionPairing> sessionPairings =
           roundNumberToSessionPairing[round]!;
       for (SessionPairing sessionPairing in sessionPairings) {
-        print('mentorId = ${sessionPairing.mentorId.id}');
+        print('mentorId = ${sessionPairing.mentorId?.id}');
         User? mentor =
-            organizerSessionState.getUserById(sessionPairing.mentorId.id);
+            organizerSessionState.getUserById(sessionPairing.mentorId?.id);
         User? mentee =
-            organizerSessionState.getUserById(sessionPairing.menteeId.id);
-        Lesson? lesson = libraryState.findLesson(sessionPairing.lessonId.id);
+            organizerSessionState.getUserById(sessionPairing.menteeId?.id);
+        Lesson? lesson = libraryState.findLesson(sessionPairing.lessonId?.id);
 
         tableRows.add(TableRow(children: <Widget>[
-          Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 8),
-              child: (InkWell(
-                  onTap: () => _goToProfile(mentor),
-                  child: Text(mentor?.displayName ?? 'Error!!!')))),
-          Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 8),
-              child: (InkWell(
-                  onTap: () => _goToProfile(mentee),
-                  child: Text(mentee?.displayName ?? 'Error!!!')))),
+          MentorTableCell(mentor, sessionPairing, isCurrentRound,
+              'Select Mentor', lesson, organizerSessionState),
+          MenteeTableCell(mentee, sessionPairing, isCurrentRound,
+              'Select Mentee', lesson, organizerSessionState),
+          // TODO: Make the lesson editable---------------------------------------------------------------------------------------
           InkWell(
             onTap: () => _goToLesson(lesson),
             child: CustomUiConstants.getTextPadding(
@@ -313,5 +312,15 @@ class SessionHostState extends State<SessionHostPage> {
 
       OtherProfileArgument.goToOtherProfile(context, user.id, user.uid);
     }
+  }
+
+  void _removeMentor(User? mentor, SessionPairing sessionPairing,
+      OrganizerSessionState organizerSessionState) {
+    organizerSessionState.removeMentor(mentor, sessionPairing);
+  }
+
+  void _removeMentee(User? mentee, SessionPairing sessionPairing,
+      OrganizerSessionState organizerSessionState) {
+    organizerSessionState.removeMentee(mentee, sessionPairing);
   }
 }

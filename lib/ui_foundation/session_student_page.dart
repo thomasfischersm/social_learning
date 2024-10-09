@@ -1,16 +1,16 @@
-import 'package:social_learning/data/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_pairing.dart';
+import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
-import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
-import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
+import 'package:social_learning/ui_foundation/other_profile_page.dart';
+import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class SessionStudentArgument {
@@ -106,12 +106,12 @@ class SessionStudentState extends State<SessionStudentPage> {
       List<SessionPairing> sessionPairings =
           roundNumberToSessionPairing[round]!;
       for (SessionPairing sessionPairing in sessionPairings) {
-        print('mentorId = ${sessionPairing.mentorId.id}');
+        print('mentorId = ${sessionPairing.mentorId?.id}');
         User? mentor =
-            studentSessionState.getUserById(sessionPairing.mentorId.id);
+            studentSessionState.getUserById(sessionPairing.mentorId?.id);
         User? mentee =
-            studentSessionState.getUserById(sessionPairing.menteeId.id);
-        Lesson? lesson = libraryState.findLesson(sessionPairing.lessonId.id);
+            studentSessionState.getUserById(sessionPairing.menteeId?.id);
+        Lesson? lesson = libraryState.findLesson(sessionPairing.lessonId?.id);
 
         if ((mentor?.id != currentUserId) && (mentee?.id != currentUserId)) {
           // Only show pairings if they involve the current student.
@@ -121,15 +121,31 @@ class SessionStudentState extends State<SessionStudentPage> {
         hasAtLeastOnePairing = true;
 
         tableRows.add(TableRow(children: <Widget>[
-          CustomUiConstants.getTextPadding(
-              Text(mentor?.displayName ?? 'Error!!!')),
-          CustomUiConstants.getTextPadding(
-              Text(mentee?.displayName ?? 'Error!!!')),
-          InkWell(
-            onTap: () => _goToLesson(lesson),
-            child: CustomUiConstants.getTextPadding(
-                Text(lesson?.title ?? 'Error!!!')),
-          ),
+          Padding(
+              padding: EdgeInsets.only(
+                left: 8,
+                bottom: 8,
+              ),
+              child: InkWell(
+                  onTap: () => _goToUser(mentor, context),
+                  child: Text(mentor?.displayName ?? '<Unassigned>'))),
+          Padding(
+              padding: EdgeInsets.only(
+                left: 8,
+                bottom: 8,
+              ),
+              child: InkWell(
+                  onTap: () => _goToUser(mentee, context),
+                  child: Text(mentee?.displayName ?? '<Unassigned>'))),
+          Padding(
+              padding: EdgeInsets.only(
+                left: 8,
+                bottom: 8,
+              ),
+              child: InkWell(
+                onTap: () => _goToLesson(lesson),
+                child: Text(lesson?.title ?? 'Error!!!'),
+              )),
           // TODO: Create link.
         ]));
       }
@@ -159,6 +175,22 @@ class SessionStudentState extends State<SessionStudentPage> {
     if (lessonId != null) {
       Navigator.pushNamed(context, NavigationEnum.lessonDetail.route,
           arguments: LessonDetailArgument(lessonId));
+    }
+  }
+
+  _goToUser(User? user, BuildContext context) {
+    String? userId = user?.id;
+    String? userUid = user?.uid;
+    if (userId != null && userUid != null) {
+      // Avoid going to self.
+      ApplicationState applicationState =
+          Provider.of<ApplicationState>(context, listen: false);
+      User? currentUser = applicationState.currentUser;
+      if (currentUser?.id == userId) {
+        return;
+      }
+
+      OtherProfileArgument.goToOtherProfile(context, userId, userUid);
     }
   }
 }

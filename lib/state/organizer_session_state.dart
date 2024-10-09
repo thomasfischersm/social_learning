@@ -44,6 +44,8 @@ class OrganizerSessionState extends ChangeNotifier {
   get roundNumberToSessionPairing =>
       _sessionPairingSubscription.roundNumberToSessionPairings;
 
+  List<SessionPairing>? get  lastRound => _sessionPairingSubscription.getLastRound();
+
   OrganizerSessionState(ApplicationState applicationState, this._libraryState) {
     // Start subscriptions.
     _sessionSubscription = SessionSubscription(() => notifyListeners());
@@ -222,7 +224,8 @@ class OrganizerSessionState extends ChangeNotifier {
   User? getUser(SessionParticipant sessionParticipant) =>
       _participantUsersSubscription.getUser(sessionParticipant);
 
-  User? getUserById(String id) => _participantUsersSubscription.getUserById(id);
+  User? getUserById(String? id) =>
+      (id == null) ? null : _participantUsersSubscription.getUserById(id);
 
   List<Lesson> getGraduatedLessons(SessionParticipant participant) {
     var user = getUser(participant);
@@ -258,43 +261,94 @@ class OrganizerSessionState extends ChangeNotifier {
     // TODO: This doesn't really work because we can't modify the SessionParticipant
     // documents that are owned by the session participants!
 
-
-  //   print('Ending the current round');
-  //
-  //   List<SessionPairing>? currentRound =
-  //       _sessionPairingSubscription.getLastRound();
-  //
-  //   if (currentRound != null) {
-  //     List<Future<void>> updateFutures = [];
-  //
-  //     for (SessionPairing pairing in currentRound) {
-  //       // Increase the teach count for the mentor.
-  //       print('Incrementing teach count for ${pairing.mentorId.id}');
-  //       updateFutures.add(FirebaseFirestore.instance
-  //           .doc('/sessionParticipants/${pairing.mentorId.id}')
-  //           .update({'teachCount': FieldValue.increment(1)}));
-  //
-  //       // Increase the learn count for the mentee.
-  //       print('Incrementing learn count for ${pairing.menteeId.id}');
-  //       updateFutures.add(FirebaseFirestore.instance
-  //           .doc('/sessionParticipants/${pairing.menteeId.id}')
-  //           .update({'learnCount': FieldValue.increment(1)}));
-  //     }
-  //
-  //     await Future.wait(updateFutures);
-  //   }
+    //   print('Ending the current round');
+    //
+    //   List<SessionPairing>? currentRound =
+    //       _sessionPairingSubscription.getLastRound();
+    //
+    //   if (currentRound != null) {
+    //     List<Future<void>> updateFutures = [];
+    //
+    //     for (SessionPairing pairing in currentRound) {
+    //       // Increase the teach count for the mentor.
+    //       print('Incrementing teach count for ${pairing.mentorId.id}');
+    //       updateFutures.add(FirebaseFirestore.instance
+    //           .doc('/sessionParticipants/${pairing.mentorId.id}')
+    //           .update({'teachCount': FieldValue.increment(1)}));
+    //
+    //       // Increase the learn count for the mentee.
+    //       print('Incrementing learn count for ${pairing.menteeId.id}');
+    //       updateFutures.add(FirebaseFirestore.instance
+    //           .doc('/sessionParticipants/${pairing.menteeId.id}')
+    //           .update({'learnCount': FieldValue.increment(1)}));
+    //     }
+    //
+    //     await Future.wait(updateFutures);
+    //   }
   }
 
   int getTeachCountForUser(String userId) {
     return _sessionPairingSubscription.items
-        .where((pairing) => pairing.mentorId.id == userId)
+        .where((pairing) => pairing.mentorId?.id == userId)
         .length;
   }
 
   int getLearnCountForUser(String userId) {
     return _sessionPairingSubscription.items
-        .where((pairing) => pairing.menteeId.id == userId)
+        .where((pairing) => pairing.menteeId?.id == userId)
         .length;
+  }
+
+  void removeMentor(User? mentor, SessionPairing sessionPairing) {
+    FirebaseFirestore.instance
+        .doc('/sessionPairings/${sessionPairing.id}')
+        .update({
+      'mentorId': null,
+    }).then((value) {
+      print('Removed mentor from session pairing.');
+    }).catchError((error) {
+      print('Failed to remove mentor from session pairing: $error');
+    });
+  }
+
+  void removeMentee(User? mentee, SessionPairing sessionPairing) {
+    FirebaseFirestore.instance
+        .doc('/sessionPairings/${sessionPairing.id}')
+        .update({
+      'menteeId': null,
+    }).then((value) {
+      print('Removed mentee from session pairing.');
+    }).catchError((error) {
+      print('Failed to remove mentee from session pairing: $error');
+    });
+  }
+
+  void addMentor(User selectedUser, SessionPairing sessionPairing) {
+    FirebaseFirestore.instance
+        .doc('/sessionPairings/${sessionPairing.id}')
+        .update({
+      'mentorId': FirebaseFirestore.instance.doc('/users/${selectedUser.id}'),
+    }).then((value) {
+      print('Added mentor to session pairing.');
+    }).catchError((error) {
+      print('Failed to add mentor to session pairing: $error');
+    });
+  }
+
+  void addMentee(User selectedUser, SessionPairing sessionPairing) {
+    FirebaseFirestore.instance
+        .doc('/sessionPairings/${sessionPairing.id}')
+        .update({
+      'menteeId': FirebaseFirestore.instance.doc('/users/${selectedUser.id}'),
+    }).then((value) {
+      print('Added mentee to session pairing.');
+    }).catchError((error) {
+      print('Failed to add mentee to session pairing: $error');
+    });
+  }
+
+  bool hasUserGraduatedLesson(User user, Lesson lesson) {
+    return _practiceRecordsSubscription.hasUserGraduatedLesson(user, lesson);
   }
 }
 

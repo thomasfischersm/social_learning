@@ -28,7 +28,7 @@ class FirestoreListSubscription<T> {
 
     _streamSubscription =
         whereFunction(FirebaseFirestore.instance.collection(_collectionName))
-            .snapshots()
+            .snapshots(includeMetadataChanges: true)
             .listen((QuerySnapshot<Map<String, dynamic>> querySnapshot) {
       print(
           'FireStoreListSubscription got ${querySnapshot.docs.length} $_collectionName');
