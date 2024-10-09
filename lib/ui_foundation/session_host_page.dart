@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/belt_color_functions.dart';
@@ -38,6 +39,19 @@ class SessionHostState extends State<SessionHostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Learning Lab')),
+        floatingActionButton: SpeedDial(
+            icon: Icons.more_vert,
+            activeIcon: Icons.close,
+            children: [
+              SpeedDialChild(
+                  onTap: () => _pairNextRound(context),
+                  child: Icon(Icons.shuffle),
+                  label: 'Pair the next round'),
+              SpeedDialChild(
+                  onTap: () => _endSession(context),
+                  child: Icon(Icons.exit_to_app),
+                  label: 'End the session')
+            ]),
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
@@ -56,22 +70,6 @@ class SessionHostState extends State<SessionHostPage> {
                         style: CustomTextStyles.subHeadline)),
                     _createParticipantTable(
                         organizerSessionState, libraryState),
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                            onPressed: () =>
-                                _pairNextRound(context, organizerSessionState),
-                            child: const Text('Pair the next round'))),
-                    Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                            onPressed: () => DialogUtils.showConfirmationDialog(
-                                context,
-                                'End Session',
-                                'Are you sure you want to end the session?',
-                                () => _endSession(
-                                    context, organizerSessionState)),
-                            child: const Text('End the session'))),
                     // Align(
                     //     alignment: Alignment.centerRight,
                     //     child: TextButton(
@@ -236,7 +234,8 @@ class SessionHostState extends State<SessionHostPage> {
             CustomUiConstants.getTextPadding(const Text('Mentor'))),
         CustomUiConstants.getIndentationTextPadding(
             CustomUiConstants.getTextPadding(const Text('Mentee'))),
-        CustomUiConstants.getTextPadding(const Text('Lesson')),
+        CustomUiConstants.getIndentationTextPadding(
+            CustomUiConstants.getTextPadding(const Text('Lesson'))),
       ]));
 
       List<SessionPairing> sessionPairings =
@@ -254,8 +253,8 @@ class SessionHostState extends State<SessionHostPage> {
               'Select Mentor', lesson, organizerSessionState),
           MenteeTableCell(mentee, sessionPairing, isCurrentRound,
               'Select Mentee', lesson, organizerSessionState),
-          LessonTableCell(lesson, mentor, mentee, sessionPairing, isCurrentRound,
-              'Select Lesson', organizerSessionState),
+          LessonTableCell(lesson, mentor, mentee, sessionPairing,
+              isCurrentRound, 'Select Lesson', organizerSessionState),
         ]));
       }
     }
@@ -267,8 +266,10 @@ class SessionHostState extends State<SessionHostPage> {
     }, children: tableRows);
   }
 
-  _pairNextRound(
-      BuildContext context, OrganizerSessionState organizerSessionState) {
+  _pairNextRound(BuildContext context) {
+    OrganizerSessionState organizerSessionState =
+        Provider.of<OrganizerSessionState>(context, listen: false);
+
     // Close the current round.
     organizerSessionState.endCurrentRound();
 
@@ -281,10 +282,16 @@ class SessionHostState extends State<SessionHostPage> {
     organizerSessionState.saveNextRound(pairedSession);
   }
 
-  _endSession(
-      BuildContext context, OrganizerSessionState organizerSessionState) {
-    organizerSessionState.endSession();
+  _endSession(BuildContext context) {
+    DialogUtils.showConfirmationDialog(
+        context, 'End Session', 'Are you sure you want to end the session?',
+        () {
+      OrganizerSessionState organizerSessionState =
+          Provider.of<OrganizerSessionState>(context, listen: false);
 
-    Navigator.pushNamed(context, NavigationEnum.levelList.route);
+      organizerSessionState.endSession();
+
+      Navigator.pushNamed(context, NavigationEnum.levelList.route);
+    });
   }
 }

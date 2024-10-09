@@ -49,16 +49,20 @@ class SessionRoundCard extends StatelessWidget {
       _lesson = null;
     }
 
-    if (_mentor?.id == applicationState.currentUser?.id) {
+    var currentUserId = applicationState.currentUser?.id;
+    if ((_mentor?.id == currentUserId) && (currentUserId != null)) {
       _otherUser = _mentee;
+    } else {
+      _otherUser = _mentor;
+    }
+
+    if ((_mentor?.id == currentUserId) && (currentUserId != null)) {
       _isTeaching = true;
       _isLearning = false;
-    } else if (_mentee?.id == applicationState.currentUser?.id) {
-      _otherUser = _mentor;
+    } else if ((_mentee?.id == currentUserId) && (currentUserId != null)) {
       _isTeaching = false;
       _isLearning = true;
     } else {
-      _otherUser = null;
       _isTeaching = false;
       _isLearning = false;
     }
