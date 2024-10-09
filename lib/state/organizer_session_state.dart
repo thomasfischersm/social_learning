@@ -44,7 +44,8 @@ class OrganizerSessionState extends ChangeNotifier {
   get roundNumberToSessionPairing =>
       _sessionPairingSubscription.roundNumberToSessionPairings;
 
-  List<SessionPairing>? get  lastRound => _sessionPairingSubscription.getLastRound();
+  List<SessionPairing>? get lastRound =>
+      _sessionPairingSubscription.getLastRound();
 
   OrganizerSessionState(ApplicationState applicationState, this._libraryState) {
     // Start subscriptions.
@@ -299,7 +300,7 @@ class OrganizerSessionState extends ChangeNotifier {
         .length;
   }
 
-  void removeMentor(User? mentor, SessionPairing sessionPairing) {
+  void removeMentor(SessionPairing sessionPairing) {
     FirebaseFirestore.instance
         .doc('/sessionPairings/${sessionPairing.id}')
         .update({
@@ -311,7 +312,7 @@ class OrganizerSessionState extends ChangeNotifier {
     });
   }
 
-  void removeMentee(User? mentee, SessionPairing sessionPairing) {
+  void removeMentee(SessionPairing sessionPairing) {
     FirebaseFirestore.instance
         .doc('/sessionPairings/${sessionPairing.id}')
         .update({
@@ -349,6 +350,30 @@ class OrganizerSessionState extends ChangeNotifier {
 
   bool hasUserGraduatedLesson(User user, Lesson lesson) {
     return _practiceRecordsSubscription.hasUserGraduatedLesson(user, lesson);
+  }
+
+  void removeLesson(SessionPairing sessionPairing) {
+    FirebaseFirestore.instance
+        .doc('/sessionPairings/${sessionPairing.id}')
+        .update({
+      'lessonId': null,
+    }).then((value) {
+      print('Removed lesson from session pairing.');
+    }).catchError((error) {
+      print('Failed to remove lesson from session pairing: $error');
+    });
+  }
+
+  void addLesson(Lesson lesson, SessionPairing sessionPairing) {
+    FirebaseFirestore.instance
+        .doc('/sessionPairings/${sessionPairing.id}')
+        .update({
+      'lessonId': FirebaseFirestore.instance.doc('/lessons/${lesson.id}'),
+    }).then((value) {
+      print('Added lesson to session pairing.');
+    }).catchError((error) {
+      print('Failed to add lesson to session pairing: $error');
+    });
   }
 }
 

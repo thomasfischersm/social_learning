@@ -23,6 +23,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/lesson_cover_image_
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_by_user_id_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/youtube_video_widget.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/util/string_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -30,6 +31,11 @@ class LessonDetailArgument {
   String lessonId;
 
   LessonDetailArgument(this.lessonId);
+
+  static goToLessonDetailPage(BuildContext context, String lessonId) {
+    Navigator.pushNamed(context, NavigationEnum.lessonDetail.route,
+        arguments: LessonDetailArgument(lessonId));
+  }
 }
 
 class LessonDetailPage extends StatefulWidget {
@@ -506,7 +512,11 @@ class LessonDetailState extends State<LessonDetailPage> {
                           SizedBox(
                               width: 50,
                               height: 50,
-                              child: ProfileImageWidget(commenter, context, linkToOtherProfile: true,)),
+                              child: ProfileImageWidget(
+                                commenter,
+                                context,
+                                linkToOtherProfile: true,
+                              )),
                         Expanded(
                             child: Container(
                           padding: const EdgeInsets.all(8.0),
@@ -731,7 +741,8 @@ class LessonDetailState extends State<LessonDetailPage> {
                           width: 50,
                           height: 50,
                           child: ProfileImageByUserIdWidget(
-                              progressVideo.userId, libraryState, linkToOtherProfile: true))),
+                              progressVideo.userId, libraryState,
+                              linkToOtherProfile: true))),
                   Text(
                       DateFormat.yMd().format(
                           progressVideo.timestamp?.toDate() ?? DateTime.now()),

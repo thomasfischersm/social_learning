@@ -144,7 +144,7 @@ class SessionStudentState extends State<SessionStudentPage> {
               ),
               child: InkWell(
                 onTap: () => _goToLesson(lesson),
-                child: Text(lesson?.title ?? 'Error!!!'),
+                child: Text(lesson?.title ?? '<Unassigned>'),
               )),
           // TODO: Create link.
         ]));

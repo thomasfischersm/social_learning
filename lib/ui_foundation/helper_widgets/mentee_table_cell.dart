@@ -49,7 +49,7 @@ class MenteeTableCell extends UserTableCell {
 
   @override
   void removeUser() {
-    organizerSessionState.removeMentee(user, sessionPairing);
+    organizerSessionState.removeMentee(sessionPairing);
   }
 
   @override

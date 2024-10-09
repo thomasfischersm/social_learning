@@ -14,6 +14,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/lesson_table_cell.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/mentee_table_cell.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/mentor_table_cell.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
@@ -253,13 +254,8 @@ class SessionHostState extends State<SessionHostPage> {
               'Select Mentor', lesson, organizerSessionState),
           MenteeTableCell(mentee, sessionPairing, isCurrentRound,
               'Select Mentee', lesson, organizerSessionState),
-          // TODO: Make the lesson editable---------------------------------------------------------------------------------------
-          InkWell(
-            onTap: () => _goToLesson(lesson),
-            child: CustomUiConstants.getTextPadding(
-                Text(lesson?.title ?? 'Error!!!')),
-          ),
-          // TODO: Create link.
+          LessonTableCell(lesson, mentor, mentee, sessionPairing, isCurrentRound,
+              'Select Lesson', organizerSessionState),
         ]));
       }
     }
@@ -290,37 +286,5 @@ class SessionHostState extends State<SessionHostPage> {
     organizerSessionState.endSession();
 
     Navigator.pushNamed(context, NavigationEnum.levelList.route);
-  }
-
-  _goToLesson(Lesson? lesson) {
-    String? lessonId = lesson?.id;
-    if (lessonId != null) {
-      Navigator.pushNamed(context, NavigationEnum.lessonDetail.route,
-          arguments: LessonDetailArgument(lessonId));
-    }
-  }
-
-  _goToProfile(User? user) {
-    if (user != null) {
-      ApplicationState applicationState =
-          Provider.of<ApplicationState>(context, listen: false);
-      User? currentUser = applicationState.currentUser;
-      if (currentUser?.id == user.id) {
-        // Don't go to your own profile.
-        return;
-      }
-
-      OtherProfileArgument.goToOtherProfile(context, user.id, user.uid);
-    }
-  }
-
-  void _removeMentor(User? mentor, SessionPairing sessionPairing,
-      OrganizerSessionState organizerSessionState) {
-    organizerSessionState.removeMentor(mentor, sessionPairing);
-  }
-
-  void _removeMentee(User? mentee, SessionPairing sessionPairing,
-      OrganizerSessionState organizerSessionState) {
-    organizerSessionState.removeMentee(mentee, sessionPairing);
   }
 }

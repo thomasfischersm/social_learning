@@ -54,7 +54,7 @@ class MentorTableCell extends UserTableCell {
 
   @override
   void removeUser() {
-    organizerSessionState.removeMentor(user, sessionPairing);
+    organizerSessionState.removeMentor(sessionPairing);
   }
 
   @override
