@@ -23,7 +23,8 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  final TextEditingController _invitationCodeController = TextEditingController();
+  final TextEditingController _invitationCodeController =
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -45,97 +46,103 @@ class HomePageState extends State<HomePage> {
         body: Align(
             alignment: Alignment.topCenter,
             child: CustomUiConstants.framePage(Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomUiConstants.getTextPadding(Text(
-              'Learning Labs',
-              style: CustomTextStyles.headline,
-            )),
-            CustomUiConstants.getTextPadding(Text(
-              'Learning Labs are a format where you learn hands-on from '
-              'the student ahead of you. Then you teach the next '
-              'student after you to deepen your own grasp on the '
-              'material.\n\n'
-              'The app shows you the lessons, tracks your progress, and '
-              'matches you up with other students during sessions.',
-              style: CustomTextStyles.getBody(context),
-            )),
-            CustomUiConstants.getDivider(),
-            CustomUiConstants.getTextPadding(Text(
-              'Courses',
-              style: CustomTextStyles.headline,
-            )),
-            _generateCourseList(context),
-            CustomUiConstants.getTextPadding(Text('Join a private course',
-                style: CustomTextStyles.subHeadline)),
-            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(child:TextField(
-                  controller: _invitationCodeController,
-                  decoration:
-                      const InputDecoration(hintText: 'Invitation code'),
-                )),
-                TextButton(
-                  onPressed: () => _joinPrivateCourse(context),
-                  child: const Text('Join'),
-                )
+                _createAppHeading(),
+                _createCoursesCard(),
+                SizedBox(height: 8),
+                _createJoinPrivateCourseCard(),
+
+                CustomUiConstants.getDivider(),
+                CustomUiConstants.getGeneralFooter(context, withDivider: false)
               ],
-            ),
-            CustomUiConstants.getDivider(),
-            CustomUiConstants.getTextPadding(Text(
-                'Create your own private course',
-                style: CustomTextStyles.subHeadline)),
-            GestureDetector(
-                onTap: () {
-                  _createCourse();
-                },
-                child: Row(
-                  children: [
-                    Flexible(
-                        child: CustomUiConstants.getTextPadding(Text(
-                            'You can create your own course to teach a subject, for a special event workshop, or corporate in-house training. Your course will be private by default and only accessible through an invitation code.',
-                            style: CustomTextStyles.getBody(context)))),
-                    Column(children: [
-                      const Icon(Icons.start),
-                      Text(
-                        'create',
-                        style: CustomTextStyles.getBody(context),
-                      )
-                    ]),
-                  ],
-                )),
-            CustomUiConstants.getDivider(),
-            CustomUiConstants.getGeneralFooter(context, withDivider: false)
-          ],
-        ))));
+            ))));
   }
 
-  _generateCourseList(BuildContext context) {
-    return Consumer<LibraryState>(builder: (context, libraryState, child) {
-      var children = <Widget>[];
-      for (Course course in libraryState.availableCourses) {
-        String pureText;
-        String? linkText;
+  Widget _createAppHeading() {
+    return ExpansionTile(
+        tilePadding: EdgeInsets.only(left: 16),
+        trailing: SizedBox.shrink(),
+        title: Row(
+          children: [
+            Text(
+              'Learning Labs ',
+              style: CustomTextStyles.headline,
+            ),
+            Icon(Icons.info_outline)
+          ],
+        ),
+        children: [
+          Padding(
+              padding: EdgeInsets.only(left: 16),
+              child: Text(
+                'Learning Labs are a format where you learn hands-on from '
+                'the student ahead of you. Then you teach the next '
+                'student after you to deepen your own grasp on the '
+                'material.\n\n'
+                'The app shows you the lessons, tracks your progress, and '
+                'matches you up with other students during sessions.',
+                style: CustomTextStyles.getBody(context),
+              )),
+        ]);
+  }
 
-        int index = course.description.indexOf('http');
-        if (index >= 0) {
-          pureText =
-              course.description.substring(0, index).replaceAll('\\n', '\n');
-          linkText = course.description.substring(index);
-        } else {
-          pureText = course.description.replaceAll('\\n', '\n');
-        }
-
-        Column textColumn =
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          InkWell(
-            child: CustomUiConstants.getTextPadding(
-                Text(course.title, style: CustomTextStyles.subHeadline)),
-            onTap: () {
-              _openCourse(course, libraryState);
-            },
+  Widget _createCoursesCard() {
+    return Card(
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16.0),
+                  topRight: Radius.circular(16.0),
+                )),
+            child: Text('Courses',
+                style:
+                    CustomTextStyles.subHeadline.copyWith(color: Colors.white)),
           ),
-          CustomUiConstants.getRichTextPadding(RichText(
+          Consumer<LibraryState>(builder: (context, libraryState, child) {
+            return Column(
+                children: libraryState.availableCourses
+                    .map((course) => _createCourseWidget(course, libraryState))
+                    .toList());
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _createCourseWidget(Course course, LibraryState libraryState) {
+    // Prepare the text.
+    String pureText;
+    String? linkText;
+
+    int index = course.description.indexOf('http');
+    if (index >= 0) {
+      pureText = course.description.substring(0, index).replaceAll('\\n', '\n');
+      linkText = course.description.substring(index);
+    } else {
+      pureText = course.description.replaceAll('\\n', '\n');
+    }
+
+    return Row(children: [
+      Flexible(
+          child: ExpansionTile(
+        trailing: SizedBox.shrink(),
+        tilePadding: EdgeInsets.only(left: 8),
+        childrenPadding: EdgeInsets.only(left: 8),
+        title: Row(children: [
+          Text(
+            '${course.title} ',
+            style: CustomTextStyles.subHeadline,
+          ),
+          Icon(Icons.info_outline)
+        ]),
+        children: [
+          RichText(
               text: TextSpan(children: [
             TextSpan(style: CustomTextStyles.getBody(context), text: pureText),
             if (linkText != null)
@@ -148,37 +155,79 @@ class HomePageState extends State<HomePage> {
                             ..onTap = () {
                               launchUrl(Uri.parse(linkText!));
                             })))
-          ]))),
-          CustomUiConstants.getDivider(),
-        ]);
+          ]))
+        ],
+      )),
+      IconButton(
+          onPressed: () => _openCourse(course, libraryState),
+          icon: Icon(Icons.start))
+    ]);
+  }
 
-        Column actionColumn = Column(children: [
-          const Icon(Icons.start),
-          Text(
-            'open',
-            style: CustomTextStyles.getBody(context),
-          )
-        ]);
-
-        Row row = Row(
-          children: [
-            Flexible(child: textColumn),
-            GestureDetector(
-              child: actionColumn,
-              onTap: () {
-                _openCourse(course, libraryState);
-              },
-            )
-          ],
-        );
-
-        children.add(row);
-      }
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: children,
-      );
-    });
+  Widget _createJoinPrivateCourseCard() {
+    return Card(
+        child: Column(children: [
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16.0),
+            topRight: Radius.circular(16.0),
+          ),
+        ),
+        child: Text(
+          'Join A Private Course',
+          style: CustomTextStyles.subHeadline.copyWith(color: Colors.white),
+        ),
+      ),
+      Padding(
+          padding: EdgeInsets.only(left: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _invitationCodeController,
+                  decoration:
+                      const InputDecoration(hintText: 'Invitation code'),
+                ),
+              ),
+              TextButton(
+                onPressed: () => _joinPrivateCourse(context),
+                child: const Text('Join'),
+              )
+            ],
+          )),
+      Row(
+        children: [
+          Flexible(
+              child: Padding(padding: EdgeInsets.all(8),child:ExpansionTile(
+                  trailing: SizedBox.shrink(),
+                  tilePadding: EdgeInsets.zero,
+                  childrenPadding: EdgeInsets.only(bottom: 8),
+                  title: Row(children: [
+                    Text('Create a private course ',
+                        style: CustomTextStyles.getBody(context)),
+                    Icon(Icons.info_outline)
+                  ]),
+                  children: [
+                Text(
+                    'You can create your own course to teach a subject, for a special event workshop, or corporate in-house training. Your course will be private by default and only accessible through an invitation code.',
+                    style: CustomTextStyles.getBody(context))
+              ]))),
+          Padding(padding: EdgeInsets.only(right:8), child:InkWell(
+              onTap: _createCourse,
+              child: Column(children: [
+                const Icon(Icons.start),
+                Text(
+                  'create',
+                  style: CustomTextStyles.getBody(context),
+                )
+              ])))
+        ],
+      ),
+    ]));
   }
 
   _openCourse(Course course, LibraryState libraryState) {
@@ -192,8 +241,10 @@ class HomePageState extends State<HomePage> {
 
   _joinPrivateCourse(BuildContext context) async {
     // Join the private course.
-    LibraryState libraryState = Provider.of<LibraryState>(context, listen: false);
-    Course? course = await libraryState.joinPrivateCourse(_invitationCodeController.text);
+    LibraryState libraryState =
+        Provider.of<LibraryState>(context, listen: false);
+    Course? course =
+        await libraryState.joinPrivateCourse(_invitationCodeController.text);
     print('Joined course: ${course?.title}');
 
     if (course == null) {
@@ -210,7 +261,8 @@ class HomePageState extends State<HomePage> {
 
     // Navigate to the curriculum of the private course.
     if (context.mounted) {
-      print('The currently selected course is ${libraryState.selectedCourse?.title}');
+      print(
+          'The currently selected course is ${libraryState.selectedCourse?.title}');
       Navigator.pushNamed(context, NavigationEnum.levelList.route);
       print('Navigated to curriculum');
     }
