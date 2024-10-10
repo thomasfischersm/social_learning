@@ -52,7 +52,7 @@ class HomePageState extends State<HomePage> {
                 _createCoursesCard(),
                 SizedBox(height: 8),
                 _createJoinPrivateCourseCard(),
-
+                SizedBox(height: 8),
                 CustomUiConstants.getDivider(),
                 CustomUiConstants.getGeneralFooter(context, withDivider: false)
               ],
@@ -61,7 +61,8 @@ class HomePageState extends State<HomePage> {
 
   Widget _createAppHeading() {
     return ExpansionTile(
-        tilePadding: EdgeInsets.only(left: 16),
+        tilePadding: EdgeInsets.only(left: 8),
+        childrenPadding: EdgeInsets.only(left: 8),
         trailing: SizedBox.shrink(),
         title: Row(
           children: [
@@ -73,17 +74,15 @@ class HomePageState extends State<HomePage> {
           ],
         ),
         children: [
-          Padding(
-              padding: EdgeInsets.only(left: 16),
-              child: Text(
-                'Learning Labs are a format where you learn hands-on from '
-                'the student ahead of you. Then you teach the next '
-                'student after you to deepen your own grasp on the '
-                'material.\n\n'
-                'The app shows you the lessons, tracks your progress, and '
-                'matches you up with other students during sessions.',
-                style: CustomTextStyles.getBody(context),
-              )),
+          Text(
+            'Learning Labs are a format where you learn hands-on from '
+            'the student ahead of you. Then you teach the next '
+            'student after you to deepen your own grasp on the '
+            'material.\n\n'
+            'The app shows you the lessons, tracks your progress, and '
+            'matches you up with other students during sessions.',
+            style: CustomTextStyles.getBody(context),
+          ),
         ]);
   }
 
@@ -202,29 +201,33 @@ class HomePageState extends State<HomePage> {
       Row(
         children: [
           Flexible(
-              child: Padding(padding: EdgeInsets.all(8),child:ExpansionTile(
-                  trailing: SizedBox.shrink(),
-                  tilePadding: EdgeInsets.zero,
-                  childrenPadding: EdgeInsets.only(bottom: 8),
-                  title: Row(children: [
-                    Text('Create a private course ',
-                        style: CustomTextStyles.getBody(context)),
-                    Icon(Icons.info_outline)
-                  ]),
-                  children: [
-                Text(
-                    'You can create your own course to teach a subject, for a special event workshop, or corporate in-house training. Your course will be private by default and only accessible through an invitation code.',
-                    style: CustomTextStyles.getBody(context))
-              ]))),
-          Padding(padding: EdgeInsets.only(right:8), child:InkWell(
-              onTap: _createCourse,
-              child: Column(children: [
-                const Icon(Icons.start),
-                Text(
-                  'create',
-                  style: CustomTextStyles.getBody(context),
-                )
-              ])))
+              child: Padding(
+                  padding: EdgeInsets.all(8),
+                  child: ExpansionTile(
+                      trailing: SizedBox.shrink(),
+                      tilePadding: EdgeInsets.zero,
+                      childrenPadding: EdgeInsets.only(bottom: 8),
+                      title: Row(children: [
+                        Text('Create a private course ',
+                            style: CustomTextStyles.getBody(context)),
+                        Icon(Icons.info_outline)
+                      ]),
+                      children: [
+                        Text(
+                            'You can create your own course to teach a subject, for a special event workshop, or corporate in-house training. Your course will be private by default and only accessible through an invitation code.',
+                            style: CustomTextStyles.getBody(context))
+                      ]))),
+          Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: InkWell(
+                  onTap: _createCourse,
+                  child: Column(children: [
+                    const Icon(Icons.start),
+                    Text(
+                      'create',
+                      style: CustomTextStyles.getBody(context),
+                    )
+                  ])))
         ],
       ),
     ]));
