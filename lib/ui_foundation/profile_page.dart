@@ -44,117 +44,122 @@ class ProfilePageState extends State<ProfilePage> {
       ),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(
-          alignment: Alignment.topCenter,child: CustomUiConstants.framePage(
-          Consumer<ApplicationState>(
+          alignment: Alignment.topCenter,
+          child: CustomUiConstants.framePage(Consumer<ApplicationState>(
               builder: (context, applicationState, child) {
-        User? currentUser = applicationState.currentUser;
-        if (currentUser == null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.pushNamed(context, NavigationEnum.landing.route);
-          });
-          return const Text('No logged in user!');
-        }
+            if (UserFunctions.isFirebaseAuthLoggedOut) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.pushNamed(context, NavigationEnum.landing.route);
+              });
+            }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ProfileLookupWidget(applicationState),
-            Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: CustomUiConstants.getDivider()),
-            Row(
+            User? currentUser = applicationState.currentUser;
+            if (currentUser == null) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                    flex: 1,
-                    child: Padding(
-                        padding: const EdgeInsets.only(right: 4),
-                        child: InkWell(
-                          onTap: () => _pickProfileImage(context),
-                          child: Stack(children: [
-                            ProfileImageWidget(currentUser, context),
-                            const Positioned(
-                                bottom: 0, right: 0, child: Icon(Icons.edit))
-                          ]),
-                        ))),
-                const SizedBox(width: 4),
-                Expanded(
-                    flex: 1,
-                    child: Column(
-                      children: [
-                        InkWell(
-                            onTap: () => showDisplayNameDialog(
-                                context, applicationState),
-                            child: Row(children: [
-                              Text(
-                                applicationState.userDisplayName ??
-                                    '<pick a display name>',
-                                style: CustomTextStyles.subHeadline,
-                              ),
-                              const SizedBox(width: 4),
-                              const Icon(Icons.edit),
-                            ])),
-                        ProfileTextEditor(applicationState)
-                      ],
+                ProfileLookupWidget(applicationState),
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: CustomUiConstants.getDivider()),
+                Row(
+                  children: [
+                    Expanded(
+                        flex: 1,
+                        child: Padding(
+                            padding: const EdgeInsets.only(right: 4),
+                            child: InkWell(
+                              onTap: () => _pickProfileImage(context),
+                              child: Stack(children: [
+                                ProfileImageWidget(currentUser, context),
+                                const Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Icon(Icons.edit))
+                              ]),
+                            ))),
+                    const SizedBox(width: 4),
+                    Expanded(
+                        flex: 1,
+                        child: Column(
+                          children: [
+                            InkWell(
+                                onTap: () => showDisplayNameDialog(
+                                    context, applicationState),
+                                child: Row(children: [
+                                  Text(
+                                    applicationState.userDisplayName ??
+                                        '<pick a display name>',
+                                    style: CustomTextStyles.subHeadline,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Icon(Icons.edit),
+                                ])),
+                            ProfileTextEditor(applicationState)
+                          ],
+                        )),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Settings',
+                  style: CustomTextStyles.subHeadline,
+                ),
+                Row(children: [
+                  const SizedBox(width: 10),
+                  Text('Instagram: ', style: CustomTextStyles.getBody(context)),
+                  InkWell(
+                      onTap: () => _openInstagram(context, applicationState),
+                      child: Text(currentUser.instagramHandle ?? '<enter>',
+                          style: CustomTextStyles.getBody(context))),
+                  IconButton(
+                      onPressed: () =>
+                          _editInstagramHandle(context, applicationState),
+                      icon: const Icon(Icons.edit)),
+                ]),
+                Row(
+                  children: [
+                    const SizedBox(width: 4),
+                    Checkbox(
+                        value: currentUser.isProfilePrivate,
+                        onChanged: (isChecked) =>
+                            _toogleIsPrivateProfile(context, applicationState)),
+                    // Flexible(child:Text(
+                    //     'Enable private profile. (Your profile will still be visible in session and to instructors.',softWrap: true,
+                    //     style: CustomTextStyles.getBody(context))),
+                    Flexible(
+                        child: RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: 'Make private profile. ',
+                            style: CustomTextStyles.getBodyNote(context)),
+                        TextSpan(
+                            text:
+                                '(Your profile will still be visible in session and to instructors.)',
+                            style: CustomTextStyles.getBodySmall(context))
+                      ]),
                     )),
+                  ],
+                ),
+                EnableLocationButton(applicationState),
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: CustomUiConstants.getDivider()),
+                TextButton(
+                    onPressed: () => Navigator.pushNamed(
+                        context, NavigationEnum.signOut.route),
+                    child: const Text("Sign out.")),
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: CustomUiConstants.getDivider()),
+                ProfileProgressVideoWidget(currentUser),
+                CustomUiConstants.getGeneralFooter(context)
               ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Settings',
-              style: CustomTextStyles.subHeadline,
-            ),
-            Row(children: [
-              const SizedBox(width: 10),
-              Text('Instagram: ', style: CustomTextStyles.getBody(context)),
-              InkWell(
-                  onTap: () => _openInstagram(context, applicationState),
-                  child: Text(currentUser.instagramHandle ?? '<enter>',
-                      style: CustomTextStyles.getBody(context))),
-              IconButton(
-                  onPressed: () =>
-                      _editInstagramHandle(context, applicationState),
-                  icon: const Icon(Icons.edit)),
-            ]),
-            Row(
-              children: [
-                const SizedBox(width: 4),
-                Checkbox(
-                    value: currentUser.isProfilePrivate,
-                    onChanged: (isChecked) =>
-                        _toogleIsPrivateProfile(context, applicationState)),
-                // Flexible(child:Text(
-                //     'Enable private profile. (Your profile will still be visible in session and to instructors.',softWrap: true,
-                //     style: CustomTextStyles.getBody(context))),
-                Flexible(
-                    child: RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: 'Make private profile. ',
-                        style: CustomTextStyles.getBodyNote(context)),
-                    TextSpan(
-                        text:
-                            '(Your profile will still be visible in session and to instructors.)',
-                        style: CustomTextStyles.getBodySmall(context))
-                  ]),
-                )),
-              ],
-            ),
-            EnableLocationButton(applicationState),
-            Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: CustomUiConstants.getDivider()),
-            TextButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, NavigationEnum.signOut.route),
-                child: const Text("Sign out.")),
-            Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: CustomUiConstants.getDivider()),
-            ProfileProgressVideoWidget(currentUser),
-            CustomUiConstants.getGeneralFooter(context)
-          ],
-        );
-      }))),
+            );
+          }))),
     );
   }
 

@@ -34,19 +34,23 @@ class StudentSessionState extends ChangeNotifier {
       if (_sessionSubscription.item?.isActive == false) {
         _resetSession();
       }
+      print(
+          'StudentSessionState.notifyListeners because the session subscription changed');
       notifyListeners();
     });
     _participantUsersSubscription =
         ParticipantUsersSubscription(() => notifyListeners(), null);
-    _sessionParticipantsSubscription = SessionParticipantsSubscription(
-        false,
-        true,
-        () => notifyListeners(),
-        _sessionSubscription,
-        _participantUsersSubscription,
-        _applicationState);
-    _sessionPairingSubscription =
-        SessionPairingsSubscription(() => notifyListeners());
+    _sessionParticipantsSubscription =
+        SessionParticipantsSubscription(false, true, () {
+      print(
+          'StudentSessionState.notifyListeners because session participants subscription changed');
+      notifyListeners();
+    }, _sessionSubscription, _participantUsersSubscription, _applicationState);
+    _sessionPairingSubscription = SessionPairingsSubscription(() {
+      print(
+          'StudentSessionState.notifyListeners because session pairing subscription changed');
+      notifyListeners();
+    });
 
     _applicationState.addListener(() {
       _checkForOngoingSession();
@@ -135,6 +139,7 @@ class StudentSessionState extends ChangeNotifier {
     _participantUsersSubscription.cancel();
     _sessionPairingSubscription.cancel();
 
+    print('StudentSessionState.notifyListeners because the session was reset');
     notifyListeners();
   }
 

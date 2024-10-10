@@ -31,6 +31,7 @@ class ApplicationState extends ChangeNotifier {
       UserFunctions.updateDisplayName(uid, newDisplayName);
     }
 
+    print('ApplicationState.notifyListeners because of displayName update');
     notifyListeners();
   }
 
@@ -153,6 +154,7 @@ class ApplicationState extends ChangeNotifier {
       UserFunctions.updateGeoLocation(applicationState);
     }
 
+    print('ApplicationState.notifyListeners because of isProfilePrivate update');
     notifyListeners();
   }
 

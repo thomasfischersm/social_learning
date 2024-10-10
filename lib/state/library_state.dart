@@ -65,6 +65,7 @@ class LibraryState extends ChangeNotifier {
       ();
     }
 
+    print('LibraryState.notifyListeners because of selectedCourse');
     notifyListeners();
   }
 
@@ -158,6 +159,7 @@ class LibraryState extends ChangeNotifier {
         _rebuildAvailableCourses();
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
+          print('LibraryState.notifyListeners because of reload private courses.');
           notifyListeners();
         });
       }
@@ -202,6 +204,7 @@ class LibraryState extends ChangeNotifier {
           .snapshots()
           .listen((snapshot) {
         _lessons = snapshot.docs.map((e) => Lesson.fromSnapshot(e)).toList();
+        print('Loaded ${_lessons?.length} lessons');
         notifyListeners();
       });
     }
