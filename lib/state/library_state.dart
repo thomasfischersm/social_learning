@@ -724,6 +724,34 @@ class LibraryState extends ChangeNotifier {
     print('finished firebase call to create comment');
   }
 
+  Future<bool> doesCourseTitleExist(String title) async {
+    return await FirebaseFirestore.instance
+        .collection('courses')
+        .where('title', isEqualTo: title)
+        .get()
+        .then((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }
+
+  Future<bool> doesInvitationCodeExist(String title) async {
+    return await FirebaseFirestore.instance
+        .collection('courses')
+        .where('invitationCode', isEqualTo: title)
+        .get()
+        .then((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+  }
+
   void signOut() {
     _selectedCourse = null;
     _isSelectedCourseInitializedFromDb = false;
