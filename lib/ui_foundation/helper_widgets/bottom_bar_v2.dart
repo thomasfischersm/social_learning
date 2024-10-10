@@ -126,7 +126,6 @@ class BottomBarV2 {
         {
           NavigationEnum.levelList.route,
           NavigationEnum.levelDetail.route,
-          NavigationEnum.lessonList.route,
           NavigationEnum.lessonDetail.route
         }.contains(currentRoute)) {
       return 1;

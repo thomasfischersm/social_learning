@@ -126,17 +126,6 @@ class LevelListState extends State<LevelListPage> {
           )));
     }
 
-    // Show Flex lessons.
-    // if (libraryState.getUnattachedLessons().isNotEmpty) {
-    //   children.add(InkWell(
-    //     onTap: () {
-    //       Navigator.pushNamed(context, NavigationEnum.levelDetail.route,
-    //           arguments: LevelDetailArgument.flexLessons());
-    //     },
-    //     child: Text('Flex Lessons', style: CustomTextStyles.getBody(context)),
-    //   ));
-    // }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: children,

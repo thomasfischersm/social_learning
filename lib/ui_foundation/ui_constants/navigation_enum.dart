@@ -7,7 +7,6 @@ enum NavigationEnum {
   profileComparison('/profile_comparison'),
   levelList('/level_list'),
   levelDetail('/level_detail'),
-  lessonList('/lesson_list'),
   lessonDetail('/lesson_detail'),
   signIn('/sign_in'),
   signOut('/sign_out'),

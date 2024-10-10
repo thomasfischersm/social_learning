@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:social_learning/custom_firebase.dart';
 import 'package:social_learning/globals.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/available_session_state.dart';
-import 'package:social_learning/state/graduation_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
@@ -19,20 +17,19 @@ import 'package:social_learning/ui_foundation/course_create_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
-import 'package:social_learning/ui_foundation/lesson_list_page.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_list_page.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/profile_comparison_page.dart';
-import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/session_create_page.dart';
 import 'package:social_learning/ui_foundation/session_create_warning_page.dart';
 import 'package:social_learning/ui_foundation/session_home_page.dart';
 import 'package:social_learning/ui_foundation/session_host_page.dart';
 import 'package:social_learning/ui_foundation/session_student_page.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
-import 'ui_foundation/bottom_bar.dart';
+
 import 'firebase_options.dart';
+import 'ui_foundation/bottom_bar.dart';
 import 'ui_foundation/profile_page.dart';
 import 'ui_foundation/sign_out_page.dart';
 
@@ -61,7 +58,6 @@ void main() async {
     providers: [
       ChangeNotifierProvider(create: (context) => applicationState),
       ChangeNotifierProvider(create: (context) => libraryState),
-      ChangeNotifierProvider(create: (context) => GraduationState()),
       ChangeNotifierProvider(
           create: (context) => StudentState(applicationState, libraryState)),
       ChangeNotifierProvider(
@@ -122,7 +118,6 @@ class SocialLearningApp extends StatelessWidget {
         '/profile_comparison': (context) => const ProfileComparisonPage(),
         '/level_list': (context) => const LevelListPage(),
         '/level_detail': (context) => const LevelDetailPage(),
-        '/lesson_list': (context) => const LessonListPage(),
         '/lesson_detail': (context) => const LessonDetailPage(),
         '/sign_in': (context) => const SignInPage(),
         '/sign_out': (context) => const SignOutPage(),
