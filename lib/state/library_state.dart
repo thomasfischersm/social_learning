@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 
@@ -20,6 +21,15 @@ import 'package:social_learning/state/student_state.dart';
 class LibraryState extends ChangeNotifier {
   final ApplicationState _applicationState;
 
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
+      _publicCourseListListener;
+
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
+  _levelListListener;
+
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
+  _lessonListListener;
+
   bool get isCourseSelected => _selectedCourse != null;
 
   Course? _selectedCourse;
@@ -32,8 +42,7 @@ class LibraryState extends ChangeNotifier {
       var currentCourseId = _applicationState.currentUser?.currentCourseId;
       if (currentCourseId != null) {
         Course? foundCourse = _availableCourses
-            .firstWhereOrNull((course) =>
-        course.id == currentCourseId.id);
+            .firstWhereOrNull((course) => course.id == currentCourseId.id);
 
         if (foundCourse != null) {
           _isSelectedCourseInitializedFromDb = true;
@@ -56,13 +65,15 @@ class LibraryState extends ChangeNotifier {
 
     String? courseId = course?.id;
     User? currentUser = _applicationState.currentUser;
-    if (courseId != null && currentUser != null && currentUser.currentCourseId?.id != courseId) {
+    if (courseId != null &&
+        currentUser != null &&
+        currentUser.currentCourseId?.id != courseId) {
       () async {
         FirebaseFirestore.instance.collection('users').doc(currentUser.id).set({
-          'currentCourseId': FirebaseFirestore.instance.doc('/courses/$courseId')
+          'currentCourseId':
+              FirebaseFirestore.instance.doc('/courses/$courseId')
         }, SetOptions(merge: true));
-      }
-      ();
+      }();
     }
 
     print('LibraryState.notifyListeners because of selectedCourse');
@@ -117,7 +128,11 @@ class LibraryState extends ChangeNotifier {
     //   'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
     // });
 
-    FirebaseFirestore.instance
+    if (_publicCourseListListener != null) {
+      _publicCourseListListener?.cancel();
+    }
+
+    _publicCourseListListener = FirebaseFirestore.instance
         .collection('courses')
         .where('isPrivate', isEqualTo: false)
         .snapshots()
@@ -127,7 +142,7 @@ class LibraryState extends ChangeNotifier {
       _rebuildAvailableCourses();
       print('Loaded ${_publicCourses.length} public courses');
       notifyListeners();
-    }).onError((error, stackTrace) {
+    }, onError: (error, stackTrace) {
       print('Failed to load public courses: $error');
     });
 
@@ -159,7 +174,8 @@ class LibraryState extends ChangeNotifier {
         _rebuildAvailableCourses();
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          print('LibraryState.notifyListeners because of reload private courses.');
+          print(
+              'LibraryState.notifyListeners because of reload private courses.');
           notifyListeners();
         });
       }
@@ -194,12 +210,17 @@ class LibraryState extends ChangeNotifier {
 
     var courseId = selectedCourse?.id;
     if (courseId != null) {
+      if (_lessonListListener != null) {
+        _lessonListListener?.cancel();
+        _lessonListListener = null;
+      }
+
       String coursePath = '/courses/$courseId';
 
-      FirebaseFirestore.instance
+      _lessonListListener = FirebaseFirestore.instance
           .collection('lessons')
           .where('courseId',
-          isEqualTo: FirebaseFirestore.instance.doc(coursePath))
+              isEqualTo: FirebaseFirestore.instance.doc(coursePath))
           .orderBy('sortOrder', descending: false)
           .snapshots()
           .listen((snapshot) {
@@ -213,12 +234,17 @@ class LibraryState extends ChangeNotifier {
   Future<void> loadLevelList() async {
     var courseId = selectedCourse?.id;
     if (courseId != null) {
+      if (_levelListListener != null) {
+        _levelListListener?.cancel();
+        _levelListListener = null;
+      }
+
       String coursePath = '/courses/$courseId';
 
-      FirebaseFirestore.instance
+      _levelListListener = FirebaseFirestore.instance
           .collection('levels')
           .where('courseId',
-          isEqualTo: FirebaseFirestore.instance.doc(coursePath))
+              isEqualTo: FirebaseFirestore.instance.doc(coursePath))
           .orderBy('sortOrder', descending: false)
           .snapshots()
           .listen((snapshot) {
@@ -250,7 +276,7 @@ class LibraryState extends ChangeNotifier {
     var lessonsRef = lessons;
     if (lessonsRef != null) {
       var unsortedLessons =
-      lessonsRef.where((element) => element.levelId == null);
+          lessonsRef.where((element) => element.levelId == null);
       unsortedLessons.sortedBy<num>((element) => element.sortOrder);
       return unsortedLessons;
     } else {
@@ -331,8 +357,7 @@ class LibraryState extends ChangeNotifier {
 
   void _setSortOrder(Lesson lesson, int newSortOrder) async {
     print(
-        '### Set sort order for ${lesson.title} from ${lesson
-            .sortOrder} to $newSortOrder');
+        '### Set sort order for ${lesson.title} from ${lesson.sortOrder} to $newSortOrder');
     await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
       'sortOrder': newSortOrder,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid
@@ -382,8 +407,8 @@ class LibraryState extends ChangeNotifier {
   }
 
   @Deprecated('Left over from the first version of the CMS.')
-  void createLessonLegacy(String courseId, String title, String instructions,
-      bool isLevel) {
+  void createLessonLegacy(
+      String courseId, String title, String instructions, bool isLevel) {
     FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
       'courseId': FirebaseFirestore.instance.doc('/courses/$courseId'),
       'sortOrder': _lessons?.length ?? 0,
@@ -394,7 +419,8 @@ class LibraryState extends ChangeNotifier {
     });
   }
 
-  Future<void> createLesson(DocumentReference? levelId,
+  Future<void> createLesson(
+      DocumentReference? levelId,
       String title,
       String? synopsis,
       String instructions,
@@ -410,7 +436,7 @@ class LibraryState extends ChangeNotifier {
         .collection('lessons')
         .add(<String, dynamic>{
       'courseId':
-      FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
+          FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
       'levelId': levelId,
       'sortOrder': _findHighestLessonSortOrder() + 1,
       // TODO: If levelId is null, use the highest sort order of the level.
@@ -438,8 +464,8 @@ class LibraryState extends ChangeNotifier {
   }
 
   @Deprecated('Left over from the first version of the CMS.')
-  void updateLessonLegacy(String lessonId, String title, String instructions,
-      bool isLevel) {
+  void updateLessonLegacy(
+      String lessonId, String title, String instructions, bool isLevel) {
     FirebaseFirestore.instance.doc('/lessons/$lessonId').set({
       'title': title,
       'instructions': instructions,
@@ -486,7 +512,8 @@ class LibraryState extends ChangeNotifier {
   int findLevelPosition(Level? level) =>
       (level != null) ? levels?.indexOf(level) ?? -1 : -1;
 
-  Future<Course> createPrivateCourse(String courseName,
+  Future<Course> createPrivateCourse(
+      String courseName,
       String invitationCode,
       String description,
       ApplicationState applicationState,
@@ -563,7 +590,7 @@ class LibraryState extends ChangeNotifier {
 
     await FirebaseFirestore.instance.collection('/levels').add({
       'courseId':
-      FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
+          FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
       'title': title,
       'description': description,
       'sortOrder': sortOrder + 1,
@@ -612,10 +639,10 @@ class LibraryState extends ChangeNotifier {
     // Or if there are no unattached lessons, find the highest sort order.
     int? followingLessonSortOrder = unattachedLessons
         .firstWhereOrNull((otherLesson) =>
-    otherLesson.title
-        .toLowerCase()
-        .compareTo(lesson.title.toLowerCase()) >
-        0)
+            otherLesson.title
+                .toLowerCase()
+                .compareTo(lesson.title.toLowerCase()) >
+            0)
         ?.sortOrder;
     int newSortOrder = (followingLessonSortOrder != null)
         ? followingLessonSortOrder - 1
@@ -664,8 +691,8 @@ class LibraryState extends ChangeNotifier {
     var attachedLessons = lessons?.where((lesson) => lesson.levelId != null);
     int highestSortOrder =
         attachedLessons?.fold(0, (int? previousValue, lesson) {
-          return max(previousValue!, lesson.sortOrder);
-        }) ??
+              return max(previousValue!, lesson.sortOrder);
+            }) ??
             0;
 
     // Sort the unattached lessons.
@@ -688,8 +715,7 @@ class LibraryState extends ChangeNotifier {
       for (Lesson lesson in getLessonsByLevel(level.id!)) {
         if (lesson.sortOrder != sortOrder) {
           print(
-              '!!! Fixing sort order for ${lesson.title} from ${lesson
-                  .sortOrder} to $sortOrder');
+              '!!! Fixing sort order for ${lesson.title} from ${lesson.sortOrder} to $sortOrder');
           _setSortOrder(lesson, sortOrder);
         }
         sortOrder++;
@@ -702,8 +728,7 @@ class LibraryState extends ChangeNotifier {
     for (Lesson lesson in unattachedLessons) {
       if (lesson.sortOrder != sortOrder) {
         print(
-            '!!! Fixing sort order for ${lesson.title} from ${lesson
-                .sortOrder} to $sortOrder');
+            '!!! Fixing sort order for ${lesson.title} from ${lesson.sortOrder} to $sortOrder');
         _setSortOrder(lesson, sortOrder);
       }
       sortOrder++;
@@ -713,9 +738,9 @@ class LibraryState extends ChangeNotifier {
   addLessonComment(Lesson lesson, String comment) async {
     User user = _applicationState.currentUser!;
     DocumentReference userId =
-    FirebaseFirestore.instance.doc('/users/${user.id}');
+        FirebaseFirestore.instance.doc('/users/${user.id}');
     DocumentReference lessonId =
-    FirebaseFirestore.instance.doc('/lessons/${lesson.id}');
+        FirebaseFirestore.instance.doc('/lessons/${lesson.id}');
 
     await FirebaseFirestore.instance.collection('lessonComments').add({
       'lessonId': lessonId,
@@ -756,6 +781,16 @@ class LibraryState extends ChangeNotifier {
   }
 
   void signOut() {
+    // Cancel subscriptions.
+    _publicCourseListListener?.cancel();
+    _publicCourseListListener = null;
+
+    _lessonListListener?.cancel();
+    _lessonListListener = null;
+
+    _levelListListener?.cancel();
+    _levelListListener = null;
+
     _selectedCourse = null;
     _isSelectedCourseInitializedFromDb = false;
     _selectedCourse = null;
