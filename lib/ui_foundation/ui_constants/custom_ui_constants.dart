@@ -41,7 +41,7 @@ class CustomUiConstants {
                   launchUrl(Uri.parse('mailto:thomas@learninglab.fans'));
                 }),
         ])),
-        const Text('(C) 2023 Thomas Fischer'),
+        const Text('(C) 2024 Thomas Fischer'),
       ],
     );
   }
