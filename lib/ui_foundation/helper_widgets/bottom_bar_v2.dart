@@ -202,6 +202,7 @@ class BottomBarV2 {
     // Curriculum
     if (isLessonsVisible) {
       if (index == 0) {
+        print('Navigating from the bottom bar to the level list page.');
         Navigator.of(context).pushNamed(NavigationEnum.levelList.route);
         return;
       } else {

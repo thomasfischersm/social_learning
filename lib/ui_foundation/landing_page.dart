@@ -17,6 +17,7 @@ class LandingPage extends StatelessWidget {
     if (libraryState.selectedCourse != null && (applicationState.currentUser != null)) {
       Future.microtask(() {
         if (context.mounted) {
+          print('Going from the landing page to the level page.');
           Navigator.of(context).pushReplacementNamed(NavigationEnum.levelList.route);
         }
       });

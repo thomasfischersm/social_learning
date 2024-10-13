@@ -291,6 +291,7 @@ class SessionHostState extends State<SessionHostPage> {
 
       organizerSessionState.endSession();
 
+      print('The session has ended. Going to the level list page.');
       Navigator.pushNamed(context, NavigationEnum.levelList.route);
     });
   }

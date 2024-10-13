@@ -97,15 +97,17 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
       children.add(Padding(
           padding: const EdgeInsets.only(top: 6),
           child: Row(children: [
-            InkWell(
+            Flexible(child:InkWell(
                 onTap: () {
                   _editLevelTitle(level, libraryState);
                 },
                 child: Text(
                   levelText,
                   style: CustomTextStyles.subHeadline,
+                  maxLines: null,
                   softWrap: true,
-                )),
+                  overflow: TextOverflow.visible,
+                ))),
             InkWell(
                 onTap: () {
                   _deleteLevel(level, context, libraryState);

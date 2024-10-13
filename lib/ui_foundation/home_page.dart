@@ -235,6 +235,7 @@ class HomePageState extends State<HomePage> {
 
   _openCourse(Course course, LibraryState libraryState) {
     libraryState.selectedCourse = course;
+    print('Open a course from the home page.');
     Navigator.pushNamed(context, NavigationEnum.levelList.route);
   }
 

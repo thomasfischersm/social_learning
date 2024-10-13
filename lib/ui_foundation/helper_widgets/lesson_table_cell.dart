@@ -61,9 +61,13 @@ class LessonTableCellState extends State<LessonTableCell> {
         padding: const EdgeInsets.only(left: 8, bottom: 8),
         child: (Row(
           children: [
-            InkWell(
+            Flexible(child:InkWell(
                 onTap: () => _goToLesson(widget.lesson),
-                child: Text(widget.lesson?.title ?? '')),
+                child: Text(
+                  widget.lesson?.title ?? '',
+                  softWrap: true,
+                  maxLines: null,
+                ))),
             if (showDeleteButton) _createRemoveButton(removeLesson, context)
           ],
         )));
@@ -113,7 +117,8 @@ class LessonTableCellState extends State<LessonTableCell> {
     // Only show levels if the user can actually learn them.
 
     List<DropdownMenuEntry<Lesson?>> entries = [];
-    BoolByReference hasBestLessonOccurred = BoolByReference(widget.mentee == null);
+    BoolByReference hasBestLessonOccurred =
+        BoolByReference(widget.mentee == null);
     LibraryState libraryState = Provider.of<LibraryState>(context);
 
     var levels = libraryState.levels;
@@ -132,14 +137,14 @@ class LessonTableCellState extends State<LessonTableCell> {
     }
 
     // Add flex lessons.
-    entries.addAll(getEntriesForLevel(
-        'Flex Lessons', libraryState.getUnattachedLessons(), hasBestLessonOccurred));
+    entries.addAll(getEntriesForLevel('Flex Lessons',
+        libraryState.getUnattachedLessons(), hasBestLessonOccurred));
 
     return entries;
   }
 
-  List<DropdownMenuEntry<Lesson?>> getEntriesForLevel(
-      String levelTitle, Iterable<Lesson> lessons, BoolByReference hasBestLessonOccurred) {
+  List<DropdownMenuEntry<Lesson?>> getEntriesForLevel(String levelTitle,
+      Iterable<Lesson> lessons, BoolByReference hasBestLessonOccurred) {
     bool canLearnAtLeastOneLesson = false;
     List<DropdownMenuEntry<Lesson?>> entries = [];
 
@@ -176,9 +181,10 @@ class LessonTableCellState extends State<LessonTableCell> {
           canLearnAtLeastOneLesson || canLearn || canPractice;
 
       if (canLearn) {
-        WidgetStateProperty<Color>? backgroundColor = hasBestLessonOccurred.value
-            ? null
-            : WidgetStateProperty.all(Colors.blue.shade50);
+        WidgetStateProperty<Color>? backgroundColor =
+            hasBestLessonOccurred.value
+                ? null
+                : WidgetStateProperty.all(Colors.blue.shade50);
 
         entries.add(DropdownMenuEntry<Lesson?>(
             value: lesson,
