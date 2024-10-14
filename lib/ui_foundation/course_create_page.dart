@@ -154,6 +154,10 @@ class CourseCreateState extends State<CourseCreatePage> {
         courseNameError = 'Course title already exists';
       });
       return;
+    } else {
+      setState(() {
+        courseNameError = null;
+      });
     }
 
     // Check if the invitation code already exists.
@@ -162,6 +166,10 @@ class CourseCreateState extends State<CourseCreatePage> {
         invitationCodeError = 'Invitation code already exists';
       });
       return;
+    } else {
+      setState(() {
+        invitationCodeError = null;
+      });
     }
 
     libraryState

@@ -40,6 +40,9 @@ class CmsLessonState extends State<CmsLessonPage> {
   DocumentReference? _levelDocRef;
   Lesson? _lesson;
   bool _isAdd = true;
+  String? _titleError = null;
+  String? _synopsisError = null;
+  String? _instructionsError = null;
 
   @override
   void didChangeDependencies() {
@@ -86,111 +89,216 @@ class CmsLessonState extends State<CmsLessonPage> {
           title: const Text('Learning Lab'),
         ),
         bottomNavigationBar: BottomBarV2.build(context),
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              _createUpdateLesson(context);
+            },
+            child: const Icon(Icons.done)),
         body: Align(
             alignment: Alignment.topCenter,
             child: CustomUiConstants.framePage(Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomUiConstants.getTextPadding(
-                Text('Create Lesson', style: CustomTextStyles.headline)),
-            Consumer<LibraryState>(
-              builder: (context, libraryState, child) {
-                return Consumer<ApplicationState>(
-                    builder: (context, applicationState, child) {
-                  return Table(columnWidths: const <int, TableColumnWidth>{
-                    0: IntrinsicColumnWidth(),
-                    1: FlexColumnWidth(),
-                  }, children: <TableRow>[
-                    TableRow(children: <Widget>[
-                      CustomUiConstants.getTextPadding(const Text('Title:')),
-                      TextField(controller: _titleController),
-                    ]),
-                    TableRow(children: <Widget>[
-                      CustomUiConstants.getTextPadding(const Text('Synopsis:')),
-                      TextField(
-                        controller: _synopsisController,
-                        minLines: 3,
-                        maxLines: null,
-                      ),
-                    ]),
-                    TableRow(children: <Widget>[
-                      CustomUiConstants.getTextPadding(
-                          const Text('Cover photo:')),
-                      UploadLessonCoverWidget(_lesson),
-                    ]),
-                    TableRow(children: <Widget>[
-                      CustomUiConstants.getTextPadding(
-                          const Text('Recap video:')),
-                      TextField(
-                        controller: _recapVideoController,
-                        decoration:
-                            const InputDecoration(hintText: 'YouTube link'),
-                      ),
-                    ]),
-                    TableRow(children: <Widget>[
-                      CustomUiConstants.getTextPadding(
-                          const Text('Lesson video:')),
-                      TextField(
-                        controller: _lessonVideoController,
-                        decoration:
-                            const InputDecoration(hintText: 'YouTube link'),
-                      ),
-                    ]),
-                    TableRow(children: <Widget>[
-                      CustomUiConstants.getTextPadding(
-                          const Text('Practice video:')),
-                      TextField(
-                        controller: _practiceVideoController,
-                        decoration:
-                            const InputDecoration(hintText: 'YouTube link'),
-                      ),
-                    ]),
-                    _generateGraduationRequirementRows(),
-                    TableRow(children: <Widget>[
-                      CustomUiConstants.getTextPadding(
-                          const Text('Instructions:')),
-                      TextField(
-                        controller: _instructionsController,
-                        maxLines: null,
-                        minLines: 5,
-                      ),
-                    ]),
-                  ]);
-                });
-              },
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                TextButton(
-                    onPressed: () {
-                      _createUpdateLesson(context);
-                    },
-                    child: Text(_isAdd ? 'Create' : 'Update')),
-                TextButton(
-                    onPressed: () => Navigator.pushNamed(
-                        context, NavigationEnum.cmsSyllabus.route),
-                    child: const Text('Cancel'))
+                CustomUiConstants.getTextPadding(
+                    Text('Create Lesson', style: CustomTextStyles.headline)),
+                Consumer<LibraryState>(
+                  builder: (context, libraryState, child) {
+                    return Consumer<ApplicationState>(
+                        builder: (context, applicationState, child) {
+                      return Column(
+                        children: [
+                          _createCoreCard(context),
+                          SizedBox(height: 8),
+                          _createGraduationRequirementsCard(context),
+                          SizedBox(height: 8),
+                          _createVideoCard(context)
+                        ],
+                      );
+                    });
+                  },
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    // TextButton(
+                        // onPressed: () {
+                        //   _createUpdateLesson(context);
+                        // },
+                        // child: Text(_isAdd ? 'Create' : 'Update')),
+                    TextButton(
+                        onPressed: () => Navigator.pushNamed(
+                            context, NavigationEnum.cmsSyllabus.route),
+                        child: const Text('Cancel'))
+                  ],
+                )
               ],
-            )
-          ],
-        ))));
+            ))));
   }
 
-  void _createCourse(BuildContext context, String courseName,
-      String invitationCode, String description) {
-    print('Attempting to create course $courseName');
+  Widget _createCoreCard(BuildContext context) {
+    return Card(
+        child: Column(children: [
+      Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorLight,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16.0),
+              topRight: Radius.circular(16.0),
+            ),
+          ),
+          child: Text(
+            'Required core',
+            style: CustomTextStyles.subHeadline,
+          )),
+      SizedBox(height: 8),
+      Padding(
+          padding: EdgeInsets.only(left: 8, right: 8),
+          child: Column(children: [
+            TextField(
+                controller: _titleController,
+                decoration: InputDecoration(
+                  labelText: 'Lesson title',
+                  errorText: _titleError,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                )),
+            SizedBox(height: 8),
+            TextField(
+                controller: _synopsisController,
+                minLines: 3,
+                maxLines: null,
+                decoration: InputDecoration(
+                  labelText: 'Synopsis',
+                  errorText: _synopsisError,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                )),
+            SizedBox(height: 8),
+            TextField(
+              controller: _instructionsController,
+              maxLines: null,
+              minLines: 5,
+              decoration: InputDecoration(
+                labelText: 'Instructions',
+                errorText: _instructionsError,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+          ]))
+    ]));
+  }
 
-    var applicationState =
-        Provider.of<ApplicationState>(context, listen: false);
-    var libraryState = Provider.of<LibraryState>(context, listen: false);
+  Widget _createGraduationRequirementsCard(BuildContext context) {
+    return Card(
+        child: Column(children: [
+      Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorLight,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16.0),
+              topRight: Radius.circular(16.0),
+            ),
+          ),
+          child: Text(
+            'Graduation requirements',
+            style: CustomTextStyles.subHeadline,
+          )),
+      SizedBox(height: 8),
+      Padding(
+          padding: EdgeInsets.only(left: 8, right: 8),
+          child: Column(children: [
+            for (var controller in _graduationRequirementsController)
+              Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: Row(
+                    children: [
+                      Expanded(
+                          child: TextField(
+                        controller: controller,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                      )),
+                      InkWell(
+                          onTap: () {
+                            _deleteGraduationRequirement(context, controller);
+                          },
+                          child: Text(' delete',
+                              style: CustomTextStyles.getLinkNoUnderline(
+                                  context))),
+                    ],
+                  )),
+            InkWell(
+                onTap: () {
+                  _addGraduationRequirement(context);
+                },
+                child: Text('Add',
+                    style: CustomTextStyles.getLinkNoUnderline(context))),
+          ]))
+    ]));
+  }
 
-    libraryState
-        .createPrivateCourse(courseName, invitationCode, description,
-            applicationState, libraryState)
-        .then((course) {
-      Navigator.pushNamed(context, NavigationEnum.cmsSyllabus.route);
-    });
+  _createVideoCard(BuildContext context) {
+    return Card(
+        child: Column(children: [
+      Container(
+          padding: const EdgeInsets.all(8.0),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColorLight,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16.0),
+              topRight: Radius.circular(16.0),
+            ),
+          ),
+          child: Text(
+            'Videos',
+            style: CustomTextStyles.subHeadline,
+          )),
+      SizedBox(height: 8),
+      Padding(
+          padding: EdgeInsets.only(left: 8, right: 8),
+          child: Column(children: [
+            TextField(
+                controller: _recapVideoController,
+                decoration: InputDecoration(
+                  labelText: 'Recap video (YouTube URL)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                )),
+            SizedBox(height: 8),
+            TextField(
+                controller: _lessonVideoController,
+                decoration: InputDecoration(
+                  labelText: 'Lesson video (YouTube URL)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                )),
+            SizedBox(height: 8),
+            TextField(
+                controller: _practiceVideoController,
+                decoration: InputDecoration(
+                  labelText: 'Practice video (YouTube URL)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                )),
+            SizedBox(height: 8),
+          ]))
+    ]));
   }
 
   _generateGraduationRequirementRows() {
@@ -210,6 +318,11 @@ class CmsLessonState extends State<CmsLessonPage> {
                   },
                   child: Text(' delete',
                       style: CustomTextStyles.getLinkNoUnderline(context))),
+              TextField(
+                controller: _instructionsController,
+                maxLines: null,
+                minLines: 5,
+              ),
             ],
           ),
         InkWell(
@@ -263,6 +376,10 @@ class CmsLessonState extends State<CmsLessonPage> {
   }
 
   void _createUpdateLesson(BuildContext context) async {
+    if (!_validateInput()) {
+      return;
+    }
+
     LibraryState libraryState =
         Provider.of<LibraryState>(context, listen: false);
     StudentState studentState =
@@ -277,7 +394,10 @@ class CmsLessonState extends State<CmsLessonPage> {
           _recapVideoController.text,
           _lessonVideoController.text,
           _practiceVideoController.text,
-          _graduationRequirementsController.map((e) => e.text).toList().removeBlankStrings(),
+          _graduationRequirementsController
+              .map((e) => e.text)
+              .toList()
+              .removeBlankStrings(),
           studentState);
     } else {
       var lesson = _lesson;
@@ -288,8 +408,10 @@ class CmsLessonState extends State<CmsLessonPage> {
         lesson.recapVideo = _recapVideoController.text;
         lesson.lessonVideo = _lessonVideoController.text;
         lesson.practiceVideo = _practiceVideoController.text;
-        lesson.graduationRequirements =
-            _graduationRequirementsController.map((e) => e.text).toList().removeBlankStrings();
+        lesson.graduationRequirements = _graduationRequirementsController
+            .map((e) => e.text)
+            .toList()
+            .removeBlankStrings();
         lesson.instructions = _instructionsController.text;
 
         libraryState.updateLesson(lesson);
@@ -297,6 +419,33 @@ class CmsLessonState extends State<CmsLessonPage> {
     }
 
     Navigator.pushNamed(context, NavigationEnum.cmsSyllabus.route);
+  }
+
+  bool _validateInput() {
+    _titleError = null;
+    _synopsisError = null;
+    _instructionsError = null;
+
+    if (_titleController.text.trim().length < 3) {
+      _titleError = 'Too short';
+    }
+
+    if (_synopsisController.text.trim().length < 3) {
+      _synopsisError = 'Too short';
+    }
+
+    if (_instructionsController.text.trim().length < 3) {
+      _instructionsError = 'Too short';
+    }
+
+    setState(() {});
+
+    if (_titleError != null || _synopsisError != null ||
+        _instructionsError != null) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }
 
