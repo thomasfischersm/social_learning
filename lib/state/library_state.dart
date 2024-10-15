@@ -532,7 +532,7 @@ class LibraryState extends ChangeNotifier {
     var course = Course.fromDocument(doc);
 
     // Automatically enroll the creator in their own course.
-    _applicationState.enrollInPrivateCourse(course, applicationState);
+    _applicationState.enrollInPrivateCourse(course);
 
     return course;
   }
@@ -546,7 +546,7 @@ class LibraryState extends ChangeNotifier {
       var course = Course.fromSnapshot(snapshot.docs.first);
 
       // Enroll in the private course.
-      await _applicationState.enrollInPrivateCourse(course, _applicationState);
+      await _applicationState.enrollInPrivateCourse(course);
 
       // Load the enrolled course into LibraryState.
       await _reloadEnrolledCourses();

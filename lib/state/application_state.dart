@@ -92,11 +92,24 @@ class ApplicationState extends ChangeNotifier {
   }
 
   enrollInPrivateCourse(
-      Course course, ApplicationState applicationState) async {
-    var currentUser = applicationState.currentUser!;
+      Course course) async {
+    var currentUser = this.currentUser!;
 
     await FirebaseFirestore.instance.doc('/users/${currentUser.id}').update({
       'enrolledCourseIds': FieldValue.arrayUnion([course.docRef])
+    });
+
+    _isCurrentUserInitialized = false;
+    _currentUser = await UserFunctions.getCurrentUser(); // TODO: Figure out if this is correct.
+
+    notifyListeners();
+  }
+
+  unenrollCourse(Course course) async {
+    var currentUser = this.currentUser!;
+
+    FirebaseFirestore.instance.doc('/users/${currentUser.id}').update({
+      'enrolledCourseIds': FieldValue.arrayRemove([course.docRef])
     });
 
     _isCurrentUserInitialized = false;

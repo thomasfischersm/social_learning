@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data_support/json_curriculum_sync.dart';
+import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
@@ -104,17 +105,22 @@ class HomePageState extends State<HomePage> {
                     CustomTextStyles.subHeadline.copyWith(color: Colors.white)),
           ),
           Consumer<LibraryState>(builder: (context, libraryState, child) {
-            return Column(
-                children: libraryState.availableCourses
-                    .map((course) => _createCourseWidget(course, libraryState))
-                    .toList());
+            return Consumer<ApplicationState>(
+                builder: (context, applicationState, child) {
+              return Column(
+                  children: libraryState.availableCourses
+                      .map((course) => _createCourseWidget(
+                          course, libraryState, applicationState))
+                      .toList());
+            });
           }),
         ],
       ),
     );
   }
 
-  Widget _createCourseWidget(Course course, LibraryState libraryState) {
+  Widget _createCourseWidget(Course course, LibraryState libraryState,
+      ApplicationState applicationState) {
     // Prepare the text.
     String pureText;
     String? linkText;
@@ -154,7 +160,13 @@ class HomePageState extends State<HomePage> {
                             ..onTap = () {
                               launchUrl(Uri.parse(linkText!));
                             })))
-          ]))
+          ])),
+          if (course.isPrivate)
+            Align(
+                alignment: Alignment.bottomRight,
+                child: TextButton(
+                    child: Text('Unenroll'),
+                    onPressed: () => _unenrollCourse(course, applicationState)))
         ],
       )),
       IconButton(
@@ -271,5 +283,33 @@ class HomePageState extends State<HomePage> {
       print('Navigated to curriculum');
     }
     // TODO: The page switch isn't working yet.
+  }
+
+  _unenrollCourse(Course course, ApplicationState applicationState) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm unenroll'),
+          content: Text('Are you sure you want to unenroll from this course?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss dialog
+              },
+              child: Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                applicationState.unenrollCourse(course);
+
+                Navigator.of(context).pop(); // Dismiss dialog
+              },
+              child: Text('Unenroll'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
