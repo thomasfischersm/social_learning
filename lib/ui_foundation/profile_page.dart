@@ -75,10 +75,10 @@ class ProfilePageState extends State<ProfilePage> {
                               onTap: () => _pickProfileImage(context),
                               child: Stack(children: [
                                 ProfileImageWidget(currentUser, context),
-                                const Positioned(
+                                Positioned(
                                     bottom: 0,
                                     right: 0,
-                                    child: Icon(Icons.edit))
+                                    child: Icon(Icons.edit,color: Colors.grey))
                               ]),
                             ))),
                     const SizedBox(width: 4),
@@ -96,7 +96,7 @@ class ProfilePageState extends State<ProfilePage> {
                                     style: CustomTextStyles.subHeadline,
                                   ),
                                   const SizedBox(width: 4),
-                                  const Icon(Icons.edit),
+                                   Icon(Icons.edit,color: Colors.grey),
                                 ])),
                             ProfileTextEditor(applicationState)
                           ],
@@ -118,7 +118,7 @@ class ProfilePageState extends State<ProfilePage> {
                   IconButton(
                       onPressed: () =>
                           _editInstagramHandle(context, applicationState),
-                      icon: const Icon(Icons.edit)),
+                      icon: Icon(Icons.edit,color: Colors.grey)),
                 ]),
                 Row(
                   children: [

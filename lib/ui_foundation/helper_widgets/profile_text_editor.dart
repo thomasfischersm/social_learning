@@ -123,7 +123,7 @@ class _ProfileTextEditorState extends State<ProfileTextEditor>
                   child: Text(_isExpanded ? 'Read Less' : 'Read More'),
                 ),
               IconButton(
-                icon: const Icon(Icons.edit),
+                icon: const Icon(Icons.edit,color: Colors.grey,),
                 onPressed: _enterEditMode,
               ),
             ],
