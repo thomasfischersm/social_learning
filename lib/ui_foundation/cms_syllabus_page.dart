@@ -13,6 +13,7 @@ import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/edit_level_title_dialog.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
@@ -97,17 +98,23 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
       children.add(Padding(
           padding: const EdgeInsets.only(top: 6),
           child: Row(children: [
-            Flexible(child:InkWell(
-                onTap: () {
-                  _editLevelTitle(level, libraryState);
-                },
-                child: Text(
-                  levelText,
-                  style: CustomTextStyles.subHeadline,
-                  maxLines: null,
-                  softWrap: true,
-                  overflow: TextOverflow.visible,
-                ))),
+            Flexible(
+                child: InkWell(
+                    onTap: () {
+                      // _editLevelTitle(level, libraryState);
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return EditLevelTitleDialog(level);
+                          });
+                    },
+                    child: Text(
+                      levelText,
+                      style: CustomTextStyles.subHeadline,
+                      maxLines: null,
+                      softWrap: true,
+                      overflow: TextOverflow.visible,
+                    ))),
             InkWell(
                 onTap: () {
                   _deleteLevel(level, context, libraryState);
@@ -230,47 +237,6 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: children,
     );
-  }
-
-  // Widget _generateAttachLesson(Level level, Lesson lesson, int sortOrder,
-  //     BuildContext context, LibraryState libraryState) {
-  //   return InkWell(
-  //       onTap: () {
-  //         _insertLesson(level, sortOrder, context, libraryState);
-  //       },
-  //       child: Text('Insert',
-  //           style: CustomTextStyles.getLinkNoUnderline(context)));
-  // }
-
-  _editLevelTitle(Level level, LibraryState libraryState) async {
-    TextEditingController controller = TextEditingController(text: level.title);
-
-    String? newLevelTitle = await showDialog<String>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Edit Level Title'),
-            content: TextField(controller: controller),
-            actions: <Widget>[
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Cancel')),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context, controller.text);
-                },
-                child: const Text('Save'),
-              ),
-            ],
-          );
-        });
-
-    if ((newLevelTitle != null) && (newLevelTitle.isNotEmpty)) {
-      level.title = newLevelTitle;
-      libraryState.updateLevel(level);
-    }
   }
 
   _deleteLevel(
@@ -413,38 +379,6 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
   }
 }
 
-void _migrateCoverPhotos(
-    BuildContext context, LibraryState libraryState) async {
-  var lessons = libraryState.lessons;
-  for (var lesson in lessons!) {
-    if (lesson.cover != null) {
-      // Upload the photo to Firebase.
-
-      final ByteData data = await rootBundle.load(lesson.cover!);
-      final imageData =
-          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-      if (imageData != null) {
-        var fireStoragePath = '/lesson_covers/${lesson.id}/coverPhoto';
-        var storageRef = FirebaseStorage.instance.ref(fireStoragePath);
-        try {
-          // var imageData = await file.readAsBytes();
-          await storageRef.putData(
-              imageData, SettableMetadata(contentType: 'image/png'));
-
-          // Save the path to the lesson.
-          lesson.coverFireStoragePath = fireStoragePath;
-          libraryState.updateLesson(lesson);
-        } catch (e) {
-          print('Error uploading photo: $e');
-        }
-
-        print(
-            'Uploaded photo of length ${imageData.length} to $fireStoragePath for lesson ${lesson.title}');
-      }
-    }
-  }
-}
-
 class LessonSelectionDialog extends StatefulWidget {
   final Iterable<Lesson> possibleLessons;
 
@@ -469,7 +403,8 @@ class LessonSelectionDialogState extends State<LessonSelectionDialog> {
     if (widget.possibleLessons.isEmpty) {
       return AlertDialog(
         title: const Text('No lessons available'),
-        content: const Text('Either create a lesson or detach a lesson from a level.'),
+        content: const Text(
+            'Either create a lesson or detach a lesson from a level.'),
         actions: <Widget>[
           TextButton(
             onPressed: () {
