@@ -84,7 +84,7 @@ class SessionCreateState extends State<SessionCreatePage> {
                     onPressed: () => Navigator.pushNamed(
                         context, NavigationEnum.sessionHome.route),
                     child: const Text('Cancel')),
-                TextButton(
+                ElevatedButton(
                     onPressed: () {
                       _createSession(context, sessionNameController.text);
                     },

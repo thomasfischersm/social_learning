@@ -425,7 +425,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                 },
                 child: const Text('Cancel'),
               ),
-              TextButton(
+              ElevatedButton(
                   onPressed: () {
                     User? localLearner = selectedLearner;
                     if (localLearner != null) {
@@ -837,7 +837,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                     Navigator.pop(context);
                   },
                   child: const Text('Cancel')),
-              TextButton(
+              ElevatedButton(
                   onPressed: () {
                     libraryState.deleteLessonComment(comment);
                     Navigator.pop(context);

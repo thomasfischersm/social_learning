@@ -316,7 +316,7 @@ class EditLessonRowState extends State<EditLessonRow> {
                   onPressed: () {
                     Navigator.pop(context);
                   }),
-              TextButton(
+              ElevatedButton(
                 child: const Text('Delete'),
                 onPressed: () {
                   var libraryState =

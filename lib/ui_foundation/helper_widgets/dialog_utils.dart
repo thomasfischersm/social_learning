@@ -21,7 +21,7 @@ class DialogUtils {
                 Navigator.of(context).pop(); // Close the dialog
               },
             ),
-            TextButton(
+            ElevatedButton(
               child: const Text('Confirm'),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog

@@ -253,7 +253,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                     Navigator.pop(context, false);
                   },
                   child: const Text('Cancel')),
-              TextButton(
+              ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
@@ -284,7 +284,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                     Navigator.pop(context);
                   },
                   child: const Text('Cancel')),
-              TextButton(
+              ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context, controller.text);
                 },
@@ -316,7 +316,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                     Navigator.pop(context, false);
                   },
                   child: const Text('Cancel')),
-              TextButton(
+              ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
@@ -363,7 +363,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                     Navigator.pop(context, false);
                   },
                   child: const Text('Cancel')),
-              TextButton(
+              ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context, true);
                 },
@@ -440,7 +440,7 @@ class LessonSelectionDialogState extends State<LessonSelectionDialog> {
           },
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () {
             Navigator.of(context)
                 .pop(_selectedLesson); // Return the selected value

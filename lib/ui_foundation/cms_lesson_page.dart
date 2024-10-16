@@ -355,7 +355,7 @@ class CmsLessonState extends State<CmsLessonPage> {
                     Navigator.pop(context, false);
                   },
                   child: const Text('Cancel')),
-              TextButton(
+              ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context, true);
                   },
