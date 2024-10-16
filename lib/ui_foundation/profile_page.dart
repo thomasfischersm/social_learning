@@ -14,6 +14,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/enable_location_but
 import 'package:social_learning/ui_foundation/helper_widgets/profile_lookup_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_progress_video_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_text_editor.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
@@ -165,6 +166,32 @@ class ProfilePageState extends State<ProfilePage> {
 
   void showDisplayNameDialog(
       BuildContext context, ApplicationState applicationState) {
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ValueInputDialog(
+          'Edit your display name',
+          applicationState.userDisplayName ?? '', // Default value
+          'Princess Fedora',
+          'OK',
+          (value) {
+            if (value == null || (value.trim().length< 3)) {
+              return 'Your display name is too short.';
+            }
+            return null; // No error
+          },
+          (newValue) {
+            // Handle confirmed new value
+            applicationState.userDisplayName = newValue;
+          },
+        );
+      },
+    );
+  }
+
+    void showDisplayNameDialog2(
+      BuildContext context, ApplicationState applicationState) {
     TextEditingController textFieldController =
         TextEditingController(text: applicationState.userDisplayName);
 
@@ -191,7 +218,7 @@ class ProfilePageState extends State<ProfilePage> {
                 },
                 child: const Text("Cancel"),
               ),
-              TextButton(
+              ElevatedButton(
                 onPressed: () {
                   setState(() {
                     applicationState.userDisplayName =
