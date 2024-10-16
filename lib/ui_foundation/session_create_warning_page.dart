@@ -40,14 +40,14 @@ class SessionCreateWarningState extends State<SessionCreateWarningPage> {
               children: [
                 TextButton(
                     onPressed: () => Navigator.pushNamed(
+                        context, NavigationEnum.sessionHome.route),
+                    child: const Text('Cancel')),
+                TextButton(
+                    onPressed: () => Navigator.pushNamed(
                         context,
                         NavigationEnum
                             .sessionCreate.route),
                     child: const Text('Continue')),
-                TextButton(
-                    onPressed: () => Navigator.pushNamed(
-                        context, NavigationEnum.sessionHome.route),
-                    child: const Text('Cancel'))
               ],
             )
           ],

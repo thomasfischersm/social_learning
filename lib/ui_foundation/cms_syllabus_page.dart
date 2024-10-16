@@ -436,16 +436,16 @@ class LessonSelectionDialogState extends State<LessonSelectionDialog> {
         TextButton(
           onPressed: () {
             Navigator.of(context)
-                .pop(_selectedLesson); // Return the selected value
+                .pop(); // Close the dialog without returning a value
           },
-          child: const Text('OK'),
+          child: const Text('Cancel'),
         ),
         TextButton(
           onPressed: () {
             Navigator.of(context)
-                .pop(); // Close the dialog without returning a value
+                .pop(_selectedLesson); // Return the selected value
           },
-          child: const Text('Cancel'),
+          child: const Text('OK'),
         ),
       ],
     );

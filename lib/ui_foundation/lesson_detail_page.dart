@@ -418,6 +418,14 @@ class LessonDetailState extends State<LessonDetailPage> {
             title: const Text("Record Lesson"),
             actions: [
               TextButton(
+                onPressed: () {
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
                   onPressed: () {
                     User? localLearner = selectedLearner;
                     if (localLearner != null) {
@@ -430,14 +438,6 @@ class LessonDetailState extends State<LessonDetailPage> {
                     }
                   },
                   child: const Text('Record')),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    Navigator.pop(context);
-                  });
-                },
-                child: const Text('Cancel'),
-              ),
             ],
             content: RecordDialogContent(currentLesson,
                 (User? student, bool isReadyToGraduate) {

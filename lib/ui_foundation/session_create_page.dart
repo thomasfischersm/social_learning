@@ -81,14 +81,14 @@ class SessionCreateState extends State<SessionCreatePage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
+                    onPressed: () => Navigator.pushNamed(
+                        context, NavigationEnum.sessionHome.route),
+                    child: const Text('Cancel')),
+                TextButton(
                     onPressed: () {
                       _createSession(context, sessionNameController.text);
                     },
                     child: const Text('Continue')),
-                TextButton(
-                    onPressed: () => Navigator.pushNamed(
-                        context, NavigationEnum.sessionHome.route),
-                    child: const Text('Cancel'))
               ],
             )
           ],
