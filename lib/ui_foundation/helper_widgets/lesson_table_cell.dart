@@ -119,7 +119,7 @@ class LessonTableCellState extends State<LessonTableCell> {
     List<DropdownMenuEntry<Lesson?>> entries = [];
     BoolByReference hasBestLessonOccurred =
         BoolByReference(widget.mentee == null);
-    LibraryState libraryState = Provider.of<LibraryState>(context);
+    LibraryState libraryState = Provider.of<LibraryState>(context, listen: false);
 
     var levels = libraryState.levels;
     if (levels != null) {

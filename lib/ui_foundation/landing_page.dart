@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/auto_sign_in_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
 import 'ui_constants/navigation_enum.dart';
@@ -11,28 +12,11 @@ class LandingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Redirect to home page if user is already signed in.
-    ApplicationState applicationState = Provider.of<ApplicationState>(context);
-    LibraryState libraryState = Provider.of<LibraryState>(context);
-    if (libraryState.selectedCourse != null && (applicationState.currentUser != null)) {
-      Future.microtask(() {
-        if (context.mounted) {
-          print('Going from the landing page to the level page.');
-          Navigator.of(context).pushReplacementNamed(NavigationEnum.levelList.route);
-        }
-      });
-    } else if (applicationState.currentUser != null) {
-      Future.microtask(() {
-        if (context.mounted) {
-          Navigator.of(context).pushReplacementNamed(NavigationEnum.home.route);
-        }
-      });
-    }
-
     return Center(
         child: CustomUiConstants.framePage(
             Column(
               children: [
+                AutoSignInWidget(),
                 Text(
                   'Social Learning',
                   style: Theme.of(context).textTheme.displaySmall,

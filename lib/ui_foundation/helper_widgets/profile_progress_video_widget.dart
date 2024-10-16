@@ -16,8 +16,7 @@ class ProfileProgressVideoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ApplicationState applicationState = Provider.of<ApplicationState>(context);
-    LibraryState libraryState = Provider.of<LibraryState>(context);
+    LibraryState libraryState = Provider.of<LibraryState>(context, listen: true);
 
     return FutureBuilder(
         future: ProgressVideoFunctions.createProfileProgressVideoFuture(

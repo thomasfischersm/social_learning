@@ -42,7 +42,8 @@ void main() async {
   );
 
   // Test if enabling persistence caching is a good thing.
-  FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
+  FirebaseFirestore.instance.settings =
+      const Settings(persistenceEnabled: true);
 
   // CustomFirebase.init();
   // FirebaseFirestore.instance.settings = const Settings(host: '127.0.0.1:8080', sslEnabled: false, persistenceEnabled: false);
@@ -92,6 +93,7 @@ class DebugObserver extends NavigatorObserver {
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
     print('didReplace ${newRoute?.settings.name}');
+    print(StackTrace.current);
   }
 }
 

@@ -1,9 +1,10 @@
-
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
-
+import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});
@@ -15,7 +16,7 @@ class SignInPage extends StatelessWidget {
         EmailAuthProvider(),
       ],
       actions: [
-        AuthStateChangeAction((context, state) {
+        AuthStateChangeAction((context, state) async {
           auth.User? user;
           if (state is SignedIn) {
             user = state.user;
@@ -35,7 +36,16 @@ class SignInPage extends StatelessWidget {
                 UserFunctions.updateDisplayName(user.uid, defaultDisplayName);
               }
             }
-            Navigator.of(context).pushReplacementNamed('/home');
+
+            ApplicationState applicationState =
+                Provider.of<ApplicationState>(context, listen: false);
+            if ((await applicationState.currentUserBlocking)?.currentCourseId != null) {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  NavigationEnum.levelList.route, (Route<dynamic> route) => false);
+            } else {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  NavigationEnum.home.route, (Route<dynamic> route) => false);
+            }
           }
         })
       ],

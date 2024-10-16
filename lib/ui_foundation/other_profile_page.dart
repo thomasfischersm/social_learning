@@ -110,7 +110,7 @@ class OtherProfileState extends State<OtherProfilePage> {
           ))));
     } else {
       // Find the course proficiency.
-      LibraryState libraryState = Provider.of<LibraryState>(context);
+      LibraryState libraryState = Provider.of<LibraryState>(context, listen: false);
       Course? selectedCourse = libraryState.selectedCourse;
       CourseProficiency? courseProficiency;
       if (selectedCourse != null) {

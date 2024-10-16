@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
@@ -43,22 +45,48 @@ class ApplicationState extends ChangeNotifier {
   User? _currentUser;
 
   User? get currentUser {
+    _initUser();
+    return _currentUser;
+  }
+
+  // Future<User?> get currentUserBlocking async {
+  //   await _initUser();
+  //   return _currentUser;
+  // }
+
+  Future<User?> get currentUserBlocking async {
+    if (_currentUser != null) {
+      return Future.value(_currentUser);
+    }
+
+    final Completer<User?> completer = Completer<User?>();
+
+    void listener() {
+      if (_currentUser != null) {
+        completer.complete(_currentUser);
+        removeListener(listener);
+      }
+    }
+
+    addListener(listener);
+
+    return completer.future;
+  }
+
+  Future<void> _initUser() async {
     if (_isLoggedIn && !_isCurrentUserInitialized) {
       _isCurrentUserInitialized = true;
-      () async {
-        _currentUser = await UserFunctions.getCurrentUser();
+      _currentUser = await UserFunctions.getCurrentUser();
 
-        // Update the geo location if the user allows it.
-        if (_isCurrentUserInitialized) {
-          if (_currentUser?.isGeoLocationEnabled ?? false) {
-            UserFunctions.updateGeoLocation(this);
-          }
+      // Update the geo location if the user allows it.
+      if (_isCurrentUserInitialized) {
+        if (_currentUser?.isGeoLocationEnabled ?? false) {
+          UserFunctions.updateGeoLocation(this);
         }
+      }
 
-        notifyListeners();
-      }();
+      notifyListeners();
     }
-    return _currentUser;
   }
 
   Future<void> init() async {
@@ -91,8 +119,7 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  enrollInPrivateCourse(
-      Course course) async {
+  enrollInPrivateCourse(Course course) async {
     var currentUser = this.currentUser!;
 
     await FirebaseFirestore.instance.doc('/users/${currentUser.id}').update({
@@ -100,7 +127,8 @@ class ApplicationState extends ChangeNotifier {
     });
 
     _isCurrentUserInitialized = false;
-    _currentUser = await UserFunctions.getCurrentUser(); // TODO: Figure out if this is correct.
+    _currentUser = await UserFunctions
+        .getCurrentUser(); // TODO: Figure out if this is correct.
 
     notifyListeners();
   }
@@ -113,7 +141,8 @@ class ApplicationState extends ChangeNotifier {
     });
 
     _isCurrentUserInitialized = false;
-    _currentUser = await UserFunctions.getCurrentUser(); // TODO: Figure out if this is correct.
+    _currentUser = await UserFunctions
+        .getCurrentUser(); // TODO: Figure out if this is correct.
 
     notifyListeners();
   }
@@ -149,7 +178,8 @@ class ApplicationState extends ChangeNotifier {
     print('End signOut');
   }
 
-  void setIsProfilePrivate(bool isProfilePrivate, ApplicationState applicationState) {
+  void setIsProfilePrivate(
+      bool isProfilePrivate, ApplicationState applicationState) {
     FirebaseFirestore.instance.doc('/users/${currentUser?.id}').update({
       'isProfilePrivate': isProfilePrivate,
     });
@@ -167,14 +197,17 @@ class ApplicationState extends ChangeNotifier {
       UserFunctions.updateGeoLocation(applicationState);
     }
 
-    print('ApplicationState.notifyListeners because of isProfilePrivate update');
+    print(
+        'ApplicationState.notifyListeners because of isProfilePrivate update');
     notifyListeners();
   }
 
   void _setProgressVideosPrivate(bool isProfilePrivate) {
     FirebaseFirestore.instance
         .collection('progressVideos')
-        .where('userId', isEqualTo: FirebaseFirestore.instance.doc('/users/${currentUser?.id}'))
+        .where('userId',
+            isEqualTo:
+                FirebaseFirestore.instance.doc('/users/${currentUser?.id}'))
         .get()
         .then((snapshot) {
       for (var doc in snapshot.docs) {

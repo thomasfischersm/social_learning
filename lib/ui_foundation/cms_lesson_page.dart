@@ -149,7 +149,7 @@ class CmsLessonState extends State<CmsLessonPage> {
             ),
           ),
           child: Text(
-            'Required core',
+            'Essentials',
             style: CustomTextStyles.subHeadline,
           )),
       SizedBox(height: 8),
@@ -191,6 +191,8 @@ class CmsLessonState extends State<CmsLessonPage> {
               ),
             ),
             SizedBox(height: 8),
+            UploadLessonCoverWidget(_lesson),
+            SizedBox(height: 8,),
           ]))
     ]));
   }

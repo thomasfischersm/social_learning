@@ -13,7 +13,7 @@ class BottomBarV2 {
             builder: (context, libraryState, child) =>
                 Consumer<StudentSessionState>(
                     builder: (context, studentSessionState, child) =>
-                        Consumer<OrganizerSessionState>(
+                          Consumer<OrganizerSessionState>(
                             builder: (context, organizerSessionState, child) {
                           bool isLessonsVisible =
                               libraryState.isCourseSelected &&

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 // import 'package:googleapis/docs/v1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -77,7 +78,9 @@ class LibraryState extends ChangeNotifier {
     }
 
     print('LibraryState.notifyListeners because of selectedCourse');
-    notifyListeners();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
   }
 
   var _availableCourses = <Course>[];
