@@ -176,8 +176,8 @@ class LessonDetailState extends State<LessonDetailPage> {
                                         ),
                                       ),
                                       /*),*/
-                                      _createCommentsView(
-                                          lesson, context, libraryState),
+                                      _createCommentsView(lesson, context,
+                                          libraryState, applicationState),
                                       SingleChildScrollView(
                                         child: Column(
                                           children: <Widget>[
@@ -448,8 +448,8 @@ class LessonDetailState extends State<LessonDetailPage> {
         });
   }
 
-  Widget _createCommentsView(
-      Lesson lesson, BuildContext context, LibraryState libraryState) {
+  Widget _createCommentsView(Lesson lesson, BuildContext context,
+      LibraryState libraryState, ApplicationState applicationState) {
     DocumentReference lessonId =
         FirebaseFirestore.instance.doc('/lessons/${lesson.id}');
     print('Querying for comments for lesson: $lessonId');
@@ -505,6 +505,9 @@ class LessonDetailState extends State<LessonDetailPage> {
                 List<Widget> commentWidgets = [];
                 for (LessonComment comment in comments) {
                   User? commenter = userMap[comment.creatorId.id];
+                  bool isSelf =
+                      (commenter?.id == applicationState.currentUser?.id);
+
                   commentWidgets.add(Container(
                       padding: const EdgeInsets.only(top: 4, bottom: 4),
                       child: Row(children: [
@@ -540,7 +543,13 @@ class LessonDetailState extends State<LessonDetailPage> {
                                   const TextStyle(fontStyle: FontStyle.italic),
                             ),
                           ])),
-                        ))
+                        )),
+                        if (isSelf)
+                          IconButton(
+                              onPressed: () {
+                                _deleteComment(comment, libraryState);
+                              },
+                              icon: Icon(Icons.close, color: Colors.grey)),
                       ])));
                 }
 
@@ -811,6 +820,32 @@ class LessonDetailState extends State<LessonDetailPage> {
   void _enableLocation(ApplicationState applicationState) {
     UserFunctions.enableGeoLocation(applicationState);
     setState(() {});
+  }
+
+  void _deleteComment(LessonComment comment, LibraryState libraryState) {
+    // Show a dialog to confirm
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Delete comment'),
+            content:
+                const Text('Are you sure you want to delete this comment?'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Cancel')),
+              TextButton(
+                  onPressed: () {
+                    libraryState.deleteLessonComment(comment);
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Delete'))
+            ],
+          );
+        });
   }
 }
 

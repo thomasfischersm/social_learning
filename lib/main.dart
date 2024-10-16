@@ -77,7 +77,8 @@ void main() async {
 class DebugObserver extends NavigatorObserver {
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    print('didPush ${route.settings.name}');
+    print('didPush ${route.settings.name} $route');
+    print(StackTrace.current);
   }
 
   @override

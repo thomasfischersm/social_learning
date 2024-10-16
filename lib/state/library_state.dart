@@ -25,11 +25,9 @@ class LibraryState extends ChangeNotifier {
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
       _publicCourseListListener;
 
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
-  _levelListListener;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _levelListListener;
 
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
-  _lessonListListener;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _lessonListListener;
 
   bool get isCourseSelected => _selectedCourse != null;
 
@@ -753,6 +751,17 @@ class LibraryState extends ChangeNotifier {
       'createdAt': FieldValue.serverTimestamp(),
     });
     print('finished firebase call to create comment');
+  }
+
+  deleteLessonComment(LessonComment comment) async {
+    print('Deleting comment: ${comment.id}');
+    await FirebaseFirestore.instance
+        .doc('/lessonComments/${comment.id}')
+        .delete()
+        .onError((error, stackTrace) {
+      print('Failed to delete comment: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    });
   }
 
   Future<bool> doesCourseTitleExist(String title) async {
