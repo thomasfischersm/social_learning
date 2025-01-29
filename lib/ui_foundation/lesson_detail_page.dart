@@ -982,7 +982,10 @@ class RecordDialogState extends State<RecordDialogContent> {
                                   _students = [_students![index]];
                                 });
                               },
-                              child: Padding(
+                              child: Container(
+                                  color: _students?.length == 1
+                                      ? Colors.blue.withOpacity(0.3)
+                                      : Colors.transparent,
                                   padding:
                                       const EdgeInsets.only(bottom: 2, top: 2),
                                   child: Row(
