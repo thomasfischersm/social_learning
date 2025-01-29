@@ -164,12 +164,12 @@ class SessionPairingAlgorithm {
     Set<Lesson> possibleLessons =
         teachableLessons.toSet().difference(alreadyLearnedLessons.toSet());
 
-    // Find the lesson with the highest sort order.
+    // Find the lesson with the lowest sort order.
     if (possibleLessons.isEmpty) {
       return null;
     } else {
       return possibleLessons.reduce((lessonA, lessonB) =>
-          (lessonA.sortOrder > lessonB.sortOrder) ? lessonA : lessonB);
+          (lessonA.sortOrder < lessonB.sortOrder) ? lessonA : lessonB);
     }
   }
 
