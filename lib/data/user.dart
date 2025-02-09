@@ -19,6 +19,7 @@ class User {
   GeoPoint? location;
   GeoPoint? roughUserLocation;
   String? instagramHandle;
+  String? calendlyUrl;
 
   User(
       this.id,
@@ -35,7 +36,8 @@ class User {
       this.isGeoLocationEnabled,
       this.location,
       this.roughUserLocation,
-      this.instagramHandle);
+      this.instagramHandle,
+      this.calendlyUrl);
 
   User.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -62,11 +64,20 @@ class User {
         isGeoLocationEnabled = e.data()?['isGeoLocationEnabled'] ?? false,
         location = e.data()?['location'],
         roughUserLocation = e.data()?['roughUserLocation'],
-        instagramHandle = e.data()?['instagramHandle'];
+        instagramHandle = e.data()?['instagramHandle'],
+        calendlyUrl = e.data()?['calendlyUrl'];
 
   CourseProficiency? getCourseProficiency(Course course) {
     return courseProficiencies
         ?.firstWhereOrNull((element) => element.courseId.id == course.id);
+  }
+
+  String? get calendlyHandle {
+    String? localUrl = calendlyUrl;
+    if (localUrl == null) {
+      return null;
+    }
+    return RegExp(r'calendly\.com/([^/]+)').firstMatch(localUrl)?.group(1);
   }
 }
 

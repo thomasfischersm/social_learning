@@ -442,12 +442,57 @@ class UserFunctions {
     });
   }
 
+  static void updateCalendlyUrl(
+      String? newCalendlyUrl, ApplicationState applicationState) async {
+    // Clean up the input
+    newCalendlyUrl = newCalendlyUrl?.trim();
+
+    // Convert to null if necessary.
+    if (newCalendlyUrl?.isEmpty ?? false) {
+      newCalendlyUrl = null;
+    }
+
+    // Check the format: https://calendly.com/thomas-playposse/30min
+    if (newCalendlyUrl != null) {
+      final uri = Uri.tryParse(newCalendlyUrl);
+      if (uri == null || uri.host != 'calendly.com') {
+        newCalendlyUrl = null;
+      }
+    }
+
+    // Update the user's Instagram handle
+    User? user = applicationState.currentUser;
+    if (user == null) {
+      return;
+    }
+
+    user.calendlyUrl = newCalendlyUrl;
+
+    await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+      'calendlyUrl': newCalendlyUrl,
+    });
+  }
+
   static Future<void> openInstaProfile(User? user) async {
     if ((user == null) || (user.instagramHandle == null)) {
       return;
     }
 
     final url = Uri.parse('https://www.instagram.com/${user.instagramHandle}/');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  static Future<void> openCalendlyUrl(User? user) async {
+    if ((user == null) || (user.calendlyUrl == null)) {
+      return;
+    }
+
+    final url = Uri.parse(user.calendlyUrl!);
 
     if (await canLaunchUrl(url)) {
       await launchUrl(url);

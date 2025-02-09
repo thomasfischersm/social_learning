@@ -79,7 +79,7 @@ class ProfilePageState extends State<ProfilePage> {
                                 Positioned(
                                     bottom: 0,
                                     right: 0,
-                                    child: Icon(Icons.edit,color: Colors.grey))
+                                    child: Icon(Icons.edit, color: Colors.grey))
                               ]),
                             ))),
                     const SizedBox(width: 4),
@@ -97,7 +97,7 @@ class ProfilePageState extends State<ProfilePage> {
                                     style: CustomTextStyles.subHeadline,
                                   ),
                                   const SizedBox(width: 4),
-                                   Icon(Icons.edit,color: Colors.grey),
+                                  Icon(Icons.edit, color: Colors.grey),
                                 ])),
                             ProfileTextEditor(applicationState)
                           ],
@@ -119,7 +119,19 @@ class ProfilePageState extends State<ProfilePage> {
                   IconButton(
                       onPressed: () =>
                           _editInstagramHandle(context, applicationState),
-                      icon: Icon(Icons.edit,color: Colors.grey)),
+                      icon: Icon(Icons.edit, color: Colors.grey)),
+                ]),
+                Row(children: [
+                  const SizedBox(width: 10),
+                  Text('Calendly: ', style: CustomTextStyles.getBody(context)),
+                  InkWell(
+                      onTap: () => _openCalendlyUrl(context, applicationState),
+                      child: Text(currentUser.calendlyHandle ?? '<enter>',
+                          style: CustomTextStyles.getBody(context))),
+                  IconButton(
+                      onPressed: () =>
+                          _editCalendlyUrl(context, applicationState),
+                      icon: Icon(Icons.edit, color: Colors.grey)),
                 ]),
                 Row(
                   children: [
@@ -166,7 +178,6 @@ class ProfilePageState extends State<ProfilePage> {
 
   void showDisplayNameDialog(
       BuildContext context, ApplicationState applicationState) {
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -176,7 +187,7 @@ class ProfilePageState extends State<ProfilePage> {
           'Princess Fedora',
           'OK',
           (value) {
-            if (value == null || (value.trim().length< 3)) {
+            if (value == null || (value.trim().length < 3)) {
               return 'Your display name is too short.';
             }
             return null; // No error
@@ -190,7 +201,7 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-    void showDisplayNameDialog2(
+  void showDisplayNameDialog2(
       BuildContext context, ApplicationState applicationState) {
     TextEditingController textFieldController =
         TextEditingController(text: applicationState.userDisplayName);
@@ -280,11 +291,6 @@ class ProfilePageState extends State<ProfilePage> {
             title: const Text("Enter a new Instagram handle"),
             content: Column(mainAxisSize: MainAxisSize.min, children: [
               TextField(
-                onChanged: (value) {
-                  setState(() {
-                    _newDisplayName = value;
-                  });
-                },
                 controller: textFieldController,
                 decoration: const InputDecoration(hintText: '@princessfedora'),
               ),
@@ -317,10 +323,60 @@ class ProfilePageState extends State<ProfilePage> {
         });
   }
 
+  _editCalendlyUrl(BuildContext context, ApplicationState applicationState) {
+    TextEditingController textFieldController =
+        TextEditingController(text: applicationState.currentUser?.calendlyUrl);
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text("Enter a new Calendly URL"),
+            content: Column(mainAxisSize: MainAxisSize.min, children: [
+              TextField(
+                controller: textFieldController,
+                decoration:
+                    const InputDecoration(hintText: 'https://calendly.com/...'),
+              ),
+              Text('Tip: Offer office hours to learners all over the world.',
+                  style: CustomTextStyles.getBodySmall(context))
+            ]),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () {
+                  UserFunctions.updateCalendlyUrl(
+                      textFieldController.value.text, applicationState);
+
+                  setState(() {
+                    Navigator.pop(context);
+                  });
+                },
+                child: const Text("OK"),
+              ),
+            ],
+          );
+        });
+  }
+
   _openInstagram(
       BuildContext context, ApplicationState applicationState) async {
     User? currentUser = applicationState.currentUser;
 
     await UserFunctions.openInstaProfile(currentUser);
+  }
+
+  _openCalendlyUrl(
+      BuildContext context, ApplicationState applicationState) async {
+    User? currentUser = applicationState.currentUser;
+
+    await UserFunctions.openCalendlyUrl(currentUser);
   }
 }
