@@ -18,12 +18,38 @@ class LandingPage extends StatelessWidget {
               children: [
                 AutoSignInWidget(),
                 Text(
-                  'Social Learning',
+                  'Learning Lab',
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
+                const Spacer(),
                 Text(
-                  'A learning envirnonment where more more advanced students '
-                  'teach you and you teach more beginning students.',
+                  'How it works',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                Text(
+                  'Learning Lab = \nLearn a lesson → Master it → Teach a peer',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
+                ),
+                const Spacer(),
+                Text(
+                  'Benefits:',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                Text('• Learn from a peer. Ask questions. Get guidance.\n'
+                    '• Skip the isolation/frustration of learning alone.\n'
+                    '• Deepen your mastery by teaching.',
+                    // '\n'
+                    // 'Available for in-person and online!',
+                  style: Theme.of(context).textTheme.bodyLarge,),
+                const Spacer(),
+                Text(
+                  'The Learning Revolution is here!',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                Text(
+                  // 'You learn everything from a mentor. Your mentor answers your questions and gets you unstuck. Your mentor doesn''t have to know everything. They only have to have mastered the lesson at hand. The intelligence of the curriculum guides you through learning the whole subject one piece at a time.',
+                  'Learn each lesson with a mentor who’s there to answer your questions and help you get unstuck. Your mentor only needs to master the specific lesson—not the entire subject—so you get clear, focused guidance. An expert-designed curriculum then connects these bite-sized lessons into a complete, effective learning journey.',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const Spacer(),
@@ -32,9 +58,11 @@ class LandingPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 Text(
-                  '1. Come to an event.\n'
-                  '2. Sign-in to pair up.',
+                  'Come to an in-person event\n'
+                  'or\n'
+                  'connect with an online mentor',
                   style: Theme.of(context).textTheme.bodyLarge,
+                  textAlign: TextAlign.center,
                 ),
                 const Spacer(),
                 const Divider(),
