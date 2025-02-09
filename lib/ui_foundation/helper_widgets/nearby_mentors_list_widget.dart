@@ -93,9 +93,8 @@ class NearbyMentorsListWidget extends StatelessWidget {
             final localUserDocs = userSnapshot.data![0].docs;
             final remoteUserDocs = userSnapshot.data![1].docs;
 
-            final localUsers = localUserDocs
-                .map((e) => User.fromSnapshot(e))
-                .toList();
+            final localUsers =
+                localUserDocs.map((e) => User.fromSnapshot(e)).toList();
 
             // Clean up data in case the DB has bad data.
             localUsers.removeWhere((user) => user.location == null);
@@ -111,7 +110,9 @@ class NearbyMentorsListWidget extends StatelessWidget {
             // Sort using the fine distance.
             nearbyMentors.sort((a, b) => a.distance!.compareTo(b.distance!));
 
-            final remoteMentors = remoteUserDocs.map((e) => MentorAndDistance(User.fromSnapshot(e), null)).toList();
+            final remoteMentors = remoteUserDocs
+                .map((e) => MentorAndDistance(User.fromSnapshot(e), null))
+                .toList();
             nearbyMentors.insertAll(0, remoteMentors);
 
             double screenWidth = MediaQuery.of(context).size.width;
@@ -120,10 +121,12 @@ class NearbyMentorsListWidget extends StatelessWidget {
               columnWidths: const {
                 0: IntrinsicColumnWidth(),
                 1: IntrinsicColumnWidth(),
-                2: FlexColumnWidth(2)
+                2: FlexColumnWidth(2),
+                3: IntrinsicColumnWidth(),
               },
               children: nearbyMentors.map((mentor) {
-                double? distanceInMiles = UserFunctions.toMiles(mentor.distance);
+                double? distanceInMiles =
+                    UserFunctions.toMiles(mentor.distance);
                 String distanceText = distanceInMiles != null
                     ? '${distanceInMiles.toStringAsFixed(0)} miles'
                     : 'Online';
@@ -131,8 +134,7 @@ class NearbyMentorsListWidget extends StatelessWidget {
                   children: [
                     TableCell(
                         verticalAlignment: TableCellVerticalAlignment.middle,
-                        child: Text(
-                            distanceText,
+                        child: Text(distanceText,
                             style: CustomTextStyles.getBody(context))),
                     // const SizedBox(width: 8),
                     Padding(
@@ -152,6 +154,19 @@ class NearbyMentorsListWidget extends StatelessWidget {
                         verticalAlignment: TableCellVerticalAlignment.middle,
                         child: Text(mentor.user.displayName,
                             style: CustomTextStyles.getBody(context))),
+                    if (mentor.distance == null)
+                      TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: IconButton(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () {
+                              UserFunctions.openCalendlyUrl(mentor.user);
+                            },
+                          ))
+                    else
+                      const TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: SizedBox.shrink()),
                   ],
                 );
               }).toList(),
