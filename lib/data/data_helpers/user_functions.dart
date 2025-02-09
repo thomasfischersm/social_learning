@@ -385,7 +385,10 @@ class UserFunctions {
     return R * c;
   }
 
-  static double toMiles(double kilometers) {
+  static double? toMiles(double? kilometers) {
+    if (kilometers == null) {
+      return null;
+    }
     return kilometers * 0.621371;
   }
 

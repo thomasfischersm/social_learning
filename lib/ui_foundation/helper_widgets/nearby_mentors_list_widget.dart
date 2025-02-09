@@ -60,15 +60,26 @@ class NearbyMentorsListWidget extends StatelessWidget {
           ));
         }
 
-        final userDocs = FirebaseFirestore.instance
-            .collection('users')
-            .where('uid', whereIn: menteeUids)
-            .where('isGeoLocationEnabled', isEqualTo: true)
-            .where('isProfilePrivate', isEqualTo: false)
-            .get();
+        final Future<List<QuerySnapshot<Map<String, dynamic>>>> usersFuture =
+            Future.wait([
+          FirebaseFirestore.instance
+              .collection('users')
+              .where('uid', whereIn: menteeUids)
+              .where('isGeoLocationEnabled', isEqualTo: true)
+              .where('isProfilePrivate', isEqualTo: false)
+              .get(),
+          FirebaseFirestore.instance
+              .collection('users')
+              .where('uid', whereIn: menteeUids.toList())
+              // This works if you store Calendly URLs as non-empty strings.
+              .where('calendlyUrl', isGreaterThan: '')
+              .where('isProfilePrivate', isEqualTo: false)
+              .limit(5)
+              .get()
+        ]);
 
-        return FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          future: userDocs,
+        return FutureBuilder<List<QuerySnapshot<Map<String, dynamic>>>>(
+          future: usersFuture,
           builder: (context, userSnapshot) {
             if (userSnapshot.hasError) {
               print('Error: ${userSnapshot.error}');
@@ -79,14 +90,17 @@ class NearbyMentorsListWidget extends StatelessWidget {
               return const CircularProgressIndicator();
             }
 
-            final users = userSnapshot.data!.docs
+            final localUserDocs = userSnapshot.data![0].docs;
+            final remoteUserDocs = userSnapshot.data![1].docs;
+
+            final localUsers = localUserDocs
                 .map((e) => User.fromSnapshot(e))
                 .toList();
 
             // Clean up data in case the DB has bad data.
-            users.removeWhere((user) => user.location == null);
+            localUsers.removeWhere((user) => user.location == null);
 
-            List<MentorAndDistance> nearbyMentors = users.map((user) {
+            List<MentorAndDistance> nearbyMentors = localUsers.map((user) {
               final distance = UserFunctions.haversineDistance(
                 currentLocation,
                 user.location!,
@@ -95,7 +109,10 @@ class NearbyMentorsListWidget extends StatelessWidget {
             }).toList();
 
             // Sort using the fine distance.
-            nearbyMentors.sort((a, b) => a.distance.compareTo(b.distance));
+            nearbyMentors.sort((a, b) => a.distance!.compareTo(b.distance!));
+
+            final remoteMentors = remoteUserDocs.map((e) => MentorAndDistance(User.fromSnapshot(e), null)).toList();
+            nearbyMentors.insertAll(0, remoteMentors);
 
             double screenWidth = MediaQuery.of(context).size.width;
 
@@ -106,13 +123,16 @@ class NearbyMentorsListWidget extends StatelessWidget {
                 2: FlexColumnWidth(2)
               },
               children: nearbyMentors.map((mentor) {
-                double distanceInMiles = UserFunctions.toMiles(mentor.distance);
+                double? distanceInMiles = UserFunctions.toMiles(mentor.distance);
+                String distanceText = distanceInMiles != null
+                    ? '${distanceInMiles.toStringAsFixed(0)} miles'
+                    : 'Online';
                 return TableRow(
                   children: [
                     TableCell(
                         verticalAlignment: TableCellVerticalAlignment.middle,
                         child: Text(
-                            '${distanceInMiles.toStringAsFixed(0)} miles',
+                            distanceText,
                             style: CustomTextStyles.getBody(context))),
                     // const SizedBox(width: 8),
                     Padding(
@@ -147,7 +167,7 @@ class MentorAndDistance {
   final User user;
 
   // final List<PracticeRecord> practiceRecords; // TODO: Show in the future how often the student has mentored this lesson.
-  final double distance;
+  final double? distance;
 
   MentorAndDistance(this.user, this.distance /*, this.practiceRecords*/);
 }
