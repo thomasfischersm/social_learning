@@ -1,5 +1,5 @@
 import 'package:social_learning/data/lesson.dart';
-import 'package:social_learning/data/reference_helper.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 

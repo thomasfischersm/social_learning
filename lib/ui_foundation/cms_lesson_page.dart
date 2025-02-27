@@ -43,10 +43,16 @@ class CmsLessonState extends State<CmsLessonPage> {
   String? _titleError = null;
   String? _synopsisError = null;
   String? _instructionsError = null;
+  bool _isInitialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    if (_isInitialized) {
+      return;
+    }
+    _isInitialized = true;
 
     CmsLessonDetailArgument? argument =
         ModalRoute.of(context)!.settings.arguments as CmsLessonDetailArgument?;
