@@ -13,76 +13,79 @@ class SessionHomePage extends StatefulWidget {
   const SessionHomePage({super.key});
 
   @override
-  State<StatefulWidget> createState() {
-    return SessionHomeState();
-  }
+  _SessionHomePageState createState() => _SessionHomePageState();
 }
 
-class SessionHomeState extends State<SessionHomePage> {
+class _SessionHomePageState extends State<SessionHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Learning Lab'),
-        ),
-        bottomNavigationBar: BottomBarV2.build(context),
-        body: Align(
-            alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomUiConstants.getTextPadding(
-                Text('Join a session', style: CustomTextStyles.headline)),
-            Padding(
+      appBar: AppBar(
+        title: const Text('Learning Lab'),
+      ),
+      bottomNavigationBar: BottomBarV2.build(context),
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: CustomUiConstants.framePage(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomUiConstants.getTextPadding(
+                Text('Join a session', style: CustomTextStyles.headline),
+              ),
+              Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Consumer<AvailableSessionState>(
-                    builder: (context, availableSessionState, child) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children:
-                        _showAvailableSessions(context, availableSessionState),
-                  );
-                })),
-            CustomUiConstants.getDivider(),
-            Row(
-              children: [
-                const Spacer(),
-                TextButton(
+                  builder: (context, availableSessionState, child) =>
+                      _buildAvailableSessions(context, availableSessionState),
+                ),
+              ),
+              CustomUiConstants.getDivider(),
+              Row(
+                children: [
+                  const Spacer(),
+                  TextButton(
                     onPressed: () => Navigator.pushNamed(
-                        context, NavigationEnum.sessionCreateWarning.route),
-                    child: const Text('Create a new session'))
-              ],
-            ),
-          ],
-        ))));
+                      context,
+                      NavigationEnum.sessionCreateWarning.route,
+                    ),
+                    child: const Text('Create a new session'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
-  List<Widget> _showAvailableSessions(
-      BuildContext context, AvailableSessionState availableSessionState) {
-    List<Widget> result = [];
-    if (availableSessionState.availableSessions.isEmpty) {
-      result.add(Text('No sessions available.',
-          style: CustomTextStyles.getBody(context)));
-    } else {
-      for (Session session in availableSessionState.availableSessions) {
-        var sessionLabel =
-            '${session.name} by ${session.organizerName} with ${session.participantCount} participants';
-        result.add(InkWell(
-            onTap: () {
-              _joinSession(session, context);
-            },
-            child: Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(sessionLabel,
-                    style: CustomTextStyles.getBody(context)))));
-      }
+  /// Builds a list of available sessions.
+  Widget _buildAvailableSessions(
+      BuildContext context, AvailableSessionState state) {
+    if (state.availableSessions.isEmpty) {
+      return Text(
+        'No sessions available.',
+        style: CustomTextStyles.getBody(context),
+      );
     }
-
-    return result;
-  }
-
-  _navigateToCreateSession() {
-    Navigator.pushNamed(context, NavigationEnum.cmsLesson.route);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: state.availableSessions.map((Session session) {
+        final sessionLabel =
+            '${session.name} by ${session.organizerName} with ${session.participantCount} participants';
+        return InkWell(
+          onTap: () => _joinSession(session),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(
+              sessionLabel,
+              style: CustomTextStyles.getBody(context),
+            ),
+          ),
+        );
+      }).toList(),
+    );
   }
 
   _joinSession(Session session, BuildContext context) {
