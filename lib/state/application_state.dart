@@ -11,6 +11,7 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/available_session_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
@@ -175,6 +176,11 @@ class ApplicationState extends ChangeNotifier {
     OrganizerSessionState organizerSessionState =
         Provider.of<OrganizerSessionState>(context, listen: false);
     organizerSessionState.signOut();
+
+    OnlineSessionState onlineSessionState =
+        Provider.of<OnlineSessionState>(context, listen: false);
+    onlineSessionState.signOut();
+
     print('End signOut');
   }
 

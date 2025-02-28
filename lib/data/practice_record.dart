@@ -21,3 +21,5 @@ class PracticeRecord {
         roughUserLocation = e.data()['roughUserLocation'] as GeoPoint?,
         timestamp = e.data()['timestamp'] as Timestamp?;
 }
+
+// TODO: Add courseId as a field so that we can query more efficiently.

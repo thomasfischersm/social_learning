@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -84,6 +85,7 @@ class BottomBarV2 {
   }
 
   static NavigationEnum _getSessionNavigationTarget(
+      BuildContext context,
       ApplicationState applicationState,
       LibraryState libraryState,
       StudentSessionState studentSessionState,
@@ -91,15 +93,22 @@ class BottomBarV2 {
     print(
         'bottom bar session button: host session ${organizerSessionState.isInitialized}, student session ${studentSessionState.isInitialized}, course selected ${libraryState.isCourseSelected}, logged in ${applicationState.isLoggedIn}');
 
+    OnlineSessionState onlineSessionState =
+        Provider.of<OnlineSessionState>(context, listen: false);
+
     if (organizerSessionState.currentSession != null) {
       return NavigationEnum.sessionHost;
     } else if (studentSessionState.currentSession != null) {
       return NavigationEnum.sessionStudent;
     } else if (libraryState.isCourseSelected && applicationState.isLoggedIn) {
       return NavigationEnum.sessionHome;
+    } else if (onlineSessionState.isInitialized && onlineSessionState.waitingSession != null) {
+      return NavigationEnum.onlineSessionWaitingRoom;
+    } else if (onlineSessionState.isInitialized && onlineSessionState.activeSession != null) {
+      return NavigationEnum.onlineSessionActive;
     } else {
       // The user needs to select a course first.
-      return NavigationEnum.sessionHome;
+      return NavigationEnum.home;
     }
   }
 
@@ -139,7 +148,9 @@ class BottomBarV2 {
           NavigationEnum.sessionCreate.route,
           NavigationEnum.sessionCreateWarning.route,
           NavigationEnum.sessionHost.route,
-          NavigationEnum.sessionStudent.route
+          NavigationEnum.sessionStudent.route,
+          NavigationEnum.onlineSessionWaitingRoom.route,
+          NavigationEnum.onlineSessionActive.route,
         }.contains(currentRoute)) {
       return 1 + (isLessonsVisible ? 1 : 0) + (isManageVisible ? 1 : 0);
     } else if (isProfileVisible &&
@@ -224,6 +235,7 @@ class BottomBarV2 {
     if (isSessionsVisible) {
       if (index == 0) {
         Navigator.of(context).pushNamed(_getSessionNavigationTarget(
+          context,
                 applicationState,
                 libraryState,
                 studentSessionState,

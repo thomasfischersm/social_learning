@@ -19,6 +19,8 @@ enum NavigationEnum {
   sessionCreate('/session_create'),
   sessionHost('/session_host'),
   sessionStudent('/session_student'),
+  onlineSessionWaitingRoom('/online_session_waiting_room'),
+  onlineSessionActive('/online_session_active'),
   createCourse('/create_course');
 
   final String route;

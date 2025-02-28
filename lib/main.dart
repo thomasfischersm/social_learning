@@ -6,6 +6,7 @@ import 'package:social_learning/globals.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/available_session_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
@@ -19,6 +20,8 @@ import 'package:social_learning/ui_foundation/landing_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_list_page.dart';
+import 'package:social_learning/ui_foundation/online_session_active_page.dart';
+import 'package:social_learning/ui_foundation/online_session_waiting_room_page.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/profile_comparison_page.dart';
 import 'package:social_learning/ui_foundation/session_create_page.dart';
@@ -68,7 +71,8 @@ void main() async {
               OrganizerSessionState(applicationState, libraryState)),
       ChangeNotifierProvider(
           create: (context) =>
-              StudentSessionState(applicationState, libraryState))
+              StudentSessionState(applicationState, libraryState)),
+      ChangeNotifierProvider(create: (context) => OnlineSessionState(applicationState)),
     ],
     builder: ((context, child) => const SocialLearningApp()),
   ));
@@ -134,6 +138,9 @@ class SocialLearningApp extends StatelessWidget {
         '/session_create': (context) => const SessionCreatePage(),
         '/session_host': (context) => const SessionHostPage(),
         '/session_student': (context) => const SessionStudentPage(),
+        '/online_session_waiting_room': (context) =>
+            const OnlineSessionWaitingRoomPage(),
+        '/online_session_active': (context) => const OnlineSessionActivePage(),
         '/create_course': (context) => const CourseCreatePage(),
       },
     );

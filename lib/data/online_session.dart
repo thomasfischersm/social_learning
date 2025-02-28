@@ -39,8 +39,8 @@ OnlineSessionStatus OnlineSessionStatusFromInt(int code) {
 
 class OnlineSession {
   String? id;
-  DocumentReference? learnerId;
-  DocumentReference? mentorId;
+  String? learnerUid;
+  String? mentorUid;
   String? videoCallUrl;
   bool isMentorInitiated; // true if the session was initiated by a mentor
   OnlineSessionStatus status; // typed status using integers
@@ -51,8 +51,8 @@ class OnlineSession {
 
   OnlineSession({
     this.id,
-    required this.learnerId,
-    this.mentorId,
+    required this.learnerUid,
+    this.mentorUid,
     this.videoCallUrl,
     required this.isMentorInitiated,
     required this.status,
@@ -65,8 +65,8 @@ class OnlineSession {
   OnlineSession.fromQuerySnapshot(
       QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
       : id = snapshot.id,
-        learnerId = snapshot.data()['learnerId'] as DocumentReference?,
-        mentorId = snapshot.data()['mentorId'] as DocumentReference?,
+        learnerUid = snapshot.data()['learnerUid'] as String?,
+        mentorUid = snapshot.data()['mentorUid'] as String?,
         videoCallUrl = snapshot.data()['videoCallUrl'] as String?,
         isMentorInitiated = snapshot.data()['isMentorInitiated'] as bool,
         status = OnlineSessionStatusFromInt(snapshot.data()['status'] as int),
@@ -78,8 +78,8 @@ class OnlineSession {
   OnlineSession.fromSnapshot(
       DocumentSnapshot<Map<String, dynamic>> snapshot)
       : id = snapshot.id,
-        learnerId = snapshot.data()?['learnerId'] as DocumentReference?,
-        mentorId = snapshot.data()?['mentorId'] as DocumentReference?,
+        learnerUid = snapshot.data()?['learnerUid'] as String?,
+        mentorUid = snapshot.data()?['mentorUid'] as String?,
         videoCallUrl = snapshot.data()?['videoCallUrl'] as String?,
         isMentorInitiated = snapshot.data()?['isMentorInitiated'] as bool,
         status = OnlineSessionStatusFromInt(snapshot.data()?['status'] as int),
@@ -90,8 +90,8 @@ class OnlineSession {
 
   OnlineSession.fromJson(Map<String, dynamic> json)
       : id = json['id'] as String?,
-        learnerId = json['learnerId'] as DocumentReference?,
-        mentorId = json['mentorId'] as DocumentReference?,
+        learnerUid = json['learnerUid'] as String?,
+        mentorUid = json['mentorUid'] as String?,
         videoCallUrl = json['videoCallUrl'] as String?,
         isMentorInitiated = json['isMentorInitiated'] as bool,
         status = OnlineSessionStatusFromInt(json['status'] as int),
