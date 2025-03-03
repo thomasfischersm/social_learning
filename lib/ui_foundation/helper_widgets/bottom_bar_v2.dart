@@ -95,17 +95,18 @@ class BottomBarV2 {
 
     OnlineSessionState onlineSessionState =
         Provider.of<OnlineSessionState>(context, listen: false);
+    print('online session state: waiting session ${onlineSessionState.waitingSession}, active session ${onlineSessionState.activeSession}');
 
     if (organizerSessionState.currentSession != null) {
       return NavigationEnum.sessionHost;
     } else if (studentSessionState.currentSession != null) {
       return NavigationEnum.sessionStudent;
-    } else if (libraryState.isCourseSelected && applicationState.isLoggedIn) {
-      return NavigationEnum.sessionHome;
     } else if (onlineSessionState.isInitialized && onlineSessionState.waitingSession != null) {
       return NavigationEnum.onlineSessionWaitingRoom;
     } else if (onlineSessionState.isInitialized && onlineSessionState.activeSession != null) {
       return NavigationEnum.onlineSessionActive;
+    } else if (libraryState.isCourseSelected && applicationState.isLoggedIn) {
+      return NavigationEnum.sessionHome;
     } else {
       // The user needs to select a course first.
       return NavigationEnum.home;

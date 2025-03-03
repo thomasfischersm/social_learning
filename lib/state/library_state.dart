@@ -36,11 +36,11 @@ class LibraryState extends ChangeNotifier {
 
   Course? get selectedCourse {
     if (_selectedCourse == null &&
-        _availableCourses.isNotEmpty &&
+        availableCourses.isNotEmpty &&
         !_isSelectedCourseInitializedFromDb) {
       var currentCourseId = _applicationState.currentUser?.currentCourseId;
       if (currentCourseId != null) {
-        Course? foundCourse = _availableCourses
+        Course? foundCourse = availableCourses
             .firstWhereOrNull((course) => course.id == currentCourseId.id);
 
         if (foundCourse != null) {

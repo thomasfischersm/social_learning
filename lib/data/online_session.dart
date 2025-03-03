@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum OnlineSessionStatus {
-  waiting,   // 0
-  active,    // 1
+  waiting, // 0
+  active, // 1
   completed, // 2
   cancelled, // 3
 }
@@ -39,6 +39,7 @@ OnlineSessionStatus OnlineSessionStatusFromInt(int code) {
 
 class OnlineSession {
   String? id;
+  DocumentReference courseId;
   String? learnerUid;
   String? mentorUid;
   String? videoCallUrl;
@@ -47,10 +48,11 @@ class OnlineSession {
   Timestamp? created;
   Timestamp? lastActive;
   Timestamp? pairedAt;
-  String? lessonId; // optional reference to the lesson/topic
+  DocumentReference? lessonId; // optional reference to the lesson/topic
 
   OnlineSession({
     this.id,
+    required this.courseId,
     required this.learnerUid,
     this.mentorUid,
     this.videoCallUrl,
@@ -65,6 +67,7 @@ class OnlineSession {
   OnlineSession.fromQuerySnapshot(
       QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
       : id = snapshot.id,
+        courseId = snapshot.data()['courseId'] as DocumentReference,
         learnerUid = snapshot.data()['learnerUid'] as String?,
         mentorUid = snapshot.data()['mentorUid'] as String?,
         videoCallUrl = snapshot.data()['videoCallUrl'] as String?,
@@ -73,11 +76,11 @@ class OnlineSession {
         created = snapshot.data()['created'] as Timestamp?,
         lastActive = snapshot.data()['lastActive'] as Timestamp?,
         pairedAt = snapshot.data()['pairedAt'] as Timestamp?,
-        lessonId = snapshot.data()['lessonId'] as String?;
+        lessonId = snapshot.data()['lessonId'] as DocumentReference?;
 
-  OnlineSession.fromSnapshot(
-      DocumentSnapshot<Map<String, dynamic>> snapshot)
+  OnlineSession.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot)
       : id = snapshot.id,
+        courseId = snapshot.data()!['courseId'] as DocumentReference,
         learnerUid = snapshot.data()?['learnerUid'] as String?,
         mentorUid = snapshot.data()?['mentorUid'] as String?,
         videoCallUrl = snapshot.data()?['videoCallUrl'] as String?,
@@ -86,17 +89,23 @@ class OnlineSession {
         created = snapshot.data()?['created'] as Timestamp?,
         lastActive = snapshot.data()?['lastActive'] as Timestamp?,
         pairedAt = snapshot.data()?['pairedAt'] as Timestamp?,
-        lessonId = snapshot.data()?['lessonId'] as String?;
+        lessonId = snapshot.data()?['lessonId'] as DocumentReference?;
 
   OnlineSession.fromJson(Map<String, dynamic> json)
       : id = json['id'] as String?,
+        courseId = FirebaseFirestore.instance.doc(json['courseId'] as String),
         learnerUid = json['learnerUid'] as String?,
         mentorUid = json['mentorUid'] as String?,
         videoCallUrl = json['videoCallUrl'] as String?,
         isMentorInitiated = json['isMentorInitiated'] as bool,
         status = OnlineSessionStatusFromInt(json['status'] as int),
-        created = json['created'] is Timestamp ? json['created'] as Timestamp : null,
-        lastActive = json['lastActive'] is Timestamp ? json['lastActive'] as Timestamp : null,
-        pairedAt = json['pairedAt'] is Timestamp ? json['pairedAt'] as Timestamp : null,
-        lessonId = json['lessonId'] as String?;
+        created =
+            json['created'] is Timestamp ? json['created'] as Timestamp : null,
+        lastActive = json['lastActive'] is Timestamp
+            ? json['lastActive'] as Timestamp
+            : null,
+        pairedAt = json['pairedAt'] is Timestamp
+            ? json['pairedAt'] as Timestamp
+            : null,
+        lessonId = json['lessonId'] as DocumentReference?;
 }

@@ -102,7 +102,9 @@ class StudentState extends ChangeNotifier {
       'timestamp': FieldValue.serverTimestamp(),
     };
 
-    if (mentee.isGeoLocationEnabled && mentee.location != null && isGraduation) {
+    if (mentee.isGeoLocationEnabled &&
+        mentee.location != null &&
+        isGraduation) {
       data['roughUserLocation'] = mentee.location;
     }
 
@@ -193,7 +195,14 @@ class StudentState extends ChangeNotifier {
 
     // Handle flex lessons.
     const String flexLessonsLevelId = 'flex Lessons';
-    var flexLevelCompletion = LevelCompletion(Level(flexLessonsLevelId, FirebaseFirestore.instance.doc('/courses/${libraryState.selectedCourse!.id}'), 'Flex Lessons', '', 999999, ''));
+    var flexLevelCompletion = LevelCompletion(Level(
+        flexLessonsLevelId,
+        FirebaseFirestore.instance
+            .doc('/courses/${libraryState.selectedCourse!.id}'),
+        'Flex Lessons',
+        '',
+        999999,
+        ''));
     levelCompletions.add(flexLevelCompletion);
     levelIdToCompletionMap[flexLessonsLevelId] = flexLevelCompletion;
 
