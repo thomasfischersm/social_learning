@@ -39,7 +39,8 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
               builder: (context, applicationState, child) {
                 return Consumer<OnlineSessionState>(
                     builder: (context, onlineSessionState, child) {
-                      String? sessionId = onlineSessionState.waitingSession?.id;
+                      String? sessionId = onlineSessionState.activeSession?.id;
+                      print('Active onnline session page has sessionId: $sessionId');
                       if (sessionId == null) {
                         return Center(child: CircularProgressIndicator());
                       } else {
@@ -49,6 +50,7 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
                             stream: OnlineSessionFunctions.getSessionStream(
                                 sessionId),
                             builder: (context, snapshot) {
+                              print('Active page has snapshot: ${snapshot.data}');
                               if (!snapshot.hasData) {
                                 return Center(
                                     child: CircularProgressIndicator());
@@ -73,6 +75,19 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
                               Lesson? lesson = libraryState.findLesson(
                                   session.lessonId!.id);
 
+                              // Navigate away if the session has ended.
+                              if (session.status != OnlineSessionStatus.active) {
+                                // TODO: Redirect to the review page.
+                                onlineSessionState.completeSession();
+                                WidgetsBinding.instance.addPostFrameCallback((
+                                    _) {
+                                  Navigator.pushNamed(
+                                      context,
+                                      NavigationEnum.sessionHome.route);
+                                });
+                                return Container();
+                              }
+
                               String? otherUserUid = session.mentorUid ==
                                   applicationState.currentUser!.uid
                                   ? session.learnerUid
@@ -81,10 +96,12 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
                                   future: UserFunctions.getUserByUid(
                                       otherUserUid!),
                                   builder: (context, userSnapshot) {
+                                    print('Active online session page has other user: ${userSnapshot.data}');
                                     if (!userSnapshot.hasData) {
                                       return Center(
                                           child: CircularProgressIndicator());
                                     } else {
+                                      print('Active session page is ready to render.');
                                       return ActiveOnlineSessionCard(
                                           session: session,
                                           currentUser: applicationState
@@ -107,6 +124,7 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
     
     if (session != null) {
       OnlineSessionFunctions.endSession(session.id!);
+      onlineSessionState.completeSession();
     }
 
     // TODO: Re-direct to get a rating.

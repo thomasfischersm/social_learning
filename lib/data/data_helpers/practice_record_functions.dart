@@ -11,6 +11,7 @@ class PracticeRecordFunctions {
         .where('menteeUid', isEqualTo: menteeUid)
         .where('isGraduation', isEqualTo: true)
         .get();
+    // TODO: Add filter by course Id.
 
     // Map the documents to PracticeRecord instances and extract the lessonId.
     List<DocumentReference> lessonIds = snapshot.docs

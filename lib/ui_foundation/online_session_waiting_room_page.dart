@@ -12,6 +12,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class OnlineSessionWaitingRoomPage extends StatefulWidget {
   const OnlineSessionWaitingRoomPage({super.key});
@@ -20,110 +21,120 @@ class OnlineSessionWaitingRoomPage extends StatefulWidget {
   State<StatefulWidget> createState() => OnlineSessionWaitingRoomState();
 }
 
-class OnlineSessionWaitingRoomState
-    extends State<OnlineSessionWaitingRoomPage> {
+class OnlineSessionWaitingRoomState extends State<OnlineSessionWaitingRoomPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Social Learning'),
-        ),
-        bottomNavigationBar: BottomBarV2.build(context),
-        body: Align(
-          alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(
-            enableScrolling: false,
-            Consumer<ApplicationState>(
-                builder: (context, applicationState, child) {
-              return Consumer<OnlineSessionState>(
-                  builder: (context, onlineSessionState, child) {
-                String? sessionId = onlineSessionState.waitingSession?.id;
-                if (sessionId == null) {
-                  return Center(child: CircularProgressIndicator());
-                } else {
-                  return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                      stream:
-                          OnlineSessionFunctions.getSessionStream(sessionId),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(child: CircularProgressIndicator());
-                        }
+    return VisibilityDetector(
+        key: Key('MyPage'),
+        onVisibilityChanged: (visibilityInfo) {
+          if (visibilityInfo.visibleFraction > 0) {
+            _startTimers(); // Page is visible, start timers
+          } else {
+            _cancelTimers(); // Page is hidden, stop timers
+          }
+        },
+        child:  Scaffold(
+            appBar: AppBar(
+              title: const Text('Social Learning'),
+            ),
+            bottomNavigationBar: BottomBarV2.build(context),
+            body: Align(
+              alignment: Alignment.topCenter,
+              child: CustomUiConstants.framePage(
+                enableScrolling: false,
+                Consumer<ApplicationState>(
+                    builder: (context, applicationState, child) {
+                  return Consumer<OnlineSessionState>(
+                      builder: (context, onlineSessionState, child) {
+                    String? sessionId = onlineSessionState.waitingSession?.id;
+                    if (sessionId == null) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      return StreamBuilder<
+                              DocumentSnapshot<Map<String, dynamic>>>(
+                          stream: OnlineSessionFunctions.getSessionStream(
+                              sessionId),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(child: CircularProgressIndicator());
+                            }
 
-                        // Session no longer exists, so navigate away.
-                        if (!snapshot.data!.exists) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            Navigator.pushNamed(
-                                context, NavigationEnum.sessionHome.route);
-                          });
-                          return Container();
-                        }
+                            // Session no longer exists, so navigate away.
+                            if (!snapshot.data!.exists) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                Navigator.pushNamed(
+                                    context, NavigationEnum.sessionHome.route);
+                              });
+                              return Container();
+                            }
 
-                        // The session has become active, redirect to the active session page.
-                        OnlineSession session =
-                            OnlineSession.fromSnapshot(snapshot.data!);
-                        if (session.status == OnlineSessionStatus.active) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            Navigator.pushNamed(context,
-                                NavigationEnum.onlineSessionActive.route);
-                          });
-                          return Container();
-                        }
+                            // The session has become active, redirect to the active session page.
+                            OnlineSession session =
+                                OnlineSession.fromSnapshot(snapshot.data!);
+                            if (session.status == OnlineSessionStatus.active) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                Navigator.pushNamed(context,
+                                    NavigationEnum.onlineSessionActive.route);
+                              });
+                              return Container();
+                            }
 
-                        String sessionTypeText =
-                            session.isMentorInitiated ? 'Teaching' : 'Learning';
-                        return Column(
-                          children: [
-                            // Header & status.
-                            Text(
-                              'You are in the $sessionTypeText waiting room.',
-                              style: CustomTextStyles.headline,
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 16),
-                            // Status message.
-                            Text(
-                              'Waiting for another student to connect...',
-                              style: CustomTextStyles.subHeadline,
-                              textAlign: TextAlign.center,
-                            ),
-                            SizedBox(height: 32),
-                            Text(
-                              'Video Call URL:',
-                              style: CustomTextStyles.getBody(context),
-                            ),
-                            SizedBox(height: 8),
-                            GestureDetector(
-                              onTap: () => _launchVC(session.videoCallUrl),
-                              child: Text(
-                                session.videoCallUrl ?? 'No URL provided',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  decoration: TextDecoration.underline,
+                            String sessionTypeText = session.isMentorInitiated
+                                ? 'Teaching'
+                                : 'Learning';
+                            return Column(
+                              children: [
+                                // Header & status.
+                                Text(
+                                  'You are in the $sessionTypeText waiting room.',
+                                  style: CustomTextStyles.headline,
+                                  textAlign: TextAlign.center,
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            Spacer(),
-                            // Cancel Session button.
-                            ElevatedButton.icon(
-                              onPressed: _onCancelPressed,
-                              icon: Icon(Icons.cancel),
-                              label: Text('Cancel Session'),
-                              style: ElevatedButton.styleFrom(
-                                // primary: Colors.red, // Red button for cancellation.
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 24, vertical: 12),
-                                textStyle: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ],
-                        );
-                      });
-                }
-              });
-            }),
-          ),
-        ));
+                                SizedBox(height: 16),
+                                // Status message.
+                                Text(
+                                  'Waiting for another student to connect...',
+                                  style: CustomTextStyles.subHeadline,
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 32),
+                                Text(
+                                  'Video Call URL:',
+                                  style: CustomTextStyles.getBody(context),
+                                ),
+                                SizedBox(height: 8),
+                                GestureDetector(
+                                  onTap: () => _launchVC(session.videoCallUrl),
+                                  child: Text(
+                                    session.videoCallUrl ?? 'No URL provided',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Spacer(),
+                                // Cancel Session button.
+                                ElevatedButton.icon(
+                                  onPressed: _onCancelPressed,
+                                  icon: Icon(Icons.cancel),
+                                  label: Text('Cancel Session'),
+                                  style: ElevatedButton.styleFrom(
+                                    // primary: Colors.red, // Red button for cancellation.
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 24, vertical: 12),
+                                    textStyle: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                              ],
+                            );
+                          });
+                    }
+                  });
+                }),
+              ),
+            )));
   }
 
   Future<void> _launchVC(String? videoCallUrl) async {
@@ -147,14 +158,19 @@ class OnlineSessionWaitingRoomState
   @override
   void initState() {
     super.initState();
-    _startIdleTimer();
-    _startHeartbeatTimer();
+    _startTimers();
+    print('started waiting room timers');
   }
 
   @override
   void dispose() {
     _cancelTimers();
     super.dispose();
+  }
+
+  void _startTimers() {
+    _startIdleTimer();
+    _startHeartbeatTimer();
   }
 
   void _startIdleTimer() {
@@ -165,8 +181,8 @@ class OnlineSessionWaitingRoomState
 
   void _startHeartbeatTimer() {
     _heartbeatTimer?.cancel();
-    _heartbeatTimer = Timer.periodic(
-        OnlineSessionFunctions.HEARTBEAT_INTERVAL, (timer) async {
+    _heartbeatTimer = Timer.periodic(OnlineSessionFunctions.HEARTBEAT_INTERVAL,
+        (timer) async {
       OnlineSessionState onlineSessionState =
           Provider.of<OnlineSessionState>(context, listen: false);
       OnlineSession? session = onlineSessionState.waitingSession;
@@ -178,6 +194,7 @@ class OnlineSessionWaitingRoomState
   }
 
   void _cancelTimers() {
+    print('Canceling waiting room timers');
     _idleTimer?.cancel();
     _promptTimer?.cancel();
     _heartbeatTimer?.cancel();

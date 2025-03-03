@@ -238,8 +238,10 @@ class OnlineSessionFunctions {
     List<OnlineSession> activeSessions = waitingSessions.where((session) {
       if (session.lastActive == null) return false;
       DateTime lastActive = session.lastActive!.toDate();
-      return lastActive.isAfter(validSince) &&
+      var isSessionActive = lastActive.isAfter(validSince) &&
           session.status == OnlineSessionStatus.waiting;
+      print('Session ${session.id} is active: $isSessionActive');
+      return isSessionActive;
     }).toList();
 
     // Filter sessions based on the current user's role.
@@ -247,8 +249,8 @@ class OnlineSessionFunctions {
     // For a mentor (waitingRole.mentor): we need sessions initiated by a learner.
     activeSessions = activeSessions.where((session) {
       return waitingRole == WaitingRole.waitingForLearner
-          ? session.isMentorInitiated
-          : !session.isMentorInitiated;
+          ? !session.isMentorInitiated
+          : session.isMentorInitiated;
     }).toList();
 
     // Sort the sessions by creation time (oldest first) so that the one on top of the queue is picked.
@@ -260,8 +262,10 @@ class OnlineSessionFunctions {
 
     // Iterate over the eligible sessions.
     for (OnlineSession session in activeSessions) {
+      print('Considering session: ${session.id}');
       // Ask the external method if the current user can partner on this session.
       DocumentReference? lessonRef = await canPartner(session, context);
+      print('Found suggested lesson: $lessonRef');
       if (lessonRef != null) {
         // A good match is found. Build the update data.
 
@@ -272,13 +276,13 @@ class OnlineSessionFunctions {
         if (waitingRole == WaitingRole.waitingForLearner) {
           // Current user is a learner joining a session initiated by a mentor.
           if (!await pairWithTransaction(context, session.id!, lessonRef,
-              learnerUid: currentUserUid)) {
+              mentorUid: currentUserUid)) {
             continue;
           }
         } else {
           // Current user is a mentor joining a session initiated by a learner.
           if (!await pairWithTransaction(context, session.id!, lessonRef,
-              mentorUid: currentUserUid)) {
+              learnerUid: currentUserUid)) {
             continue;
           }
         }
@@ -297,27 +301,32 @@ class OnlineSessionFunctions {
   static Future<bool> pairWithTransaction(
       BuildContext context, String sessionId, DocumentReference lessonRef,
       {String? learnerUid, String? mentorUid}) async {
+    print('Pairing with session: $sessionId');
     if (learnerUid == null && mentorUid == null) {
       throw Exception('Either learnerUid or mentorUid must be provided.');
     }
 
     // Start transaction.
     bool success = false;
-    FirebaseFirestore.instance.runTransaction((transaction) async {
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
+      print('Start transaction to pair with session: $sessionId');
       var sessionRef = docRef('onlineSessions', sessionId);
       DocumentSnapshot<Map<String, dynamic>> snapshot =
           await transaction.get(sessionRef);
       if (!snapshot.exists) {
-        throw Exception('Session does not exist.');
+        print('Session does not exist.');
+        return;
       }
       OnlineSession session = OnlineSession.fromSnapshot(snapshot);
 
       if (learnerUid != null && session.learnerUid != null) {
-        throw Exception('Session already has a learner.');
+        print('Session already has a learner.');
+        return;
       }
 
       if (mentorUid != null && session.mentorUid != null) {
-        throw Exception('Session already has a mentor.');
+        print('Session already has a mentor.');
+        return;
       }
 
       var data = {
@@ -336,12 +345,11 @@ class OnlineSessionFunctions {
       }
 
       await transaction.update(sessionRef, data);
-    }).then((_) {
       success = true;
-    }).catchError((error) {
-      success = false;
+      print('Transaction completed for session: $sessionId');
     });
 
+    print('Online session pair transaction result: $success');
     if (success) {
       OnlineSession session = await getOnlineSession(sessionId);
       OnlineSessionState onlineSessionState =
@@ -362,7 +370,7 @@ class OnlineSessionFunctions {
         Provider.of<StudentState>(context, listen: false);
 
     // Get uids.
-    String thisStudentUid = applicationState.currentUser!.uid;
+    // String thisStudentUid = applicationState.currentUser!.uid;
     String otherStudentUid =
         session.isMentorInitiated ? session.mentorUid! : session.learnerUid!;
 
@@ -384,12 +392,19 @@ class OnlineSessionFunctions {
             ? thisStudentLessonIds
             : otherStudentLessonIds)
         .toSet();
+    print('Trying pairing. Mentor lesson count: ${mentorLessonIds.length}. Learner lesson count: ${learnerLessonIds.length}');
+
+    for (String lessonId in thisStudentLessonIds) {
+      print('This student lesson: $lessonId');
+    }
 
     List<Lesson>? lessons = libraryState.lessons;
     if (lessons != null) {
       for (Lesson lesson in lessons) {
+        print('Trying to partner lesson: ${lesson.id} ${lesson.title} mentor: ${mentorLessonIds.contains(lesson.id)} learner: ${learnerLessonIds.contains(lesson.id)}; this student: ${thisStudentLessonIds.contains(lesson.id)} other student: ${otherStudentLessonIds.contains(lesson.id)}');
+        // TODO: Handle that admin can teach everything.
         if (mentorLessonIds.contains(lesson.id) &&
-            learnerLessonIds.contains(lesson.id)) {
+            !learnerLessonIds.contains(lesson.id)) {
           return docRef('lessons', lesson.id!);
         }
       }

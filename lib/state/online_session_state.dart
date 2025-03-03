@@ -12,6 +12,7 @@ class OnlineSessionState extends ChangeNotifier {
 
   OnlineSession? _waitingSession;
   OnlineSession? _activeSession;
+  OnlineSession? _pendingReviewSession;
 
   bool isInitialized = false;
   String? courseId = null;
@@ -19,6 +20,8 @@ class OnlineSessionState extends ChangeNotifier {
   OnlineSession? get waitingSession => _waitingSession;
 
   OnlineSession? get activeSession => _activeSession;
+
+  OnlineSession? get pendingReviewSession => _pendingReviewSession;
 
   OnlineSessionState(this.applicationState, this.libraryState) {
     _attemptInit();
@@ -118,6 +121,7 @@ class OnlineSessionState extends ChangeNotifier {
   void completeSession() {
     _waitingSession = null;
     _activeSession = null;
+    // TODO: Keep session around to be reviewed.
     notifyListeners();
   }
 

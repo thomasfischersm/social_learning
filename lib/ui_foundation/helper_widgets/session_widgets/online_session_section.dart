@@ -25,6 +25,11 @@ class OnlineSessionSection extends StatefulWidget {
 class OnlineSessionSectionState extends State<OnlineSessionSection> {
   @override
   Widget build(BuildContext context) {
+    // Make sure to init StudentState, in case the user went directly to this
+    // page.
+    StudentState studentState = Provider.of<StudentState>(context, listen: false);
+    studentState.getGraduatedLessonIds();
+
     return CustomCard(
       title: 'Immediate 1:1 Online Sessions',
       child: Column(
@@ -56,6 +61,7 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
   }
 
   void _onTeachNowPressed(List<OnlineSession>? sessionQueue) async {
+    print('Teach Now pressed. Queue size: ${sessionQueue?.length}');
     if (sessionQueue != null) {
       OnlineSession? newSession =
           await OnlineSessionFunctions.tryPairWithWaitingSession(
@@ -271,11 +277,11 @@ class OnlineSessionInitiationWidget extends StatelessWidget {
     final String roleLabel;
     final String buttonLabel;
     if (waitingRole == WaitingRole.waitingForLearner) {
-      stream = OnlineSessionFunctions.listenSessionsAwaitingLearner(context);
+      stream = OnlineSessionFunctions.listenSessionsAwaitingMentor(context);
       roleLabel = 'learner';
       buttonLabel = 'Teach Now';
     } else {
-      stream = OnlineSessionFunctions.listenSessionsAwaitingMentor(context);
+      stream = OnlineSessionFunctions.listenSessionsAwaitingLearner(context);
       roleLabel = 'mentor';
       buttonLabel = 'Learn Now';
     }
