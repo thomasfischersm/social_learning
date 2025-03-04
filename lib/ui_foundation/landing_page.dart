@@ -14,6 +14,7 @@ class LandingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
         child: CustomUiConstants.framePage(
+            enableAuthGuard: false,
             Column(
               children: [
                 AutoSignInWidget(),
@@ -36,12 +37,14 @@ class LandingPage extends StatelessWidget {
                   'Benefits:',
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
-                Text('• Learn from a peer. Ask questions. Get guidance.\n'
-                    '• Skip the isolation/frustration of learning alone.\n'
-                    '• Deepen your mastery by teaching.',
-                    // '\n'
-                    // 'Available for in-person and online!',
-                  style: Theme.of(context).textTheme.bodyLarge,),
+                Text(
+                  '• Learn from a peer. Ask questions. Get guidance.\n'
+                  '• Skip the isolation/frustration of learning alone.\n'
+                  '• Deepen your mastery by teaching.',
+                  // '\n'
+                  // 'Available for in-person and online!',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
                 const Spacer(),
                 Text(
                   'The Learning Revolution is here!',
