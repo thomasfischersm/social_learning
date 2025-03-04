@@ -113,16 +113,26 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
       barrierDismissible: false, // Force the user to choose Cancel or confirm.
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
-          // Validation function for the URL.
-          String? _validateUrl(String? value) {
+          String? _validateMeetingUrl(String? value) {
             if (value == null || value.isEmpty) {
               return 'Please enter a URL';
             }
-            if (!value.contains('meet.google.com') &&
-                !value.contains('zoom.us')) {
-              return 'URL must be a Google Meet or Zoom link';
+
+            final uri = Uri.tryParse(value);
+            if (uri == null || !uri.hasScheme || !uri.hasAuthority) {
+              return 'Invalid URL';
             }
-            return null;
+            if (uri.scheme != 'https') {
+              return 'URL must start with https';
+            }
+
+            final host = uri.host.toLowerCase();
+            // Check for Google Meet
+            if (host == 'meet.google.com') return null;
+            // Check for Zoom: allow zoom.us and its subdomains (e.g., us02web.zoom.us)
+            if (host == 'zoom.us' || host.endsWith('.zoom.us')) return null;
+
+            return 'URL must be a Google Meet or Zoom link';
           }
 
           return AlertDialog(
@@ -149,7 +159,7 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
                     hintText: 'https://meet.google.com/… or https://zoom.us/…',
                   ),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: _validateUrl,
+                  validator: _validateMeetingUrl,
                   onChanged: (value) {
                     setState(() {
                       isValid = _formKey.currentState?.validate() ?? false;

@@ -42,7 +42,7 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
                       String? sessionId = onlineSessionState.activeSession?.id;
                       print('Active onnline session page has sessionId: $sessionId');
                       if (sessionId == null) {
-                        return Center(child: CircularProgressIndicator());
+                        return Center(child: CircularProgressIndicator(color: Colors.red));
                       } else {
                         return StreamBuilder<DocumentSnapshot<Map<
                             String,
@@ -53,7 +53,7 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
                               print('Active page has snapshot: ${snapshot.data}');
                               if (!snapshot.hasData) {
                                 return Center(
-                                    child: CircularProgressIndicator());
+                                    child: CircularProgressIndicator(color: Colors.yellow));
                               }
 
                               // Session no longer exists, so navigate away.
@@ -99,7 +99,7 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
                                     print('Active online session page has other user: ${userSnapshot.data}');
                                     if (!userSnapshot.hasData) {
                                       return Center(
-                                          child: CircularProgressIndicator());
+                                          child: CircularProgressIndicator(color: Colors.pink));
                                     } else {
                                       print('Active session page is ready to render.');
                                       return ActiveOnlineSessionCard(

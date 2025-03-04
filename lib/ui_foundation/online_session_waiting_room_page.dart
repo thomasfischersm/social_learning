@@ -73,6 +73,11 @@ class OnlineSessionWaitingRoomState extends State<OnlineSessionWaitingRoomPage> 
                                 OnlineSession.fromSnapshot(snapshot.data!);
                             if (session.status == OnlineSessionStatus.active) {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
+                                OnlineSessionState onlineSessionState =
+                                    Provider.of<OnlineSessionState>(context,
+                                        listen: false);
+                                onlineSessionState.setActiveSession(session);
+
                                 Navigator.pushNamed(context,
                                     NavigationEnum.onlineSessionActive.route);
                               });
