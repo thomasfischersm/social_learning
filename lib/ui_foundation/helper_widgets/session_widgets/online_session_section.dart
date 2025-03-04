@@ -11,6 +11,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/custom_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/session_widgets/online_session_section.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -27,7 +28,8 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
   Widget build(BuildContext context) {
     // Make sure to init StudentState, in case the user went directly to this
     // page.
-    StudentState studentState = Provider.of<StudentState>(context, listen: false);
+    StudentState studentState =
+        Provider.of<StudentState>(context, listen: false);
     studentState.getGraduatedLessonIds();
 
     return CustomCard(
@@ -62,6 +64,18 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
 
   void _onTeachNowPressed(List<OnlineSession>? sessionQueue) async {
     print('Teach Now pressed. Queue size: ${sessionQueue?.length}');
+
+    StudentState studentState =
+        Provider.of<StudentState>(context, listen: false);
+    if (!studentState.canTeachInCurrentCourse()) {
+      DialogUtils.showInfoDialog(
+          context,
+          'Before teaching',
+          'Before you can teach, you must learn and graduate at least one lesson.',
+          () {});
+      return;
+    }
+
     if (sessionQueue != null) {
       OnlineSession? newSession =
           await OnlineSessionFunctions.tryPairWithWaitingSession(

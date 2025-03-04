@@ -33,4 +33,31 @@ class DialogUtils {
       },
     );
   }
+
+  static Future<void> showInfoDialog(
+      BuildContext context,
+      String title,
+      String body,
+      VoidCallback onConfirm,
+      ) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(body),
+          actions: <Widget>[
+            ElevatedButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                onConfirm(); // Call the provided action
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }

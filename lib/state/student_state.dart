@@ -57,7 +57,7 @@ class StudentState extends ChangeNotifier {
       });
 
       _libraryState.addListener(
-            () {
+        () {
           UserFunctions.updateCourseProficiency(
               _applicationState, _libraryState, this);
 
@@ -336,6 +336,25 @@ class StudentState extends ChangeNotifier {
     }
 
     return graduatedLessonIds;
+  }
+
+  bool canTeachInCurrentCourse() {
+    if (!_libraryState.isCourseSelected) {
+      return false;
+    }
+
+    _init();
+
+    Course? selectedCourse = _libraryState.selectedCourse;
+    if (selectedCourse == null) {
+      return false;
+    }
+
+    return _learnRecords?.any((element) =>
+            element.isGraduation &&
+            (_libraryState.findLesson(element.lessonId.id)?.courseId.id ==
+                selectedCourse.id)) ??
+        false;
   }
 }
 

@@ -22,7 +22,7 @@ extension OnlineSessionStatusExtension on OnlineSessionStatus {
   }
 }
 
-OnlineSessionStatus OnlineSessionStatusFromInt(int code) {
+OnlineSessionStatus onlineSessionStatusFromInt(int code) {
   switch (code) {
     case 0:
       return OnlineSessionStatus.waiting;
@@ -49,6 +49,8 @@ class OnlineSession {
   Timestamp? lastActive;
   Timestamp? pairedAt;
   DocumentReference? lessonId; // optional reference to the lesson/topic
+  // TODO: Add learned lessons so that we don't have to load them during the
+  // pairing process.
 
   OnlineSession({
     this.id,
@@ -72,7 +74,7 @@ class OnlineSession {
         mentorUid = snapshot.data()['mentorUid'] as String?,
         videoCallUrl = snapshot.data()['videoCallUrl'] as String?,
         isMentorInitiated = snapshot.data()['isMentorInitiated'] as bool,
-        status = OnlineSessionStatusFromInt(snapshot.data()['status'] as int),
+        status = onlineSessionStatusFromInt(snapshot.data()['status'] as int),
         created = snapshot.data()['created'] as Timestamp?,
         lastActive = snapshot.data()['lastActive'] as Timestamp?,
         pairedAt = snapshot.data()['pairedAt'] as Timestamp?,
@@ -85,7 +87,7 @@ class OnlineSession {
         mentorUid = snapshot.data()?['mentorUid'] as String?,
         videoCallUrl = snapshot.data()?['videoCallUrl'] as String?,
         isMentorInitiated = snapshot.data()?['isMentorInitiated'] as bool,
-        status = OnlineSessionStatusFromInt(snapshot.data()?['status'] as int),
+        status = onlineSessionStatusFromInt(snapshot.data()?['status'] as int),
         created = snapshot.data()?['created'] as Timestamp?,
         lastActive = snapshot.data()?['lastActive'] as Timestamp?,
         pairedAt = snapshot.data()?['pairedAt'] as Timestamp?,
@@ -98,7 +100,7 @@ class OnlineSession {
         mentorUid = json['mentorUid'] as String?,
         videoCallUrl = json['videoCallUrl'] as String?,
         isMentorInitiated = json['isMentorInitiated'] as bool,
-        status = OnlineSessionStatusFromInt(json['status'] as int),
+        status = onlineSessionStatusFromInt(json['status'] as int),
         created =
             json['created'] is Timestamp ? json['created'] as Timestamp : null,
         lastActive = json['lastActive'] is Timestamp
