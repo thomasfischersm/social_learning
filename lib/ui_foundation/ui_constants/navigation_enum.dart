@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 
 enum NavigationEnum {
   landing('/landing'),
@@ -24,5 +25,11 @@ enum NavigationEnum {
   createCourse('/create_course');
 
   final String route;
+
   const NavigationEnum(this.route);
+
+  void navigateClean(BuildContext context) {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+        route, (route) => route.settings.name == NavigationEnum.home.route);
+  }
 }

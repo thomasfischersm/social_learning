@@ -205,7 +205,7 @@ class BottomBarV2 {
 
     // Home
     if (index == 0) {
-      Navigator.of(context).pushNamed(NavigationEnum.home.route);
+      Navigator.of(context).pushNamedAndRemoveUntil(NavigationEnum.home.route, (route) => false);
       return;
     } else {
       index--;
@@ -215,7 +215,7 @@ class BottomBarV2 {
     if (isLessonsVisible) {
       if (index == 0) {
         print('Navigating from the bottom bar to the level list page.');
-        Navigator.of(context).pushNamed(NavigationEnum.levelList.route);
+        NavigationEnum.levelList.navigateClean(context);
         return;
       } else {
         index--;
@@ -225,7 +225,7 @@ class BottomBarV2 {
     // CMS
     if (isManageVisible) {
       if (index == 0) {
-        Navigator.of(context).pushNamed(NavigationEnum.cmsSyllabus.route);
+        NavigationEnum.cmsSyllabus.navigateClean(context);
         return;
       } else {
         index--;
@@ -235,13 +235,13 @@ class BottomBarV2 {
     // Sessions
     if (isSessionsVisible) {
       if (index == 0) {
-        Navigator.of(context).pushNamed(_getSessionNavigationTarget(
+        _getSessionNavigationTarget(
           context,
                 applicationState,
                 libraryState,
                 studentSessionState,
                 organizerSessionState)
-            .route);
+            .navigateClean(context);
         return;
       } else {
         index--;
@@ -251,7 +251,7 @@ class BottomBarV2 {
     // Profile
     if (isProfileVisible) {
       if (index == 0) {
-        Navigator.of(context).pushNamed(NavigationEnum.profile.route);
+        NavigationEnum.profile.navigateClean(context);
         return;
       } else {
         index--;
