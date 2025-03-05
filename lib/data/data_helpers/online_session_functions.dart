@@ -5,6 +5,7 @@ import 'package:social_learning/data/data_helpers/practice_record_functions.dart
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/online_session.dart';
+import 'package:social_learning/data/online_session_review.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/online_session_state.dart';
@@ -55,10 +56,9 @@ class OnlineSessionFunctions {
     return OnlineSession.fromSnapshot(snapshot);
   }
 
-  static Stream<DocumentSnapshot<Map<String, dynamic>>> getSessionStream(String sessionId) {
-    return _onlineSessionsCollection
-        .doc(sessionId)
-        .snapshots();
+  static Stream<DocumentSnapshot<Map<String, dynamic>>> getSessionStream(
+      String sessionId) {
+    return _onlineSessionsCollection.doc(sessionId).snapshots();
   }
 
   /// Listens to sessions awaiting a mentor.
@@ -392,7 +392,8 @@ class OnlineSessionFunctions {
             ? thisStudentLessonIds
             : otherStudentLessonIds)
         .toSet();
-    print('Trying pairing. Mentor lesson count: ${mentorLessonIds.length}. Learner lesson count: ${learnerLessonIds.length}');
+    print(
+        'Trying pairing. Mentor lesson count: ${mentorLessonIds.length}. Learner lesson count: ${learnerLessonIds.length}');
 
     for (String lessonId in thisStudentLessonIds) {
       print('This student lesson: $lessonId');
@@ -401,7 +402,8 @@ class OnlineSessionFunctions {
     List<Lesson>? lessons = libraryState.lessons;
     if (lessons != null) {
       for (Lesson lesson in lessons) {
-        print('Trying to partner lesson: ${lesson.id} ${lesson.title} mentor: ${mentorLessonIds.contains(lesson.id)} learner: ${learnerLessonIds.contains(lesson.id)}; this student: ${thisStudentLessonIds.contains(lesson.id)} other student: ${otherStudentLessonIds.contains(lesson.id)}');
+        print(
+            'Trying to partner lesson: ${lesson.id} ${lesson.title} mentor: ${mentorLessonIds.contains(lesson.id)} learner: ${learnerLessonIds.contains(lesson.id)}; this student: ${thisStudentLessonIds.contains(lesson.id)} other student: ${otherStudentLessonIds.contains(lesson.id)}');
         // TODO: Handle that admin can teach everything.
         if (mentorLessonIds.contains(lesson.id) &&
             !learnerLessonIds.contains(lesson.id)) {
@@ -411,5 +413,28 @@ class OnlineSessionFunctions {
     }
 
     return null;
+  }
+
+  static Future<OnlineSessionReview?> getPendingReview(
+      String currentUserUid, String courseId) async {
+    // try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+          .instance
+          .collection('onlineSessionReviews')
+          .where('courseId', isEqualTo: docRef('courses', courseId))
+          .where('reviewerUid', isEqualTo: currentUserUid)
+          .where('isPending', isEqualTo: true)
+          .get();
+
+
+    if (snapshot.docs.isEmpty) {
+      return null;
+    }
+
+    return OnlineSessionReview.fromSnapshot(snapshot.docs.first);
+    // } catch(e) {
+    //   print('Error getting pending review: $e');
+    //   rethrow;
+    // }
   }
 }

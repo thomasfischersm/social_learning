@@ -23,7 +23,9 @@ enum NavigationEnum {
   onlineSessionWaitingRoom('/online_session_waiting_room'),
   onlineSessionActive('/online_session_active'),
   createCourse('/create_course'),
-  codeOfConduct('/code_of_conduct'),;
+  codeOfConduct('/code_of_conduct'),
+  onlineSessionReview('/online_session_review'),
+  ;
 
   final String route;
 

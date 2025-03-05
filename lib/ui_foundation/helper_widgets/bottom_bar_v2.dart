@@ -14,7 +14,7 @@ class BottomBarV2 {
             builder: (context, libraryState, child) =>
                 Consumer<StudentSessionState>(
                     builder: (context, studentSessionState, child) =>
-                          Consumer<OrganizerSessionState>(
+                        Consumer<OrganizerSessionState>(
                             builder: (context, organizerSessionState, child) {
                           bool isLessonsVisible =
                               libraryState.isCourseSelected &&
@@ -29,15 +29,15 @@ class BottomBarV2 {
                           bool isProfileVisible = applicationState.isLoggedIn;
 
                           var currentIndex = _determineCurrentIndex(
-                                context,
-                                applicationState,
-                                libraryState,
-                                studentSessionState,
-                                organizerSessionState,
-                                isLessonsVisible,
-                                isManageVisible,
-                                isSessionsVisible,
-                                isProfileVisible);
+                              context,
+                              applicationState,
+                              libraryState,
+                              studentSessionState,
+                              organizerSessionState,
+                              isLessonsVisible,
+                              isManageVisible,
+                              isSessionsVisible,
+                              isProfileVisible);
 
                           return BottomNavigationBar(
                             items: [
@@ -78,7 +78,9 @@ class BottomBarV2 {
                                 isManageVisible,
                                 isSessionsVisible,
                                 isProfileVisible),
-                            selectedItemColor: currentIndex == -1 ? Theme.of(context).hintColor : Theme.of(context).primaryColor,
+                            selectedItemColor: currentIndex == -1
+                                ? Theme.of(context).hintColor
+                                : Theme.of(context).primaryColor,
                             unselectedItemColor: Theme.of(context).hintColor,
                           );
                         }))));
@@ -95,16 +97,22 @@ class BottomBarV2 {
 
     OnlineSessionState onlineSessionState =
         Provider.of<OnlineSessionState>(context, listen: false);
-    print('online session state: waiting session ${onlineSessionState.waitingSession}, active session ${onlineSessionState.activeSession}');
+    print(
+        'online session state: waiting session ${onlineSessionState.waitingSession}, active session ${onlineSessionState.activeSession}');
 
     if (organizerSessionState.currentSession != null) {
       return NavigationEnum.sessionHost;
     } else if (studentSessionState.currentSession != null) {
       return NavigationEnum.sessionStudent;
-    } else if (onlineSessionState.isInitialized && onlineSessionState.waitingSession != null) {
+    } else if (onlineSessionState.isInitialized &&
+        onlineSessionState.waitingSession != null) {
       return NavigationEnum.onlineSessionWaitingRoom;
-    } else if (onlineSessionState.isInitialized && onlineSessionState.activeSession != null) {
+    } else if (onlineSessionState.isInitialized &&
+        onlineSessionState.activeSession != null) {
       return NavigationEnum.onlineSessionActive;
+    } else if (onlineSessionState.isInitialized &&
+        onlineSessionState.pendingReview != null) {
+      return NavigationEnum.onlineSessionReview;
     } else if (libraryState.isCourseSelected && applicationState.isLoggedIn) {
       return NavigationEnum.sessionHome;
     } else {
@@ -152,6 +160,8 @@ class BottomBarV2 {
           NavigationEnum.sessionStudent.route,
           NavigationEnum.onlineSessionWaitingRoom.route,
           NavigationEnum.onlineSessionActive.route,
+          NavigationEnum.codeOfConduct.route,
+          NavigationEnum.onlineSessionReview.route,
         }.contains(currentRoute)) {
       return 1 + (isLessonsVisible ? 1 : 0) + (isManageVisible ? 1 : 0);
     } else if (isProfileVisible &&
@@ -205,7 +215,8 @@ class BottomBarV2 {
 
     // Home
     if (index == 0) {
-      Navigator.of(context).pushNamedAndRemoveUntil(NavigationEnum.home.route, (route) => false);
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(NavigationEnum.home.route, (route) => false);
       return;
     } else {
       index--;
@@ -235,12 +246,8 @@ class BottomBarV2 {
     // Sessions
     if (isSessionsVisible) {
       if (index == 0) {
-        _getSessionNavigationTarget(
-          context,
-                applicationState,
-                libraryState,
-                studentSessionState,
-                organizerSessionState)
+        _getSessionNavigationTarget(context, applicationState, libraryState,
+                studentSessionState, organizerSessionState)
             .navigateClean(context);
         return;
       } else {

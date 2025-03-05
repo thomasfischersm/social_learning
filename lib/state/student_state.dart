@@ -283,25 +283,30 @@ class StudentState extends ChangeNotifier {
   }
 
   int getLessonsLearned(Course course, LibraryState libraryState) {
+    _init();
+
     int learnCount = 0;
 
     Set<String> alreadyCountedLessonIds = {};
 
-    for (PracticeRecord record in _learnRecords!) {
-      Lesson? lesson = libraryState.lessons
-          ?.firstWhereOrNull((element) => element.id == record.lessonId.id);
+    var learnRecords = _learnRecords;
+    if (learnRecords != null) {
+      for (PracticeRecord record in learnRecords) {
+        Lesson? lesson = libraryState.lessons
+            ?.firstWhereOrNull((element) => element.id == record.lessonId.id);
 
-      if ((lesson == null) || (lesson.courseId.id != course.id)) {
-        continue;
-      }
+        if ((lesson == null) || (lesson.courseId.id != course.id)) {
+          continue;
+        }
 
-      if (alreadyCountedLessonIds.contains(lesson.id)) {
-        continue;
-      }
+        if (alreadyCountedLessonIds.contains(lesson.id)) {
+          continue;
+        }
 
-      if (record.isGraduation) {
-        alreadyCountedLessonIds.add(lesson.id!);
-        learnCount++;
+        if (record.isGraduation) {
+          alreadyCountedLessonIds.add(lesson.id!);
+          learnCount++;
+        }
       }
     }
     return learnCount;

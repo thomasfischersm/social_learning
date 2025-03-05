@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/online_session_functions.dart';
+import 'package:social_learning/data/data_helpers/online_session_review_functions.dart';
 import 'package:social_learning/data/online_session.dart';
+import 'package:social_learning/data/online_session_review.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 
@@ -12,21 +14,22 @@ class OnlineSessionState extends ChangeNotifier {
 
   OnlineSession? _waitingSession;
   OnlineSession? _activeSession;
-  OnlineSession? _pendingReviewSession;
+  OnlineSessionReview? _pendingReview;
 
   bool isInitialized = false;
-  String? courseId = null;
+  String? _courseId = null;
 
   OnlineSession? get waitingSession => _waitingSession;
 
   OnlineSession? get activeSession => _activeSession;
 
-  OnlineSession? get pendingReviewSession => _pendingReviewSession;
+  OnlineSessionReview? get pendingReview => _pendingReview;
 
   OnlineSessionState(this.applicationState, this.libraryState) {
     _attemptInit();
 
     applicationState.addListener(() {
+      print('OnlineSessionState received applicationState change');
       _attemptInit();
       if (applicationState.currentUser == null) {
         signOut();
@@ -34,9 +37,10 @@ class OnlineSessionState extends ChangeNotifier {
     });
 
     libraryState.addListener(() {
+      print('OnlineSessionState received libraryState change');
       String? newCourseId = libraryState.selectedCourse?.id;
-      if (newCourseId != courseId) {
-        courseId = newCourseId;
+      if (newCourseId != _courseId) {
+        _courseId = newCourseId;
 
         // Cancel waiting session.
         if (_waitingSession != null) {
@@ -44,21 +48,27 @@ class OnlineSessionState extends ChangeNotifier {
         }
 
         _loadSessions();
+        _loadPendingReview();
       }
     });
   }
 
   void _attemptInit() {
+    print('OnlineSessionState._attemptInit: isInitialized: $isInitialized, currentUser: ${applicationState.currentUser}');
     if (!isInitialized && (applicationState.currentUser != null)) {
       isInitialized = true;
+
+      _courseId = libraryState.selectedCourse?.id;
+
       _loadSessions();
+      _loadPendingReview();
 
       notifyListeners();
     }
   }
 
   void _loadSessions() async {
-    String? localCourseId = courseId;
+    String? localCourseId = _courseId;
     if (localCourseId == null) {
       _waitingSession = null;
       _activeSession = null;
@@ -102,6 +112,23 @@ class OnlineSessionState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> _loadPendingReview() async {
+    String? localCourseId = _courseId;
+    if (localCourseId == null) {
+      print('OnlineSessionState._loadPendingReview: No course selected.');
+      _pendingReview = null;
+      notifyListeners();
+      return;
+    }
+
+    print('Attempt to load pending review for course $localCourseId');
+    String currentUserUid = applicationState.currentUser!.uid;
+    _pendingReview = await OnlineSessionFunctions.getPendingReview(
+        currentUserUid, localCourseId);
+    notifyListeners();
+    print('Succeeded to load pending review for course $localCourseId, review: $pendingReview');
+  }
+
   /// Called when a session enters the waiting state.
   /// This sets the waitingSession and clears any activeSession.
   void setWaitingSession(OnlineSession? session) {
@@ -118,10 +145,17 @@ class OnlineSessionState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void completeSession() {
+  Future<void> completeSession() async {
     _waitingSession = null;
     _activeSession = null;
-    // TODO: Keep session around to be reviewed.
+
+    await _loadPendingReview();
+
+    notifyListeners();
+  }
+
+  void completeReview() {
+    _pendingReview = null;
     notifyListeners();
   }
 

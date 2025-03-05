@@ -39,12 +39,11 @@ class SessionHomePageState extends State<SessionHomePage> {
                       )),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   // Bottom section: online session section (fixed at bottom).
-                  if (true)
-                    Flexible(
-                        flex: 1,
-                        child: const Column(
-                          children: [OnlineSessionSection()],
-                        )),
+                  Flexible(
+                      flex: 1,
+                      child: const Column(
+                        children: [OnlineSessionSection()],
+                      )),
                 ],
               );
             }
