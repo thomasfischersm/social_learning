@@ -22,11 +22,16 @@ enum NavigationEnum {
   sessionStudent('/session_student'),
   onlineSessionWaitingRoom('/online_session_waiting_room'),
   onlineSessionActive('/online_session_active'),
-  createCourse('/create_course');
+  createCourse('/create_course'),
+  codeOfConduct('/code_of_conduct'),;
 
   final String route;
 
   const NavigationEnum(this.route);
+
+  void navigate(BuildContext context) {
+    Navigator.of(context).pushNamed(route);
+  }
 
   void navigateClean(BuildContext context) {
     Navigator.of(context).pushNamedAndRemoveUntil(

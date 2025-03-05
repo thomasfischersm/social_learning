@@ -56,6 +56,11 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
                   onClick: _onLearnNowPressed),
             ],
           ),
+          Center(
+              child: InkWell(
+                  onTap: () => NavigationEnum.codeOfConduct.navigate(context),
+                  child: Text('Read the Code of Conduct',
+                      style: CustomTextStyles.getLink(context)))),
           const SizedBox(height: 16),
         ],
       ),

@@ -30,10 +30,11 @@ class CustomTextStyles {
   static TextStyle? getFullyLearned(BuildContext context) =>
       getBody(context)?.copyWith(color: fullyLearnedColor);
 
-  static TextStyle? getLink(BuildContext context) => getBody(context)
-      ?.copyWith(color: Colors.blue, decoration: TextDecoration.underline);
+  static TextStyle? getLink(BuildContext context) => getBody(context)?.copyWith(
+      color: Colors.blue,
+      decoration: TextDecoration.underline,
+      decorationColor: Colors.blue);
 
-
-  static TextStyle? getLinkNoUnderline(BuildContext context) => getBody(context)
-      ?.copyWith(color: Colors.blue);
+  static TextStyle? getLinkNoUnderline(BuildContext context) =>
+      getBody(context)?.copyWith(color: Colors.blue);
 }
