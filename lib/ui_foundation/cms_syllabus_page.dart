@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
@@ -8,6 +7,7 @@ import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/edit_level_title_dialog.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/one_time_banner.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -33,10 +33,20 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
     }
 
     return Scaffold(
-        appBar: AppBar(title:
-            Consumer<LibraryState>(builder: (context, libraryState, child) {
-          return Text('${libraryState.selectedCourse?.title} Curriculum');
-        })),
+        appBar: AppBar(
+          title:
+              Consumer<LibraryState>(builder: (context, libraryState, child) {
+            return Text('${libraryState.selectedCourse?.title} Curriculum');
+          }),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.bar_chart),
+              tooltip: 'Instructor Dashboard',
+              onPressed: () =>
+                  NavigationEnum.instructorDashBoard.navigateClean(context),
+            ),
+          ],
+        ),
         bottomNavigationBar: BottomBarV2.build(context),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -54,30 +64,40 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
           child: CustomUiConstants.framePage(Consumer<LibraryState>(
               builder: (context, libraryState, child) => Consumer<StudentState>(
                       builder: (context, studentState, child) {
-                    return SingleChildScrollView(
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomUiConstants.getTextPadding(Text(
-                          '${libraryState.selectedCourse?.title} Curriculum',
-                          style: CustomTextStyles.headline,
-                        )),
-                        if (libraryState.selectedCourse?.invitationCode != null)
-                          CustomUiConstants.getTextPadding(Text(
-                              'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
-                              style: CustomTextStyles.getBody(context))),
-                        generateLevelList(context, libraryState),
-                        InkWell(
-                            onTap: () {
-                              _addLevel(context, libraryState);
-                            },
-                            child: Text('Add level',
-                                style: CustomTextStyles.getLinkNoUnderline(
-                                    context))),
-                        _generateUnattachedLessons(context, libraryState),
-                        CustomUiConstants.getGeneralFooter(context)
-                      ],
-                    ));
+                    return  OneTimeBanner(
+                        prefsKey: 'instructorDashboardHint',
+                        message:
+                        'Tap the chart icon above to open your Instructor Dashboard.',
+                        leading: Icon(Icons.bar_chart, color: Colors.blue),
+                        child: SingleChildScrollView(
+                        child:Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomUiConstants.getTextPadding(Text(
+                                  '${libraryState.selectedCourse?.title} Curriculum',
+                                  style: CustomTextStyles.headline,
+                                )),
+                                if (libraryState
+                                        .selectedCourse?.invitationCode !=
+                                    null)
+                                  CustomUiConstants.getTextPadding(Text(
+                                      'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
+                                      style:
+                                          CustomTextStyles.getBody(context))),
+                                generateLevelList(context, libraryState),
+                                InkWell(
+                                    onTap: () {
+                                      _addLevel(context, libraryState);
+                                    },
+                                    child: Text('Add level',
+                                        style:
+                                            CustomTextStyles.getLinkNoUnderline(
+                                                context))),
+                                _generateUnattachedLessons(
+                                    context, libraryState),
+                                CustomUiConstants.getGeneralFooter(context)
+                              ],
+                            )));
                   }))),
         ));
   }

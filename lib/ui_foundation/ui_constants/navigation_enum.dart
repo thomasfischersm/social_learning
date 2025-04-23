@@ -25,6 +25,7 @@ enum NavigationEnum {
   createCourse('/create_course'),
   codeOfConduct('/code_of_conduct'),
   onlineSessionReview('/online_session_review'),
+  instructorDashBoard('/instructor_dashboard'),
   ;
 
   final String route;

@@ -17,6 +17,7 @@ import 'package:social_learning/ui_foundation/cms_syllabus_page.dart';
 import 'package:social_learning/ui_foundation/code_of_conduct_page.dart';
 import 'package:social_learning/ui_foundation/course_create_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
+import 'package:social_learning/ui_foundation/instructor_dashboard_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
@@ -120,6 +121,7 @@ class SocialLearningApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Ovo',
       ),
+      debugShowCheckedModeBanner: false,
       initialRoute: '/landing',
       routes: {
         '/landing': (context) => const LandingPage(),
@@ -148,6 +150,8 @@ class SocialLearningApp extends StatelessWidget {
         '/online_session_review': (context) => const OnlineSessionReviewPage(),
         '/create_course': (context) => const CourseCreatePage(),
         '/code_of_conduct': (context) => const CodeOfConductPage(),
+        '/instructor_dashboard': (context) =>
+            const InstructorDashboardPage(),
       },
     );
   }
