@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/online_session.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
@@ -79,74 +78,56 @@ class ActiveOnlineSessionCard extends StatelessWidget {
 
   /// Builds the partner column showing the partner's profile image and display name.
   Widget _buildPartnerColumn(BuildContext context) {
-    if (partner != null) {
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: ProfileImageWidget(
-                partner!,
-                context,
-                linkToOtherProfile: true,
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: ProfileImageWidget(
+              partner,
+              context,
+              linkToOtherProfile: true,
             ),
-            SizedBox(height: 8),
-            Text(
-              partner!.displayName,
-              style: CustomTextStyles.getBody(context),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    } else {
-      return Center(
-        child: Text(
-          '<Partner not assigned>',
-          style: CustomTextStyles.getBody(context),
-        ),
-      );
+          ),
+          SizedBox(height: 8),
+          Text(
+            partner.displayName,
+            style: CustomTextStyles.getBody(context),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
     }
-  }
 
   /// Builds the lesson column showing the proposed lesson.
   /// The lesson is tappable and navigates to the lesson detail page.
   Widget _buildLessonColumn(BuildContext context) {
-    if (lesson != null) {
-      return InkWell(
-        onTap: () {
-          // Navigate to the lesson detail page.
-          LessonDetailArgument.goToLessonDetailPage(context, lesson!.id!);
-        },
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (lesson!.coverFireStoragePath != null)
-              Align(
-                alignment: Alignment.topRight,
-                child: LessonCoverImageWidget(lesson!.coverFireStoragePath),
-              ),
-            SizedBox(height: 8),
-            Text(
-              lesson!.title,
-              style: CustomTextStyles.getBody(context),
-              textAlign: TextAlign.center,
+    return InkWell(
+      onTap: () {
+        // Navigate to the lesson detail page.
+        LessonDetailArgument.goToLessonDetailPage(context, lesson.id!);
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (lesson.coverFireStoragePath != null)
+            Align(
+              alignment: Alignment.topRight,
+              child: LessonCoverImageWidget(lesson.coverFireStoragePath),
             ),
-          ],
-        ),
-      );
-    } else {
-      return Center(
-        child: Text(
-          '<No lesson assigned>',
-          style: CustomTextStyles.getBody(context),
-        ),
-      );
+          SizedBox(height: 8),
+          Text(
+            lesson.title,
+            style: CustomTextStyles.getBody(context),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
     }
-  }
 
   /// Builds the main content of the card.
   /// It arranges the partner profile column and the lesson column side by side.

@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/online_session_functions.dart';
-import 'package:social_learning/data/data_helpers/practice_record_functions.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
-import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/online_session.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
@@ -12,7 +10,6 @@ import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/custom_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/session_widgets/online_session_section.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
@@ -123,8 +120,8 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
     BuildContext context,
     WaitingRole waitingRole,
   ) {
-    final TextEditingController _controller = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
+    final TextEditingController controller = TextEditingController();
+    final formKey = GlobalKey<FormState>();
     bool isValid = false;
 
     return showDialog<String>(
@@ -132,7 +129,7 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
       barrierDismissible: false, // Force the user to choose Cancel or confirm.
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
-          String? _validateMeetingUrl(String? value) {
+          String? validateMeetingUrl(String? value) {
             if (value == null || value.isEmpty) {
               return 'Please enter a URL';
             }
@@ -171,17 +168,17 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
                 height: 4,
               ),
               Form(
-                key: _formKey,
+                key: formKey,
                 child: TextFormField(
-                  controller: _controller,
+                  controller: controller,
                   decoration: InputDecoration(
                     hintText: 'https://meet.google.com/… or https://zoom.us/…',
                   ),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: _validateMeetingUrl,
+                  validator: validateMeetingUrl,
                   onChanged: (value) {
                     setState(() {
-                      isValid = _formKey.currentState?.validate() ?? false;
+                      isValid = formKey.currentState?.validate() ?? false;
                     });
                   },
                 ),
@@ -197,8 +194,8 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
               TextButton(
                 onPressed: isValid
                     ? () {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          Navigator.of(context).pop(_controller.text);
+                        if (formKey.currentState?.validate() ?? false) {
+                          Navigator.of(context).pop(controller.text);
                         }
                       }
                     : null,

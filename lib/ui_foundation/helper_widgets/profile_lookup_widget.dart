@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:social_learning/state/application_state.dart';
@@ -8,7 +7,6 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class ProfileLookupWidget extends StatefulWidget {
   final ApplicationState applicationState;

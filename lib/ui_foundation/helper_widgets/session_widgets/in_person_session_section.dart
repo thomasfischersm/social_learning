@@ -9,7 +9,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class InPersonSessionSection extends StatelessWidget {
-  const InPersonSessionSection({Key? key}) : super(key: key);
+  const InPersonSessionSection({super.key});
 
   @override
   Widget build(BuildContext context) {

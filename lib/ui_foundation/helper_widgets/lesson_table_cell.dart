@@ -4,11 +4,9 @@ import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/user.dart';
-import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
-import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class LessonTableCell extends StatefulWidget {

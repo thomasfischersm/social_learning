@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:social_learning/state/application_state.dart';
-import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/auto_sign_in_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 

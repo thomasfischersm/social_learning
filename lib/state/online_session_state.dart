@@ -1,8 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
-import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/online_session_functions.dart';
-import 'package:social_learning/data/data_helpers/online_session_review_functions.dart';
 import 'package:social_learning/data/online_session.dart';
 import 'package:social_learning/data/online_session_review.dart';
 import 'package:social_learning/state/application_state.dart';
@@ -17,7 +14,7 @@ class OnlineSessionState extends ChangeNotifier {
   OnlineSessionReview? _pendingReview;
 
   bool isInitialized = false;
-  String? _courseId = null;
+  String? _courseId;
 
   OnlineSession? get waitingSession => _waitingSession;
 

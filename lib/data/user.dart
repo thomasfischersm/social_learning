@@ -1,7 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/course.dart';
-import 'package:social_learning/state/library_state.dart';
 
 class User {
   String id;

@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 class AuthGuard extends StatefulWidget {
   final Widget child;
-  const AuthGuard({Key? key, required this.child}) : super(key: key);
+  const AuthGuard({super.key, required this.child});
 
   @override
   AuthGuardState createState() => AuthGuardState();

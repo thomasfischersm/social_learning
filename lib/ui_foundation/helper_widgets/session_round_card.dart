@@ -1,7 +1,6 @@
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';

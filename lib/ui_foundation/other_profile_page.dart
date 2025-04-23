@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/expanding_text_box.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';

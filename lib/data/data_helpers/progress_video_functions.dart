@@ -1,4 +1,3 @@
-import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -189,7 +188,7 @@ class ProgressVideoFunctions {
 
           // Group by lessonId
           Map<String, List<ProgressVideo>> progressVideosByLessonId =
-              LinkedHashMap();
+              {};
           for (var progressVideo in progressVideos) {
             String lessonId = progressVideo.lessonId.id;
             if (!progressVideosByLessonId.containsKey(lessonId)) {
@@ -223,7 +222,7 @@ class ProgressVideoFunctions {
         convertSnapshotToSortedProgressVideos(snapshot);
 
     // Group by lessonId
-    Map<String, List<ProgressVideo>> progressVideosByLessonId = LinkedHashMap();
+    Map<String, List<ProgressVideo>> progressVideosByLessonId = {};
     for (var progressVideo in progressVideos) {
       String lessonId = progressVideo.lessonId.id;
       if (!progressVideosByLessonId.containsKey(lessonId)) {

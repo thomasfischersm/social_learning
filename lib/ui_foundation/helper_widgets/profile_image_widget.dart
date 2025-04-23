@@ -5,7 +5,6 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
-import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class ProfileImageWidget extends StatefulWidget {
   final User _user;

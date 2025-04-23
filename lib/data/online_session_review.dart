@@ -43,9 +43,6 @@ class OnlineSessionReview {
 
   factory OnlineSessionReview.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data();
-    if (data == null) {
-      throw Exception('No data in snapshot for OnlineReview');
-    }
     return OnlineSessionReview(
       id: snapshot.id,
       sessionId: data['sessionId'] as DocumentReference,

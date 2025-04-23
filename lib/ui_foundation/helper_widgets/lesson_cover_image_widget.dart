@@ -1,6 +1,5 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:googleapis/admin/directory_v1.dart';
 
 class LessonCoverImageWidget extends StatefulWidget {
   final String? coverFireStoragePath;

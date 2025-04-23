@@ -1,22 +1,15 @@
-import 'dart:js_interop';
-import 'dart:math';
 
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:googleapis/apigeeregistry/v1.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
-import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/edit_level_title_dialog.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/level_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CmsSyllabusPage extends StatefulWidget {
@@ -305,7 +298,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
         context: context,
         builder: (context) {
           String abbreviatedTitle = (lesson.title.length > 7)
-              ? lesson.title.substring(0, 7) + '...'
+              ? '${lesson.title.substring(0, 7)}...'
               : lesson.title;
           return AlertDialog(
             title: Text('Lesson: $abbreviatedTitle'),

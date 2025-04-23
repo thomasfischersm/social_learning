@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
-import 'package:social_learning/state/library_state.dart';
 
 import 'ui_constants/navigation_enum.dart';
 

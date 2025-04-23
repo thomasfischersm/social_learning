@@ -11,7 +11,7 @@ import 'package:social_learning/state/library_state.dart';
 class UploadLessonCoverWidget extends StatefulWidget {
   final Lesson? lesson;
 
-  const UploadLessonCoverWidget(this.lesson, {Key? key}) : super(key: key);
+  const UploadLessonCoverWidget(this.lesson, {super.key});
 
   @override
   State<StatefulWidget> createState() {

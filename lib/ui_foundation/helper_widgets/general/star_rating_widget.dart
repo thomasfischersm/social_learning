@@ -8,13 +8,13 @@ class StarRatingWidget extends StatefulWidget {
   final Color unfilledColor;
 
   const StarRatingWidget({
-    Key? key,
+    super.key,
     this.initialRating = 0,
     required this.onRatingChanged,
     this.starSize = 32.0,
     this.filledColor = Colors.amber,
     this.unfilledColor = Colors.grey,
-  }) : super(key: key);
+  });
 
   @override
   _StarRatingWidgetState createState() => _StarRatingWidgetState();

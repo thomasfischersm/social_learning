@@ -344,7 +344,7 @@ class OnlineSessionFunctions {
         throw Exception('Either learnerUid or mentorUid must be provided.');
       }
 
-      await transaction.update(sessionRef, data);
+      transaction.update(sessionRef, data);
       success = true;
       print('Transaction completed for session: $sessionId');
     });

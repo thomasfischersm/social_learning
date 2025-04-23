@@ -4,11 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:social_learning/data/data_helpers/progress_video_functions.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
-import 'package:social_learning/data/lesson.dart';
-import 'package:social_learning/data/progress_video.dart';
-import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/enable_location_button.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_lookup_widget.dart';
@@ -19,8 +15,6 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 import 'package:social_learning/data/user.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/youtube_video_widget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../state/application_state.dart';
 import 'ui_constants/navigation_enum.dart';

@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 // import 'package:googleapis/docs/v1.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';

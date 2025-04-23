@@ -4,9 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
-import 'package:social_learning/ui_foundation/bottom_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
@@ -40,9 +38,9 @@ class CmsLessonState extends State<CmsLessonPage> {
   DocumentReference? _levelDocRef;
   Lesson? _lesson;
   bool _isAdd = true;
-  String? _titleError = null;
-  String? _synopsisError = null;
-  String? _instructionsError = null;
+  String? _titleError;
+  String? _synopsisError;
+  String? _instructionsError;
   bool _isInitialized = false;
 
   @override
@@ -349,7 +347,7 @@ class CmsLessonState extends State<CmsLessonPage> {
         context: context,
         builder: (context) {
           String abbreviation = controller.text.length > 7
-              ? controller.text.substring(0, 7) + '...'
+              ? '${controller.text.substring(0, 7)}...'
               : controller.text;
 
           return AlertDialog(

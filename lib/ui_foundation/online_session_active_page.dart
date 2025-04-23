@@ -6,7 +6,6 @@ import 'package:social_learning/data/data_helpers/online_session_review_function
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/online_session.dart';
-import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/online_session_state.dart';

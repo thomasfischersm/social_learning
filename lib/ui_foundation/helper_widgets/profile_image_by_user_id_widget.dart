@@ -3,11 +3,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/belt_color_functions.dart';
-import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
-import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class ProfileImageByUserIdWidget extends StatefulWidget {
   final DocumentReference userId;

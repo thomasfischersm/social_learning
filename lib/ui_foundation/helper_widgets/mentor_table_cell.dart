@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:googleapis/dataproc/v1.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/user.dart';
@@ -10,7 +9,7 @@ class MentorTableCell extends UserTableCell {
   final Lesson? lesson;
   final OrganizerSessionState organizerSessionState;
 
-  MentorTableCell(super.user, super.sessionPairing, super.isEditable,
+  const MentorTableCell(super.user, super.sessionPairing, super.isEditable,
       super.selectHintText, this.lesson, this.organizerSessionState,
       {super.key});
 
