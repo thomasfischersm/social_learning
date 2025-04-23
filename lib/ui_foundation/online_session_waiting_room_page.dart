@@ -21,7 +21,8 @@ class OnlineSessionWaitingRoomPage extends StatefulWidget {
   State<StatefulWidget> createState() => OnlineSessionWaitingRoomState();
 }
 
-class OnlineSessionWaitingRoomState extends State<OnlineSessionWaitingRoomPage> {
+class OnlineSessionWaitingRoomState
+    extends State<OnlineSessionWaitingRoomPage> {
   @override
   Widget build(BuildContext context) {
     return VisibilityDetector(
@@ -33,7 +34,7 @@ class OnlineSessionWaitingRoomState extends State<OnlineSessionWaitingRoomPage> 
             _cancelTimers(); // Page is hidden, stop timers
           }
         },
-        child:  Scaffold(
+        child: Scaffold(
             appBar: AppBar(
               title: const Text('Social Learning'),
             ),
@@ -87,6 +88,11 @@ class OnlineSessionWaitingRoomState extends State<OnlineSessionWaitingRoomPage> 
                             String sessionTypeText = session.isMentorInitiated
                                 ? 'Teaching'
                                 : 'Learning';
+
+                            String noMatchText = session.isMentorInitiated
+                                ? 'New app - no match?\nLink Calendly to your profile so learners can find you.'
+                                : 'New app — no match?\nLesson pages let you schedule with a student.';
+
                             return Column(
                               children: [
                                 // Header & status.
@@ -118,6 +124,12 @@ class OnlineSessionWaitingRoomState extends State<OnlineSessionWaitingRoomPage> 
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
+                                ),
+                                SizedBox(height: 32),
+                                Text(
+                                  noMatchText,
+                                  style: CustomTextStyles.getBodySmall(context),
+                                  textAlign: TextAlign.center,
                                 ),
                                 Spacer(),
                                 // Cancel Session button.
