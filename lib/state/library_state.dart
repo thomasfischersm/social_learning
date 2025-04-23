@@ -409,7 +409,7 @@ class LibraryState extends ChangeNotifier {
 
   @Deprecated('Left over from the first version of the CMS.')
   void createLessonLegacy(
-      String courseId, String title, String instructions, bool isLevel) {
+      String courseId, String title, String instructions, bool isLevel) async {
     FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
       'courseId': FirebaseFirestore.instance.doc('/courses/$courseId'),
       'sortOrder': _lessons?.length ?? 0,
@@ -433,9 +433,10 @@ class LibraryState extends ChangeNotifier {
       StudentState studentState) async {
     var currentUser = _applicationState.currentUser;
 
-    DocumentReference newLessonRef = await FirebaseFirestore.instance
-        .collection('lessons')
-        .add(<String, dynamic>{
+    DocumentReference<Map<String, dynamic>> newLessonRef =
+        await FirebaseFirestore.instance
+            .collection('lessons')
+            .add(<String, dynamic>{
       'courseId':
           FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
       'levelId': levelId,
@@ -460,7 +461,8 @@ class LibraryState extends ChangeNotifier {
     // If it's a private course, create a practiceRecords entry so that the
     // creator can teach it.
     if (selectedCourse?.isPrivate == true) {
-      studentState.recordTeaching(newLessonRef.id, currentUser, true);
+      studentState.recordTeaching(
+          newLessonRef.id, selectedCourse!.id!, currentUser, true);
     }
   }
 
