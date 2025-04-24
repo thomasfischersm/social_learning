@@ -110,7 +110,8 @@ class UserFunctions {
     return User.fromSnapshot(userDoc);
   }
 
-  static bool get isFirebaseAuthLoggedOut => auth.FirebaseAuth.instance.currentUser == null;
+  static bool get isFirebaseAuthLoggedOut =>
+      auth.FirebaseAuth.instance.currentUser == null;
 
   static String? extractNumberId(DocumentReference? id) {
     if (id != null) {
