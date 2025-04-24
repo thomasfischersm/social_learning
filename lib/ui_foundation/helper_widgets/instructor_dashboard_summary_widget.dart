@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/instructor_dashboard_functions.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -6,9 +7,11 @@ import 'package:social_learning/data/user.dart';
 
 /// Dashboard summary showing key metrics in a 2×2 grid, fetching data in parallel.
 class InstructorDashboardSummaryWidget extends StatefulWidget {
-  final String? courseId; // nullable: may load later
-  const InstructorDashboardSummaryWidget({Key? key, this.courseId})
-      : super(key: key);
+  final Course? course;
+
+  String? get courseId => course?.id; // nullable: may load later
+
+  const InstructorDashboardSummaryWidget({super.key, this.course});
 
   @override
   InstructorDashboardSummaryWidgetState createState() =>
@@ -41,7 +44,7 @@ class InstructorDashboardSummaryWidgetState
       _countsFuture = Future.wait([
         InstructorDashboardFunctions.getStudentCount(widget.courseId!),
         InstructorDashboardFunctions.getLessonCount(widget.courseId!),
-        InstructorDashboardFunctions.getSessionsTaughtCount(widget.courseId!),
+        InstructorDashboardFunctions.getSessionsTaughtCount(widget.course!),
         InstructorDashboardFunctions.getMostAdvancedStudent(widget.courseId!),
       ]);
       print('Counts future initialized with courseId: ${widget.courseId}');

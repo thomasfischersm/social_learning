@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
 
 /// Collection of helper functions for the Instructor Dashboard.
@@ -44,16 +45,17 @@ class InstructorDashboardFunctions {
   /// Returns the count of practice sessions (lessons taught) in the given course.
   /// This counts all PracticeRecords for the course.
   /// Uses Firestore aggregation query. Returns null on error.
-  static Future<int?> getSessionsTaughtCount(String courseId) async {
+  static Future<int?> getSessionsTaughtCount(Course course) async {
     try {
-      final courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
       final agg = await FirebaseFirestore.instance
           .collection('practiceRecords')
-          .where('courseId', isEqualTo: courseRef)
+          .where('courseId', isEqualTo: course.docRef)
+          .where('menteeUid', isNotEqualTo: course.creatorId)
           .count()
           .get();
       return agg.count;
     } catch (e) {
+      print(e);
       return null;
     }
   }

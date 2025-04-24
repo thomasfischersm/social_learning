@@ -27,7 +27,8 @@ class InstructorDashboardState extends State<InstructorDashboardPage> {
                 builder: (context, libraryState, child) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        InstructorDashboardSummaryWidget(courseId: libraryState.selectedCourse?.id),
+                        InstructorDashboardSummaryWidget(
+                            course: libraryState.selectedCourse),
                       ],
                     )))));
   }
