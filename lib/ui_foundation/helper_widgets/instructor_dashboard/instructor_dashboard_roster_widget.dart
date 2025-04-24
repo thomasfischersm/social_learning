@@ -9,23 +9,21 @@ import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 
-/// Roster widget that lazily loads students for a given course,
-/// with cursor-based pagination and default alphabetical sorting.
+/// Roster widget that loads students lazily, allows sorting & filtering.
 class InstructorDashboardRosterWidget extends StatefulWidget {
-  /// The course whose roster to display. May be null while loading.
   final Course? course;
 
   const InstructorDashboardRosterWidget({
-    super.key,
+    Key? key,
     required this.course,
-  });
+  }) : super(key: key);
 
   @override
-  InstructorDashboardRosterWidgetState createState() =>
-      InstructorDashboardRosterWidgetState();
+  _InstructorDashboardRosterWidgetState createState() =>
+      _InstructorDashboardRosterWidgetState();
 }
 
-class InstructorDashboardRosterWidgetState
+class _InstructorDashboardRosterWidgetState
     extends State<InstructorDashboardRosterWidget> {
   final ScrollController _scrollController = ScrollController();
   final List<User> _students = [];
@@ -33,27 +31,26 @@ class InstructorDashboardRosterWidgetState
   bool _isLoading = false;
   bool _hasMore = true;
 
+  String? _nameFilter;
+  StudentSortOption _selectedSort = StudentSortOption.recent;
+
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    if (widget.course != null) {
-      _loadNextPage();
-    }
+    if (widget.course != null) _resetAndLoad();
   }
 
   @override
-  void didUpdateWidget(covariant InstructorDashboardRosterWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Only reset and load if switching to a different course.
-    if (oldWidget.course?.id != widget.course?.id) {
-      _resetAndLoad();
-    }
+  void didUpdateWidget(covariant InstructorDashboardRosterWidget old) {
+    super.didUpdateWidget(old);
+    if (old.course?.id != widget.course?.id) _resetAndLoad();
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >
-        _scrollController.position.maxScrollExtent - 200) {
+    if (!_scrollController.hasClients) return;
+    final max = _scrollController.position.maxScrollExtent;
+    if (max > 0 && _scrollController.position.pixels > max - 200) {
       _loadNextPage();
     }
   }
@@ -65,9 +62,7 @@ class InstructorDashboardRosterWidgetState
       _hasMore = true;
       _isLoading = false;
     });
-    if (widget.course != null) {
-      await _loadNextPage();
-    }
+    await _loadNextPage();
   }
 
   Future<void> _loadNextPage() async {
@@ -79,19 +74,37 @@ class InstructorDashboardRosterWidgetState
         courseId: widget.course!.id!,
         startAfterDoc: _lastDoc,
         pageSize: 20,
-        sort: StudentSortOption.alphabetical, // TODO: expose UI for sort choice
+        sort: _selectedSort,
+        nameFilter: _nameFilter,
       );
-
       setState(() {
         _students.addAll(page.students);
         _lastDoc = page.lastDoc;
         _hasMore = page.hasMore;
       });
-    } catch (e, stack) {
-      debugPrint('Error fetching students for course ${widget.course?.id}: $e');
-      debugPrint(stack.toString());
+    } catch (e, st) {
+      debugPrint('Error loading students: $e\n$st');
     } finally {
       setState(() => _isLoading = false);
+    }
+  }
+
+  String _labelForSort(StudentSortOption opt) {
+    switch (opt) {
+      case StudentSortOption.recent:
+        return 'Recently Active';
+      case StudentSortOption.advanced:
+        // TODO: Probably remove because it's a pain to implement.
+        return 'Most Advanced';
+      case StudentSortOption.newest:
+        // TODO: Implement the created field on user.
+        return 'Newest';
+      case StudentSortOption.atRisk:
+        // TODO: Test
+        return 'At Risk';
+      case StudentSortOption.alphabetical:
+      default:
+        return 'A → Z';
     }
   }
 
@@ -100,99 +113,159 @@ class InstructorDashboardRosterWidgetState
     if (widget.course == null) {
       return const Center(child: CircularProgressIndicator());
     }
+    return Column(
+      children: [
+        // Filter & Sort Bar
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              // Search field
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search students…',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                  ),
+                  onChanged: (text) {
+                    final f = text.trim();
 
-    return ListView.builder(
-      controller: _scrollController,
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      itemCount: _students.length + (_hasMore ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index >= _students.length) {
-          // loading indicator at bottom
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(16),
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
+                    if (f.length < 3 && _nameFilter == null) {
+                      // The user needs to type at least three letters.
+                      return;
+                    }
 
-        final user = _students[index];
-        final prof =
-            user.getCourseProficiency(widget.course!)?.proficiency ?? 0.0;
-        final profText = '${(prof * 100).toStringAsFixed(0)}%';
-
-        final lastActivityTs = user.lastLessonTimestamp;
-        final lastActiveText = lastActivityTs != null
-            ? translateTimeStampToTimeAgo(lastActivityTs.toDate())
-            : null;
-        print('Last active: $lastActiveText and timestamp: $lastActivityTs');
-
-        return InkWell(
-            onTap: () {
-              OtherProfileArgument.goToOtherProfile(context, user.id, user.uid);
+                    setState(() {
+                      _nameFilter = f.length >= 3 ? f : null;
+                    });
+                    _resetAndLoad();
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Sort dropdown
+              DropdownButton<StudentSortOption>(
+                value: _selectedSort,
+                items: StudentSortOption.values.map((opt) {
+                  return DropdownMenuItem(
+                    value: opt,
+                    child: Text(_labelForSort(opt)),
+                  );
+                }).toList(),
+                onChanged: (newOpt) {
+                  if (newOpt != null && newOpt != _selectedSort) {
+                    setState(() => _selectedSort = newOpt);
+                    _resetAndLoad();
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+        // Student list
+        Expanded(
+          child: ListView.builder(
+            controller: _scrollController,
+            padding:
+            const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            itemCount: _students.length + (_hasMore ? 1 : 0),
+            itemBuilder: (ctx, i) {
+              if (i >= _students.length) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+              return _buildStudentRow(_students[i], context);
             },
-            child: Card(
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ListTile(
-                dense: true,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                leading: ProfileImageWidget(
-                  user,
-                  context,
-                  maxRadius: 20,
-                  linkToOtherProfile: true,
-                ),
-                title: Text(
-                  user.displayName,
-                  style: CustomTextStyles.subHeadline,
-                ),
-                subtitle: Row(
-                  children: [
-                    Text(profText, style: CustomTextStyles.getBody(context)),
-                    if (lastActiveText != null) ...[
-                      const SizedBox(width: 8),
-                      Text('Active $lastActiveText',
-                          style: CustomTextStyles.getBodySmall(context)),
-                    ],
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (user.instagramHandle != null)
-                      IconButton(
-                        icon: SvgPicture.asset(
-                          'assets/icons/Instagram_Glyph_Black.svg',
-                          width: 20,
-                          height: 20,
-                        ),
-                        padding: EdgeInsets.zero,
-                        constraints:
-                            const BoxConstraints(minWidth: 32, minHeight: 32),
-                        onPressed: () => UserFunctions.openInstaProfile(user),
-                      ),
-                    const SizedBox(width: 4),
-                    _iconButton(Icons.email,
-                        onPressed: () => UserFunctions.openEmailClient(user)),
-                    const SizedBox(width: 4),
-                    _iconButton(Icons.assignment, onPressed: () {}),
-                  ],
-                ),
-              ),
-            ));
-      },
+          ),
+        ),
+      ],
     );
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  Widget _buildStudentRow(User user, BuildContext context) {
+    final prof =
+        user.getCourseProficiency(widget.course!)?.proficiency ?? 0.0;
+    final profText = '${(prof * 100).toStringAsFixed(0)}%';
+    final profStyle = prof >= 1.0
+        ? CustomTextStyles.getFullyLearned(context)!
+        : CustomTextStyles.getPartiallyLearned(context)!;
+
+    final ts = user.lastLessonTimestamp;
+    final lastActive = ts != null ? _timeAgo(ts.toDate()) : null;
+
+    return InkWell(
+      onTap: () {
+        OtherProfileArgument.goToOtherProfile(
+            context, user.id, user.uid);
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        elevation: 1,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: ListTile(
+          dense: true,
+          contentPadding:
+          const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          leading: ProfileImageWidget(
+            user,
+            context,
+            maxRadius: 20,
+            linkToOtherProfile: true,
+          ),
+          title: Text(user.displayName,
+              style: CustomTextStyles.subHeadline),
+          subtitle: Row(
+            children: [
+              Text(profText,
+                  style:
+                  profStyle.copyWith(fontWeight: FontWeight.bold)),
+              if (lastActive != null) ...[
+                const SizedBox(width: 8),
+                Text('Active $lastActive',
+                    style: CustomTextStyles.getBodySmall(context)),
+              ],
+            ],
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (user.instagramHandle != null)
+                IconButton(
+                  icon: SvgPicture.asset(
+                    'assets/icons/Instagram_Glyph_Black.svg',
+                    width: 20,
+                    height: 20,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                      minWidth: 32, minHeight: 32),
+                  onPressed: () =>
+                      UserFunctions.openInstaProfile(user),
+                ),
+              const SizedBox(width: 4),
+              _iconButton(Icons.email,
+                  onPressed: () =>
+                      UserFunctions.openEmailClient(user)),
+              const SizedBox(width: 4),
+              _iconButton(Icons.assignment, onPressed: () {}),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _iconButton(IconData icon, {required VoidCallback onPressed}) {
@@ -200,22 +273,29 @@ class InstructorDashboardRosterWidgetState
       icon: Icon(icon),
       iconSize: 20,
       padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+      constraints:
+      const BoxConstraints(minWidth: 32, minHeight: 32),
       onPressed: onPressed,
     );
   }
 
-  /// Converts a DateTime into a “time ago” string, e.g. “5m ago”, “2h ago”.
-  String translateTimeStampToTimeAgo(DateTime date) {
+  /// Converts DateTime to 'time ago'.
+  String _timeAgo(DateTime date) {
     final diff = DateTime.now().difference(date);
     if (diff.inMinutes < 1) return 'just now';
     if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
     if (diff.inHours < 24) return '${diff.inHours}h ago';
     if (diff.inDays < 7) return '${diff.inDays}d ago';
-    final w = (diff.inDays ~/ 7);
+    final w = diff.inDays ~/ 7;
     if (w < 4) return '${w}w ago';
-    final m = (diff.inDays ~/ 30);
+    final m = diff.inDays ~/ 30;
     if (m < 12) return '${m}mo ago';
     return '${diff.inDays ~/ 365}y ago';
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

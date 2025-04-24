@@ -96,38 +96,46 @@ class InstructorDashboardFunctions {
     return userSnap.exists ? User.fromSnapshot(userSnap) : null;
   }
 
-  /// Fetches one page of students in [courseId], with cursor‐based pagination,
-  /// sorted according to [sort].
+  /// Fetches one page of students in [courseId], with cursor-based pagination,
+  /// sorted according to [sort], and optionally filtered by name prefix.
+  ///
+  /// - [courseId]: the Firestore ID of the course.
+  /// - [startAfterDoc]: if non-null, begins the page after this document (for pagination).
+  /// - [pageSize]: how many students per page (default 20).
+  /// - [sort]: which sort order to apply (defaults to alphabetical).
+  /// - [nameFilter]: if non-null and ≥3 chars, filters to users whose sortName starts with this prefix.
   static Future<StudentPage> getStudentPage({
     required String courseId,
     DocumentSnapshot<Map<String, dynamic>>? startAfterDoc,
     int pageSize = 20,
     StudentSortOption sort = StudentSortOption.alphabetical,
+    String? nameFilter,
   }) async {
     final courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
-            .collection('users')
-            .where('enrolledCourseIds', arrayContains: courseRef)
-        // we’ll add ordering and filters below
-        ;
+        .collection('users')
+        .where('enrolledCourseIds', arrayContains: courseRef);
 
-    // apply sorting / additional filters
+    // 1) Name-prefix filter
+    if (nameFilter != null && nameFilter.length >= 3) {
+      final start = nameFilter;
+      final end = '$nameFilter\uf8ff';
+      query = query
+          .where('sortName', isGreaterThanOrEqualTo: start)
+          .where('sortName', isLessThanOrEqualTo: end);
+    }
+
+    // 2) Sort order
     switch (sort) {
       case StudentSortOption.recent:
         query = query.orderBy('lastLessonTimestamp', descending: true);
         break;
-
       case StudentSortOption.advanced:
-        // TODO: add a course‐specific proficiency field or lookup courseAnalytics
-        // and order by that descending
-        query = query.orderBy('proficiency_${courseId}', descending: true);
+        query = query.orderBy('proficiency_$courseId', descending: true);
         break;
-
       case StudentSortOption.newest:
-        // TODO: add a `createdAt` Timestamp field to User
         query = query.orderBy('createdAt', descending: true);
         break;
-
       case StudentSortOption.atRisk:
         final now = DateTime.now();
         final sevenDaysAgo =
@@ -139,41 +147,31 @@ class InstructorDashboardFunctions {
             .where('lastLessonTimestamp', isGreaterThanOrEqualTo: thirtyDaysAgo)
             .orderBy('lastLessonTimestamp', descending: true);
         break;
-
       case StudentSortOption.alphabetical:
       default:
         query = query.orderBy('sortName');
     }
 
-    // Always fetch one extra doc to detect "hasMore"
+    // 3) Pagination cursor + fetch one extra to detect hasMore
     query = query.limit(pageSize + 1);
-
-    // Apply cursor if provided
     if (startAfterDoc != null) {
       query = query.startAfterDocument(startAfterDoc);
     }
 
-    try {
-      final snap = await query.get();
-      final docs = snap.docs;
-      final hasMore = docs.length == pageSize + 1;
-      final pageDocs = hasMore ? docs.sublist(0, pageSize) : docs;
+    // 4) Execute and map to StudentPage
+    final snap = await query.get();
+    final docs = snap.docs;
+    final hasMore = docs.length == pageSize + 1;
+    final pageDocs = hasMore ? docs.sublist(0, pageSize) : docs;
 
-      final students = pageDocs.map((doc) => User.fromSnapshot(doc)).toList();
-      final lastDoc = pageDocs.isNotEmpty ? pageDocs.last : null;
+    final students = pageDocs.map((doc) => User.fromSnapshot(doc)).toList();
+    final lastDoc = pageDocs.isNotEmpty ? pageDocs.last : null;
 
-      print('Fetched ${students.length} students for course $courseId');
-
-      return StudentPage(
-        students: students,
-        lastDoc: lastDoc,
-        hasMore: hasMore,
-      );
-    } catch (e, stack) {
-      print('Error fetching student page for course $courseId: $e');
-      print('Stack trace:\n$stack');
-      rethrow;
-    }
+    return StudentPage(
+      students: students,
+      lastDoc: lastDoc,
+      hasMore: hasMore,
+    );
   }
 }
 
