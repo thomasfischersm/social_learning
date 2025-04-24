@@ -15,7 +15,6 @@ import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
 
-
 class ApplicationState extends ChangeNotifier {
   ApplicationState() {
     init();
@@ -82,6 +81,16 @@ class ApplicationState extends ChangeNotifier {
         if (_currentUser?.isGeoLocationEnabled ?? false) {
           UserFunctions.updateGeoLocation(this);
         }
+      }
+
+      // Update the e-mail if it has changed in Firebase authentication.
+      String? currentDbEmail = _currentUser?.email;
+      String? currentAuthEmail = auth.FirebaseAuth.instance.currentUser?.email;
+      if (currentDbEmail != currentAuthEmail && currentAuthEmail != null) {
+        _currentUser!.email = currentAuthEmail;
+        FirebaseFirestore.instance
+            .doc('/users/${_currentUser!.id}')
+            .update({'email': currentAuthEmail});
       }
 
       notifyListeners();

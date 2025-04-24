@@ -33,7 +33,7 @@ class InstructorDashboardState extends State<InstructorDashboardPage> {
                     child: InstructorDashboardSummaryWidget(course: course),
                   ),
                 ],
-                body: const InstructorDashboardRosterWidget(),
+                body: InstructorDashboardRosterWidget(course: course),
               );
             },
           ),

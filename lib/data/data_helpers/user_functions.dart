@@ -510,4 +510,23 @@ class UserFunctions {
       throw 'Could not launch $url';
     }
   }
+
+  static Future<void> openEmailClient(User? user) async {
+      if (user == null || user.email == null) {
+        return;
+      }
+
+      final Uri emailUri = Uri(
+        scheme: 'mailto',
+        path: user.email,
+        query: Uri.encodeQueryComponent('subject=Hello&body=Hi ${user.displayName},'),
+      );
+
+      if (await canLaunchUrl(emailUri)) {
+        print('Launching email client with URI: $emailUri');
+        await launchUrl(emailUri, mode: LaunchMode.externalApplication);
+      } else {
+        throw 'Could not launch $emailUri';
+      }
+    }
 }

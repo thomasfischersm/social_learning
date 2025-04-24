@@ -7,6 +7,7 @@ class User {
   String uid;
   String displayName;
   String sortName;
+  String? email;
   String profileText;
   bool isAdmin;
   String? profileFireStoragePath;
@@ -19,12 +20,16 @@ class User {
   GeoPoint? roughUserLocation;
   String? instagramHandle;
   String? calendlyUrl;
+  // TODO: This needs to be per course. I implemented to get the functionality
+  // working. However, it only works if the user is in only one course.
+  Timestamp? lastLessonTimestamp;
 
   User(
       this.id,
       this.uid,
       this.displayName,
       this.sortName,
+      this.email,
       this.profileText,
       this.isAdmin,
       this.profileFireStoragePath,
@@ -36,13 +41,15 @@ class User {
       this.location,
       this.roughUserLocation,
       this.instagramHandle,
-      this.calendlyUrl);
+      this.calendlyUrl,
+      this.lastLessonTimestamp);
 
   User.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
         uid = e.data()?['uid'] ?? '',
         displayName = e.data()?['displayName'] ?? '',
         sortName = e.data()?['sortName'] ?? '',
+        email = e.data()?['email'],
         profileText = e.data()?['profileText'] ?? '',
         isAdmin = e.data()?['isAdmin'] ?? false,
         profileFireStoragePath = e.data()?['profileFireStoragePath'],
@@ -64,7 +71,8 @@ class User {
         location = e.data()?['location'],
         roughUserLocation = e.data()?['roughUserLocation'],
         instagramHandle = e.data()?['instagramHandle'],
-        calendlyUrl = e.data()?['calendlyUrl'];
+        calendlyUrl = e.data()?['calendlyUrl'],
+        lastLessonTimestamp = e.data()?['lastLessonTimestamp'];
 
   CourseProficiency? getCourseProficiency(Course course) {
     return courseProficiencies

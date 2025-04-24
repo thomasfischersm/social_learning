@@ -9,11 +9,11 @@ import 'package:social_learning/ui_foundation/other_profile_page.dart';
 class ProfileImageWidget extends StatefulWidget {
   final User _user;
   final LibraryState _libraryState;
-  final double? maxRadius;
+  final double maxRadius;
   final bool linkToOtherProfile;
 
   ProfileImageWidget(this._user, BuildContext context,
-      {super.key, this.maxRadius, this.linkToOtherProfile = false})
+      {super.key, this.maxRadius = 100, this.linkToOtherProfile = false})
       : _libraryState = Provider.of<LibraryState>(context, listen: false);
 
   @override
@@ -57,7 +57,10 @@ class ProfileImageWidgetState extends State<ProfileImageWidget> {
         avatar = _createCircleAvatar();
       }
     } else {
-      avatar = const Icon(Icons.photo);
+      avatar = CircleAvatar(
+        maxRadius: widget.maxRadius,
+        child: Icon(Icons.photo, size: widget.maxRadius),
+      );
     }
 
     if (widget.linkToOtherProfile) {
@@ -82,7 +85,7 @@ class ProfileImageWidgetState extends State<ProfileImageWidget> {
           ),
           width: (physicalScreenWidth * .34).toInt(),
           policy: ResizeImagePolicy.fit),
-      maxRadius: widget.maxRadius ?? 100,
+      maxRadius: widget.maxRadius,
     );
   }
 
