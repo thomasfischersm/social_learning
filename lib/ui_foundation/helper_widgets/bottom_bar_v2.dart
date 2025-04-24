@@ -148,8 +148,11 @@ class BottomBarV2 {
         }.contains(currentRoute)) {
       return 1;
     } else if (isManageVisible &&
-        {NavigationEnum.cmsSyllabus.route, NavigationEnum.cmsLesson.route}
-            .contains(currentRoute)) {
+        {
+          NavigationEnum.cmsSyllabus.route,
+          NavigationEnum.cmsLesson.route,
+          NavigationEnum.instructorDashBoard.route
+        }.contains(currentRoute)) {
       return isLessonsVisible ? 2 : 1;
     } else if (isSessionsVisible &&
         {
