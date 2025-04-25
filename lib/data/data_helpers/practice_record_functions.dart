@@ -42,4 +42,18 @@ class PracticeRecordFunctions {
         .get();
     return agg.count ?? 0;
   }
+
+  /// Fetches all practice records (both partial and graduated)
+  /// for the given mentee UID.
+  static Future<List<PracticeRecord>> fetchPracticeRecordsForMentee(
+      String menteeUid) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('practiceRecords')
+        .where('menteeUid', isEqualTo: menteeUid)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => PracticeRecord.fromSnapshot(doc))
+        .toList();
+  }
 }

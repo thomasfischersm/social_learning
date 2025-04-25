@@ -26,7 +26,7 @@ enum NavigationEnum {
   codeOfConduct('/code_of_conduct'),
   onlineSessionReview('/online_session_review'),
   instructorDashBoard('/instructor_dashboard'),
-  studentCheckOff('/student_check_off'),
+  instructorClipboard('/instructor_clipboard'),
   ;
 
   final String route;

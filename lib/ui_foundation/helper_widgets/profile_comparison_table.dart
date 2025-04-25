@@ -103,10 +103,16 @@ class ProfileComparisonTableState extends State<ProfileComparisonTable> {
                   const Icon(Icons.arrow_drop_down)
                 else
                   const Icon(Icons.arrow_right),
-                Text(level.title,
-                    overflow: TextOverflow.ellipsis,
+                Flexible(   // <-- bounds the Text to the remaining space
+                  child: Text(
+                    level.title,
                     style: CustomTextStyles.subHeadline
-                        .copyWith(fontWeight: FontWeight.bold)),
+                        .copyWith(fontWeight: FontWeight.bold),
+                    softWrap: true,             // allow breaking
+                    maxLines: 2,                // up to two lines (or null = unlimited)
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ])),
           const SizedBox.shrink()
         ]));

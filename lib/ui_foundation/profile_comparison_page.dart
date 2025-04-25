@@ -62,22 +62,6 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
           });
         }
       });
-
-      // Load the other user's PracticeRecords.
-      // FirebaseFirestore.instance
-      //     .collection('practiceRecords')
-      //     .where('uid', isEqualTo: otherUserUid)
-      //     .where('isGraduation', isEqualTo: true)
-      //     .get()
-      //     .then((QuerySnapshot<Map<String, dynamic>> snapshot) {
-      //   if (snapshot.docs.isNotEmpty) {
-      //     setState(() {
-      //       _otherUserGraduatedLessonIds = snapshot.docs
-      //           .map((doc) => PracticeRecord.fromSnapshot(doc).lessonId.id)
-      //           .toSet();
-      //     });
-      //   }
-      // });
     }
   }
 

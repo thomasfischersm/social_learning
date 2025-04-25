@@ -34,7 +34,7 @@ import 'package:social_learning/ui_foundation/session_host_page.dart';
 import 'package:social_learning/ui_foundation/session_student_page.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
 import 'package:flutter/foundation.dart';
-import 'package:social_learning/ui_foundation/student_check_off_page.dart';
+import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 
 import 'firebase_options.dart';
 import 'ui_foundation/bottom_bar.dart';
@@ -154,8 +154,8 @@ class SocialLearningApp extends StatelessWidget {
         '/code_of_conduct': (context) => const CodeOfConductPage(),
         '/instructor_dashboard': (context) =>
             const InstructorDashboardPage(),
-        '/student_check_off': (context) =>
-            const StudentCheckOffPage(),
+        '/instructor_clipboard': (context) =>
+            const InstructorClipboardPage(),
       },
     );
   }

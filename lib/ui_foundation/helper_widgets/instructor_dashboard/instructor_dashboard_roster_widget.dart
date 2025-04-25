@@ -6,7 +6,7 @@ import 'package:social_learning/data/data_helpers/instructor_dashboard_functions
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
-import 'package:social_learning/ui_foundation/student_check_off_page.dart';
+import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 
@@ -283,7 +283,7 @@ class InstructorDashboardRosterWidgetState
                   onPressed: () => UserFunctions.openEmailClient(user)),
               const SizedBox(width: 4),
               _iconButton(Icons.assignment, onPressed: () {
-                StudentCheckOffArgument.navigateTo(context, user.id, user.uid);
+                InstructorClipboardArgument.navigateTo(context, user.id, user.uid);
               }),
             ],
           ),
