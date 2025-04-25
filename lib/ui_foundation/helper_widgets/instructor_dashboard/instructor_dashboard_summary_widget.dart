@@ -87,7 +87,7 @@ class InstructorDashboardSummaryWidgetState
             ),
             StatCard(
               iconData: Icons.repeat,
-              label: 'Sessions Taught',
+              label: 'Lessons Taught',
               value: sessionsCount?.toString() ?? '-',
             ),
             StatCard(
