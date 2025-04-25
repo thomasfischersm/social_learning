@@ -6,6 +6,7 @@ import 'package:social_learning/data/data_helpers/instructor_dashboard_functions
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
+import 'package:social_learning/ui_foundation/student_check_off_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 
@@ -14,16 +15,16 @@ class InstructorDashboardRosterWidget extends StatefulWidget {
   final Course? course;
 
   const InstructorDashboardRosterWidget({
-    Key? key,
+    super.key,
     required this.course,
-  }) : super(key: key);
+  });
 
   @override
-  _InstructorDashboardRosterWidgetState createState() =>
-      _InstructorDashboardRosterWidgetState();
+  InstructorDashboardRosterWidgetState createState() =>
+      InstructorDashboardRosterWidgetState();
 }
 
-class _InstructorDashboardRosterWidgetState
+class InstructorDashboardRosterWidgetState
     extends State<InstructorDashboardRosterWidget> {
   final ScrollController _scrollController = ScrollController();
   final List<User> _students = [];
@@ -42,9 +43,9 @@ class _InstructorDashboardRosterWidgetState
   }
 
   @override
-  void didUpdateWidget(covariant InstructorDashboardRosterWidget old) {
-    super.didUpdateWidget(old);
-    if (old.course?.id != widget.course?.id) _resetAndLoad();
+  void didUpdateWidget(covariant InstructorDashboardRosterWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.course?.id != widget.course?.id) _resetAndLoad();
   }
 
   void _onScroll() {
@@ -281,7 +282,9 @@ class _InstructorDashboardRosterWidgetState
               _iconButton(Icons.email,
                   onPressed: () => UserFunctions.openEmailClient(user)),
               const SizedBox(width: 4),
-              _iconButton(Icons.assignment, onPressed: () {}),
+              _iconButton(Icons.assignment, onPressed: () {
+                StudentCheckOffArgument.navigateTo(context, user.id, user.uid);
+              }),
             ],
           ),
         ),

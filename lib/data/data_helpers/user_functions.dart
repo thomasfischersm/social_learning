@@ -111,6 +111,14 @@ class UserFunctions {
     return User.fromSnapshot(userDoc);
   }
 
+  static Future<User> getUserById(String id) async {
+    var doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(id)
+        .get();
+    return User.fromSnapshot(doc);
+  }
+
   static bool get isFirebaseAuthLoggedOut =>
       auth.FirebaseAuth.instance.currentUser == null;
 

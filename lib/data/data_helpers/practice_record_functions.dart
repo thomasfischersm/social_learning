@@ -20,4 +20,26 @@ class PracticeRecordFunctions {
 
     return lessonIds;
   }
+
+  /// Returns the count of graduated lessons where [menteeUid] is the student.
+  static Future<int> getLessonsLearnedCount(String menteeUid) async {
+    final agg = await FirebaseFirestore.instance
+        .collection('practiceRecords')
+        .where('menteeUid', isEqualTo: menteeUid)
+        .where('isGraduation', isEqualTo: true)
+        .count()
+        .get();
+    return agg.count ?? 0;
+  }
+
+  /// Returns the count of graduated lessons where [mentorUid] is the instructor.
+  static Future<int> getLessonsTaughtCount(String mentorUid) async {
+    final agg = await FirebaseFirestore.instance
+        .collection('practiceRecords')
+        .where('mentorUid', isEqualTo: mentorUid)
+        .where('isGraduation', isEqualTo: true)
+        .count()
+        .get();
+    return agg.count ?? 0;
+  }
 }
