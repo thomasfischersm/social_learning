@@ -135,7 +135,7 @@ class _InstructorDashboardRosterWidgetState
                     ),
                     isDense: true,
                     contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   onChanged: (text) {
                     final f = text.trim();
@@ -175,9 +175,34 @@ class _InstructorDashboardRosterWidgetState
           ),
         ),
         const Divider(height: 1),
-        // Student list
+        // Student list or empty message
         Expanded(
-          child: ListView.builder(
+          child: _students.isEmpty && !_hasMore
+              ? Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.person_off, size: 48, color: Colors.grey.shade400),
+                const SizedBox(height: 16),
+                Text(
+                  'No students found',
+                  style: CustomTextStyles.getBody(context)?.copyWith(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Try adjusting your search or filters.',
+                  style: CustomTextStyles.getBodySmall(context)?.copyWith(
+                    color: Colors.grey.shade500,
+                  ),
+                ),
+              ],
+            ),
+          )
+              : ListView.builder(
             controller: _scrollController,
             padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
             itemCount: _students.length + (_hasMore ? 1 : 0),
@@ -201,9 +226,6 @@ class _InstructorDashboardRosterWidgetState
   Widget _buildStudentRow(User user, BuildContext context) {
     final prof = user.getCourseProficiency(widget.course!)?.proficiency ?? 0.0;
     final profText = '${(prof * 100).toStringAsFixed(0)}%';
-    final profStyle = prof >= 1.0
-        ? CustomTextStyles.getFullyLearned(context)!
-        : CustomTextStyles.getPartiallyLearned(context)!;
 
     final ts = user.lastLessonTimestamp;
     final lastActive = ts != null ? _timeAgo(ts.toDate()) : null;
@@ -232,7 +254,7 @@ class _InstructorDashboardRosterWidgetState
           subtitle: Row(
             children: [
               Text(profText,
-                  style: profStyle.copyWith(fontWeight: FontWeight.bold)),
+                  style: CustomTextStyles.getBody(context)),
               if (lastActive != null) ...[
                 const SizedBox(width: 8),
                 Text('Active $lastActive',
