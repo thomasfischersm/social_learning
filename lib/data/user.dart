@@ -23,6 +23,7 @@ class User {
   // TODO: This needs to be per course. I implemented to get the functionality
   // working. However, it only works if the user is in only one course.
   Timestamp? lastLessonTimestamp;
+  Timestamp created;
 
   User(
       this.id,
@@ -42,7 +43,8 @@ class User {
       this.roughUserLocation,
       this.instagramHandle,
       this.calendlyUrl,
-      this.lastLessonTimestamp);
+      this.lastLessonTimestamp,
+      this.created);
 
   User.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -72,7 +74,8 @@ class User {
         roughUserLocation = e.data()?['roughUserLocation'],
         instagramHandle = e.data()?['instagramHandle'],
         calendlyUrl = e.data()?['calendlyUrl'],
-        lastLessonTimestamp = e.data()?['lastLessonTimestamp'];
+        lastLessonTimestamp = e.data()?['lastLessonTimestamp'],
+        created = e.data()?['created'] ?? Timestamp.fromDate(DateTime(2025, 4, 24));
 
   CourseProficiency? getCourseProficiency(Course course) {
     return courseProficiencies

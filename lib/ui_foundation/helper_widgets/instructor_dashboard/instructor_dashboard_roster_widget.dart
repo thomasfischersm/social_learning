@@ -134,8 +134,8 @@ class _InstructorDashboardRosterWidgetState
                       borderRadius: BorderRadius.circular(8),
                     ),
                     isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 8),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   onChanged: (text) {
                     final f = text.trim();
@@ -156,7 +156,9 @@ class _InstructorDashboardRosterWidgetState
               // Sort dropdown
               DropdownButton<StudentSortOption>(
                 value: _selectedSort,
-                items: StudentSortOption.values.map((opt) {
+                items: StudentSortOption.values
+                    .where((opt) => opt != StudentSortOption.advanced)
+                    .map((opt) {
                   return DropdownMenuItem(
                     value: opt,
                     child: Text(_labelForSort(opt)),
@@ -177,8 +179,7 @@ class _InstructorDashboardRosterWidgetState
         Expanded(
           child: ListView.builder(
             controller: _scrollController,
-            padding:
-            const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
             itemCount: _students.length + (_hasMore ? 1 : 0),
             itemBuilder: (ctx, i) {
               if (i >= _students.length) {
@@ -198,8 +199,7 @@ class _InstructorDashboardRosterWidgetState
   }
 
   Widget _buildStudentRow(User user, BuildContext context) {
-    final prof =
-        user.getCourseProficiency(widget.course!)?.proficiency ?? 0.0;
+    final prof = user.getCourseProficiency(widget.course!)?.proficiency ?? 0.0;
     final profText = '${(prof * 100).toStringAsFixed(0)}%';
     final profStyle = prof >= 1.0
         ? CustomTextStyles.getFullyLearned(context)!
@@ -210,8 +210,7 @@ class _InstructorDashboardRosterWidgetState
 
     return InkWell(
       onTap: () {
-        OtherProfileArgument.goToOtherProfile(
-            context, user.id, user.uid);
+        OtherProfileArgument.goToOtherProfile(context, user.id, user.uid);
       },
       child: Card(
         margin: const EdgeInsets.symmetric(vertical: 4),
@@ -222,20 +221,18 @@ class _InstructorDashboardRosterWidgetState
         child: ListTile(
           dense: true,
           contentPadding:
-          const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           leading: ProfileImageWidget(
             user,
             context,
             maxRadius: 20,
             linkToOtherProfile: true,
           ),
-          title: Text(user.displayName,
-              style: CustomTextStyles.subHeadline),
+          title: Text(user.displayName, style: CustomTextStyles.subHeadline),
           subtitle: Row(
             children: [
               Text(profText,
-                  style:
-                  profStyle.copyWith(fontWeight: FontWeight.bold)),
+                  style: profStyle.copyWith(fontWeight: FontWeight.bold)),
               if (lastActive != null) ...[
                 const SizedBox(width: 8),
                 Text('Active $lastActive',
@@ -254,15 +251,13 @@ class _InstructorDashboardRosterWidgetState
                     height: 20,
                   ),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                      minWidth: 32, minHeight: 32),
-                  onPressed: () =>
-                      UserFunctions.openInstaProfile(user),
+                  constraints:
+                      const BoxConstraints(minWidth: 32, minHeight: 32),
+                  onPressed: () => UserFunctions.openInstaProfile(user),
                 ),
               const SizedBox(width: 4),
               _iconButton(Icons.email,
-                  onPressed: () =>
-                      UserFunctions.openEmailClient(user)),
+                  onPressed: () => UserFunctions.openEmailClient(user)),
               const SizedBox(width: 4),
               _iconButton(Icons.assignment, onPressed: () {}),
             ],
@@ -277,8 +272,7 @@ class _InstructorDashboardRosterWidgetState
       icon: Icon(icon),
       iconSize: 20,
       padding: EdgeInsets.zero,
-      constraints:
-      const BoxConstraints(minWidth: 32, minHeight: 32),
+      constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
       onPressed: onPressed,
     );
   }

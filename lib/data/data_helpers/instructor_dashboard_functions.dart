@@ -134,7 +134,7 @@ class InstructorDashboardFunctions {
         query = query.orderBy('proficiency_$courseId', descending: true);
         break;
       case StudentSortOption.newest:
-        query = query.orderBy('createdAt', descending: true);
+        query = query.orderBy('created', descending: true);
         break;
       case StudentSortOption.atRisk:
         final now = DateTime.now();

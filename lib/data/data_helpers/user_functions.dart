@@ -22,6 +22,7 @@ class UserFunctions {
       'email': email,
       'isProfilePrivate': false,
       'isGeoLocationEnabled': false,
+      'created': FieldValue.serverTimestamp(),
     });
   }
 
