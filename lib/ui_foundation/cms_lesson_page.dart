@@ -100,43 +100,45 @@ class CmsLessonState extends State<CmsLessonPage> {
             child: const Icon(Icons.done)),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CustomUiConstants.getTextPadding(
-                    Text('Create Lesson', style: CustomTextStyles.headline)),
-                Consumer<LibraryState>(
-                  builder: (context, libraryState, child) {
-                    return Consumer<ApplicationState>(
-                        builder: (context, applicationState, child) {
-                      return Column(
-                        children: [
-                          _createCoreCard(context),
-                          SizedBox(height: 8),
-                          _createGraduationRequirementsCard(context),
-                          SizedBox(height: 8),
-                          _createVideoCard(context)
-                        ],
-                      );
-                    });
-                  },
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+            child: CustomUiConstants.framePage(
+                enableCreatorGuard: true,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // TextButton(
+                    CustomUiConstants.getTextPadding(Text('Create Lesson',
+                        style: CustomTextStyles.headline)),
+                    Consumer<LibraryState>(
+                      builder: (context, libraryState, child) {
+                        return Consumer<ApplicationState>(
+                            builder: (context, applicationState, child) {
+                          return Column(
+                            children: [
+                              _createCoreCard(context),
+                              SizedBox(height: 8),
+                              _createGraduationRequirementsCard(context),
+                              SizedBox(height: 8),
+                              _createVideoCard(context)
+                            ],
+                          );
+                        });
+                      },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        // TextButton(
                         // onPressed: () {
                         //   _createUpdateLesson(context);
                         // },
                         // child: Text(_isAdd ? 'Create' : 'Update')),
-                    TextButton(
-                        onPressed: () => Navigator.pushNamed(
-                            context, NavigationEnum.cmsSyllabus.route),
-                        child: const Text('Cancel'))
+                        TextButton(
+                            onPressed: () => Navigator.pushNamed(
+                                context, NavigationEnum.cmsSyllabus.route),
+                            child: const Text('Cancel'))
+                      ],
+                    )
                   ],
-                )
-              ],
-            ))));
+                ))));
   }
 
   Widget _createCoreCard(BuildContext context) {
@@ -196,7 +198,9 @@ class CmsLessonState extends State<CmsLessonPage> {
             ),
             SizedBox(height: 8),
             UploadLessonCoverWidget(_lesson),
-            SizedBox(height: 8,),
+            SizedBox(
+              height: 8,
+            ),
           ]))
     ]));
   }
@@ -446,7 +450,8 @@ class CmsLessonState extends State<CmsLessonPage> {
 
     setState(() {});
 
-    if (_titleError != null || _synopsisError != null ||
+    if (_titleError != null ||
+        _synopsisError != null ||
         _instructionsError != null) {
       return false;
     } else {

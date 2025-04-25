@@ -61,16 +61,19 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
         ),
         body: Align(
           alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(Consumer<LibraryState>(
-              builder: (context, libraryState, child) => Consumer<StudentState>(
-                      builder: (context, studentState, child) {
-                    return  OneTimeBanner(
-                        prefsKey: 'instructorDashboardHint',
-                        message:
-                        'Tap the chart icon above to open your Instructor Dashboard.',
-                        leading: Icon(Icons.bar_chart, color: Colors.blue),
-                        child: SingleChildScrollView(
-                        child:Column(
+          child: CustomUiConstants.framePage(
+              enableCreatorGuard: true,
+              Consumer<LibraryState>(
+                  builder: (context, libraryState, child) =>
+                      Consumer<StudentState>(
+                          builder: (context, studentState, child) {
+                        return OneTimeBanner(
+                            prefsKey: 'instructorDashboardHint',
+                            message:
+                                'Tap the chart icon above to open your Instructor Dashboard.',
+                            leading: Icon(Icons.bar_chart, color: Colors.blue),
+                            child: SingleChildScrollView(
+                                child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 CustomUiConstants.getTextPadding(Text(
@@ -98,7 +101,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                                 CustomUiConstants.getGeneralFooter(context)
                               ],
                             )));
-                  }))),
+                      }))),
         ));
   }
 

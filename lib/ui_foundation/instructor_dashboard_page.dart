@@ -24,6 +24,7 @@ class InstructorDashboardState extends State<InstructorDashboardPage> {
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
           enableScrolling: false,
+          enableCreatorGuard: true,
           Consumer<LibraryState>(
             builder: (context, libraryState, child) {
               final course = libraryState.selectedCourse;

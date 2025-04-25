@@ -40,4 +40,12 @@ enum NavigationEnum {
     Navigator.of(context).pushNamedAndRemoveUntil(
         route, (route) => route.settings.name == NavigationEnum.home.route);
   }
+
+  void navigateCleanDelayed(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      if (context.mounted) {
+        navigateClean(context);
+      }
+    });
+  }
 }
