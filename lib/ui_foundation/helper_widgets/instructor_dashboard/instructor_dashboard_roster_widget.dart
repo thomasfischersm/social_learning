@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/instructor_dashboard_functions.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -136,7 +138,7 @@ class InstructorDashboardRosterWidgetState
                     ),
                     isDense: true,
                     contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   onChanged: (text) {
                     final f = text.trim();
@@ -180,45 +182,47 @@ class InstructorDashboardRosterWidgetState
         Expanded(
           child: _students.isEmpty && !_hasMore
               ? Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.person_off, size: 48, color: Colors.grey.shade400),
-                const SizedBox(height: 16),
-                Text(
-                  'No students found',
-                  style: CustomTextStyles.getBody(context)?.copyWith(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade600,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.person_off,
+                          size: 48, color: Colors.grey.shade400),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No students found',
+                        style: CustomTextStyles.getBody(context)?.copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Try adjusting your search or filters.',
+                        style: CustomTextStyles.getBodySmall(context)?.copyWith(
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Try adjusting your search or filters.',
-                  style: CustomTextStyles.getBodySmall(context)?.copyWith(
-                    color: Colors.grey.shade500,
-                  ),
-                ),
-              ],
-            ),
-          )
+                )
               : ListView.builder(
-            controller: _scrollController,
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-            itemCount: _students.length + (_hasMore ? 1 : 0),
-            itemBuilder: (ctx, i) {
-              if (i >= _students.length) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-              }
-              return _buildStudentRow(_students[i], context);
-            },
-          ),
+                  controller: _scrollController,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                  itemCount: _students.length + (_hasMore ? 1 : 0),
+                  itemBuilder: (ctx, i) {
+                    if (i >= _students.length) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+                    return _buildStudentRow(_students[i], context);
+                  },
+                ),
         ),
       ],
     );
@@ -254,8 +258,7 @@ class InstructorDashboardRosterWidgetState
           title: Text(user.displayName, style: CustomTextStyles.subHeadline),
           subtitle: Row(
             children: [
-              Text(profText,
-                  style: CustomTextStyles.getBody(context)),
+              Text(profText, style: CustomTextStyles.getBody(context)),
               if (lastActive != null) ...[
                 const SizedBox(width: 8),
                 Text('Active $lastActive',
@@ -282,14 +285,25 @@ class InstructorDashboardRosterWidgetState
               _iconButton(Icons.email,
                   onPressed: () => UserFunctions.openEmailClient(user)),
               const SizedBox(width: 4),
-              _iconButton(Icons.assignment, onPressed: () {
-                InstructorClipboardArgument.navigateTo(context, user.id, user.uid);
-              }),
+              _iconButton(Icons.assignment,
+                  onPressed: () => _onClipboardButtonPressed(user)),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _onClipboardButtonPressed(User user) {
+    ApplicationState applicationState =
+        Provider.of<ApplicationState>(context, listen: false);
+
+    if (user.id == applicationState.currentUser?.id) {
+      // Doesn't make sense to open clipboard for self.
+      return;
+    }
+
+    InstructorClipboardArgument.navigateTo(context, user.id, user.uid);
   }
 
   Widget _iconButton(IconData icon, {required VoidCallback onPressed}) {
