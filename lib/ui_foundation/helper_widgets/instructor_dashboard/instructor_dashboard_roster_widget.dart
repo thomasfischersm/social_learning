@@ -62,10 +62,10 @@ class _InstructorDashboardRosterWidgetState
       _hasMore = true;
       _isLoading = false;
     });
-    await _loadNextPage();
+    await _loadNextPage(clear: true);
   }
 
-  Future<void> _loadNextPage() async {
+  Future<void> _loadNextPage({bool clear = false}) async {
     if (_isLoading || !_hasMore || widget.course == null) return;
     setState(() => _isLoading = true);
 
@@ -78,6 +78,10 @@ class _InstructorDashboardRosterWidgetState
         nameFilter: _nameFilter,
       );
       setState(() {
+        if (clear) {
+          _students.clear();
+        }
+
         _students.addAll(page.students);
         _lastDoc = page.lastDoc;
         _hasMore = page.hasMore;
