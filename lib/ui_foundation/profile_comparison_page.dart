@@ -8,6 +8,8 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_comparison_table.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/profile_image_by_user_id_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/data/user.dart';
@@ -88,17 +90,19 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomUiConstants.getIndentationTextPadding(
-                    CustomUiConstants.getTextPadding(Text(
-                        'You and ${_otherUser?.displayName}',
-                        style: CustomTextStyles.headline))),
-                Consumer<LibraryState>(builder: (context, libraryState, child) {
-                  return _createComparisonTable(context, libraryState);
-                }),
-              ],
+            child: CustomUiConstants.framePage(Consumer<ApplicationState>(
+              builder: (context, applicationState, child) {
+                return Consumer<LibraryState>(
+                    builder: (context, libraryState, child) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _createHeaderWidget(applicationState, libraryState),
+                      _createComparisonTable(context, libraryState)
+                    ],
+                  );
+                });
+              },
             ))));
   }
 
@@ -173,5 +177,114 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
     } else {
       return currentUserGraduatedLessonIds;
     }
+  }
+
+  Widget _createHeaderWidget(
+      ApplicationState appState,
+      LibraryState libraryState,
+      ) {
+    final currentUser = appState.currentUser;
+    final otherUser = _otherUser;
+
+    if (currentUser == null || otherUser == null) {
+      return const SizedBox.shrink();
+    }
+
+    const TextStyle nameStyle = TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+    );
+    const TextStyle actionStyle = TextStyle(fontSize: 14);
+    const double avatarRadius = 28;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // 1) Avatars + names + arrows
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        ProfileImageWidget(
+                          currentUser,
+                          context,
+                          maxRadius: avatarRadius,
+                          linkToOtherProfile: false,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(currentUser.displayName, style: nameStyle),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.arrow_forward, size: 16),
+                            SizedBox(width: 4),
+                            Text('Teach', style: actionStyle),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        ProfileImageWidget(
+                          otherUser,
+                          context,
+                          maxRadius: avatarRadius,
+                          linkToOtherProfile: true,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(otherUser.displayName, style: nameStyle),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Icon(Icons.arrow_back, size: 16),
+                            SizedBox(width: 4),
+                            Text('Learn', style: actionStyle),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              // 2) Explanatory line
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'You teach ${otherUser.displayName}',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      '${otherUser.displayName} teaches you',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

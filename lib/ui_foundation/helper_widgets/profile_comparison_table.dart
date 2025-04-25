@@ -69,44 +69,25 @@ class ProfileComparisonTableState extends State<ProfileComparisonTable> {
   Widget build(BuildContext context) {
     User? otherUser = widget.otherUser;
 
-    return Table(columnWidths: const {
-      0: FlexColumnWidth(),
-      1: IntrinsicColumnWidth()
-    }, children: [
-      TableRow(
-          decoration: BoxDecoration(
-            color: Colors.grey[300], // Background color for the header
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Table(
+            columnWidths: const {
+              0: FlexColumnWidth(),
+              1: IntrinsicColumnWidth()
+            },
+            children: [
+              ...buildLevelRows(context),
+            ],
           ),
-          children: [
-            TableCell(
-                verticalAlignment: TableCellVerticalAlignment.middle,
-                child: CustomUiConstants.getIndentationTextPadding(Text(
-                    'Curriculum',
-                    style: CustomTextStyles.subHeadline
-                        .copyWith(fontWeight: FontWeight.bold)))),
-            if (otherUser != null)
-              TableCell(
-                  verticalAlignment: TableCellVerticalAlignment.middle,
-                  child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: Stack(children: [
-                        // Make sure that the column has a minimum width!
-                        Text('Practice',
-                            style: CustomTextStyles.getBody(context)
-                                ?.copyWith(color: Colors.transparent)),
-                        Center(
-                            child: ProfileImageWidget(
-                          otherUser,
-                          context,
-                          maxRadius: 20,
-                          linkToOtherProfile: true,
-                        ))
-                      ])))
-            else
-              const SizedBox.shrink(),
-          ]),
-      ...buildLevelRows(context),
-    ]);
+        ),
+      ),
+    );
   }
 
   List<TableRow> buildLevelRows(BuildContext context) {
@@ -147,7 +128,9 @@ class ProfileComparisonTableState extends State<ProfileComparisonTable> {
                 const Icon(Icons.arrow_drop_down)
               else
                 const Icon(Icons.arrow_right),
-              Text('Flex Lessons', style: CustomTextStyles.subHeadline.copyWith(fontWeight: FontWeight.bold)),
+              Text('Flex Lessons',
+                  style: CustomTextStyles.subHeadline
+                      .copyWith(fontWeight: FontWeight.bold)),
             ])),
         const SizedBox.shrink()
       ]));
