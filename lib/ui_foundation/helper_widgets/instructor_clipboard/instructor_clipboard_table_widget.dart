@@ -10,6 +10,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
+import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -72,6 +73,13 @@ class InstructorClipboardTableState
     setState(() {
       _expandedLevelId = _expandedLevelId == levelId ? null : levelId;
     });
+  }
+
+  _goToLesson(String? lessonId) {
+    if (lessonId != null) {
+      Navigator.pushNamed(context, NavigationEnum.lessonDetail.route,
+          arguments: LessonDetailArgument(lessonId));
+    }
   }
 
   void _onCheckboxChanged(Lesson lesson, bool? checked) {
@@ -212,7 +220,7 @@ class InstructorClipboardTableState
       return TableRow(children: [
         Padding(
           padding: EdgeInsets.only(left: IconTheme.of(context).size ?? 24),
-          child: Text(lesson.title, style: CustomTextStyles.getBody(context)),
+          child: InkWell(onTap: () => _goToLesson(lesson.id), child:Text(lesson.title, style: CustomTextStyles.getBody(context))),
         ),
         Center(
           child: Checkbox(
