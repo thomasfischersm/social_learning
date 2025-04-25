@@ -10,7 +10,6 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/student_check_off/instructor_clipboard_header_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -19,15 +18,23 @@ import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart'
 class InstructorClipboardTableWidget extends StatefulWidget {
   final User student;
   final LibraryState libraryState;
-  const InstructorClipboardTableWidget(this.student, this.libraryState, {super.key});
+
+  const InstructorClipboardTableWidget(this.student, this.libraryState,
+      {super.key});
 
   @override
-  State<InstructorClipboardTableWidget> createState() => InstructorClipboardTableState();
+  State<InstructorClipboardTableWidget> createState() =>
+      InstructorClipboardTableState();
 }
 
-enum LessonState { none, graduated }
+enum LessonState {
+  none,
+  graduated,
+  practiced,
+}
 
-class InstructorClipboardTableState extends State<InstructorClipboardTableWidget> {
+class InstructorClipboardTableState
+    extends State<InstructorClipboardTableWidget> {
   static const flexLevelId = 'flex';
   String? _expandedLevelId;
   Map<String, LessonState> _lessonState = {};
@@ -41,8 +48,9 @@ class InstructorClipboardTableState extends State<InstructorClipboardTableWidget
   }
 
   Future<void> _loadPracticeRecords() async {
-    final practiceRecords = await PracticeRecordFunctions
-        .fetchPracticeRecordsForMentee(widget.student.uid);
+    final practiceRecords =
+        await PracticeRecordFunctions.fetchPracticeRecordsForMentee(
+            widget.student.uid);
     final Map<String, LessonState> states = {};
     final Map<String, PracticeRecord> grads = {};
     for (var practiceRecord in practiceRecords) {
@@ -50,6 +58,8 @@ class InstructorClipboardTableState extends State<InstructorClipboardTableWidget
       if (practiceRecord.isGraduation) {
         states[id] = LessonState.graduated;
         grads[id] = practiceRecord;
+      } else if (states[id] != LessonState.graduated){
+        states[id] = LessonState.practiced;
       }
     }
     setState(() {
@@ -60,8 +70,7 @@ class InstructorClipboardTableState extends State<InstructorClipboardTableWidget
 
   void _toggleLevel(String levelId) {
     setState(() {
-      _expandedLevelId =
-      _expandedLevelId == levelId ? null : levelId;
+      _expandedLevelId = _expandedLevelId == levelId ? null : levelId;
     });
   }
 
@@ -85,13 +94,13 @@ class InstructorClipboardTableState extends State<InstructorClipboardTableWidget
     final rec = _graduationRecord[lessonId]!;
     final when = rec.timestamp?.toDate();
     final whenStr =
-    when != null ? DateFormat.yMMMd().add_jm().format(when) : 'Unknown';
+        when != null ? DateFormat.yMMMd().add_jm().format(when) : 'Unknown';
     // TODO: Show multiple graduation records if they exist.
     DialogUtils.showInfoDialog(
       context,
       'Already Graduated',
       '"$lessonTitle" was graduated on $whenStr.',
-          () {},
+      () {},
     );
   }
 
@@ -100,9 +109,8 @@ class InstructorClipboardTableState extends State<InstructorClipboardTableWidget
       context,
       'Graduate Lesson?',
       'Are you sure you want to mark "${lesson.title}" as graduated?',
-          () {
-        final studentState =
-        Provider.of<StudentState>(context, listen: false);
+      () {
+        final studentState = Provider.of<StudentState>(context, listen: false);
         studentState.recordTeachingWithCheck(
             lesson, widget.student, true, context);
         setState(() {
@@ -115,12 +123,10 @@ class InstructorClipboardTableState extends State<InstructorClipboardTableWidget
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:
-      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: SingleChildScrollView(
@@ -143,8 +149,8 @@ class InstructorClipboardTableState extends State<InstructorClipboardTableWidget
       if (level.id == null) continue;
       rows.add(_levelHeaderRow(level.id!, level.title));
       if (_expandedLevelId == level.id) {
-        rows.addAll(_buildLessonRows(
-            widget.libraryState.getLessonsByLevel(level.id!)));
+        rows.addAll(
+            _buildLessonRows(widget.libraryState.getLessonsByLevel(level.id!)));
       }
     }
     final flex = widget.libraryState.getUnattachedLessons();
@@ -162,8 +168,7 @@ class InstructorClipboardTableState extends State<InstructorClipboardTableWidget
       InkWell(
         onTap: () => _toggleLevel(id),
         child: Padding(
-          padding:
-          const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             children: [
               Icon(_expandedLevelId == id
@@ -189,16 +194,29 @@ class InstructorClipboardTableState extends State<InstructorClipboardTableWidget
   List<TableRow> _buildLessonRows(Iterable<Lesson> lessons) {
     return lessons.map((lesson) {
       final id = lesson.id!;
-      final graduated = _lessonState[id] == LessonState.graduated;
+      bool? graduated;
+      switch(_lessonState[id]) {
+        case LessonState.none:
+          graduated = false;
+          break;
+        case LessonState.graduated:
+          graduated = true;
+          break;
+        case LessonState.practiced:
+          graduated = null;
+          break;
+        default:
+          graduated = false;
+          break;
+      }
       return TableRow(children: [
         Padding(
-          padding: EdgeInsets.only(
-              left: IconTheme.of(context).size ?? 24),
-          child: Text(lesson.title,
-              style: CustomTextStyles.getBody(context)),
+          padding: EdgeInsets.only(left: IconTheme.of(context).size ?? 24),
+          child: Text(lesson.title, style: CustomTextStyles.getBody(context)),
         ),
         Center(
           child: Checkbox(
+            tristate: true,
             value: graduated,
             onChanged: (val) => _onCheckboxChanged(lesson, val),
           ),
