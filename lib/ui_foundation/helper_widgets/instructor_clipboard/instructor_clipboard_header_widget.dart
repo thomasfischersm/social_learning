@@ -65,7 +65,7 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
                     student,
                     context,
                     maxRadius: 32,
-                    linkToOtherProfile: false,
+                    linkToOtherProfile: true,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
