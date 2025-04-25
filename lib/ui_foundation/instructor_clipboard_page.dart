@@ -36,6 +36,7 @@ class InstructorClipboardArgument {
 
 class InstructorClipboardPage extends StatefulWidget {
   const InstructorClipboardPage({super.key});
+
   @override
   State<InstructorClipboardPage> createState() => _StudentCheckOffState();
 }
@@ -45,12 +46,13 @@ class _StudentCheckOffState extends State<InstructorClipboardPage> {
   int _lessonsLearned = 0;
   int _lessonsTaught = 0;
 
-  String? get _studentId =>
-      (ModalRoute.of(context)?.settings.arguments as InstructorClipboardArgument?)
-          ?.studentId;
-  String? get _studentUid =>
-      (ModalRoute.of(context)?.settings.arguments as InstructorClipboardArgument?)
-          ?.studentUid;
+  String? get _studentId => (ModalRoute.of(context)?.settings.arguments
+          as InstructorClipboardArgument?)
+      ?.studentId;
+
+  String? get _studentUid => (ModalRoute.of(context)?.settings.arguments
+          as InstructorClipboardArgument?)
+      ?.studentUid;
 
   @override
   void didChangeDependencies() {
@@ -77,6 +79,7 @@ class _StudentCheckOffState extends State<InstructorClipboardPage> {
       body: Align(
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
+          enableCreatorGuard: true,
           Consumer<LibraryState>(
             builder: (context, libraryState, _) {
               if (_student == null) {
@@ -105,4 +108,3 @@ class _StudentCheckOffState extends State<InstructorClipboardPage> {
     );
   }
 }
-
