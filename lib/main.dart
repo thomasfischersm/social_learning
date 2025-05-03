@@ -15,7 +15,9 @@ import 'package:social_learning/ui_foundation/cms_home_page.dart';
 import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/cms_syllabus_page.dart';
 import 'package:social_learning/ui_foundation/code_of_conduct_page.dart';
+import 'package:social_learning/ui_foundation/course_generation_review_page.dart';
 import 'package:social_learning/ui_foundation/course_create_page.dart';
+import 'package:social_learning/ui_foundation/course_generation_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/instructor_dashboard_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
@@ -45,6 +47,8 @@ import 'ui_foundation/sign_out_page.dart';
 // https://firebase.google.com/codelabs/firebase-get-to-know-flutter#4
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -152,10 +156,11 @@ class SocialLearningApp extends StatelessWidget {
         '/online_session_review': (context) => const OnlineSessionReviewPage(),
         '/create_course': (context) => const CourseCreatePage(),
         '/code_of_conduct': (context) => const CodeOfConductPage(),
-        '/instructor_dashboard': (context) =>
-            const InstructorDashboardPage(),
-        '/instructor_clipboard': (context) =>
-            const InstructorClipboardPage(),
+        '/instructor_dashboard': (context) => const InstructorDashboardPage(),
+        '/instructor_clipboard': (context) => const InstructorClipboardPage(),
+        '/course_generation': (context) => const CourseGenerationPage(),
+        '/course_generation_review': (context) =>
+            const CourseGenerationReviewPage(),
       },
     );
   }

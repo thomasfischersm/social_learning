@@ -27,6 +27,8 @@ enum NavigationEnum {
   onlineSessionReview('/online_session_review'),
   instructorDashBoard('/instructor_dashboard'),
   instructorClipboard('/instructor_clipboard'),
+  courseGeneration('/course_generation'),
+  courseGenerationReview('/course_generation_review'),
   ;
 
   final String route;

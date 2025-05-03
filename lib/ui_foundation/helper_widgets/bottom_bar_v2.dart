@@ -151,7 +151,10 @@ class BottomBarV2 {
         {
           NavigationEnum.cmsSyllabus.route,
           NavigationEnum.cmsLesson.route,
-          NavigationEnum.instructorDashBoard.route
+          NavigationEnum.instructorDashBoard.route,
+          NavigationEnum.instructorClipboard.route,
+          NavigationEnum.courseGeneration.route,
+          NavigationEnum.courseGenerationReview.route,
         }.contains(currentRoute)) {
       return isLessonsVisible ? 2 : 1;
     } else if (isSessionsVisible &&
