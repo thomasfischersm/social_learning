@@ -7,86 +7,103 @@ import { defineSecret } from 'firebase-functions/params';
 const openaiApiKey = defineSecret('OPENAI_API_KEY');
 
 export const generateCoursePlan = onCall({ secrets: [openaiApiKey] }, async (request) => {
-  const openai = new OpenAI({
-    apiKey: openaiApiKey.value(),
-  });
+  const openai = new OpenAI({ apiKey: openaiApiKey.value() });
   const data = request.data;
   const auth = request.auth;
 
-  if (!auth) {
-    throw new Error('Unauthenticated user');
-  }
+  if (!auth) throw new Error('Unauthenticated user');
 
   const uid = auth.uid;
   const coursePlanId = data.coursePlanId;
-
-  if (!coursePlanId || typeof coursePlanId !== 'string') {
-    throw new Error('Invalid or missing coursePlanId');
-  }
+  if (!coursePlanId || typeof coursePlanId !== 'string') throw new Error('Invalid or missing coursePlanId');
 
   const coursePlanRef = db.doc(`/coursePlans/${coursePlanId}`);
   const coursePlanSnap = await coursePlanRef.get();
-
-  if (!coursePlanSnap.exists) {
-    throw new Error('CoursePlan not found');
-  }
+  if (!coursePlanSnap.exists) throw new Error('CoursePlan not found');
 
   const coursePlan = coursePlanSnap.data();
   const courseRef = coursePlan?.courseId;
-
-  if (!courseRef || typeof courseRef.path !== 'string') {
-    throw new Error('Missing course reference');
-  }
+  if (!courseRef || typeof courseRef.path !== 'string') throw new Error('Missing course reference');
 
   const courseSnap = await courseRef.get();
-  if (!courseSnap.exists) {
-    throw new Error('Course not found');
-  }
+  if (!courseSnap.exists) throw new Error('Course not found');
 
   const courseData = courseSnap.data();
-  if (courseData.creatorId !== uid) {
-    throw new Error('You are not the course creator');
-  }
+  if (courseData.creatorId !== uid) throw new Error('You are not the course creator');
 
-  const planJson = coursePlan?.planJson;
-  const direction = planJson;
+  const direction = coursePlan?.planJson;
+  if (!direction || typeof direction !== 'string') throw new Error('Missing or invalid planJson.direction');
 
-  if (!direction || typeof direction !== 'string') {
-    throw new Error('Missing or invalid planJson.direction');
-  }
+  // STEP 1: Ask GPT to design the course concept
+  const step1 = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages: [
+      {
+        role: 'system',
+        content: 'You are an expert instructional designer helping develop a peer-led course curriculum.',
+      },
+      {
+        role: 'user',
+        content: `
+Course direction: ${direction}
 
-const messages = [
-  {
-    role: 'system',
-    content: `
-You are an expert instructional designer.
+The course will be taught through 15-minute peer-led mini-lessons. Each student teaches the next once they master a lesson. What are the key topics, goals, and dimensions that should shape this course? Organize your answer as a short plan of what to prioritize when designing levels and lessons.
+        `.trim(),
+      },
+    ],
+    temperature: 0.7,
+  });
 
-You will design a course in which students teach each lesson to a peer who has not yet learned it. Each lesson is a self-contained unit lasting about 15 minutes and should teach one specific skill or concept. The peer-teacher has just mastered the lesson and has no teaching experience.
+  const courseDesign = step1.choices[0].message?.content ?? '';
 
-Each lesson must include the following fields:
+  // STEP 2: Ask GPT to propose levels and lessons based on the plan
+  const step2 = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages: [
+      { role: 'system', content: 'You are continuing the curriculum design process.' },
+      { role: 'user', content: direction },
+      { role: 'assistant', content: courseDesign },
+      {
+        role: 'user',
+        content: `
+Based on your design plan, now propose a curriculum outline.
 
-- "title": A concise lesson name
-- "synopsis": A short summary of the lesson’s focus
-- "instructions": A **single string**, written for the peer-teacher, that includes:
-  - A bulleted list (~6 items) of step-by-step teaching instructions
-  - A short explanation of the concept or skill (as mentor reference)
-  - A short list of 2–4 common learner mistakes or misconceptions
+Break the course into 2–4 levels, each with a short description. For each level, create 3–6 peer-teachable mini-lessons. Each lesson should:
+- Be specific and teach one concept or skill
+- Include a title and short synopsis
+- Include a paragraph of teaching instructions
+- End with graduation requirements
 
-All of this content must be returned **inside a single string** in the "instructions" field. Do not split this into multiple items or arrays.
+Return this in plain text, not JSON yet.
+        `.trim(),
+      },
+    ],
+    temperature: 0.7,
+  });
 
-- "graduationRequirements": A short list of 2–4 things the learner must demonstrate before progressing
+  const curriculumText = step2.choices[0].message?.content ?? '';
 
-The course must be organized into "levels", each with a title and short description, grouping related lessons together.
+  // STEP 3: Ask GPT to convert it to strict JSON
+  const step3 = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages: [
+      { role: 'system', content: 'You are converting curriculum content into strict JSON.' },
+      { role: 'user', content: direction },
+      { role: 'assistant', content: courseDesign },
+      { role: 'user', content: 'Here is the proposed curriculum outline:' },
+      { role: 'assistant', content: curriculumText },
+      {
+        role: 'user',
+        content: `
+Now convert the curriculum to JSON.
 
-Do not include any explanatory text. Return only strict JSON with this structure.
+Each lesson must contain:
+- title
+- synopsis
+- instructions (as a **single string**, including bullets, summary, and common issues)
+- graduationRequirements (a list of 2–4 items)
 
-`.trim(),
-  },
-    {
-      role: 'user',
-      content: `Course direction: ${direction}
-
-Return only JSON with the following structure:
+Return ONLY the following JSON structure:
 {
   "levels": [
     {
@@ -96,29 +113,21 @@ Return only JSON with the following structure:
         {
           "title": "Lesson Title",
           "synopsis": "Short summary of the lesson",
-          "instructions": "Instructions on how to teach and learn the skill",
-          "graduationRequirements": [
-            "Requirement 1",
-            "Requirement 2"
-          ]
+          "instructions": "All text as one string: bullets + explanation + common issues",
+          "graduationRequirements": ["Requirement 1", "Requirement 2"]
         }
       ]
     }
   ]
-}`,
-    },
-  ] as OpenAI.ChatCompletionMessageParam[];
-
-  const chatResponse = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages: [...messages],
-    temperature: 0.7,
+}
+        `.trim(),
+      },
+    ],
+    temperature: 0.5,
   });
 
-  const content = chatResponse.choices?.[0]?.message?.content;
-  if (!content) {
-    throw new Error('No content returned from OpenAI');
-  }
+  const content = step3.choices[0].message?.content;
+  if (!content) throw new Error('No content returned from OpenAI');
 
   let parsed: any;
   try {
@@ -128,7 +137,6 @@ Return only JSON with the following structure:
     throw new Error('Invalid JSON returned by GPT');
   }
 
-//   await coursePlanRef.update({ generatedJson: parsed });
   await coursePlanRef.update({ generatedJson: JSON.stringify(parsed) });
   return { success: true };
 });
