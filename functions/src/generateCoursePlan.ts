@@ -6,7 +6,7 @@ import { defineSecret } from 'firebase-functions/params';
 
 const openaiApiKey = defineSecret('OPENAI_API_KEY');
 
-export const generateCoursePlan = onCall({ secrets: [openaiApiKey] }, async (request) => {
+export const generateCoursePlan = onCall({ secrets: [openaiApiKey], timeoutSeconds: 540 }, async (request) => {
   const openai = new OpenAI({ apiKey: openaiApiKey.value() });
   const data = request.data;
   const auth = request.auth;
@@ -34,68 +34,78 @@ export const generateCoursePlan = onCall({ secrets: [openaiApiKey] }, async (req
   const direction = coursePlan?.planJson;
   if (!direction || typeof direction !== 'string') throw new Error('Missing or invalid planJson.direction');
 
-  // STEP 1: Ask GPT to design the course concept
+  let openaiResponses = [];
+
+  // STEP 1: Bottom-up inventory of teachable items
   const step1 = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'gpt-4.1',
     messages: [
-      {
-        role: 'system',
-        content: 'You are an expert instructional designer helping develop a peer-led course curriculum.',
-      },
+      { role: 'system', content: 'You are a curriculum designer identifying all teachable elements for a course.' },
       {
         role: 'user',
-        content: `
-Course direction: ${direction}
+        content: `Course direction: ${direction}
 
-The course will be taught through 15-minute peer-led mini-lessons. Each student teaches the next once they master a lesson. What are the key topics, goals, and dimensions that should shape this course? Organize your answer as a short plan of what to prioritize when designing levels and lessons.
-        `.trim(),
-      },
+List specific skills, concepts, drills, poses, or principles that might be taught. For each, mention prerequisites and a rough estimate of difficulty or readiness needed.`
+      }
     ],
     temperature: 0.7,
   });
+  const inventoryText = step1.choices[0].message?.content ?? '';
+  openaiResponses.push(inventoryText);
 
-  const courseDesign = step1.choices[0].message?.content ?? '';
-
-  // STEP 2: Ask GPT to propose levels and lessons based on the plan
+  // STEP 2: Top-down goal design
   const step2 = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'gpt-4.1',
     messages: [
-      { role: 'system', content: 'You are continuing the curriculum design process.' },
+      { role: 'system', content: 'You are helping define goals and experience for a course.' },
       { role: 'user', content: direction },
-      { role: 'assistant', content: courseDesign },
+      { role: 'assistant', content: inventoryText },
       {
         role: 'user',
-        content: `
-Based on your design plan, now propose a curriculum outline.
-
-Break the course into 2–4 levels, each with a short description. For each level, create 3–6 peer-teachable mini-lessons. Each lesson should:
-- Be specific and teach one concept or skill
-- Include a title and short synopsis
-- Include a paragraph of teaching instructions
-- End with graduation requirements
-
-Return this in plain text, not JSON yet.
-        `.trim(),
+        content: `Define inspiring yet realistic outcomes for this course based on the listed teachable content. Consider time limits (about 15 minutes per lesson. Each student learns a lesson and then teaches it. Thus a student can finish learning/teaching two lessons per hour.). Define the kind of student experience and emotional arc we want. Then suggest which goals to aim for.`
       },
     ],
     temperature: 0.7,
   });
+  const goalsText = step2.choices[0].message?.content ?? '';
+  openaiResponses.push(goalsText);
 
-  const curriculumText = step2.choices[0].message?.content ?? '';
-
-  // STEP 3: Ask GPT to convert it to strict JSON
+  // STEP 3: Structure levels and lessons based on goals and content
   const step3 = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'gpt-4.1',
     messages: [
-      { role: 'system', content: 'You are converting curriculum content into strict JSON.' },
+      { role: 'system', content: 'You are designing a level-based curriculum for peer-teaching.' },
       { role: 'user', content: direction },
-      { role: 'assistant', content: courseDesign },
-      { role: 'user', content: 'Here is the proposed curriculum outline:' },
+      { role: 'assistant', content: inventoryText },
+      { role: 'assistant', content: goalsText },
+      {
+        role: 'user',
+        content: `Organize the course into 2–4 levels. Each level should have 3–6 peer-teachable lessons. Each lesson must include:
+- title
+- synopsis
+- instructions (as one string including bullets, summary, and common issues)
+- 2–4 graduationRequirements
+
+Return this in formatted text (not JSON yet).`
+      },
+    ],
+    temperature: 0.6,
+  });
+  const curriculumText = step3.choices[0].message?.content ?? '';
+  openaiResponses.push(curriculumText);
+
+  // STEP 4: Convert to strict JSON
+  const step4 = await openai.chat.completions.create({
+    model: 'gpt-4.1',
+    messages: [
+      { role: 'system', content: 'You are converting structured curriculum content into strict JSON.' },
+      { role: 'user', content: direction },
+      { role: 'assistant', content: inventoryText },
+      { role: 'assistant', content: goalsText },
       { role: 'assistant', content: curriculumText },
       {
         role: 'user',
-        content: `
-Now convert the curriculum to JSON.
+        content: `Now convert the curriculum to JSON.
 
 Each lesson must contain:
 - title
@@ -118,15 +128,13 @@ Return ONLY the following JSON structure:
         }
       ]
     }
-  ]
-}
-        `.trim(),
+  ]`
       },
     ],
     temperature: 0.5,
   });
 
-  const content = step3.choices[0].message?.content;
+  const content = step4.choices[0].message?.content;
   if (!content) throw new Error('No content returned from OpenAI');
 
   let parsed: any;
@@ -137,6 +145,10 @@ Return ONLY the following JSON structure:
     throw new Error('Invalid JSON returned by GPT');
   }
 
-  await coursePlanRef.update({ generatedJson: JSON.stringify(parsed) });
+  await coursePlanRef.update({
+    generatedJson: JSON.stringify(parsed),
+    openaiResponses: openaiResponses.join('\n\n---\n\n')
+  });
+
   return { success: true };
 });
