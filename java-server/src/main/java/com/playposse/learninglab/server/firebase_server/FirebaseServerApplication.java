@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class FirebaseServerApplication {
 
 	public static void main(String[] args) {
+		// Test
 		SpringApplication.run(FirebaseServerApplication.class, args);
 	}
 
