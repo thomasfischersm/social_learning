@@ -35,6 +35,8 @@ dependencies {
 	implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.14'
 
 	implementation 'com.google.firebase:firebase-admin:9.4.3'
+
+	implementation("com.openai:openai-java:1.6.0")
 }
 
 tasks.named('test') {
