@@ -1,0 +1,15 @@
+# Usual exclusions
+.gradle/
+.idea/
+*.iml
+*.log
+*.class
+*.jar  # Exclude junk top-level jars
+
+# Ignore everything in build folder...
+build/**
+
+# ...except the jar we need
+!build/
+!build/libs/
+!build/libs/*.jar

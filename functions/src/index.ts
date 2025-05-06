@@ -11,4 +11,3 @@
 
 export { updateMostAdvancedStudent } from './updateMostAdvancedStudent';
 export { updateUserLastLessonTimestamp } from './updateUserLastLessonTimestamp';
-export { generateCoursePlan } from './generateCoursePlan';
