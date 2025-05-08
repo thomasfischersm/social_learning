@@ -73,8 +73,8 @@ public final class ParallelStep implements Step {
 
     /** Builder for a ParallelStep. */
     public static class Builder {
-        private final LinkedHashMap<String, SimpleStep> branches = new LinkedHashMap<>();
-        private Label<Map<String, Object>> joinLabel;
+        protected final LinkedHashMap<String, SimpleStep> branches = new LinkedHashMap<>();
+        protected Label<Map<String, Object>> joinLabel;
 
         /** Add a branch: its name and the single SimpleStep it should run. */
         public Builder branch(String name, SimpleStep step) {

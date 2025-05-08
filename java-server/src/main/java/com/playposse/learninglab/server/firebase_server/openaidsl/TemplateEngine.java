@@ -29,9 +29,8 @@ public final class TemplateEngine {
         while (m.find()) {
             String key = m.group(1);
             String replacement = vars.getOrDefault(key, m.group(0));
-            // escape backslashes and dollars in replacement
-            replacement = replacement.replace("\\\\", "\\\\\\\\").replace("$", "\\$");
-            m.appendReplacement(sb, replacement);
+            // quoteReplacement ensures backslashes and dollars are _literal_
+            m.appendReplacement(sb, Matcher.quoteReplacement(replacement));
         }
         m.appendTail(sb);
         return sb.toString();

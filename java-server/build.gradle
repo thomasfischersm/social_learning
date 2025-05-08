@@ -1,44 +1,53 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.5'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'com.github.ben-manes.versions' version '0.52.0'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.github.ben-manes.versions' version '0.52.0'
 }
 
 group = 'com.playposse.learninglab.server'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// Google Cloud Secret Manager client
-	implementation 'com.google.cloud:google-cloud-secretmanager:2.61.0'
+    // Google Cloud Secret Manager client
+    implementation 'com.google.cloud:google-cloud-secretmanager:2.61.0'
 
-	// (Optional) For logging
-	implementation 'org.slf4j:slf4j-api:2.0.9'
+    // (Optional) For logging
+    implementation 'org.slf4j:slf4j-api:2.0.9'
 
-	// (Optional) For cleaner JSON handling if needed later
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.0'
+    // (Optional) For cleaner JSON handling if needed later
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.0'
 
-	implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.14'
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.14'
 
-	implementation 'com.google.firebase:firebase-admin:9.4.3'
+    implementation 'com.google.firebase:firebase-admin:9.4.3'
 
-	implementation("com.openai:openai-java:1.6.0")
+    implementation("com.openai:openai-java:1.6.0")
+
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.9.2"
+
+    // Mockito for stubs & spies
+    testImplementation "org.mockito:mockito-core:4.+"
+
+    // (Optional) Jackson for JSON assertions
+    testImplementation "com.fasterxml.jackson.core:jackson-databind:2.15.2"
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

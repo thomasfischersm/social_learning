@@ -9,21 +9,21 @@ import java.util.concurrent.Executor;
 
 /**
  * A single chat‐completion “step” that:
- *  1. Builds a prompt (system/user/assistant + optional history),
- *  2. Calls the OpenAI client,
- *  3. Parses the result,
- *  4. Records a CallLog,
- *  5. Returns a new ChainContext with the label bound.
+ * 1. Builds a prompt (system/user/assistant + optional history),
+ * 2. Calls the OpenAI client,
+ * 3. Parses the result,
+ * 4. Records a CallLog,
+ * 5. Returns a new ChainContext with the label bound.
  */
 public final class SimpleStep implements Step {
 
-    private final String                   name;
-    private final List<MessageTemplate>    templates;
-    private final Parser<?>                parser;
-    private final Label<?>                 label;
-    private final ChatConfig               config;
-    private final boolean                  includeHistory;
-    private final int                      historyPairs;
+    private final String name;
+    private final List<MessageTemplate> templates;
+    private final Parser<?> parser;
+    private final Label<?> label;
+    private final ChatConfig config;
+    private final boolean includeHistory;
+    private final int historyPairs;
 
     public SimpleStep(
             String name,
@@ -34,13 +34,17 @@ public final class SimpleStep implements Step {
             boolean includeHistory,
             int historyPairs
     ) {
-        this.name           = name;
-        this.templates      = templates;
-        this.parser         = parser;
-        this.label          = label;
-        this.config         = config;
+        this.name = name;
+        this.templates = templates;
+        this.parser = parser;
+        this.label = label;
+        this.config = config;
         this.includeHistory = includeHistory;
-        this.historyPairs   = historyPairs;
+        this.historyPairs = historyPairs;
+    }
+
+    public Label<?> getLabel() {
+        return label;
     }
 
     @Override
@@ -65,7 +69,7 @@ public final class SimpleStep implements Step {
             }
 
             // resolve each template through the current context
-            Map<String,String> varsMap = TemplateEngine.buildStringMap(ctx);
+            Map<String, String> varsMap = TemplateEngine.buildStringMap(ctx);
             for (var tmpl : templates) {
                 String txt = TemplateEngine.resolve(tmpl.content(), varsMap);
                 prompt.add(new ChatMsg(tmpl.role(), txt));
@@ -77,14 +81,14 @@ public final class SimpleStep implements Step {
                 // 2. Call OpenAI
                 ChatCompletionResult res = client.chatCompletion(prompt, config);
                 String completion = res.content();
-                JsonNode usage     = res.usage();
+                JsonNode usage = res.usage();
 
                 // 3. Parse into T
                 Object parsed = parser.parse(completion);
 
                 // 4. Append to history & vars
                 ChainContext withUser = nextCtx.appendHistory(
-                        new ChatMsg(Role.USER, prompt.get(prompt.size()-1).content())
+                        new ChatMsg(Role.USER, prompt.get(prompt.size() - 1).content())
                 );
                 ChainContext withBoth = withUser.appendHistory(
                         new ChatMsg(Role.ASSISTANT, completion)
@@ -117,7 +121,7 @@ public final class SimpleStep implements Step {
                         err
                 );
                 // surface the error in the context
-                nextCtx = nextCtx.plus(label, null);
+//                nextCtx = nextCtx.plus(label, null);
             }
 
             logs.add(logEntry);
