@@ -43,9 +43,4 @@ public class CoursePlanController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
-
-    public static class GenerateCoursePlanRequest {
-        public String uid;
-        public String coursePlanId;
-    }
 }
