@@ -1,12 +1,14 @@
 package com.playposse.learninglab.server.firebase_server.openaidsl;
 
+import com.openai.models.ChatModel;
+
 import java.util.List;
 
 /**
  * Immutable set of parameters for one chat-completion call.
  */
 public record ChatConfig(
-        String model,
+        ChatModel model,
         int maxTokens,
         double temperature,
         double topP,
@@ -32,7 +34,7 @@ public record ChatConfig(
      * Fluent builder for ChatConfig.
      */
     public static class Builder {
-        private String model = "gpt-4o";
+        private ChatModel model = ChatModel.CHATGPT_4O_LATEST;
         private int maxTokens = 2_048;
         private double temperature = 1.0;
         private double topP = 1.0;
@@ -53,7 +55,7 @@ public record ChatConfig(
             this.functions = cfg.functions();
         }
 
-        public Builder model(String m) {
+        public Builder model(ChatModel m) {
             this.model = m;
             return this;
         }

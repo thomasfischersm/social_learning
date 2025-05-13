@@ -5,6 +5,7 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.FieldValue;
 import com.google.cloud.firestore.Firestore;
+import com.openai.models.ChatModel;
 import com.playposse.learninglab.server.firebase_server.openaidsl.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -186,7 +187,7 @@ public class CoursePlanService3 {
                             "content", m.content()))
                     .toList();
             // delegate; ignore usage (null)
-            String text = svc.chat(sdkMsgs, config.temperature());
+            String text = svc.chat(sdkMsgs, ChatModel.CHATGPT_4O_LATEST, config.temperature(), 5000);
             return new ChatCompletionResult(text, null);
         }
     }

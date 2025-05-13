@@ -32,7 +32,7 @@ public class OpenAiClientImpl implements OpenAiClient {
     ) throws Exception {
         // 1) Start the builder with model & sampling params :contentReference[oaicite:1]{index=1}
         var builder = ChatCompletionCreateParams.builder()
-                .model(ChatModel.of(config.model().toUpperCase().replace('-', '_')))
+                .model(config.model())
                 .maxTokens(config.maxTokens())
                 .temperature(config.temperature())
                 .topP(config.topP())

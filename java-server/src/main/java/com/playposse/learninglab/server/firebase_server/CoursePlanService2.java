@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
+import com.openai.models.ChatModel;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class CoursePlanService2 {
             String inventoryText = openAiService.chat(List.of(
                     system("You are a curriculum designer identifying all teachable elements for a course."),
                     user("Course direction: " + direction + "\n\nList specific skills, concepts, drills, poses, or principles that might be taught. For each, mention prerequisites and a rough estimate of difficulty or readiness needed.")
-            ), 0.7);
+            ), ChatModel.CHATGPT_4O_LATEST, 0.7, 5000);
             openaiResponses.add(inventoryText);
 
             // Step 2
@@ -61,7 +62,7 @@ public class CoursePlanService2 {
                     user(direction),
                     assistant(inventoryText),
                     user("Define inspiring yet realistic outcomes for this course based on the listed teachable content. Consider time limits (about 15 minutes per lesson. Each student learns a lesson and then teaches it. Thus a student can finish learning/teaching two lessons per hour.). Define the kind of student experience and emotional arc we want. Then suggest which goals to aim for.\n")
-            ), 0.7);
+            ),  ChatModel.CHATGPT_4O_LATEST, 0.7, 5000);
             openaiResponses.add(goalsText);
 
             // Step 3
@@ -79,7 +80,7 @@ public class CoursePlanService2 {
                             
                             Return this in formatted text (not JSON yet).
                             """)
-            ), 0.6);
+            ),  ChatModel.CHATGPT_4O_LATEST, 0.7, 5000);
             openaiResponses.add(curriculumText);
 
             // Step 4
@@ -116,7 +117,7 @@ public class CoursePlanService2 {
                               ]
                             }
                             """)
-            ), 0.5);
+            ),  ChatModel.CHATGPT_4O_LATEST, 0.7, 5000);
 
             Map<?, ?> parsedJson;
             try {

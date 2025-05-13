@@ -1,5 +1,7 @@
 package com.playposse.learninglab.server.firebase_server.openaidsl;
 
+import com.openai.models.ChatModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +74,7 @@ public class StepBuilder {
     }
 
     /** Override the model for this step. */
-    public StepBuilder model(String model) {
+    public StepBuilder model(ChatModel model) {
         ensureOverrideCfg().model(model);
         return this;
     }

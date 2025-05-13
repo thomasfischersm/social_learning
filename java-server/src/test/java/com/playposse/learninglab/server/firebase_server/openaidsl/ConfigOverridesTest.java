@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 
+import com.openai.models.ChatModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -21,7 +22,7 @@ class ConfigOverridesTest {
     void setup() throws Exception {
         // Build explicit defaults so we know what to expect
         defaults = new DefaultsBuilder()
-                .model("base-model")
+                .model(ChatModel.CHATGPT_4O_LATEST)
                 .maxTokens(123)
                 .build();
 
@@ -48,7 +49,7 @@ class ConfigOverridesTest {
                 .endStep()
                 .step("step1")
                 .user("p1")
-                .model("override-model")
+                .model(ChatModel.GPT_3_5_TURBO)
                 .maxTokens(456)
                 .parse(Parsers.string())
                 .label(L1)
@@ -76,7 +77,7 @@ class ConfigOverridesTest {
 
         // Second call: overridden values
         ChatConfig cfg1 = cfgs.get(1);
-        assertEquals("override-model", cfg1.model(),      "Step1 should use overridden model");
+        assertEquals(ChatModel.GPT_3_5_TURBO, cfg1.model(),      "Step1 should use overridden model");
         assertEquals(456,               cfg1.maxTokens(), "Step1 should use overridden maxTokens");
 
         // Confirm all other parameters remain the same as defaults

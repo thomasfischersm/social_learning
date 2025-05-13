@@ -53,10 +53,11 @@ public class OpenAiService {
     /**
      * Multi‐role chat: accepts List<Map<role,content>>.
      */
-    public String chat(List<Map<String, String>> messagesInput, double temperature) {
+    public String chat(List<Map<String, String>> messagesInput, ChatModel chatModel, double temperature, long maxTokens) {
         ChatCompletionCreateParams.Builder b = ChatCompletionCreateParams.builder()
-                .model(ChatModel.GPT_4)
-                .temperature(temperature);
+                .model(chatModel)
+                .temperature(temperature)
+                .maxTokens(maxTokens);
 
         for (Map<String, String> msg : messagesInput) {
             String role    = msg.get("role");

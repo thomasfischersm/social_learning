@@ -1,5 +1,7 @@
 package com.playposse.learninglab.server.firebase_server.openaidsl;
 
+import com.openai.models.ChatModel;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -58,7 +60,7 @@ public final class ChainBuilder {
         public StepBuilderDSL history(int pairs)         { inner.history(pairs); return this; }
         public StepBuilderDSL parse(Parser<?> p)         { inner.parse(p);    return this; }
         public <T> StepBuilderDSL label(Label<T> lbl)    { inner.label(lbl);  return this; }
-        public StepBuilderDSL model(String m)            { inner.model(m);    return this; }
+        public StepBuilderDSL model(ChatModel m)         { inner.model(m);    return this; }
         public StepBuilderDSL maxTokens(int t)           { inner.maxTokens(t);return this; }
         public StepBuilderDSL temperature(double v)      { inner.temperature(v); return this; }
         public StepBuilderDSL topP(double v)             { inner.topP(v);     return this; }

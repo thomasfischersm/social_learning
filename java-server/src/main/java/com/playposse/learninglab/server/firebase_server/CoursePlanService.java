@@ -366,7 +366,7 @@ public class CoursePlanService {
                             "content", m.content()))
                     .toList();
             // delegate; ignore usage (null)
-            String text = svc.chat(sdkMsgs, config.temperature());
+            String text = svc.chat(sdkMsgs, config.model(), config.temperature(), config.maxTokens());
             return new ChatCompletionResult(text, null);
         }
     }
