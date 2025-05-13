@@ -11,6 +11,7 @@ gcloud run deploy learning-lab-server `
   --image gcr.io/social-learning-32741/learning-lab-server `
   --platform managed `
   --region us-central1 `
-  --allow-unauthenticated
+  --allow-unauthenticated `
+  --timeout 1200s  # 20 minutes timeout
 
 Write-Host "✅ Deployment complete."
