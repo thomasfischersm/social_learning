@@ -1,6 +1,8 @@
 package com.playposse.learninglab.server.firebase_server.openaidsl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.*;
@@ -16,6 +18,7 @@ import java.util.concurrent.Executor;
  * 5. Returns a new ChainContext with the label bound.
  */
 public final class SimpleStep implements Step {
+    private static final Logger log = LoggerFactory.getLogger(SimpleStep.class);
 
     private final String name;
     private final List<MessageTemplate> templates;
@@ -78,10 +81,16 @@ public final class SimpleStep implements Step {
             CallLog logEntry;
             ChainContext nextCtx = ctx;
             try {
+                log.info("Calling OpenAI step '{}'", name);
+                log.debug("Prompt: {}", prompt);
+
                 // 2. Call OpenAI
                 ChatCompletionResult res = client.chatCompletion(prompt, config);
                 String completion = res.content();
                 JsonNode usage = res.usage();
+
+                log.info("Received OpenAI response for '{}'", name);
+                log.debug("Response content: {}", res.content());
 
                 // 3. Parse into T
                 Object parsed = parser.parse(completion);

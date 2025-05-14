@@ -72,7 +72,7 @@ class ConfigOverridesTest {
 
         // First call: defaults
         ChatConfig cfg0 = cfgs.get(0);
-        assertEquals("base-model", cfg0.model(),      "Step0 should use default model");
+        assertEquals(ChatModel.CHATGPT_4O_LATEST, cfg0.model(),      "Step0 should use default model");
         assertEquals(123,            cfg0.maxTokens(), "Step0 should use default maxTokens");
 
         // Second call: overridden values

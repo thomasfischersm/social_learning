@@ -17,7 +17,6 @@ import java.util.Map;
 public class CoursePlanService {
 
     private final Firestore db;
-    private final OpenAiService openAiService;
     private final OpenAiClient openAiClient;
     private final ChatConfig defaults;
 
@@ -36,11 +35,18 @@ public class CoursePlanService {
     private static final Label<String> JSON_TEXT = Label.of("jsonText", String.class);
 
     @Autowired
-    public CoursePlanService(Firestore db, OpenAiService openAiService) {
+    public CoursePlanService(Firestore db, SecretFetcher secretFetcher) {
+        String apiKey;
+        try {
+            apiKey = secretFetcher.getOpenAiApiKey();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch OpenAI API key", e);
+        }
+
         this.db = db;
-        this.openAiService = openAiService;
         // wrap the existing OpenAiService in our OpenAiClient interface
-        this.openAiClient = new OpenAiServiceAdapter(openAiService);
+//        this.openAiClient = new OpenAiServiceAdapter(openAiService);
+        this.openAiClient = new OpenAiClientImpl(apiKey);
         // pick whatever global defaults you like; you can override per‐step below
         this.defaults = new DefaultsBuilder().build();
     }
