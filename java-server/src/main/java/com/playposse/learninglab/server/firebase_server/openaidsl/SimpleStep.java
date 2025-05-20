@@ -91,6 +91,7 @@ public final class SimpleStep implements Step {
 
                 log.info("Received OpenAI response for '{}'", name);
                 log.debug("Response content: {}", res.content());
+                log.debug("Usage: {}", usage);
 
                 // 3. Parse into T
                 Object parsed = parser.parse(completion);
@@ -114,6 +115,8 @@ public final class SimpleStep implements Step {
                         null
                 );
             } catch (Exception e) {
+                log.error("OpenAI step '{}' failed. Prompt: {}", name, prompt, e);
+
                 // wrap error
                 ErrorInfo err = new ErrorInfo(
                         name,

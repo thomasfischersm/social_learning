@@ -24,6 +24,7 @@ public class CoursePlanService {
     private static final Label<String> PRIME = Label.of("prime", String.class);
     private static final Label<String> INVENTORY_CATEGORIES = Label.of("inventoryCategories", String.class);
     private static final Label<String> INVENTORY_SOURCES = Label.of("inventorySources", String.class);
+    private static final Label<String> INVENTORY_SOURCES_EVALUATION = Label.of("inventorySourcesEvaluation", String.class);
     private static final Label<String> INVENTORY = Label.of("inventory", String.class);
     private static final Label<String> STUDENT_FIRST_CLASS = Label.of("studentFirstClass", String.class);
     private static final Label<String> GOALS = Label.of("goals", String.class);
@@ -80,7 +81,20 @@ public class CoursePlanService {
                 "what is achievable within the course duration, how would it complement the other goals, and so on. " +
                 "You also always want to ask yourself what is it that you are actually proposing. For example, if " +
                 "you propose a class on communication, that's vague. Ask yourself what specific communication skill " +
-                "you think would be good to teach.";
+                "you think would be good to teach.\n\n" +
+                "In past runs, you tend to misunderstand the curriculum hierarchy. You would create courses with a " +
+                "single level (which was essentially the class description) and each lesson would be a class session. " +
+                "However, the model is different. In our approach when we refer to mini-lessons or short lessons " +
+                "they refer to a unit of learning. Students can learn multiple lessons/mini-lessons during a class " +
+                "room session. So the hierarchy is course -> many levels -> many lessons. A class room session is the " +
+                "time and place where students meet to learn/teach each other mini-lessons. Example: In a chess course, " +
+                "students may meet for six two-hour sessions in a six week course. Mini-lessons are concrete, teachable " +
+                "atomic learning units. Examples could be a mini-lesson about how the bishop moves or the opening " +
+                "the Queens Gambit. These mini-lessons may be grouped into levels for organization and to give students " +
+                "intermediate goals. A level could be for all the mini-lessons on how the chess pieces move. Or a " +
+                "first level could be organized as a 'crash course' with a sampler of key mini-lessons to play a first " +
+                "game. Within in a class room session, students would teach each other as many mini-lessons/lessons " +
+                "as they can.";
 
         ChainResult result = ChainBuilder
                 .start(defaults)
@@ -123,17 +137,32 @@ public class CoursePlanService {
                 .system(systemMsg)
                 .history()
                 .user("Now that you have categories of online sources, do an online search to identify good URLs" +
-                        "that would give you nameable, teachable elements of the subject.")
+                        "that would give you nameable, teachable elements of the subject. Be sure to access online " +
+                        "sources and not answer from your memory!")
                 .parse(Parsers.string())
                 .label(INVENTORY_SOURCES)
                 .maxTokens(9000)
+                .endStep()
+
+                // Step 3.5: inventory
+                .step(INVENTORY_SOURCES_EVALUATION.name())
+                .system(systemMsg)
+                .history()
+                .user("Check the URLs and evaluate the sources for their quality to contain information for the " +
+                        "curriculum generation. Some of the sites may simply be marketing material with no info. Other " +
+                        "pages may contain valuable information about the subject. Some may be a single page. Others may " +
+                        "be multiple pages, like a database, repository, or blog about the subject. Identify high-value " +
+                        "sources (and their URL) and also how deeply you would want to crawl them.")
+                .maxTokens(9000)
+                .parse(Parsers.string())
+                .label(INVENTORY_SOURCES_EVALUATION)
                 .endStep()
 
                 // Step 4: inventory
                 .step(INVENTORY.name())
                 .system(systemMsg)
                 .history()
-                .user("Now that you have URLs, browse the pages and extract a list of nameable, teachable " +
+                .user("Now that you have URLs to good sources, browse the pages and extract a list of nameable, teachable " +
                         "elements of the subject. And combine the lists into one master list. Group the items into " +
                         "categories that make sense.")
                 .maxTokens(9000)
@@ -143,7 +172,7 @@ public class CoursePlanService {
 
                 // Step 5: student first class
                 .step(STUDENT_FIRST_CLASS.name())
-                .system("You are helping define goals and experience for a course.")
+                .system(systemMsg)
                 .history()
                 .user(direction)
                 .user("Let's switch track a bit. Consider what the emotional state/needs and readiness of " +
@@ -157,7 +186,7 @@ public class CoursePlanService {
 
                 // Step 6: goals
                 .step(GOALS.name())
-                .system("You are helping define goals and experience for a course.")
+                .system(systemMsg)
                 .history()
                 .user("Define inspiring yet realistic outcomes for this course based on the listed teachable content. " +
                         "Consider time limits of each session and the duration that each teachable unit would " +
@@ -175,7 +204,7 @@ public class CoursePlanService {
 
                 // Step 7: design criteria
                 .step(DESIGN_CRITERIA.name())
-                .system("You are helping define goals and experience for a course.")
+                .system(systemMsg)
                 .history()
                 .user("I want you to think about what would make a good curriculum design. You often design " +
                         "courses in a very logical fashion as one would create a book: Start at the very beginning, " +
@@ -195,7 +224,7 @@ public class CoursePlanService {
 
                 // Step 6: goals
                 .step(GOALS.name())
-                .system("You are helping define goals and experience for a course.")
+                .system(systemMsg)
                 .history()
                 .user("Define inspiring yet realistic outcomes for this course based on the listed teachable content. " +
                         "Consider time limits of each session and the duration that each teachable unit would " +
@@ -213,7 +242,7 @@ public class CoursePlanService {
 
                 // Step 7: session format
                 .step(SESSION_FORMAT.name())
-                .system("You are helping define goals and experience for a course.")
+                .system(systemMsg)
                 .history()
                 .user("Let's think about the design of the course. Start by thinking about how you would design" +
                         " a session in the course. You probably want to allocate most of the time to mini-lessons " +
@@ -228,14 +257,49 @@ public class CoursePlanService {
                         "Sometimes, mini-lessons might be shorter, e.g. a warm-up for a physical class may only " +
                         "take 3-5 minutes for both partners to get a turn. A mini-lesson for a chess club might " +
                         "require enough time to actually get through a chess opening. So consider what makes sense " +
-                        "for the given subject.")
+                        "for the given subject.\n\n" +
+                        "In past runs, you've had issues where your lessons included lots of things. Let me be " +
+                        "clear: Each lesson should be an atomic unit. If it's a chess course, each lesson might be an " +
+                        "opening or how a chess piece moves. If it's an acroyoga class, it's a single pose or warm-up. " +
+                        "A lesson is not a whole bunch of things that you stuff together.\n\n" +
+                        "If you are confused: A course refers to the entire program. A session a time when students " +
+                        "and the teacher meet up. A mini-lesson (or short lesson) is a learning unit in the " +
+                        "course that can be checked off and completed. A level is a logical grouping of " +
+                        "mini-lessons.\n\n" +
+                        "For example, a 6-week chess course would meet for six weeks. A session may be structured as " +
+                        "a 10-minute welcome by the teacher to explain what to expect. Then, there might be " +
+                        "40 minutes for students to teach each other mini-lessons. Some students will progress faster " +
+                        "than others. The levels may be laid out so that fast students can finish one for each " +
+                        "session. The first level may be have one mini-lesson for the rules of how each chess piece can " +
+                        "move. The mentoring student may explain how it works and then do an exercise to apply it. " +
+                        "The second level may have one mini-lesson for each for one common chess opening each. There " +
+                        "may be a mini-lesson thrown in about how to stay clear-headed under pressure. Because just " +
+                        "telling that to someone, this wouldn't be a lecture only but some creatively-designed " +
+                        "practical exercise. The final ten minutes of class may be a demonstrating chess game between " +
+                        "the instructor and a student where the instructor explains the game while it happens.\n\n" +
+                        "Another example is acroyoga. Let's say a level starts with warm-ups, then introduces " +
+                        "acroyoga poses, and finishes with a flow (washing machine) that connects the poses as a" +
+                        "capstone. The warm-ups would be smartly chosen to not simply be warm-ups but teach " +
+                        "acroyoga principles and prepare for the poses. For example, body tightness drills " +
+                        "prepare students for the base to remove one foot from the flyer in bird pose and for the " +
+                        "flyer to remain tight and not lose balance. Perhaps, a twelve-week course is laid out with " +
+                        "the plan of teaching the washing machine four-step. Four-step consists of four poses. One " +
+                        "of them is star. Star is a more advanced inversion than shoulderstand. Shoulderstand is a" +
+                        "more advanced version than candlestick. Doing solo tripod headstand is a good preparation " +
+                        "for an inversion like candlestick. You can see how the prerequisites and preparation for the " +
+                        "final goal (four-step washing machine) fan out. So the whole course might be designed with " +
+                        "that end goal in mind.\n\n" +
+                        "To be really clear: Each mini-lesson is a single, unique teachable unit, usually something " +
+                        "practical, interactive with a clear outcome/success. It's not a meandering all kinds of " +
+                        "things. Levels are logical groupings to shape the mini-lessons into a greater whole and to " +
+                        "provide students with a sense of progress and intermediate goals.")
                 .parse(Parsers.string())
                 .label(SESSION_FORMAT)
                 .endStep()
 
                 // Step 8: level design
                 .step(LEVEL_DESIGN.name())
-                .system("You are helping define goals and experience for a course.")
+                .system(systemMsg)
                 .history()
                 .user("Let's design the levels. First, consider that a level should be a logically complete unit" +
                         " that builds up to a greater something. It should probably also correlate somewhat to the " +
@@ -243,24 +307,31 @@ public class CoursePlanService {
                         "about the content of the level that it fits within the given time. Identify what would make " +
                         "good levels for the course and then define a summary for it, learning outcomes, and named, " +
                         "teachable elements to include. Use the course learning outcomes and student readiness in " +
-                        "this exercise.")
+                        "this exercise.\n\n" +
+                        "As a reminder, you've often created courses with a single level where each lesson was the " +
+                        "the entire session for that day. That's dead wrong! You are supposed to create mini-lessons " +
+                        "that are unique, atomic, teachable units. There are many of these to be learned in each " +
+                        "class room session. And they are supposed to be grouped into levels to create organization " +
+                        "and progress points for students.\n\n" +
+                        "Again, a mini-lesson (aka lesson) is not the entire time together, but it's one of many units " +
+                        "that are taught during a class.")
                 .parse(Parsers.string())
                 .label(LEVEL_DESIGN)
                 .endStep()
 
                 // Step 9: criteria review
-                .step(LEVEL_DESIGN.name())
-                .system("You are helping define goals and experience for a course.")
+                .step(CRITERIA_REVIEW.name())
+                .system(systemMsg)
                 .history()
                 .user("Use the design criteria that you made for the course to review the course that you've " +
                         "created. Make adjustments as you identify issues.")
                 .parse(Parsers.string())
-                .label(LEVEL_DESIGN)
+                .label(CRITERIA_REVIEW)
                 .endStep()
 
                 // Step 10: curriculum design
                 .step("curriculum")
-                .system("You are designing a level-based curriculum for peer-teaching.")
+                .system(systemMsg)
                 .user(direction)
                 .assistant("${inventory}")
                 .assistant("${goals}")
@@ -299,7 +370,8 @@ public class CoursePlanService {
                         - instructions (as a **single string**, including bullets, summary, and common issues)
                         - graduationRequirements (a list of items)
                         
-                        Return ONLY the following JSON structure:
+                        Return ONLY the following JSON structure. Be sure to return nothing else but json, not even a
+                        little string 'json' in front of it:
                         {
                           "levels": [
                             {
@@ -325,6 +397,7 @@ public class CoursePlanService {
                 .run(openAiClient);
 
         // pull out the four pieces
+        // TODO: Log all the pieces!
         String inventory = result.get(INVENTORY);
         String goals = result.get(GOALS);
         String curriculum = result.get(CURRICULUM);

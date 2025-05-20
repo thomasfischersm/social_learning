@@ -7,8 +7,10 @@ import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
+import com.openai.models.completions.CompletionUsage;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Adapter from our ChatMsg/ChatConfig DSL into the official OpenAI Java SDK.
@@ -74,6 +76,11 @@ public class OpenAiClientImpl implements OpenAiClient {
 
         // 5) (Optional) parse usage once you locate the right type; leave null for now
         JsonNode usageJson = null;
+        Optional<CompletionUsage> usageOpt = response.usage();
+        if (usageOpt.isPresent()) {
+            // Convert the usage POJO into a JSON tree
+            usageJson = MAPPER.valueToTree(usageOpt.get());
+        }
 
         return new ChatCompletionResult(text, usageJson);
     }
