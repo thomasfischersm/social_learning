@@ -11,6 +11,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
+// Teachable item imports removed below
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/data/lesson_comment.dart';
 import 'package:social_learning/data/user.dart';
@@ -57,6 +58,7 @@ class LibraryState extends ChangeNotifier {
       _lessons = null;
       _isLessonListLoaded = false;
       _isLevelListLoaded = false;
+      // Teachable item flags removed below
     }
 
     _selectedCourse = course;
@@ -811,5 +813,7 @@ class LibraryState extends ChangeNotifier {
     _isCourseListLoaded = false;
     _isLevelListLoaded = false;
     _isLessonListLoaded = false;
+
+    // Teachable item related state and listeners removed below
   }
 }

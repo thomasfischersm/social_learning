@@ -29,7 +29,7 @@ enum NavigationEnum {
   instructorClipboard('/instructor_clipboard'),
   courseGeneration('/course_generation'),
   courseGenerationReview('/course_generation_review'),
-  ;
+  courseDesignerInventory('/course_inventory');
 
   final String route;
 
