@@ -5,6 +5,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/course_plan.dart';
 import 'package:social_learning/data/data_helpers/course_plan_functions.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
@@ -121,7 +122,8 @@ class CourseGenerationPageState extends State<CourseGenerationPage> {
                               focusNode: _focusNode,
                               maxLines: 10,
                               decoration: InputDecoration(
-                                hintText: 'e.g., A beginner tango course focused on musicality and improvisation...',
+                                hintText:
+                                    'e.g., A beginner tango course focused on musicality and improvisation...',
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -133,13 +135,13 @@ class CourseGenerationPageState extends State<CourseGenerationPage> {
                               child: ElevatedButton.icon(
                                 icon: _isGenerating
                                     ? const SizedBox(
-                                  height: 16,
-                                  width: 16,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
+                                        height: 16,
+                                        width: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
                                     : const Icon(Icons.auto_fix_high),
                                 label: Text(_isGenerating
                                     ? 'Generating...'
@@ -164,32 +166,45 @@ class CourseGenerationPageState extends State<CourseGenerationPage> {
   }
 
   Future<void> _onGenerateTapped(Course course) async {
-    await DialogUtils.showConfirmationDialog(
-      context,
-      'Replace existing curriculum?',
-      'Generating a new curriculum will permanently replace your current one. This process uses AI and costs real money to run — please only proceed if you really intend to regenerate.',
-          () async {
-        setState(() => _isGenerating = true);
-        final direction = _controller.text.trim();
+    ApplicationState applicationState =
+        Provider.of<ApplicationState>(context, listen: false);
 
-        final courseRef = docRef('courses', course.id!);
-        CoursePlan? plan = await CoursePlanFunctions.getCoursePlanByCourse(courseRef);
+    if (applicationState.currentUser?.isAdmin != true) {
+      await DialogUtils.showInfoDialog(context, 'Generate curriculum',
+          'Please, contact thomas@learninglab.fans to get early access to this feature.',
+          () {
+        /* Nothing todo */
+      });
+    } else {
+      await DialogUtils.showConfirmationDialog(
+        context,
+        'Replace existing curriculum?',
+        'Generating a new curriculum will permanently replace your current one. This process uses AI and costs real money to run — please only proceed if you really intend to regenerate.',
+        () async {
+          setState(() => _isGenerating = true);
+          final direction = _controller.text.trim();
 
-        if (plan == null) {
-          final newId = await CoursePlanFunctions.createCoursePlan(courseRef, direction);
-          plan = await CoursePlanFunctions.getCoursePlanById(newId);
-        } else {
-          await CoursePlanFunctions.updatePlanJson(plan.id!, direction);
-        }
+          final courseRef = docRef('courses', course.id!);
+          CoursePlan? plan =
+              await CoursePlanFunctions.getCoursePlanByCourse(courseRef);
 
-        await CloudFunctions.generateCourseFromPlan(plan!.id!);
+          if (plan == null) {
+            final newId = await CoursePlanFunctions.createCoursePlan(
+                courseRef, direction);
+            plan = await CoursePlanFunctions.getCoursePlanById(newId);
+          } else {
+            await CoursePlanFunctions.updatePlanJson(plan.id!, direction);
+          }
 
-        setState(() => _isGenerating = false);
+          await CloudFunctions.generateCourseFromPlan(plan!.id!);
 
-        if (mounted) {
-          NavigationEnum.courseGenerationReview.navigateClean(context);
-        }
-      },
-    );
+          setState(() => _isGenerating = false);
+
+          if (mounted) {
+            NavigationEnum.courseGenerationReview.navigateClean(context);
+          }
+        },
+      );
+    }
   }
 }
