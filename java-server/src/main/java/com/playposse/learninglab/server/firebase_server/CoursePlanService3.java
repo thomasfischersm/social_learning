@@ -188,7 +188,7 @@ public class CoursePlanService3 {
                     .toList();
             // delegate; ignore usage (null)
             String text = svc.chat(sdkMsgs, ChatModel.CHATGPT_4O_LATEST, config.temperature(), 5000);
-            return new ChatCompletionResult(text, null);
+            return new ChatCompletionResult(text, null, 0);
         }
     }
 }

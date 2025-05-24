@@ -91,6 +91,7 @@ public final class SimpleStep implements Step {
 
                 log.info("Received OpenAI response for '{}'", name);
                 log.debug("Response content: {}", res.content());
+                log.info("OpenAI call for '{}' took {} ms", name, res.durationMillis());
                 log.debug("Usage: {}", usage);
 
                 // 3. Parse into T
@@ -112,7 +113,8 @@ public final class SimpleStep implements Step {
                         config,
                         completion,
                         usage,
-                        null
+                        null,
+                        0
                 );
             } catch (Exception e) {
                 log.error("OpenAI step '{}' failed. Prompt: {}", name, prompt, e);
@@ -130,7 +132,8 @@ public final class SimpleStep implements Step {
                         config,
                         /*completion=*/null,
                         /*usage=*/null,
-                        err
+                        err,
+                        0
                 );
                 // surface the error in the context
 //                nextCtx = nextCtx.plus(label, null);

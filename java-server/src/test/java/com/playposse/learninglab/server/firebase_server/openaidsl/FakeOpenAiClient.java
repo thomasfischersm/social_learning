@@ -41,10 +41,10 @@ public class FakeOpenAiClient implements OpenAiClient {
                 if (value.endsWith("-")) {
                     // dynamic prefix: grab whatever follows the key in the prompt
                     String suffix = user.substring(user.indexOf(key) + key.length()).trim();
-                    return new ChatCompletionResult(value + suffix, usage);
+                    return new ChatCompletionResult(value + suffix, usage, 0);
                 } else {
                     // static reply
-                    return new ChatCompletionResult(value, usage);
+                    return new ChatCompletionResult(value, usage, 0);
                 }
             }
         }

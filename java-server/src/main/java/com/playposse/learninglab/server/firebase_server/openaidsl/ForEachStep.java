@@ -58,7 +58,7 @@ public final class ForEachStep<T, R> implements Step {
                     ),
                     Instant.now()
             );
-            logs.add(new CallLog(joinLabel, List.of(), null, null, null, err));
+            logs.add(new CallLog(joinLabel, List.of(), null, null, null, err, 0));
         }
 
         // 2) Fan out each item

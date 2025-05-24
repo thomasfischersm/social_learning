@@ -2,6 +2,7 @@ package com.playposse.learninglab.server.firebase_server.openaidsl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
@@ -30,7 +31,7 @@ public class OpenAiClientImpl implements OpenAiClient {
     @Override
     public ChatCompletionResult chatCompletion(
             List<ChatMsg> messages,
-            ChatConfig    config
+            ChatConfig config
     ) throws Exception {
         // 1) Start the builder with model & sampling params :contentReference[oaicite:1]{index=1}
         var builder = ChatCompletionCreateParams.builder()
@@ -61,10 +62,12 @@ public class OpenAiClientImpl implements OpenAiClient {
 
         // 3) Build & send
         ChatCompletionCreateParams params = builder.build();
+        long start = System.nanoTime();
         ChatCompletion response = sdk
                 .chat()
                 .completions()
                 .create(params);
+        long elapsedMs = (System.nanoTime() - start) / 1_000_000L;
 
         // 4) Extract the single reply (content() returns Optional<String>)
         String text = response
@@ -78,10 +81,13 @@ public class OpenAiClientImpl implements OpenAiClient {
         JsonNode usageJson = null;
         Optional<CompletionUsage> usageOpt = response.usage();
         if (usageOpt.isPresent()) {
-            // Convert the usage POJO into a JSON tree
-            usageJson = MAPPER.valueToTree(usageOpt.get());
+            ObjectNode node = MAPPER.createObjectNode();
+            node.put("prompt_tokens", usageOpt.get().promptTokens());
+            node.put("completion_tokens", usageOpt.get().completionTokens());
+            node.put("total_tokens", usageOpt.get().totalTokens());
+            usageJson = node;
         }
 
-        return new ChatCompletionResult(text, usageJson);
+        return new ChatCompletionResult(text, usageJson, elapsedMs);
     }
 }

@@ -29,7 +29,7 @@ class ConfigOverridesTest {
         // Mock the OpenAiClient to return a placeholder result
         client = mock(OpenAiClient.class);
         when(client.chatCompletion(anyList(), any()))
-                .thenReturn(new ChatCompletionResult("unused", null));
+                .thenReturn(new ChatCompletionResult("unused", null, 0));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.playposse.learninglab.server.firebase_server;
 
+import java.util.LinkedHashMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class CoursePlanService {
@@ -396,14 +399,23 @@ public class CoursePlanService {
                 .build()
                 .run(openAiClient);
 
-        // pull out the four pieces
-        // TODO: Log all the pieces!
-        String inventory = result.get(INVENTORY);
-        String goals = result.get(GOALS);
-        String curriculum = result.get(CURRICULUM);
-        String jsonText = result.get(JSON_TEXT);
+        // Join every non-null completion in that order:
+        String allResponses = result.callLogs().stream()
+                .map(CallLog::completion)
+                .filter(Objects::nonNull)
+                .collect(Collectors.joining("\n\n---\n\n"));
+
+        Map<String, Long> durationsByStep = result.callLogs().stream()
+                .collect(Collectors.toMap(
+                        log -> log.label().name(),
+                        CallLog::durationMillis,
+                        (a, b) -> b,
+                        LinkedHashMap::new
+                ));
+        String durationsJson = new ObjectMapper().writeValueAsString(durationsByStep);
 
         // parse JSON into a Map and write back
+        String jsonText = result.get(JSON_TEXT);
         Map<?, ?> parsedJson;
         try {
             parsedJson = new ObjectMapper().readValue(jsonText, Map.class);
@@ -415,38 +427,10 @@ public class CoursePlanService {
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("generatedJson", new ObjectMapper().writeValueAsString(parsedJson));
-        updates.put("openaiResponses", String.join(
-                "\n\n---\n\n",
-                inventory, goals, curriculum, jsonText
-        ));
+        updates.put("openaiResponses", allResponses);
         updates.put("lastGenerated", FieldValue.serverTimestamp());
+        updates.put("openaiDurations", durationsJson);
 
         coursePlanRef.update(updates);
-    }
-
-    /**
-     * Adapter so we can pass your existing OpenAiService into our DSL.
-     */
-    private static class OpenAiServiceAdapter implements OpenAiClient {
-        private final OpenAiService svc;
-
-        OpenAiServiceAdapter(OpenAiService svc) {
-            this.svc = svc;
-        }
-
-        @Override
-        public ChatCompletionResult chatCompletion(
-                List<ChatMsg> messages,
-                ChatConfig config
-        ) throws Exception {
-            // convert our DSL ChatMsg → the Map<String,String> your service expects
-            List<Map<String, String>> sdkMsgs = messages.stream()
-                    .map(m -> Map.of("role", m.role().name().toLowerCase(),
-                            "content", m.content()))
-                    .toList();
-            // delegate; ignore usage (null)
-            String text = svc.chat(sdkMsgs, config.model(), config.temperature(), config.maxTokens());
-            return new ChatCompletionResult(text, null);
-        }
     }
 }

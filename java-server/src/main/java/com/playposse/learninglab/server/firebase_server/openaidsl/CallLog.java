@@ -19,6 +19,7 @@ public record CallLog(
         ChatConfig config,
         String completion,
         JsonNode usage,
-        ErrorInfo error
+        ErrorInfo error,
+        long durationMillis
 ) {}
 

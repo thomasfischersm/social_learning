@@ -87,7 +87,7 @@ class SingleStepTest {
                                 throw new IllegalStateException(
                                         "No mapping for prompt: " + prompt);
                             }
-                            return new ChatCompletionResult(out, null);
+                            return new ChatCompletionResult(out, null, 0);
                         });
             } catch (Exception e) {
                 throw new RuntimeException(e);
