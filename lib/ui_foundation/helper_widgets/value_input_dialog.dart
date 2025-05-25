@@ -6,10 +6,9 @@ class ValueInputDialog extends StatelessWidget {
   final String hintText;
   final String okButtonLabel;
   final String? Function(String?)? validate;
-  final Function(String) onConfirm;
 
   const ValueInputDialog(this.title, this.currentValue, this.hintText,
-      this.okButtonLabel, this.validate, this.onConfirm,
+      this.okButtonLabel, this.validate,
       {super.key});
 
   @override
@@ -54,8 +53,7 @@ class ValueInputDialog extends StatelessWidget {
             // Validate before confirming
             errorMessage = validate?.call(controller.text);
             if (errorMessage == null) {
-              onConfirm(controller.text);
-              Navigator.of(context).pop(); // Close dialog
+              Navigator.of(context).pop(controller.text); // Close dialog
             }
           },
           child: Text(okButtonLabel),

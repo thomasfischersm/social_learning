@@ -170,29 +170,29 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void showDisplayNameDialog(
-      BuildContext context, ApplicationState applicationState) {
-    showDialog(
+  Future<void> showDisplayNameDialog(
+      BuildContext context, ApplicationState applicationState) async {
+    final String? newValue = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return ValueInputDialog(
           'Edit your display name',
-          applicationState.userDisplayName ?? '', // Default value
+          applicationState.userDisplayName ?? '',
           'Princess Fedora',
           'OK',
           (value) {
-            if (value == null || (value.trim().length < 3)) {
+            if (value == null || value.trim().length < 3) {
               return 'Your display name is too short.';
             }
-            return null; // No error
-          },
-          (newValue) {
-            // Handle confirmed new value
-            applicationState.userDisplayName = newValue;
+            return null;
           },
         );
       },
     );
+
+    if (newValue != null) {
+      applicationState.userDisplayName = newValue;
+    }
   }
 
   void showDisplayNameDialog2(
