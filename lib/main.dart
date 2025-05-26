@@ -15,6 +15,7 @@ import 'package:social_learning/ui_foundation/cms_home_page.dart';
 import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/cms_syllabus_page.dart';
 import 'package:social_learning/ui_foundation/code_of_conduct_page.dart';
+import 'package:social_learning/ui_foundation/course_designer_inventory_page.dart';
 import 'package:social_learning/ui_foundation/course_generation_review_page.dart';
 import 'package:social_learning/ui_foundation/course_create_page.dart';
 import 'package:social_learning/ui_foundation/course_generation_page.dart';
@@ -161,6 +162,8 @@ class SocialLearningApp extends StatelessWidget {
         '/course_generation': (context) => const CourseGenerationPage(),
         '/course_generation_review': (context) =>
             const CourseGenerationReviewPage(),
+        '/course_designer_inventory': (context) =>
+            const CourseDesignerInventoryPage(),
       },
     );
   }

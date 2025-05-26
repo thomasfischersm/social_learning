@@ -155,6 +155,7 @@ class BottomBarV2 {
           NavigationEnum.instructorClipboard.route,
           NavigationEnum.courseGeneration.route,
           NavigationEnum.courseGenerationReview.route,
+          NavigationEnum.courseDesignerInventory.route,
         }.contains(currentRoute)) {
       return isLessonsVisible ? 2 : 1;
     } else if (isSessionsVisible &&

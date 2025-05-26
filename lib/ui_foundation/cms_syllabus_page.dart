@@ -50,6 +50,11 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
               tooltip: 'Generate Curriculum',
               onPressed: () => NavigationEnum.courseGeneration.navigateClean(context),
             ),
+            IconButton(
+              icon: const Icon(Icons.account_tree_outlined),
+              tooltip: 'Course Inventory', // Updated tooltip
+              onPressed: () => NavigationEnum.courseDesignerInventory.navigateClean(context),
+            ),
           ],
         ),
         bottomNavigationBar: BottomBarV2.build(context),
