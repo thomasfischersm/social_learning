@@ -33,17 +33,22 @@ class InventoryCategoryEntry extends InventoryEntry {
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
         child: Row(
           children: [
-            GestureDetector(
-              onTap: () {
-                isExpanded = !isExpanded;
-                refresh();
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Icon(
-                  isExpanded ? Icons.expand_less : Icons.expand_more,
-                  size: 18,
-                  color: Colors.grey[700],
+            // Expand/collapse icon with ripple
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(4),
+                  onTap: () {
+                    isExpanded = !isExpanded;
+                    refresh();
+                  },
+                  child: Icon(
+                    isExpanded ? Icons.expand_less : Icons.expand_more,
+                    size: 18,
+                    color: Colors.grey[700],
+                  ),
                 ),
               ),
             ),
@@ -54,32 +59,40 @@ class InventoryCategoryEntry extends InventoryEntry {
               style: CustomTextStyles.subHeadline,
             ),
 
-            // Edit icon
-            GestureDetector(
-              onTap: () => _editCategoryName(context, refresh),
-              child: const Padding(
-                padding: EdgeInsets.only(left: 6.0),
-                child: Icon(Icons.edit, size: 14, color: Colors.grey),
+            // ✏️ Edit icon
+            Padding(
+              padding: const EdgeInsets.only(left: 6.0),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(4),
+                  onTap: () => _editCategoryName(context, refresh),
+                  child: const Icon(Icons.edit, size: 14, color: Colors.grey),
+                ),
               ),
             ),
 
-            // Delete icon
+            // 🗑 Delete icon
             if (onDelete != null)
-              GestureDetector(
-                onTap: () {
-                  DialogUtils.showConfirmationDialog(
-                    context,
-                    'Delete category?',
-                    'Are you sure you want to delete the category "${category.name}" and all its items?',
-                        () async {
-                      await onDelete!(category);
-                      refresh();
+              Padding(
+                padding: const EdgeInsets.only(left: 6.0),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(4),
+                    onTap: () {
+                      DialogUtils.showConfirmationDialog(
+                        context,
+                        'Delete category?',
+                        'Are you sure you want to delete the category "${category.name}" and all its items?',
+                            () async {
+                          await onDelete!(category);
+                          refresh();
+                        },
+                      );
                     },
-                  );
-                },
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 6.0),
-                  child: Icon(Icons.delete, size: 14, color: Colors.grey),
+                    child: const Icon(Icons.delete, size: 14, color: Colors.grey),
+                  ),
                 ),
               ),
 

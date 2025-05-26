@@ -34,9 +34,10 @@ class InventoryItemEntry extends InventoryEntry {
             if (item.notes != null && item.notes!.trim().isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(left: 6.0),
-                child: Tooltip(
-                  message: 'This item has notes',
-                  child: GestureDetector(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(4),
                     onTap: () {
                       showDialog(
                         context: context,
@@ -54,41 +55,49 @@ class InventoryItemEntry extends InventoryEntry {
               ),
 
             // ✏️ Edit icon
-            GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => ItemNoteDialog(
-                    item: item,
-                    onSaved: refresh,
-                    startInEditMode: true,
-                    dataContext: dataContext,
-                  ),
-                );
-              },
-              child: const Padding(
-                padding: EdgeInsets.only(left: 6.0),
-                child: Icon(Icons.edit, size: 14, color: Colors.grey),
+            Padding(
+              padding: const EdgeInsets.only(left: 6.0),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(4),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => ItemNoteDialog(
+                        item: item,
+                        onSaved: refresh,
+                        startInEditMode: true,
+                        dataContext: dataContext,
+                      ),
+                    );
+                  },
+                  child: const Icon(Icons.edit, size: 14, color: Colors.grey),
+                ),
               ),
             ),
 
             // 🗑 Delete icon
             if (onDelete != null)
-              GestureDetector(
-                onTap: () {
-                  DialogUtils.showConfirmationDialog(
-                    context,
-                    'Delete item?',
-                    'Are you sure you want to delete "${item.name}"?',
-                        () async {
-                      await onDelete!(item);
-                      refresh();
+              Padding(
+                padding: const EdgeInsets.only(left: 6.0),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(4),
+                    onTap: () {
+                      DialogUtils.showConfirmationDialog(
+                        context,
+                        'Delete item?',
+                        'Are you sure you want to delete "${item.name}"?',
+                            () async {
+                          await onDelete!(item);
+                          refresh();
+                        },
+                      );
                     },
-                  );
-                },
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 6.0),
-                  child: Icon(Icons.delete, size: 14, color: Colors.grey),
+                    child: const Icon(Icons.delete, size: 14, color: Colors.grey),
+                  ),
                 ),
               ),
 
