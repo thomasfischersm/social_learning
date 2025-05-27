@@ -1,17 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/teachable_item_tag.dart';
 
 class TeachableItemTagFunctions {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const String _collectionPath = 'teachableItemTags';
   static const String _itemsCollectionPath = 'teachableItems';
 
-  static Future<DocumentReference?> addTag({
+  static Future<TeachableItemTag?> addTag({
     required String courseId,
     required String name,
     required String color,
   }) async {
     try {
       final courseRef = _firestore.collection('courses').doc(courseId);
+
       final docRef = await _firestore.collection(_collectionPath).add({
         'courseId': courseRef,
         'name': name,
@@ -19,12 +21,15 @@ class TeachableItemTagFunctions {
         'createdAt': FieldValue.serverTimestamp(),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
-      return docRef;
+
+      final snapshot = await docRef.get();
+      return TeachableItemTag.fromSnapshot(snapshot as DocumentSnapshot<Map<String, dynamic>>);
     } catch (e) {
       print('Error adding tag: $e');
       return null;
     }
   }
+
 
   static Future<void> updateTag({
     required String tagId,
@@ -71,4 +76,24 @@ class TeachableItemTagFunctions {
       print('Error deleting tag $tagId: $e');
     }
   }
+
+  static Future<List<TeachableItemTag>> getTagsForCourse(String courseId) async {
+    try {
+      final courseRef = _firestore.collection('courses').doc(courseId);
+
+      final querySnapshot = await _firestore
+          .collection(_collectionPath)
+          .where('courseId', isEqualTo: courseRef)
+          .orderBy('name') // Sort alphabetically by tag name
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => TeachableItemTag.fromSnapshot(doc))
+          .toList();
+    } catch (e) {
+      print('Error fetching tags for course $courseId: $e');
+      return [];
+    }
+  }
+
 }

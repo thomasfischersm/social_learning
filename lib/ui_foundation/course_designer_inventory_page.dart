@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_category_functions.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
+import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
-import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/data/teachable_item_tag.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_category_entry.dart';
@@ -14,9 +15,8 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_item_entry.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_tag_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CourseDesignerInventoryPage extends StatefulWidget {
   const CourseDesignerInventoryPage({super.key});
@@ -32,6 +32,8 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
   List<TeachableItemCategory> _categories = [];
   List<TeachableItem> _items = [];
+  List<TeachableItemTag> _tags = [];
+  String? _courseId; // ✅ new field
 
   @override
   List<TeachableItemCategory> getCategories() => _categories;
@@ -89,13 +91,26 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
             padding: EdgeInsets.all(32.0),
             child: CircularProgressIndicator(),
           )
-              : ListView.builder(
-            itemCount: inventoryEntries.length,
-            itemBuilder: (context, index) {
-              return inventoryEntries[index].buildWidget(context, () {
-                setState(() {});
-              }, this);
-            },
+              : NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              if (_courseId != null)
+                SliverToBoxAdapter(
+                  child: InventoryTagCard(
+                    tags: _tags,
+                    courseId: _courseId!,
+                  ),
+                ),
+            ],
+            body: ListView.builder(
+              itemCount: inventoryEntries.length,
+              itemBuilder: (context, index) {
+                return inventoryEntries[index].buildWidget(
+                  context,
+                      () => setState(() {}),
+                  this,
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -103,10 +118,18 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
   }
 
   Future<void> loadInventoryData(String courseId) async {
+    _courseId = courseId; // ✅ store courseId
     setState(() => isLoading = true);
 
-    _categories = await TeachableItemCategoryFunctions.getCategoriesForCourse(courseId);
-    _items = await TeachableItemFunctions.getItemsForCourse(courseId);
+    final results = await Future.wait([
+      TeachableItemCategoryFunctions.getCategoriesForCourse(courseId),
+      TeachableItemFunctions.getItemsForCourse(courseId),
+      TeachableItemTagFunctions.getTagsForCourse(courseId),
+    ]);
+
+    _categories = results[0] as List<TeachableItemCategory>;
+    _items = results[1] as List<TeachableItem>;
+    _tags = results[2] as List<TeachableItemTag>;
 
     final itemsByCategory = <String, List<TeachableItem>>{};
     for (final item in _items) {
@@ -171,7 +194,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
     if (newItem == null) return;
 
-    _items.add(newItem); // ✅ keep contextData in sync
+    _items.add(newItem); // ✅ sync context
 
     final insertIndex = inventoryEntries.indexWhere(
           (entry) => entry is AddNewItemEntry && entry.category.id == category.id,
@@ -205,7 +228,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
     if (newCategory == null) return;
 
-    _categories.add(newCategory); // ✅ keep contextData in sync
+    _categories.add(newCategory);
 
     final insertIndex = inventoryEntries.length - 1;
 
@@ -234,8 +257,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
   Future<void> _onDeleteItem(TeachableItem item) async {
     await TeachableItemFunctions.deleteItem(itemId: item.id!);
 
-    _items.removeWhere((i) => i.id == item.id); // ✅ sync InventoryContext
-
+    _items.removeWhere((i) => i.id == item.id);
     inventoryEntries.removeWhere(
           (entry) => entry is InventoryItemEntry && entry.item.id == item.id,
     );
@@ -246,7 +268,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
   Future<void> _onDeleteCategory(TeachableItemCategory category) async {
     await TeachableItemCategoryFunctions.deleteCategory(categoryId: category.id!);
 
-    _categories.removeWhere((c) => c.id == category.id); // ✅ sync InventoryContext
+    _categories.removeWhere((c) => c.id == category.id);
     _items.removeWhere((item) => item.categoryId.id == category.id);
 
     inventoryEntries.removeWhere((entry) {
