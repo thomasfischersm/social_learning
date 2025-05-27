@@ -33,7 +33,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
   List<TeachableItemCategory> _categories = [];
   List<TeachableItem> _items = [];
   List<TeachableItemTag> _tags = [];
-  String? _courseId; // ✅ new field
+  String? _courseId;
 
   @override
   List<TeachableItemCategory> getCategories() => _categories;
@@ -42,13 +42,15 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
   List<TeachableItem> getItems() => _items;
 
   @override
+  List<TeachableItemTag> getTags() => _tags;
+
+  @override
   List<TeachableItem> getItemsForCategory(String categoryId) =>
       _items.where((item) => item.categoryId.id == categoryId).toList();
 
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final libraryState = Provider.of<LibraryState>(context, listen: false);
       if (libraryState.selectedCourse?.id != null) {
@@ -92,7 +94,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
             child: CircularProgressIndicator(),
           )
               : NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+            headerSliverBuilder: (context, _) => [
               if (_courseId != null)
                 SliverToBoxAdapter(
                   child: InventoryTagCard(
@@ -118,7 +120,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
   }
 
   Future<void> loadInventoryData(String courseId) async {
-    _courseId = courseId; // ✅ store courseId
+    _courseId = courseId;
     setState(() => isLoading = true);
 
     final results = await Future.wait([
@@ -194,7 +196,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
     if (newItem == null) return;
 
-    _items.add(newItem); // ✅ sync context
+    _items.add(newItem);
 
     final insertIndex = inventoryEntries.indexWhere(
           (entry) => entry is AddNewItemEntry && entry.category.id == category.id,

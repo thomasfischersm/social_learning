@@ -7,7 +7,7 @@ class TeachableItem {
   String? name;
   String? notes;
   final int sortOrder;
-  final List<DocumentReference>? tagIds;
+  List<DocumentReference>? tagIds;
   final Timestamp createdAt;
   final Timestamp modifiedAt;
 

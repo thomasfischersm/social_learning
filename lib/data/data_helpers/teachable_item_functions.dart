@@ -262,4 +262,20 @@ class TeachableItemFunctions {
       return [];
     }
   }
+
+  static Future<TeachableItem?> getItemById(String itemId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection(_collectionPath)
+          .doc(itemId)
+          .get();
+      if (snapshot.exists) {
+        return TeachableItem.fromSnapshot(snapshot);
+      }
+      return null;
+    } catch (e) {
+      print('Error fetching item $itemId: $e');
+      return null;
+    }
+  }
 }
