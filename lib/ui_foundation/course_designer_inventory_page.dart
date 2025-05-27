@@ -13,6 +13,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_item_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_category_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_drag_helper.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_item_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_tag_card.dart';
@@ -47,6 +48,9 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
   @override
   List<TeachableItem> getItemsForCategory(String categoryId) =>
       _items.where((item) => item.categoryId.id == categoryId).toList();
+
+  @override
+  List<InventoryEntry> getInventoryEntries() => inventoryEntries;
 
   @override
   void initState() {
@@ -93,26 +97,38 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
             padding: EdgeInsets.all(32.0),
             child: CircularProgressIndicator(),
           )
-              : NestedScrollView(
-            headerSliverBuilder: (context, _) => [
+              : Column(
+            children: [
               if (_courseId != null)
-                SliverToBoxAdapter(
-                  child: InventoryTagCard(
-                    tags: _tags,
-                    courseId: _courseId!,
-                  ),
+                InventoryTagCard(tags: _tags, courseId: _courseId!),
+              Expanded(
+                child: ReorderableListView.builder(
+                  buildDefaultDragHandles: false,
+                  itemCount: inventoryEntries.length,
+                  onReorder: (oldIndex, newIndex) async {
+                    await InventoryDragHelper.handleReorder(
+                      context: this,
+                      inventoryEntries: inventoryEntries,
+                      oldIndex: oldIndex,
+                      newIndex: newIndex,
+                    );
+                    await loadInventoryData(_courseId!);
+                  },
+                  itemBuilder: (context, index) {
+                    final entry = inventoryEntries[index];
+                    return ReorderableDelayedDragStartListener(
+                      key: ValueKey(entry),
+                      index: index,
+                      child: entry.buildWidget(
+                        context,
+                            () => setState(() {}),
+                        this,
+                      ),
+                    );
+                  },
                 ),
+              ),
             ],
-            body: ListView.builder(
-              itemCount: inventoryEntries.length,
-              itemBuilder: (context, index) {
-                return inventoryEntries[index].buildWidget(
-                  context,
-                      () => setState(() {}),
-                  this,
-                );
-              },
-            ),
           ),
         ),
       ),
@@ -183,11 +199,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
     setState(() => isLoading = false);
   }
 
-  Future<void> _onAddNewItem(
-      String courseId,
-      TeachableItemCategory category,
-      String name,
-      ) async {
+  Future<void> _onAddNewItem(String courseId, TeachableItemCategory category, String name) async {
     final newItem = await TeachableItemFunctions.addItem(
       courseId: courseId,
       categoryId: category.id!,
@@ -199,13 +211,9 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
     _items.add(newItem);
 
     final insertIndex = inventoryEntries.indexWhere(
-          (entry) => entry is AddNewItemEntry && entry.category.id == category.id,
-    );
+            (entry) => entry is AddNewItemEntry && entry.category.id == category.id);
 
-    if (insertIndex == -1) {
-      print('Could not find insertion point for new item in category ${category.name}');
-      return;
-    }
+    if (insertIndex == -1) return;
 
     inventoryEntries.insert(
       insertIndex,
@@ -217,7 +225,6 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
   Future<void> _onAddNewCategory(String courseId, String name) async {
     TeachableItemCategory? newCategory;
-
     try {
       newCategory = await TeachableItemCategoryFunctions.addCategory(
         courseId: courseId,
