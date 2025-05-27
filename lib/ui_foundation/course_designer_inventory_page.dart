@@ -15,6 +15,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_drag_helper.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_intro_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_item_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_tag_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
@@ -97,12 +98,16 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
             padding: EdgeInsets.all(32.0),
             child: CircularProgressIndicator(),
           )
-              : Column(
-            children: [
+              : NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              SliverToBoxAdapter(child: InventoryIntroCard()),
               if (_courseId != null)
-                InventoryTagCard(tags: _tags, courseId: _courseId!),
-              Expanded(
-                child: ReorderableListView.builder(
+                SliverToBoxAdapter(
+                  child: InventoryTagCard(tags: _tags, courseId: _courseId!),
+                ),
+            ],
+            body:
+                 ReorderableListView.builder(
                   buildDefaultDragHandles: false,
                   itemCount: inventoryEntries.length,
                   onReorder: (oldIndex, newIndex) async {
@@ -127,8 +132,8 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
                     );
                   },
                 ),
-              ),
-            ],
+
+
           ),
         ),
       ),
