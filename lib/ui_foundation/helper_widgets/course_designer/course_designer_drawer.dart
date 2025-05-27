@@ -13,7 +13,7 @@ class CourseDesignerDrawer extends StatelessWidget {
   }
 
   static const List<_CurriculumStep> steps = [
-    // _CurriculumStep('Intro', NavigationEnum.courseGeneration),
+    _CurriculumStep('Intro', NavigationEnum.courseDesignerIntro),
     _CurriculumStep('Inventory', NavigationEnum.courseDesignerInventory),
     // _CurriculumStep('Dependencies', NavigationEnum.cmsSyllabus),
     // _CurriculumStep('Scoping', NavigationEnum.courseGenerationReview),
