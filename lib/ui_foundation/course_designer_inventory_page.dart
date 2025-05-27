@@ -9,6 +9,7 @@ import 'package:social_learning/data/teachable_item_category.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_category_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_item_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_category_entry.dart';
@@ -85,8 +86,14 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
   @override
   Widget build(BuildContext context) {
+    final scaffoldKey = GlobalKey<ScaffoldState>();
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Learning Lab')),
+      key: scaffoldKey,
+      appBar: AppBar(
+          title: const Text('Learning Lab'),
+          leading: CourseDesignerDrawer.hamburger(scaffoldKey)),
+      drawer: CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(
         alignment: Alignment.topCenter,
@@ -95,46 +102,44 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
           enableCreatorGuard: true,
           isLoading
               ? const Padding(
-            padding: EdgeInsets.all(32.0),
-            child: CircularProgressIndicator(),
-          )
+                  padding: EdgeInsets.all(32.0),
+                  child: CircularProgressIndicator(),
+                )
               : NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) => [
-              SliverToBoxAdapter(child: InventoryIntroCard()),
-              if (_courseId != null)
-                SliverToBoxAdapter(
-                  child: InventoryTagCard(tags: _tags, courseId: _courseId!),
-                ),
-            ],
-            body:
-                 ReorderableListView.builder(
-                  buildDefaultDragHandles: false,
-                  itemCount: inventoryEntries.length,
-                  onReorder: (oldIndex, newIndex) async {
-                    await InventoryDragHelper.handleReorder(
-                      context: this,
-                      inventoryEntries: inventoryEntries,
-                      oldIndex: oldIndex,
-                      newIndex: newIndex,
-                    );
-                    await loadInventoryData(_courseId!);
-                  },
-                  itemBuilder: (context, index) {
-                    final entry = inventoryEntries[index];
-                    return ReorderableDelayedDragStartListener(
-                      key: ValueKey(entry),
-                      index: index,
-                      child: entry.buildWidget(
-                        context,
-                            () => setState(() {}),
-                        this,
+                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                    SliverToBoxAdapter(child: InventoryIntroCard()),
+                    if (_courseId != null)
+                      SliverToBoxAdapter(
+                        child:
+                            InventoryTagCard(tags: _tags, courseId: _courseId!),
                       ),
-                    );
-                  },
+                  ],
+                  body: ReorderableListView.builder(
+                    buildDefaultDragHandles: false,
+                    itemCount: inventoryEntries.length,
+                    onReorder: (oldIndex, newIndex) async {
+                      await InventoryDragHelper.handleReorder(
+                        context: this,
+                        inventoryEntries: inventoryEntries,
+                        oldIndex: oldIndex,
+                        newIndex: newIndex,
+                      );
+                      await loadInventoryData(_courseId!);
+                    },
+                    itemBuilder: (context, index) {
+                      final entry = inventoryEntries[index];
+                      return ReorderableDelayedDragStartListener(
+                        key: ValueKey(entry),
+                        index: index,
+                        child: entry.buildWidget(
+                          context,
+                          () => setState(() {}),
+                          this,
+                        ),
+                      );
+                    },
+                  ),
                 ),
-
-
-          ),
         ),
       ),
     );
@@ -162,7 +167,8 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
     inventoryEntries.clear();
 
-    for (final category in _categories..sort((a, b) => a.sortOrder.compareTo(b.sortOrder))) {
+    for (final category in _categories
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder))) {
       final categoryEntry = InventoryCategoryEntry(
         category,
         isExpanded: true,
@@ -204,7 +210,8 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
     setState(() => isLoading = false);
   }
 
-  Future<void> _onAddNewItem(String courseId, TeachableItemCategory category, String name) async {
+  Future<void> _onAddNewItem(
+      String courseId, TeachableItemCategory category, String name) async {
     final newItem = await TeachableItemFunctions.addItem(
       courseId: courseId,
       categoryId: category.id!,
@@ -215,8 +222,8 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
     _items.add(newItem);
 
-    final insertIndex = inventoryEntries.indexWhere(
-            (entry) => entry is AddNewItemEntry && entry.category.id == category.id);
+    final insertIndex = inventoryEntries.indexWhere((entry) =>
+        entry is AddNewItemEntry && entry.category.id == category.id);
 
     if (insertIndex == -1) return;
 
@@ -273,22 +280,26 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
     _items.removeWhere((i) => i.id == item.id);
     inventoryEntries.removeWhere(
-          (entry) => entry is InventoryItemEntry && entry.item.id == item.id,
+      (entry) => entry is InventoryItemEntry && entry.item.id == item.id,
     );
 
     setState(() {});
   }
 
   Future<void> _onDeleteCategory(TeachableItemCategory category) async {
-    await TeachableItemCategoryFunctions.deleteCategory(categoryId: category.id!);
+    await TeachableItemCategoryFunctions.deleteCategory(
+        categoryId: category.id!);
 
     _categories.removeWhere((c) => c.id == category.id);
     _items.removeWhere((item) => item.categoryId.id == category.id);
 
     inventoryEntries.removeWhere((entry) {
-      if (entry is InventoryCategoryEntry && entry.category.id == category.id) return true;
-      if (entry is InventoryItemEntry && entry.item.categoryId.id == category.id) return true;
-      if (entry is AddNewItemEntry && entry.category.id == category.id) return true;
+      if (entry is InventoryCategoryEntry && entry.category.id == category.id)
+        return true;
+      if (entry is InventoryItemEntry &&
+          entry.item.categoryId.id == category.id) return true;
+      if (entry is AddNewItemEntry && entry.category.id == category.id)
+        return true;
       return false;
     });
 
