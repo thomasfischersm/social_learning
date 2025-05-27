@@ -1,8 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
-class InventoryIntroCard extends StatelessWidget {
+class InventoryIntroCard extends StatefulWidget {
   const InventoryIntroCard({super.key});
+
+  @override
+  State<InventoryIntroCard> createState() => _InventoryIntroCardState();
+}
+
+class _InventoryIntroCardState extends State<InventoryIntroCard> {
+  bool _bodyVisible = true;
+
+  static const String _prefsKey = 'inventory_intro_card_dismissed';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDismissedState();
+  }
+
+  Future<void> _loadDismissedState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final dismissed = prefs.getBool(_prefsKey) ?? false;
+    setState(() {
+      _bodyVisible = !dismissed;
+    });
+  }
+
+  Future<void> _dismissCardBody() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_prefsKey, true);
+    setState(() {
+      _bodyVisible = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +49,7 @@ class InventoryIntroCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(context),
-          _buildBody(),
+          if (_bodyVisible) _buildBodyWithDismiss(),
         ],
       ),
     );
@@ -35,17 +67,30 @@ class InventoryIntroCard extends StatelessWidget {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBodyWithDismiss() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-      child: Text(
-        "Brainstorm all the small, teachable pieces of your subject. "
-            "You're not creating lessons yet — just listing the core concepts and skills.\n\n"
-            "🎯 Example (chess):\n"
-            "• Movement → Bishop, Pawn, Knight\n"
-            "• Tactics → Fork, Pin\n"
-            "• Rules → Castling, En Passant",
-        style: const TextStyle(fontSize: 13, color: Colors.black87),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Brainstorm all the small, teachable pieces of your subject. "
+                "You're not creating lessons yet — just listing the core concepts and skills.\n\n"
+                "🎯 Example (chess):\n"
+                "• Movement → Bishop, Pawn, Knight\n"
+                "• Tactics → Fork, Pin\n"
+                "• Rules → Castling, En Passant",
+            style: TextStyle(fontSize: 13, color: Colors.black87),
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: _dismissCardBody,
+              child: const Text("Dismiss", style: TextStyle(fontSize: 13)),
+            ),
+          )
+        ],
       ),
     );
   }
