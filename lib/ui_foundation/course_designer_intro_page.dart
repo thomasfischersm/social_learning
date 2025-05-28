@@ -5,12 +5,14 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/cou
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CourseDesignerIntroPage extends StatefulWidget {
   const CourseDesignerIntroPage({super.key});
 
   @override
-  State<CourseDesignerIntroPage> createState() => _CourseDesignerIntroPageState();
+  State<CourseDesignerIntroPage> createState() =>
+      _CourseDesignerIntroPageState();
 }
 
 class _CourseDesignerIntroPageState extends State<CourseDesignerIntroPage> {
@@ -27,6 +29,13 @@ class _CourseDesignerIntroPageState extends State<CourseDesignerIntroPage> {
       ),
       drawer: const CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          NavigationEnum.courseDesignerProfile.navigateCleanDelayed(context);
+        }, // or Icons.navigate_next
+        tooltip: 'Next Page',
+        child: Icon(Icons.arrow_forward),
+      ),
       body: Align(
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
@@ -87,9 +96,12 @@ class _StepsBody extends StatelessWidget {
         row('Inventory', 'brain dump teachable elements'),
         row('Prerequisites', 'sequence the learning'),
         row('Scope', 'flip items on/off to fit the time constraints'),
-        row('Skill dimensions', 'develop a rubric and plan for developing student abilities'),
-        row('Learning outcomes', 'start with the result and work back to lessons'),
-        row('Session outline', 'drag lessons, breaks, and warm‑ups into a teaching agenda'),
+        row('Skill dimensions',
+            'develop a rubric and plan for developing student abilities'),
+        row('Learning outcomes',
+            'start with the result and work back to lessons'),
+        row('Session outline',
+            'drag lessons, breaks, and warm‑ups into a teaching agenda'),
         const SizedBox(height: 8),
         Text(
           '(Jump between steps anytime from the left‑menu.)',
@@ -148,9 +160,9 @@ class _InfoVsAbilityBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       'A lot of courses are designed around transmitting information. '
-          'What\'s often left out is how to develop the student\'s ability. '
-          'For example, knowing about a dance figure and being a great dancer are two separate things. '
-          'By structuring a curriculum around skill dimensions, students become great practitioners.',
+      'What\'s often left out is how to develop the student\'s ability. '
+      'For example, knowing about a dance figure and being a great dancer are two separate things. '
+      'By structuring a curriculum around skill dimensions, students become great practitioners.',
       style: CustomTextStyles.getBody(context),
     );
   }

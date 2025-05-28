@@ -10,6 +10,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/cou
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CourseDesignerProfilePage extends StatefulWidget {
   const CourseDesignerProfilePage({super.key});
@@ -79,7 +80,7 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
   Future<void> _save() async {
     if (_courseId == null) return;
 
-    final profile = CourseProfile(
+    final updatedProfile = CourseProfile(
       id: _courseProfile?.id,
       courseId: docRef('courses', _courseId!),
       topicAndFocus: topicController.text.trim(),
@@ -92,7 +93,14 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
       anythingUnusual: notesController.text.trim(),
     );
 
-    _courseProfile = await CourseProfileFunctions.saveCourseProfile(profile);
+    if (_hasProfileChanged(_courseProfile!, updatedProfile)) {
+      _courseProfile =
+          await CourseProfileFunctions.saveCourseProfile(updatedProfile);
+    }
+
+    if (mounted) {
+      NavigationEnum.courseDesignerInventory.navigateClean(context);
+    }
   }
 
   @override
@@ -236,5 +244,16 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
         ),
       ],
     );
+  }
+
+  bool _hasProfileChanged(CourseProfile oldProfile, CourseProfile newProfile) {
+    return oldProfile.topicAndFocus != newProfile.topicAndFocus ||
+        oldProfile.scheduleAndDuration != newProfile.scheduleAndDuration ||
+        oldProfile.targetAudience != newProfile.targetAudience ||
+        oldProfile.groupSizeAndFormat != newProfile.groupSizeAndFormat ||
+        oldProfile.location != newProfile.location ||
+        oldProfile.howStudentsJoin != newProfile.howStudentsJoin ||
+        oldProfile.toneAndApproach != newProfile.toneAndApproach ||
+        oldProfile.anythingUnusual != newProfile.anythingUnusual;
   }
 }

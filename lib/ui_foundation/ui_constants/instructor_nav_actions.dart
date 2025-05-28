@@ -17,9 +17,9 @@ class InstructorNavActions {
       ),
       IconButton(
         icon: const Icon(Icons.account_tree_outlined),
-        tooltip: 'Course Inventory', // Updated tooltip
+        tooltip: 'Course Designer', // Updated tooltip
         onPressed: () =>
-            NavigationEnum.courseDesignerInventory.navigateClean(context),
+            NavigationEnum.courseDesignerIntro.navigateClean(context),
       )
     ];
   }
