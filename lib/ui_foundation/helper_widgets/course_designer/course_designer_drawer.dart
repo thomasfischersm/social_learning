@@ -16,6 +16,8 @@ class CourseDesignerDrawer extends StatelessWidget {
     _CurriculumStep('Intro', NavigationEnum.courseDesignerIntro),
     _CurriculumStep('Profile', NavigationEnum.courseDesignerProfile),
     _CurriculumStep('Inventory', NavigationEnum.courseDesignerInventory),
+    _CurriculumStep(
+        'Prerequisites', NavigationEnum.courseDesignerPrerequisites),
     // _CurriculumStep('Dependencies', NavigationEnum.cmsSyllabus),
     // _CurriculumStep('Scoping', NavigationEnum.courseGenerationReview),
     // _CurriculumStep('Skill Dimensions', NavigationEnum.cmsLesson),
@@ -46,7 +48,7 @@ class CourseDesignerDrawer extends StatelessWidget {
                     ? Icons.arrow_right
                     : Icons.check_circle_outline,
                 color:
-                currentRoute == step.nav.route ? Colors.blue : Colors.grey,
+                    currentRoute == step.nav.route ? Colors.blue : Colors.grey,
               ),
               onTap: () {
                 Navigator.of(context).pop(); // Close the drawer

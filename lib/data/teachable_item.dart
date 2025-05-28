@@ -8,6 +8,8 @@ class TeachableItem {
   String? notes;
   final int sortOrder;
   List<DocumentReference>? tagIds;
+  List<DocumentReference>? requiredPrerequisiteIds;
+  List<DocumentReference>? recommendedPrerequisiteIds;
   final Timestamp createdAt;
   final Timestamp modifiedAt;
 
@@ -19,6 +21,8 @@ class TeachableItem {
     this.notes,
     required this.sortOrder,
     this.tagIds,
+    this.requiredPrerequisiteIds,
+    this.recommendedPrerequisiteIds,
     required this.createdAt,
     required this.modifiedAt,
   });
@@ -35,6 +39,12 @@ class TeachableItem {
       tagIds: (data['tagIds'] as List<dynamic>?)
           ?.map((tagId) => tagId as DocumentReference)
           .toList(),
+      requiredPrerequisiteIds: (data['requiredPrerequisiteIds'] as List<dynamic>?)
+          ?.map((ref) => ref as DocumentReference)
+          .toList(),
+      recommendedPrerequisiteIds: (data['recommendedPrerequisiteIds'] as List<dynamic>?)
+          ?.map((ref) => ref as DocumentReference)
+          .toList(),
       createdAt: data['createdAt'] as Timestamp,
       modifiedAt: data['modifiedAt'] as Timestamp,
     );
@@ -48,6 +58,8 @@ class TeachableItem {
       'notes': notes,
       'sortOrder': sortOrder,
       'tagIds': tagIds,
+      'requiredPrerequisiteIds': requiredPrerequisiteIds,
+      'recommendedPrerequisiteIds': recommendedPrerequisiteIds,
       'createdAt': createdAt,
       'modifiedAt': modifiedAt,
     };

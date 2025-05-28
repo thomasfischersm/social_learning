@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/teachable_item.dart';
 
 class TeachableItemFunctions {
@@ -13,7 +14,8 @@ class TeachableItemFunctions {
   }) async {
     try {
       final courseRef = _firestore.collection('courses').doc(courseId);
-      final categoryRef = _firestore.collection('teachableItemCategories').doc(categoryId);
+      final categoryRef =
+          _firestore.collection('teachableItemCategories').doc(categoryId);
 
       // Determine next sortOrder
       final querySnapshot = await _firestore
@@ -70,7 +72,10 @@ class TeachableItemFunctions {
       if (tagIds != null) {
         dataToUpdate['tagIds'] = tagIds;
       }
-      await _firestore.collection(_collectionPath).doc(itemId).update(dataToUpdate);
+      await _firestore
+          .collection(_collectionPath)
+          .doc(itemId)
+          .update(dataToUpdate);
     } catch (e) {
       print('Error updating item $itemId: $e');
     }
@@ -156,8 +161,8 @@ class TeachableItemFunctions {
       final destinationList = isSameCategory
           ? sourceList
           : allItemsAcrossCategories
-          .where((item) => item.categoryId.path == newCategoryRef.path)
-          .toList()
+              .where((item) => item.categoryId.path == newCategoryRef.path)
+              .toList()
         ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
       // Move the item
@@ -168,14 +173,15 @@ class TeachableItemFunctions {
         name: movedItem.name,
         notes: movedItem.notes,
         tagIds: movedItem.tagIds,
-        sortOrder: newIndex, // placeholder; will be updated in loop
+        sortOrder: newIndex,
+        // placeholder; will be updated in loop
         createdAt: movedItem.createdAt,
         modifiedAt: movedItem.modifiedAt,
       );
 
       if (isSameCategory) {
         final currentIndex =
-        sourceList.indexWhere((item) => item.id == movedItem.id);
+            sourceList.indexWhere((item) => item.id == movedItem.id);
         if (currentIndex == -1 || currentIndex == newIndex) return;
 
         final updatedList = [...sourceList];
@@ -226,13 +232,13 @@ class TeachableItemFunctions {
         for (int i = 0; i < updatedDestination.length; i++) {
           final item = updatedDestination[i];
           final docRef = _firestore.collection(_collectionPath).doc(item.id);
-          final needsUpdate =
-              item.sortOrder != i || item.id == movedItem.id;
+          final needsUpdate = item.sortOrder != i || item.id == movedItem.id;
 
           if (needsUpdate) {
             batch.update(docRef, {
               'sortOrder': i,
-              'categoryId': item.id == movedItem.id ? newCategoryRef : item.categoryId,
+              'categoryId':
+                  item.id == movedItem.id ? newCategoryRef : item.categoryId,
               'modifiedAt': FieldValue.serverTimestamp(),
             });
           }
@@ -247,7 +253,8 @@ class TeachableItemFunctions {
 
   static Future<List<TeachableItem>> getItemsForCourse(String courseId) async {
     try {
-      final courseRef = FirebaseFirestore.instance.collection('courses').doc(courseId);
+      final courseRef =
+          FirebaseFirestore.instance.collection('courses').doc(courseId);
 
       final snapshot = await FirebaseFirestore.instance
           .collection(_collectionPath)
@@ -275,6 +282,93 @@ class TeachableItemFunctions {
       return null;
     } catch (e) {
       print('Error fetching item $itemId: $e');
+      return null;
+    }
+  }
+
+  static Future<TeachableItem?> addDependency({
+    required TeachableItem target,
+    required TeachableItem dependency,
+    required bool required,
+  }) async {
+    try {
+      final field =
+          required ? 'requiredPrerequisiteIds' : 'recommendedPrerequisiteIds';
+      final docRefItem = docRef(_collectionPath, target.id!);
+      final prereqRef = docRef(_collectionPath, dependency.id!);
+
+      await docRefItem.update({
+        field: FieldValue.arrayUnion([prereqRef]),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+
+      final updatedSnapshot = await docRefItem.get();
+      return updatedSnapshot.exists
+          ? TeachableItem.fromSnapshot(updatedSnapshot)
+          : null;
+    } catch (e) {
+      print('Error adding dependency to item ${target.id}: $e');
+      return null;
+    }
+  }
+
+  static Future<TeachableItem?> removeDependency({
+    required TeachableItem target,
+    required TeachableItem dependency,
+  }) async {
+    try {
+      final docRefItem = docRef(_collectionPath, target.id!);
+      final prereqRef = docRef(_collectionPath, dependency.id!);
+
+      await docRefItem.update({
+        'requiredPrerequisiteIds': FieldValue.arrayRemove([prereqRef]),
+        'recommendedPrerequisiteIds': FieldValue.arrayRemove([prereqRef]),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+
+      final updatedSnapshot = await docRefItem.get();
+      return updatedSnapshot.exists
+          ? TeachableItem.fromSnapshot(updatedSnapshot)
+          : null;
+    } catch (e) {
+      print('Error removing dependency from item ${target.id}: $e');
+      return null;
+    }
+  }
+
+  static Future<TeachableItem?> toggleDependency({
+    required TeachableItem target,
+    required TeachableItem dependency,
+  }) async {
+    try {
+      final docRefItem = docRef(_collectionPath, target.id!);
+      final prereqRef = docRef(_collectionPath, dependency.id!);
+
+      final snapshot = await docRefItem.get();
+      if (!snapshot.exists) return null;
+      final current = TeachableItem.fromSnapshot(snapshot);
+
+      final requiredList = current.requiredPrerequisiteIds ?? [];
+      final recommendedList = current.recommendedPrerequisiteIds ?? [];
+
+      final isRequired = requiredList.any((ref) => ref.id == dependency.id);
+      final fromField =
+          isRequired ? 'requiredPrerequisiteIds' : 'recommendedPrerequisiteIds';
+      final toField =
+          isRequired ? 'recommendedPrerequisiteIds' : 'requiredPrerequisiteIds';
+
+      await docRefItem.update({
+        fromField: FieldValue.arrayRemove([prereqRef]),
+        toField: FieldValue.arrayUnion([prereqRef]),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+
+      final updatedSnapshot = await docRefItem.get();
+      return updatedSnapshot.exists
+          ? TeachableItem.fromSnapshot(updatedSnapshot)
+          : null;
+    } catch (e) {
+      print('Error toggling dependency for item ${target.id}: $e');
       return null;
     }
   }

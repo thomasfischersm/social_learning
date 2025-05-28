@@ -32,6 +32,7 @@ enum NavigationEnum {
   courseDesignerIntro('/course_designer_intro'),
   courseDesignerProfile('/course_designer_profile'),
   courseDesignerInventory('/course_designer_inventory'),
+  courseDesignerPrerequisites('/course_designer_prerequisites'),
   ;
 
   final String route;
