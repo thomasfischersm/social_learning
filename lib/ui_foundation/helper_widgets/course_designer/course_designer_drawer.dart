@@ -29,9 +29,12 @@ class CourseDesignerDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: [
-          const DrawerHeader(
-            child: Text('Curriculum Steps',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+            child: Text(
+              'Course Designer',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
           ),
           for (final step in steps)
             ListTile(
