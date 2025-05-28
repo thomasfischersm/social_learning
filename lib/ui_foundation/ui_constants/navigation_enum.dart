@@ -30,6 +30,7 @@ enum NavigationEnum {
   courseGeneration('/course_generation'),
   courseGenerationReview('/course_generation_review'),
   courseDesignerIntro('/course_designer_intro'),
+  courseDesignerProfile('/course_designer_profile'),
   courseDesignerInventory('/course_designer_inventory'),
   ;
 

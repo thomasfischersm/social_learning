@@ -20,6 +20,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_item_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_tag_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 
 class CourseDesignerInventoryPage extends StatefulWidget {
   const CourseDesignerInventoryPage({super.key});
@@ -92,7 +93,8 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
       key: scaffoldKey,
       appBar: AppBar(
           title: const Text('Learning Lab'),
-          leading: CourseDesignerDrawer.hamburger(scaffoldKey)),
+          leading: CourseDesignerDrawer.hamburger(scaffoldKey),
+          actions: InstructorNavActions.createActions(context)),
       drawer: CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(

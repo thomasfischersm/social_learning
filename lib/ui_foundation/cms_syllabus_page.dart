@@ -10,6 +10,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/edit_level_title_di
 import 'package:social_learning/ui_foundation/helper_widgets/one_time_banner.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CmsSyllabusPage extends StatefulWidget {
@@ -38,24 +39,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
               Consumer<LibraryState>(builder: (context, libraryState, child) {
             return Text('${libraryState.selectedCourse?.title} Curriculum');
           }),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.bar_chart),
-              tooltip: 'Instructor Dashboard',
-              onPressed: () =>
-                  NavigationEnum.instructorDashBoard.navigateClean(context),
-            ),
-            IconButton(
-              icon: const Icon(Icons.auto_stories),
-              tooltip: 'Generate Curriculum',
-              onPressed: () => NavigationEnum.courseGeneration.navigateClean(context),
-            ),
-            IconButton(
-              icon: const Icon(Icons.account_tree_outlined),
-              tooltip: 'Course Inventory', // Updated tooltip
-              onPressed: () => NavigationEnum.courseDesignerInventory.navigateClean(context),
-            ),
-          ],
+          actions: InstructorNavActions.createActions(context),
         ),
         bottomNavigationBar: BottomBarV2.build(context),
         floatingActionButton: FloatingActionButton(

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_intro/course_designer_class.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 
 class CourseDesignerIntroPage extends StatefulWidget {
   const CourseDesignerIntroPage({super.key});
@@ -22,6 +23,7 @@ class _CourseDesignerIntroPageState extends State<CourseDesignerIntroPage> {
       appBar: AppBar(
         title: const Text('Learning Lab'),
         leading: CourseDesignerDrawer.hamburger(scaffoldKey),
+        actions: InstructorNavActions.createActions(context),
       ),
       drawer: const CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
