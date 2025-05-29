@@ -1,24 +1,31 @@
 import 'package:social_learning/data/data_helpers/teachable_item_category_functions.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
+import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
+import 'package:social_learning/data/teachable_item_tag.dart';
 
 class PrerequisiteContext {
   final List<TeachableItemCategory> categories;
   final List<TeachableItem> items;
+  final List<TeachableItemTag> tags;
   final void Function() refresh;
 
   final Map<String, TeachableItem> itemById = {};
   final Map<String, TeachableItemCategory> categoryById = {};
+  final Map<String, TeachableItemTag> tagById = {};
+
   bool isLoading = true;
 
   PrerequisiteContext._({
     required this.categories,
     required this.items,
+    required this.tags,
     required this.refresh,
   }) {
     itemById.addEntries(items.map((item) => MapEntry(item.id!, item)));
     categoryById.addEntries(categories.map((cat) => MapEntry(cat.id!, cat)));
+    tagById.addEntries(tags.map((tag) => MapEntry(tag.id!, tag)));
     isLoading = false;
   }
 
@@ -29,9 +36,11 @@ class PrerequisiteContext {
     final categories =
     await TeachableItemCategoryFunctions.getCategoriesForCourse(courseId);
     final items = await TeachableItemFunctions.getItemsForCourse(courseId);
+    final tags = await TeachableItemTagFunctions.getTagsForCourse(courseId);
     return PrerequisiteContext._(
       categories: categories,
       items: items,
+      tags: tags,
       refresh: refresh,
     );
   }
@@ -53,8 +62,7 @@ class PrerequisiteContext {
   List<TeachableItem> getItemsWithDependencies() {
     final filtered = items.where((item) {
       final hasRequired = item.requiredPrerequisiteIds?.isNotEmpty ?? false;
-      final hasRecommended =
-          item.recommendedPrerequisiteIds?.isNotEmpty ?? false;
+      final hasRecommended = item.recommendedPrerequisiteIds?.isNotEmpty ?? false;
       return hasRequired || hasRecommended;
     }).toList();
 
@@ -97,9 +105,16 @@ class PrerequisiteContext {
     _updateItemInContext(updated);
   }
 
-  List<TeachableItem> _sortedPrerequisites(
-      List<dynamic> prereqRefs,
-      ) {
+  List<TeachableItemTag> getTagsForItem(TeachableItem item) {
+    final refs = item.tagIds ?? [];
+    return refs
+        .map((ref) => tagById[ref.id])
+        .where((tag) => tag != null)
+        .cast<TeachableItemTag>()
+        .toList();
+  }
+
+  List<TeachableItem> _sortedPrerequisites(List<dynamic> prereqRefs) {
     final prereqs = prereqRefs
         .map((ref) => itemById[ref.id])
         .where((item) => item != null)
@@ -146,5 +161,4 @@ class PrerequisiteContext {
 
     return map;
   }
-
 }

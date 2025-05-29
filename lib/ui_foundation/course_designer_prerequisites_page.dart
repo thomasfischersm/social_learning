@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/focused_teachable_item_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
@@ -19,6 +21,7 @@ class CourseDesignerPrerequisitesPage extends StatefulWidget {
 class _CourseDesignerPrerequisitesPageState
     extends State<CourseDesignerPrerequisitesPage> {
   String? _courseId;
+  TeachableItem? _focusedItem;
   PrerequisiteContext? _prerequisiteContext;
 
   @override
@@ -63,12 +66,16 @@ class _CourseDesignerPrerequisitesPageState
   }
 
   void _handleFocusItemSelected(String? itemId) {
-    // For now, just print or keep the state
-    print('Selected focus item: $itemId');
+    final newFocus = itemId == null
+        ? null
+        : _prerequisiteContext?.itemById[itemId];
+    setState(() {
+      _focusedItem = newFocus;
+    });
   }
 
   void _handleShowItemsWithPrerequisites() {
-    // For now, just print or show a dialog
+    // Optional: you could open a dialog or redirect
     print('Requested items with prerequisites');
   }
 
@@ -109,6 +116,11 @@ class _CourseDesignerPrerequisitesPageState
           context: _prerequisiteContext!,
           onSelectItem: _handleFocusItemSelected,
           onShowItemsWithPrerequisites: _handleShowItemsWithPrerequisites,
+        ),
+        const SizedBox(height: 24),
+        PrerequisitesCard(
+          context: _prerequisiteContext!,
+          focusedItem: _focusedItem,
         ),
       ],
     );

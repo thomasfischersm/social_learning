@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
-import 'package:social_learning/data/teachable_item_tag.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 
 class PrerequisiteItemEntry extends StatefulWidget {
+  final PrerequisiteContext context;
   final TeachableItem item;
   final TeachableItem parentItem;
-  final int dependencyDepth;
-  final PrerequisiteContext context;
+  final int parentDepth;
 
   const PrerequisiteItemEntry({
     super.key,
+    required this.context,
     required this.item,
     required this.parentItem,
-    required this.dependencyDepth,
-    required this.context,
+    required this.parentDepth,
   });
 
   @override
@@ -24,37 +24,25 @@ class PrerequisiteItemEntry extends StatefulWidget {
 }
 
 class _PrerequisiteItemEntryState extends State<PrerequisiteItemEntry> {
-  late bool isRequired;
-  late bool isRecommended;
+  late final bool isRequired;
+  late final bool isRecommended;
 
   @override
   void initState() {
     super.initState();
-    _computeState();
+    isRequired = widget.parentItem.requiredPrerequisiteIds?.any((ref) => ref.id == widget.item.id) ?? false;
+    isRecommended = widget.parentItem.recommendedPrerequisiteIds?.any((ref) => ref.id == widget.item.id) ?? false;
   }
 
-  void _computeState() {
-    isRequired = widget.parentItem.requiredPrerequisiteIds
-        ?.any((ref) => ref.id == widget.item.id) ??
-        false;
-
-    isRecommended = widget.parentItem.recommendedPrerequisiteIds
-        ?.any((ref) => ref.id == widget.item.id) ??
-        false;
-  }
-
-  void _handleToggleDependency() async {
+  Future<void> _toggle() async {
     await widget.context.toggleDependency(
       target: widget.parentItem,
       dependency: widget.item,
     );
-    setState(() {
-      _computeState();
-    });
   }
 
-  void _handleRemoveDependency() {
-    DialogUtils.showConfirmationDialog(
+  Future<void> _remove() async {
+    await DialogUtils.showConfirmationDialog(
       context,
       'Remove Dependency',
       'Are you sure you want to remove this dependency?',
@@ -63,20 +51,19 @@ class _PrerequisiteItemEntryState extends State<PrerequisiteItemEntry> {
           target: widget.parentItem,
           dependency: widget.item,
         );
-        // refresh already called inside context
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final indentWidth = widget.dependencyDepth * 16.0;
-    final tagWidgets = (widget.item.tags ?? <TeachableItemTag>[])
+    final tagWidgets = widget.context
+        .getTagsForItem(widget.item)
         .map((tag) => Padding(
-      padding: const EdgeInsets.only(left: 4),
+      padding: const EdgeInsets.only(left: 4.0),
       child: TagPill(
-        label: tag.label ?? '',
-        color: tag.color ?? Colors.grey,
+        label: tag.name,
+        color: Color(int.parse(tag.color.replaceFirst('#', '0xff'))),
       ),
     ))
         .toList();
@@ -85,13 +72,11 @@ class _PrerequisiteItemEntryState extends State<PrerequisiteItemEntry> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          SizedBox(width: indentWidth),
-
-          // Icon toggle (required/recommended)
+          SizedBox(width: widget.parentDepth * 16.0),
           InkWell(
-            onTap: _handleToggleDependency,
+            onTap: _toggle,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: Icon(
                 isRequired
                     ? Icons.check_circle
@@ -107,38 +92,22 @@ class _PrerequisiteItemEntryState extends State<PrerequisiteItemEntry> {
               ),
             ),
           ),
-
-          // Item name and tags
-          Expanded(
-            child: Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(
-                  widget.item.name ?? '(Untitled)',
-                  style: const TextStyle(fontSize: 14),
-                ),
-                ...tagWidgets,
-              ],
-            ),
+          const SizedBox(width: 4),
+          Text(widget.item.name ?? '(Untitled)'),
+          ...tagWidgets,
+          const Spacer(),
+          IconButton(
+            icon: const Icon(Icons.remove_circle_outline),
+            tooltip: 'Remove',
+            onPressed: _remove,
           ),
-
-          // Action buttons
-          Row(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.remove_circle_outline),
-                tooltip: 'Remove Dependency',
-                onPressed: _handleRemoveDependency,
-              ),
-              const SizedBox(width: 4),
-              IconButton(
-                icon: const Icon(Icons.add_circle_outline),
-                tooltip: 'Add Sub-Dependency',
-                onPressed: () {
-                  // You can wire this up to open a dropdown later
-                },
-              ),
-            ],
+          const SizedBox(width: 4),
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            tooltip: 'Add dependency',
+            onPressed: () {
+              // To be implemented later.
+            },
           ),
         ],
       ),
