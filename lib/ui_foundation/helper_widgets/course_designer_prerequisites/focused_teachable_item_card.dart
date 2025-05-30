@@ -32,7 +32,8 @@ class FocusedTeachableItemCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
                     border: Border.all(color: Colors.grey.shade300),
@@ -61,7 +62,10 @@ class FocusedTeachableItemCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        for (final item in this.dataContext.itemsGroupedByCategory[category.id] ?? [])
+                        for (final item in this
+                                .dataContext
+                                .itemsGroupedByCategory[category.id] ??
+                            [])
                           DropdownMenuItem<String>(
                             value: item.id,
                             child: Text(item.name ?? '(Untitled)'),
@@ -75,12 +79,14 @@ class FocusedTeachableItemCard extends StatelessWidget {
               InkWell(
                 onTap: onShowItemsWithPrerequisites,
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
                   child: Text(
                     'View All',
                     style: TextStyle(
                       color: Colors.blue,
                       decoration: TextDecoration.underline,
+                      decorationColor: Colors.blue,
                     ),
                   ),
                 ),

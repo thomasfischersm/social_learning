@@ -27,6 +27,7 @@ class PrerequisitesCard extends StatelessWidget {
         item: prereq,
         parentItem: parent,
         parentDepth: depth,
+        showAddButton: true,
       ));
       entries.addAll(_buildWrappedEntries(
         context.getAllPrerequisites(prereq),
@@ -37,29 +38,20 @@ class PrerequisitesCard extends StatelessWidget {
     return entries;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    print('Building prerequisites card for: ${focusedItem?.name ?? 'null'}');
-
-    if (focusedItem == null) {
-      return CourseDesignerCard(
-        title: 'Dependency Tree',
-        body: const Text('No item selected.'),
-      );
-    }
+  Widget _buildViewForFocusedItem() {
+    final prerequisites = context.getAllPrerequisites(focusedItem!);
 
     final entries = <PrerequisiteItemEntry>[
-      // Add the focused item itself as root
       PrerequisiteItemEntry(
         key: UniqueKey(),
-        context: this.context,
+        context: context,
         item: focusedItem!,
         parentItem: null,
-        parentDepth: 0, // special marker for root; or use 0
+        parentDepth: 0,
+        showAddButton: true,
       ),
-      // Then add its prerequisites recursively
       ..._buildWrappedEntries(
-        this.context.getAllPrerequisites(focusedItem!),
+        prerequisites,
         focusedItem!,
         1,
       ),
@@ -67,8 +59,44 @@ class PrerequisitesCard extends StatelessWidget {
 
     return CourseDesignerCard(
       title: 'Dependency Tree',
+      body:  ListView.builder(
+          itemCount: entries.length,
+          itemBuilder: (context, index) => entries[index],
+        ),
+
+    );
+  }
+
+  Widget _buildViewForAllItemsWithDependencies() {
+    final rootItems = context.getItemsWithDependencies();
+    final entries = <PrerequisiteItemEntry>[];
+
+    for (final root in rootItems) {
+      entries.add(PrerequisiteItemEntry(
+        key: UniqueKey(),
+        context: context,
+        item: root,
+        parentItem: null,
+        parentDepth: 0,
+        showAddButton: true,
+      ));
+
+      for (final prereq in context.getAllPrerequisites(root)) {
+        entries.add(PrerequisiteItemEntry(
+          key: UniqueKey(),
+          context: context,
+          item: prereq,
+          parentItem: root,
+          parentDepth: 1,
+          showAddButton: false,
+        ));
+      }
+    }
+
+    return CourseDesignerCard(
+      title: 'Dependency Tree',
       body: entries.isEmpty
-          ? const Text('No prerequisites defined.')
+          ? const Text('No items with dependencies.')
           : SizedBox(
         height: 400,
         child: ListView.builder(
@@ -79,4 +107,11 @@ class PrerequisitesCard extends StatelessWidget {
     );
   }
 
+  @override
+  Widget build(BuildContext context) {
+    print('Building prerequisites card for: ${focusedItem?.name ?? 'null'}');
+    return focusedItem == null
+        ? _buildViewForAllItemsWithDependencies()
+        : _buildViewForFocusedItem();
+  }
 }

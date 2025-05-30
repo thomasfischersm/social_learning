@@ -70,9 +70,8 @@ class _CourseDesignerPrerequisitesPageState
 
   void _handleFocusItemSelected(String? itemId) {
     print('handleFocusItemSelected: $itemId start');
-    final newFocus = itemId == null
-        ? null
-        : _prerequisiteContext?.itemById[itemId];
+    final newFocus =
+        itemId == null ? null : _prerequisiteContext?.itemById[itemId];
     setState(() {
       _focusedItem = newFocus;
     });
@@ -82,6 +81,9 @@ class _CourseDesignerPrerequisitesPageState
   void _handleShowItemsWithPrerequisites() {
     // Optional: you could open a dialog or redirect
     print('Requested items with prerequisites');
+    setState(() {
+      _focusedItem = null;
+    });
   }
 
   @override
@@ -91,7 +93,7 @@ class _CourseDesignerPrerequisitesPageState
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: const Text('Set Prerequisites'),
+        title: const Text('Prerequisites'),
         leading: CourseDesignerDrawer.hamburger(scaffoldKey),
         actions: InstructorNavActions.createActions(context),
       ),
@@ -100,13 +102,13 @@ class _CourseDesignerPrerequisitesPageState
       body: Align(
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
-          enableScrolling: true,
+          enableScrolling: false,
           enableCreatorGuard: true,
           _prerequisiteContext == null
               ? const Padding(
-            padding: EdgeInsets.all(32.0),
-            child: CircularProgressIndicator(),
-          )
+                  padding: EdgeInsets.all(32.0),
+                  child: CircularProgressIndicator(),
+                )
               : _buildMainContent(),
         ),
       ),
@@ -114,21 +116,32 @@ class _CourseDesignerPrerequisitesPageState
   }
 
   Widget _buildMainContent() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        FocusedTeachableItemCard(
-          dataContext: _prerequisiteContext!,
-          focusedItem: _focusedItem,
-          onSelectItem: _handleFocusItemSelected,
-          onShowItemsWithPrerequisites: _handleShowItemsWithPrerequisites,
-        ),
-        const SizedBox(height: 24),
-        PrerequisitesCard(
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                FocusedTeachableItemCard(
+                  dataContext: _prerequisiteContext!,
+                  focusedItem: _focusedItem,
+                  onSelectItem: _handleFocusItemSelected,
+                  onShowItemsWithPrerequisites: _handleShowItemsWithPrerequisites,
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        ];
+      },
+      body: Padding(
+        padding: const EdgeInsets.only(bottom: 24), // prevent overlap with bottom bar
+        child: PrerequisitesCard(
           context: _prerequisiteContext!,
           focusedItem: _focusedItem,
         ),
-      ],
+      ),
     );
   }
+
 }

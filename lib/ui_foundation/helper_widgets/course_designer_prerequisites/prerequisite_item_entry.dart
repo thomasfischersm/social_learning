@@ -10,6 +10,7 @@ class PrerequisiteItemEntry extends StatelessWidget {
   final TeachableItem item;
   final TeachableItem? parentItem;
   final int parentDepth;
+  final bool showAddButton;
 
   const PrerequisiteItemEntry({
     super.key,
@@ -17,6 +18,7 @@ class PrerequisiteItemEntry extends StatelessWidget {
     required this.item,
     required this.parentItem,
     required this.parentDepth,
+    this.showAddButton = true,
   });
 
   Future<void> _toggle() async {
@@ -103,17 +105,18 @@ class PrerequisiteItemEntry extends StatelessWidget {
           ),
           ...tagWidgets,
           const SizedBox(width: 4),
-          AddPrerequisiteFanoutWidget(
-            context: this.context,
-            targetItem: item,
-            onDependencySelected: (selected) async {
-              await this.context.addDependency(
-                target: item,
-                dependency: selected,
-                required: true,
-              );
-            },
-          ),
+          if (showAddButton)
+            AddPrerequisiteFanoutWidget(
+              context: this.context,
+              targetItem: item,
+              onDependencySelected: (selected) async {
+                await this.context.addDependency(
+                  target: item,
+                  dependency: selected,
+                  required: true,
+                );
+              },
+            ),
           if (!isRoot) ...[
             const SizedBox(width: 4),
             InkWell(
