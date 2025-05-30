@@ -33,10 +33,16 @@ class PrerequisiteContext {
     required String courseId,
     required void Function() refresh,
   }) async {
-    final categories =
-    await TeachableItemCategoryFunctions.getCategoriesForCourse(courseId);
-    final items = await TeachableItemFunctions.getItemsForCourse(courseId);
-    final tags = await TeachableItemTagFunctions.getTagsForCourse(courseId);
+    final futures = await Future.wait([
+      TeachableItemCategoryFunctions.getCategoriesForCourse(courseId),
+      TeachableItemFunctions.getItemsForCourse(courseId),
+      TeachableItemTagFunctions.getTagsForCourse(courseId),
+    ]);
+
+    final categories = futures[0] as List<TeachableItemCategory>;
+    final items = futures[1] as List<TeachableItem>;
+    final tags = futures[2] as List<TeachableItemTag>;
+
     return PrerequisiteContext._(
       categories: categories,
       items: items,
@@ -44,6 +50,7 @@ class PrerequisiteContext {
       refresh: refresh,
     );
   }
+
 
   List<TeachableItem> getRequiredPrerequisites(TeachableItem item) {
     return _sortedPrerequisites(item.requiredPrerequisiteIds ?? []);
@@ -81,6 +88,8 @@ class PrerequisiteContext {
       required: required,
     );
     _updateItemInContext(updated);
+
+    refresh();
   }
 
   Future<void> removeDependency({
@@ -92,6 +101,8 @@ class PrerequisiteContext {
       dependency: dependency,
     );
     _updateItemInContext(updated);
+
+    refresh();
   }
 
   Future<void> toggleDependency({
@@ -103,6 +114,8 @@ class PrerequisiteContext {
       dependency: dependency,
     );
     _updateItemInContext(updated);
+
+    refresh();
   }
 
   List<TeachableItemTag> getTagsForItem(TeachableItem item) {

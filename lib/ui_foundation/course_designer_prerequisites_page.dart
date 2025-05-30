@@ -58,7 +58,10 @@ class _CourseDesignerPrerequisitesPageState
     if (_courseId == null) return;
     final context = await PrerequisiteContext.create(
       courseId: _courseId!,
-      refresh: () => setState(() {}),
+      refresh: () => setState(() {
+        // Weirdest bug ever!
+        _handleFocusItemSelected(_focusedItem?.id);
+      }),
     );
     setState(() {
       _prerequisiteContext = context;
@@ -66,12 +69,14 @@ class _CourseDesignerPrerequisitesPageState
   }
 
   void _handleFocusItemSelected(String? itemId) {
+    print('handleFocusItemSelected: $itemId start');
     final newFocus = itemId == null
         ? null
         : _prerequisiteContext?.itemById[itemId];
     setState(() {
       _focusedItem = newFocus;
     });
+    print('handleFocusItemSelected: new focus: $_focusedItem done');
   }
 
   void _handleShowItemsWithPrerequisites() {
@@ -113,7 +118,8 @@ class _CourseDesignerPrerequisitesPageState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         FocusedTeachableItemCard(
-          context: _prerequisiteContext!,
+          dataContext: _prerequisiteContext!,
+          focusedItem: _focusedItem,
           onSelectItem: _handleFocusItemSelected,
           onShowItemsWithPrerequisites: _handleShowItemsWithPrerequisites,
         ),

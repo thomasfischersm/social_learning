@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/add_prerequisite_fanout_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 
-class PrerequisiteItemEntry extends StatefulWidget {
+class PrerequisiteItemEntry extends StatelessWidget {
   final PrerequisiteContext context;
   final TeachableItem item;
-  final TeachableItem parentItem;
+  final TeachableItem? parentItem;
   final int parentDepth;
 
   const PrerequisiteItemEntry({
@@ -19,37 +19,24 @@ class PrerequisiteItemEntry extends StatefulWidget {
     required this.parentDepth,
   });
 
-  @override
-  State<PrerequisiteItemEntry> createState() => _PrerequisiteItemEntryState();
-}
-
-class _PrerequisiteItemEntryState extends State<PrerequisiteItemEntry> {
-  late final bool isRequired;
-  late final bool isRecommended;
-
-  @override
-  void initState() {
-    super.initState();
-    isRequired = widget.parentItem.requiredPrerequisiteIds?.any((ref) => ref.id == widget.item.id) ?? false;
-    isRecommended = widget.parentItem.recommendedPrerequisiteIds?.any((ref) => ref.id == widget.item.id) ?? false;
-  }
-
   Future<void> _toggle() async {
-    await widget.context.toggleDependency(
-      target: widget.parentItem,
-      dependency: widget.item,
+    if (parentItem == null) return;
+    await context.toggleDependency(
+      target: parentItem!,
+      dependency: item,
     );
   }
 
-  Future<void> _remove() async {
+  Future<void> _remove(BuildContext context) async {
+    if (parentItem == null) return;
     await DialogUtils.showConfirmationDialog(
       context,
       'Remove Dependency',
       'Are you sure you want to remove this dependency?',
           () async {
-        await widget.context.removeDependency(
-          target: widget.parentItem,
-          dependency: widget.item,
+        await this.context.removeDependency(
+          target: parentItem!,
+          dependency: item,
         );
       },
     );
@@ -57,58 +44,87 @@ class _PrerequisiteItemEntryState extends State<PrerequisiteItemEntry> {
 
   @override
   Widget build(BuildContext context) {
-    final tagWidgets = widget.context
-        .getTagsForItem(widget.item)
-        .map((tag) => Padding(
-      padding: const EdgeInsets.only(left: 4.0),
-      child: TagPill(
-        label: tag.name,
-        color: Color(int.parse(tag.color.replaceFirst('#', '0xff'))),
+    print('Building prerequisite item entry for ${item.name}');
+    final isRoot = parentItem == null;
+
+    final isRequired = parentItem?.requiredPrerequisiteIds
+        ?.any((ref) => ref.id == item.id) ??
+        false;
+
+    final isRecommended = parentItem?.recommendedPrerequisiteIds
+        ?.any((ref) => ref.id == item.id) ??
+        false;
+
+    final tagWidgets = this
+        .context
+        .getTagsForItem(item)
+        .map(
+          (tag) => Padding(
+        padding: const EdgeInsets.only(left: 4.0),
+        child: TagPill(
+          label: tag.name,
+          color: Color(int.parse(tag.color.replaceFirst('#', '0xff'))),
+        ),
       ),
-    ))
+    )
         .toList();
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          SizedBox(width: widget.parentDepth * 16.0),
-          InkWell(
-            onTap: _toggle,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4.0),
-              child: Icon(
-                isRequired
-                    ? Icons.check_circle
-                    : isRecommended
-                    ? Icons.star
-                    : Icons.radio_button_unchecked,
-                color: isRequired
-                    ? Colors.green
-                    : isRecommended
-                    ? Colors.amber
-                    : Colors.grey,
-                size: 20,
+          SizedBox(width: parentDepth * 16.0),
+          if (!isRoot)
+            InkWell(
+              onTap: _toggle,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                child: Icon(
+                  isRequired
+                      ? Icons.check_circle
+                      : isRecommended
+                      ? Icons.star
+                      : Icons.radio_button_unchecked,
+                  color: isRequired
+                      ? Colors.green
+                      : isRecommended
+                      ? Colors.amber
+                      : Colors.grey,
+                  size: 20,
+                ),
               ),
-            ),
-          ),
+            )
+          else
+            const SizedBox.shrink(),
           const SizedBox(width: 4),
-          Text(widget.item.name ?? '(Untitled)'),
+          Text(
+            item.name ?? '(Untitled)',
+            style: isRoot ? const TextStyle(fontWeight: FontWeight.bold) : null,
+          ),
           ...tagWidgets,
-          const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.remove_circle_outline),
-            tooltip: 'Remove',
-            onPressed: _remove,
-          ),
           const SizedBox(width: 4),
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            tooltip: 'Add dependency',
-            onPressed: () {
-              // To be implemented later.
+          AddPrerequisiteFanoutWidget(
+            context: this.context,
+            targetItem: item,
+            onDependencySelected: (selected) async {
+              await this.context.addDependency(
+                target: item,
+                dependency: selected,
+                required: true,
+              );
             },
           ),
+          if (!isRoot) ...[
+            const SizedBox(width: 4),
+            InkWell(
+              borderRadius: BorderRadius.circular(20),
+              onTap: () => _remove(context),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Icon(Icons.remove_circle_outline),
+              ),
+            ),
+          ],
         ],
       ),
     );

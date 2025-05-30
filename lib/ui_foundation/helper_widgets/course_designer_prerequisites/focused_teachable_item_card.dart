@@ -3,25 +3,19 @@ import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
 
-class FocusedTeachableItemCard extends StatefulWidget {
-  final PrerequisiteContext context;
+class FocusedTeachableItemCard extends StatelessWidget {
+  final PrerequisiteContext dataContext;
+  final TeachableItem? focusedItem;
   final void Function(String? selectedItemId) onSelectItem;
   final VoidCallback onShowItemsWithPrerequisites;
 
   const FocusedTeachableItemCard({
     super.key,
-    required this.context,
+    required this.dataContext,
+    required this.focusedItem,
     required this.onSelectItem,
     required this.onShowItemsWithPrerequisites,
   });
-
-  @override
-  State<FocusedTeachableItemCard> createState() =>
-      _FocusedTeachableItemCardState();
-}
-
-class _FocusedTeachableItemCardState extends State<FocusedTeachableItemCard> {
-  String? selectedItemId;
 
   @override
   Widget build(BuildContext context) {
@@ -46,47 +40,40 @@ class _FocusedTeachableItemCardState extends State<FocusedTeachableItemCard> {
                   ),
                   child: DropdownButton<String>(
                     isExpanded: true,
-                    value: selectedItemId,
+                    value: focusedItem?.id,
                     underline: const SizedBox(),
                     hint: const Text('Select focus item'),
                     onChanged: (value) {
                       if (value != null) {
-                        setState(() {
-                          selectedItemId = value;
-                        });
-                        widget.onSelectItem(value);
+                        onSelectItem(value);
                       }
                     },
                     items: [
-                      for (final category in widget.context.categories)
-                        ...[
-                          DropdownMenuItem<String>(
-                            value: null,
-                            enabled: false,
-                            child: Text(
-                              category.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey,
-                              ),
+                      for (final category in this.dataContext.categories) ...[
+                        DropdownMenuItem<String>(
+                          value: '__CATEGORY__${category.id}',
+                          enabled: false,
+                          child: Text(
+                            category.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
                             ),
                           ),
-                          for (final item in widget
-                              .context.itemsGroupedByCategory[category.id] ??
-                              [])
-                            DropdownMenuItem<String>(
-                              value: item.id,
-                              child: Text(item.name ?? '(Untitled)'),
-                            ),
-                        ],
+                        ),
+                        for (final item in this.dataContext.itemsGroupedByCategory[category.id] ?? [])
+                          DropdownMenuItem<String>(
+                            value: item.id,
+                            child: Text(item.name ?? '(Untitled)'),
+                          ),
+                      ],
                     ],
                   ),
                 ),
               ),
-
               const SizedBox(width: 8),
               InkWell(
-                onTap: widget.onShowItemsWithPrerequisites,
+                onTap: onShowItemsWithPrerequisites,
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
                   child: Text(
