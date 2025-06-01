@@ -12,16 +12,16 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
-class CourseDesignerPrerequisitesPage extends StatefulWidget {
-  const CourseDesignerPrerequisitesPage({super.key});
+class CourseDesignerScopePage extends StatefulWidget {
+  const CourseDesignerScopePage({super.key});
 
   @override
-  State<CourseDesignerPrerequisitesPage> createState() =>
-      _CourseDesignerPrerequisitesPageState();
+  State<CourseDesignerScopePage> createState() =>
+      _CourseDesignerScopePageState();
 }
 
-class _CourseDesignerPrerequisitesPageState
-    extends State<CourseDesignerPrerequisitesPage> {
+class _CourseDesignerScopePageState
+    extends State<CourseDesignerScopePage> {
   String? _courseId;
   TeachableItem? _focusedItem;
   PrerequisiteContext? _prerequisiteContext;
@@ -73,7 +73,7 @@ class _CourseDesignerPrerequisitesPageState
   void _handleFocusItemSelected(String? itemId) {
     print('handleFocusItemSelected: $itemId start');
     final newFocus =
-        itemId == null ? null : _prerequisiteContext?.itemById[itemId];
+    itemId == null ? null : _prerequisiteContext?.itemById[itemId];
     setState(() {
       _focusedItem = newFocus;
     });
@@ -103,8 +103,9 @@ class _CourseDesignerPrerequisitesPageState
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          NavigationEnum.courseDesignerScope.navigateCleanDelayed(context);
-        }, // or Icons.navigate_next
+          // TODO: Navigate to the next page.
+          // NavigationEnum.courseDesignerProfile.navigateCleanDelayed(context);
+        },
         tooltip: 'Next Page',
         child: Icon(Icons.arrow_forward),
       ),
@@ -115,9 +116,9 @@ class _CourseDesignerPrerequisitesPageState
           enableCreatorGuard: true,
           _prerequisiteContext == null
               ? const Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: CircularProgressIndicator(),
-                )
+            padding: EdgeInsets.all(32.0),
+            child: CircularProgressIndicator(),
+          )
               : _buildMainContent(),
         ),
       ),
@@ -125,31 +126,23 @@ class _CourseDesignerPrerequisitesPageState
   }
 
   Widget _buildMainContent() {
-      return NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  FocusedTeachableItemCard(
-                    dataContext: _prerequisiteContext!,
-                    focusedItem: _focusedItem,
-                    onSelectItem: _handleFocusItemSelected,
-                    onShowItemsWithPrerequisites:
-                        _handleShowItemsWithPrerequisites,
-                  ),
-                  const SizedBox(height: 24),
-                  DecomposedCourseDesignerCard.buildHeader('Dependency Tree'),
-                ],
-              ),
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                // TODO: Add card
+                const SizedBox(height: 24),
+                DecomposedCourseDesignerCard.buildHeader('Dependency Tree'),
+              ],
             ),
-          ];
-        },body:
-PrerequisitesCard(
-            context: _prerequisiteContext!,
-            focusedItem: _focusedItem,
           ),
-        );
+        ];
+      },body:
+        SizedBox.shrink()
+    // TODO: Add content
+    );
 
   }
 }

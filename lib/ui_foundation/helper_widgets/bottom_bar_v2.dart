@@ -159,6 +159,7 @@ class BottomBarV2 {
           NavigationEnum.courseDesignerProfile.route,
           NavigationEnum.courseDesignerInventory.route,
           NavigationEnum.courseDesignerPrerequisites.route,
+          NavigationEnum.courseDesignerScope.route,
         }.contains(currentRoute)) {
       return isLessonsVisible ? 2 : 1;
     } else if (isSessionsVisible &&
