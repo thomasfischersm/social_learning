@@ -42,6 +42,7 @@ class _CourseDesignerPrerequisitesPageState
 
   @override
   void dispose() {
+    // TODO: There is a bug where the cotnext seems to have gone already.
     final libraryState = Provider.of<LibraryState>(context, listen: false);
     libraryState.removeListener(_libraryStateListener);
     super.dispose();
