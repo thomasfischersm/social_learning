@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/add_prerequisite_fanout_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
@@ -35,11 +36,11 @@ class PrerequisiteItemEntry extends StatelessWidget {
       context,
       'Remove Dependency',
       'Are you sure you want to remove this dependency?',
-          () async {
+      () async {
         await this.context.removeDependency(
-          target: parentItem!,
-          dependency: item,
-        );
+              target: parentItem!,
+              dependency: item,
+            );
       },
     );
   }
@@ -49,12 +50,12 @@ class PrerequisiteItemEntry extends StatelessWidget {
     print('Building prerequisite item entry for ${item.name}');
     final isRoot = parentItem == null;
 
-    final isRequired = parentItem?.requiredPrerequisiteIds
-        ?.any((ref) => ref.id == item.id) ??
-        false;
+    final isRequired =
+        parentItem?.requiredPrerequisiteIds?.any((ref) => ref.id == item.id) ??
+            false;
 
     final isRecommended = parentItem?.recommendedPrerequisiteIds
-        ?.any((ref) => ref.id == item.id) ??
+            ?.any((ref) => ref.id == item.id) ??
         false;
 
     final tagWidgets = this
@@ -62,16 +63,16 @@ class PrerequisiteItemEntry extends StatelessWidget {
         .getTagsForItem(item)
         .map(
           (tag) => Padding(
-        padding: const EdgeInsets.only(left: 4.0),
-        child: TagPill(
-          label: tag.name,
-          color: Color(int.parse(tag.color.replaceFirst('#', '0xff'))),
-        ),
-      ),
-    )
+            padding: const EdgeInsets.only(left: 4.0),
+            child: TagPill(
+              label: tag.name,
+              color: Color(int.parse(tag.color.replaceFirst('#', '0xff'))),
+            ),
+          ),
+        )
         .toList();
 
-    return Padding(
+    return DecomposedCourseDesignerCard.buildBody(Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
@@ -85,13 +86,13 @@ class PrerequisiteItemEntry extends StatelessWidget {
                   isRequired
                       ? Icons.check_circle
                       : isRecommended
-                      ? Icons.star
-                      : Icons.radio_button_unchecked,
+                          ? Icons.star
+                          : Icons.radio_button_unchecked,
                   color: isRequired
                       ? Colors.green
                       : isRecommended
-                      ? Colors.amber
-                      : Colors.grey,
+                          ? Colors.amber
+                          : Colors.grey,
                   size: 20,
                 ),
               ),
@@ -111,10 +112,10 @@ class PrerequisiteItemEntry extends StatelessWidget {
               targetItem: item,
               onDependencySelected: (selected) async {
                 await this.context.addDependency(
-                  target: item,
-                  dependency: selected,
-                  required: true,
-                );
+                      target: item,
+                      dependency: selected,
+                      required: true,
+                    );
               },
             ),
           if (!isRoot) ...[
@@ -130,6 +131,6 @@ class PrerequisiteItemEntry extends StatelessWidget {
           ],
         ],
       ),
-    );
+    ));
   }
 }

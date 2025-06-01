@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_item_entry.dart';
 
@@ -15,10 +16,10 @@ class PrerequisitesCard extends StatelessWidget {
   });
 
   List<PrerequisiteItemEntry> _buildWrappedEntries(
-      List<TeachableItem> prerequisites,
-      TeachableItem parent,
-      int depth,
-      ) {
+    List<TeachableItem> prerequisites,
+    TeachableItem parent,
+    int depth,
+  ) {
     final entries = <PrerequisiteItemEntry>[];
     for (final prereq in prerequisites) {
       entries.add(PrerequisiteItemEntry(
@@ -57,13 +58,15 @@ class PrerequisitesCard extends StatelessWidget {
       ),
     ];
 
-    return CourseDesignerCard(
-      title: 'Dependency Tree',
-      body:  ListView.builder(
-          itemCount: entries.length,
-          itemBuilder: (context, index) => entries[index],
-        ),
-
+    return ListView.builder(
+      itemCount: entries.length + 1,
+      itemBuilder: (context, index) {
+        if (index < entries.length) {
+          return entries[index];
+        } else {
+          return DecomposedCourseDesignerCard.buildFooter();
+        }
+      },
     );
   }
 
@@ -93,18 +96,16 @@ class PrerequisitesCard extends StatelessWidget {
       }
     }
 
-    return CourseDesignerCard(
-      title: 'Dependency Tree',
-      body: entries.isEmpty
-          ? const Text('No items with dependencies.')
-          : SizedBox(
-        height: 400,
-        child: ListView.builder(
-          itemCount: entries.length,
-          itemBuilder: (context, index) => entries[index],
-        ),
-      ),
-    );
+    return SizedBox.expand(child:ListView.builder(
+      itemCount: entries.length + 1,
+      itemBuilder: (context, index) {
+        if (index < entries.length) {
+          return entries[index];
+        } else {
+          return DecomposedCourseDesignerCard.buildFooter();
+        }
+      },
+    ));
   }
 
   @override

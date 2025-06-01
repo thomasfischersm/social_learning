@@ -4,6 +4,7 @@ import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/focused_teachable_item_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
@@ -116,32 +117,31 @@ class _CourseDesignerPrerequisitesPageState
   }
 
   Widget _buildMainContent() {
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                FocusedTeachableItemCard(
-                  dataContext: _prerequisiteContext!,
-                  focusedItem: _focusedItem,
-                  onSelectItem: _handleFocusItemSelected,
-                  onShowItemsWithPrerequisites: _handleShowItemsWithPrerequisites,
-                ),
-                const SizedBox(height: 24),
-              ],
+      return NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  FocusedTeachableItemCard(
+                    dataContext: _prerequisiteContext!,
+                    focusedItem: _focusedItem,
+                    onSelectItem: _handleFocusItemSelected,
+                    onShowItemsWithPrerequisites:
+                        _handleShowItemsWithPrerequisites,
+                  ),
+                  const SizedBox(height: 24),
+                  DecomposedCourseDesignerCard.buildHeader('Dependency Tree'),
+                ],
+              ),
             ),
+          ];
+        },body:
+PrerequisitesCard(
+            context: _prerequisiteContext!,
+            focusedItem: _focusedItem,
           ),
-        ];
-      },
-      body: Padding(
-        padding: const EdgeInsets.only(bottom: 24), // prevent overlap with bottom bar
-        child: PrerequisitesCard(
-          context: _prerequisiteContext!,
-          focusedItem: _focusedItem,
-        ),
-      ),
-    );
-  }
+        );
 
+  }
 }
