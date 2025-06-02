@@ -8,6 +8,8 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/dec
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/focused_teachable_item_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_scope/scope_context.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_scope/scope_overview_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -22,9 +24,7 @@ class CourseDesignerScopePage extends StatefulWidget {
 
 class _CourseDesignerScopePageState
     extends State<CourseDesignerScopePage> {
-  String? _courseId;
-  TeachableItem? _focusedItem;
-  PrerequisiteContext? _prerequisiteContext;
+  ScopeContext? _scopeContext;
 
   @override
   void initState() {
@@ -32,7 +32,6 @@ class _CourseDesignerScopePageState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final libraryState = Provider.of<LibraryState>(context, listen: false);
       if (libraryState.selectedCourse?.id != null) {
-        _courseId = libraryState.selectedCourse!.id!;
         _loadContext();
       } else {
         libraryState.addListener(_libraryStateListener);
@@ -50,42 +49,30 @@ class _CourseDesignerScopePageState
   void _libraryStateListener() {
     final libraryState = Provider.of<LibraryState>(context, listen: false);
     if (libraryState.selectedCourse?.id != null) {
-      _courseId = libraryState.selectedCourse!.id!;
       libraryState.removeListener(_libraryStateListener);
       _loadContext();
     }
   }
 
   Future<void> _loadContext() async {
-    if (_courseId == null) return;
-    final context = await PrerequisiteContext.create(
-      courseId: _courseId!,
-      refresh: () => setState(() {
-        // Weirdest bug ever!
-        _handleFocusItemSelected(_focusedItem?.id);
-      }),
-    );
-    setState(() {
-      _prerequisiteContext = context;
-    });
-  }
-
-  void _handleFocusItemSelected(String? itemId) {
-    print('handleFocusItemSelected: $itemId start');
-    final newFocus =
-    itemId == null ? null : _prerequisiteContext?.itemById[itemId];
-    setState(() {
-      _focusedItem = newFocus;
-    });
-    print('handleFocusItemSelected: new focus: $_focusedItem done');
-  }
-
-  void _handleShowItemsWithPrerequisites() {
-    // Optional: you could open a dialog or redirect
-    print('Requested items with prerequisites');
-    setState(() {
-      _focusedItem = null;
-    });
+    if (mounted) {
+      final libraryState = Provider.of<LibraryState>(context, listen: false);
+      var courseId = libraryState.selectedCourse?.id;
+      if (courseId == null) {
+        return;
+      }
+      final dataContext = await ScopeContext.create(
+        courseId: courseId,
+        refresh: () =>
+            setState(() {
+              // Weirdest bug ever!
+              // TODO:
+            }),
+      );
+      setState(() {
+        _scopeContext = dataContext;
+      });
+    }
   }
 
   @override
@@ -114,7 +101,7 @@ class _CourseDesignerScopePageState
         child: CustomUiConstants.framePage(
           enableScrolling: false,
           enableCreatorGuard: true,
-          _prerequisiteContext == null
+          _scopeContext == null
               ? const Padding(
             padding: EdgeInsets.all(32.0),
             child: CircularProgressIndicator(),
@@ -132,9 +119,9 @@ class _CourseDesignerScopePageState
           SliverToBoxAdapter(
             child: Column(
               children: [
-                // TODO: Add card
+                // ScopeOverviewCard(scopeContext: _scopeContext),
                 const SizedBox(height: 24),
-                DecomposedCourseDesignerCard.buildHeader('Dependency Tree'),
+                DecomposedCourseDesignerCard.buildHeader('Select teachable items'),
               ],
             ),
           ),

@@ -47,7 +47,7 @@ class CourseProfileFunctions {
           'createdAt': FieldValue.serverTimestamp(),
           'modifiedAt': FieldValue.serverTimestamp(),
         });
-        print('Course profile create successfully.');
+        print('Course profile created successfully.');
       }
 
       // Fetch the updated profile

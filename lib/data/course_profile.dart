@@ -13,6 +13,12 @@ class CourseProfile {
   String? toneAndApproach;
   String? anythingUnusual;
 
+  int defaultTeachableItemDurationInMinutes;
+  int? totalCourseDurationInMinutes;
+  int instructionalTimePercent;
+  int? sessionCount;
+  int? sessionDurationInMinutes;
+
   final Timestamp? createdAt;
   final Timestamp? modifiedAt;
 
@@ -27,6 +33,11 @@ class CourseProfile {
     this.howStudentsJoin,
     this.toneAndApproach,
     this.anythingUnusual,
+    this.defaultTeachableItemDurationInMinutes = 15,
+    this.totalCourseDurationInMinutes,
+    this.instructionalTimePercent = 75,
+    this.sessionCount,
+    this.sessionDurationInMinutes,
     this.createdAt,
     this.modifiedAt,
   });
@@ -44,8 +55,13 @@ class CourseProfile {
       howStudentsJoin: data['howStudentsJoin'] as String?,
       toneAndApproach: data['toneAndApproach'] as String?,
       anythingUnusual: data['anythingUnusual'] as String?,
-      createdAt: data['createdAt'] as Timestamp,
-      modifiedAt: data['modifiedAt'] as Timestamp,
+      defaultTeachableItemDurationInMinutes: data['defaultTeachableItemDurationInMinutes'] as int? ?? 15,
+      totalCourseDurationInMinutes: data['totalCourseDurationInMinutes'] as int?,
+      instructionalTimePercent: data['instructionalTimePercent'] as int? ?? 75,
+      sessionCount: data['sessionCount'] as int?,
+      sessionDurationInMinutes: data['sessionDurationInMinutes'] as int?,
+      createdAt: data['createdAt'] as Timestamp?,
+      modifiedAt: data['modifiedAt'] as Timestamp?,
     );
   }
 
@@ -60,6 +76,11 @@ class CourseProfile {
       'howStudentsJoin': howStudentsJoin,
       'toneAndApproach': toneAndApproach,
       'anythingUnusual': anythingUnusual,
+      'defaultTeachableItemDurationInMinutes': defaultTeachableItemDurationInMinutes,
+      'totalCourseDurationInMinutes': totalCourseDurationInMinutes,
+      'instructionalTimePercent': instructionalTimePercent,
+      'sessionCount': sessionCount,
+      'sessionDurationInMinutes': sessionDurationInMinutes,
       'createdAt': createdAt,
       'modifiedAt': modifiedAt,
     };

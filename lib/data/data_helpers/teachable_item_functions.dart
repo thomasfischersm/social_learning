@@ -11,6 +11,9 @@ class TeachableItemFunctions {
     required String categoryId,
     required String name,
     String? notes,
+    int? durationInMinutes,
+    bool? isIncludedInCourse,
+    bool? isManuallyExcludedFromCourse
   }) async {
     try {
       final courseRef = _firestore.collection('courses').doc(courseId);
@@ -39,6 +42,9 @@ class TeachableItemFunctions {
         'notes': notes,
         'sortOrder': newSortOrder,
         'tagIds': [],
+        'durationInMinutes': durationInMinutes,
+        'isIncludedInCourse': isIncludedInCourse,
+        'isManuallyExcludedFromCourse': isManuallyExcludedFromCourse,
         'createdAt': FieldValue.serverTimestamp(),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
@@ -58,6 +64,9 @@ class TeachableItemFunctions {
     required String itemId,
     required String name,
     String? notes,
+    int? durationInMinutes,
+    bool? isIncludedInCourse,
+    bool? isManuallyExcludedFromCourse,
     List<DocumentReference>? tagIds,
     // categoryId and sortOrder are handled by batchUpdateItemSortOrder
   }) async {
@@ -68,6 +77,16 @@ class TeachableItemFunctions {
       };
       if (notes != null) {
         dataToUpdate['notes'] = notes;
+      }
+      if (durationInMinutes != null) {
+        dataToUpdate['durationInMinutes'] = durationInMinutes;
+      }
+      if (isIncludedInCourse != null) {
+        dataToUpdate['isIncludedInCourse'] = isIncludedInCourse;
+      }
+      if (isManuallyExcludedFromCourse != null) {
+        dataToUpdate['isManuallyExcludedFromCourse'] =
+            isManuallyExcludedFromCourse;
       }
       if (tagIds != null) {
         dataToUpdate['tagIds'] = tagIds;
@@ -172,9 +191,13 @@ class TeachableItemFunctions {
         categoryId: newCategoryRef,
         name: movedItem.name,
         notes: movedItem.notes,
+        durationInMinutes: movedItem.durationInMinutes,
+        isIncludedInCourse: movedItem.isIncludedInCourse,
+        isManuallyExcludedFromCourse: movedItem.isManuallyExcludedFromCourse,
         tagIds: movedItem.tagIds,
         sortOrder: newIndex,
-        // placeholder; will be updated in loop
+        requiredPrerequisiteIds: movedItem.requiredPrerequisiteIds,
+        recommendedPrerequisiteIds: movedItem.recommendedPrerequisiteIds,
         createdAt: movedItem.createdAt,
         modifiedAt: movedItem.modifiedAt,
       );
