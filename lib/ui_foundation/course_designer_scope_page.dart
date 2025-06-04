@@ -9,6 +9,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_pre
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_scope/scope_context.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_scope/scope_items_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_scope/scope_overview_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
@@ -22,8 +23,7 @@ class CourseDesignerScopePage extends StatefulWidget {
       _CourseDesignerScopePageState();
 }
 
-class _CourseDesignerScopePageState
-    extends State<CourseDesignerScopePage> {
+class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
   ScopeContext? _scopeContext;
 
   @override
@@ -63,11 +63,10 @@ class _CourseDesignerScopePageState
       }
       final dataContext = await ScopeContext.create(
         courseId: courseId,
-        refresh: () =>
-            setState(() {
-              // Weirdest bug ever!
-              // TODO:
-            }),
+        refresh: () => setState(() {
+          // Weirdest bug ever!
+          // TODO:
+        }),
       );
       setState(() {
         _scopeContext = dataContext;
@@ -103,9 +102,9 @@ class _CourseDesignerScopePageState
           enableCreatorGuard: true,
           _scopeContext == null
               ? const Padding(
-            padding: EdgeInsets.all(32.0),
-            child: CircularProgressIndicator(),
-          )
+                  padding: EdgeInsets.all(32.0),
+                  child: CircularProgressIndicator(),
+                )
               : _buildMainContent(),
         ),
       ),
@@ -113,23 +112,25 @@ class _CourseDesignerScopePageState
   }
 
   Widget _buildMainContent() {
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverToBoxAdapter(
-            child: Column(
-              children: [
-                // ScopeOverviewCard(scopeContext: _scopeContext),
-                const SizedBox(height: 24),
-                DecomposedCourseDesignerCard.buildHeader('Select teachable items'),
-              ],
-            ),
-          ),
-        ];
-      },body:
-        SizedBox.shrink()
-    // TODO: Add content
-    );
+    if (_scopeContext == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
+    return NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  ScopeOverviewCard(scopeContext: _scopeContext!),
+                  const SizedBox(height: 24),
+                  DecomposedCourseDesignerCard.buildHeader(
+                      'Select teachable items'),
+                ],
+              ),
+            ),
+          ];
+        },
+        body: ScopeItemsCard(scopeContext: _scopeContext!));
   }
 }

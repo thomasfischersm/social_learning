@@ -18,44 +18,25 @@ class ScopeOverviewCard extends StatefulWidget {
 }
 
 class _ScopeOverviewCardState extends State<ScopeOverviewCard> {
-  late final TextEditingController _sessionCountController;
-  late final TextEditingController _sessionDurationController;
-
-  @override
-  void initState() {
-    super.initState();
-    final profile = widget.scopeContext.courseProfile;
-    _sessionCountController = TextEditingController(
-      text: profile?.sessionCount?.toString() ?? '',
-    );
-    _sessionDurationController = TextEditingController(
-      text: profile?.sessionDurationInMinutes?.toString() ?? '',
-    );
-  }
-
-  @override
-  void dispose() {
-    _sessionCountController.dispose();
-    _sessionDurationController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final profile = widget.scopeContext.courseProfile;
     if (profile == null) {
       return const CourseDesignerCard(
-        title: 'Scope Overview',
+        title: 'Step 4: Scope Overview',
         body: Text('Course profile data not available.'),
       );
     }
 
-    final totalSelectedMinutes = widget.scopeContext.getSelectedItemsTotalMinutes();
+    final totalSelectedMinutes =
+        widget.scopeContext.getSelectedItemsTotalMinutes();
 
     final totalCourseMinutes = profile.totalCourseDurationInMinutes ?? 0;
     final instructionalTargetPercent = profile.instructionalTimePercent;
     final instructionalTargetMinutes =
         totalCourseMinutes * instructionalTargetPercent / 100;
+    final defaultTeachableItemDurationInMinutes =
+        profile.defaultTeachableItemDurationInMinutes;
 
     Color barColor;
     if (instructionalTargetMinutes == 0 || totalCourseMinutes == 0) {
@@ -71,12 +52,13 @@ class _ScopeOverviewCardState extends State<ScopeOverviewCard> {
     }
 
     return CourseDesignerCard(
-      title: 'Scope Overview',
+      title: 'Step 4: Scope Overview',
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'This is the difficult task of cutting what doesn''t fit into the course. By selecting/unselecting items, it will easily let you play around with different scenarios.',
+            'This is the difficult task of cutting what doesn'
+            't fit into the course. By selecting/unselecting items, it will easily let you play around with different scenarios.',
           ),
           const SizedBox(height: 16),
           Column(
@@ -114,6 +96,23 @@ class _ScopeOverviewCardState extends State<ScopeOverviewCard> {
                   ),
                 ),
               ),
+              InkWell(
+                onTap: _editDefaultTeachableItemDurationInMinutes,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Default item duration: $defaultTeachableItemDurationInMinutes min',
+                        ),
+                      ),
+                      const Icon(Icons.edit, size: 18),
+                    ],
+                  ),
+                ),
+              ),
+              Divider(),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Text(
@@ -122,7 +121,7 @@ class _ScopeOverviewCardState extends State<ScopeOverviewCard> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          // const SizedBox(height: 16),
           LinearProgressIndicator(
             value: totalCourseMinutes > 0
                 ? (totalSelectedMinutes / totalCourseMinutes).clamp(0.0, 1.0)
@@ -152,23 +151,27 @@ class _ScopeOverviewCardState extends State<ScopeOverviewCard> {
       context: context,
       builder: (context) => ValueInputDialog(
         'Instructional Time (%)',
-        widget.scopeContext.courseProfile?.instructionalTimePercent.toString() ?? '75',
-        'Ex: 70. Time left is used for warm-ups, breaks, or group sharing.',
+        widget.scopeContext.courseProfile?.instructionalTimePercent
+                .toString() ??
+            '75',
+        'Example: 70. Time left is used for warm-ups, breaks, or group sharing.',
         'Save',
-            (value) {
+        (value) {
           final num = int.tryParse(value ?? '');
           if (num == null) return 'Please enter a valid number';
-          if (num < 0 || num > 100) return 'Must be between 0 and 100';
+          if (num < 0 || num > 1000) return 'Must be between 0 and 1000';
           return null;
         },
-            (newValue) {
+        (newValue) {
           final newPercent = int.parse(newValue);
           widget.scopeContext.saveInstructionalPercentage(newPercent);
         },
+        instructionText:
+            'Note all classroom time can be used for covering new content.\n\n'
+            'Time left is used for warm-ups, breaks, or group sharing.',
       ),
     );
   }
-
 
   String _formatDuration(int? minutes) {
     if (minutes == null) return '--';
@@ -183,4 +186,28 @@ class _ScopeOverviewCardState extends State<ScopeOverviewCard> {
     }
   }
 
+  void _editDefaultTeachableItemDurationInMinutes() {
+    showDialog(
+      context: context,
+      builder: (context) => ValueInputDialog(
+        'Default Teachable Item Duration (min)',
+        widget.scopeContext.courseProfile
+                ?.defaultTeachableItemDurationInMinutes
+                .toString() ??
+            '15',
+        'Example: 15.',
+        'Save',
+        (value) {
+          final num = int.tryParse(value ?? '');
+          if (num == null) return 'Please enter a valid number';
+          if (num < 1) return 'Must be at least 1 minute';
+          return null;
+        },
+        (newValue) {
+          final newDuration = int.parse(newValue);
+          widget.scopeContext.saveDefaultTeachableItemDuration(newDuration);
+        },
+      ),
+    );
+  }
 }

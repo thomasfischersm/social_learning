@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/teachable_item_inclusion_status.dart';
 
 class TeachableItem {
   final String? id;
@@ -11,8 +12,7 @@ class TeachableItem {
   List<DocumentReference>? tagIds;
   List<DocumentReference>? requiredPrerequisiteIds;
   List<DocumentReference>? recommendedPrerequisiteIds;
-  bool isIncludedInCourse;
-  bool isManuallyExcludedFromCourse;
+  TeachableItemInclusionStatus inclusionStatus;
   final Timestamp createdAt;
   final Timestamp modifiedAt;
 
@@ -27,8 +27,7 @@ class TeachableItem {
     this.tagIds,
     this.requiredPrerequisiteIds,
     this.recommendedPrerequisiteIds,
-    this.isIncludedInCourse = false,
-    this.isManuallyExcludedFromCourse = false,
+    this.inclusionStatus = TeachableItemInclusionStatus.excluded,
     required this.createdAt,
     required this.modifiedAt,
   });
@@ -39,7 +38,7 @@ class TeachableItem {
       id: snapshot.id,
       courseId: data['courseId'] as DocumentReference,
       categoryId: data['categoryId'] as DocumentReference,
-      name: data['name'] as String,
+      name: data['name'] as String?,
       notes: data['notes'] as String?,
       sortOrder: data['sortOrder'] as int,
       durationInMinutes: data['durationInMinutes'] as int?,
@@ -52,8 +51,9 @@ class TeachableItem {
       recommendedPrerequisiteIds: (data['recommendedPrerequisiteIds'] as List<dynamic>?)
           ?.map((ref) => ref as DocumentReference)
           .toList(),
-      isIncludedInCourse: data['isIncludedInCourse'] as bool? ?? false,
-      isManuallyExcludedFromCourse: data['isManuallyExcludedFromCourse'] as bool? ?? false,
+      inclusionStatus: TeachableItemInclusionStatusX.fromInt(
+        data['inclusionStatus'] as int? ?? 0,
+      ),
       createdAt: data['createdAt'] as Timestamp,
       modifiedAt: data['modifiedAt'] as Timestamp,
     );
@@ -70,8 +70,7 @@ class TeachableItem {
       'tagIds': tagIds,
       'requiredPrerequisiteIds': requiredPrerequisiteIds,
       'recommendedPrerequisiteIds': recommendedPrerequisiteIds,
-      'isIncludedInCourse': isIncludedInCourse,
-      'isManuallyExcludedFromCourse': isManuallyExcludedFromCourse,
+      'inclusionStatus': inclusionStatus.toInt(),
       'createdAt': createdAt,
       'modifiedAt': modifiedAt,
     };

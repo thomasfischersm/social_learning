@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/teachable_item.dart';
+import 'package:social_learning/data/teachable_item_inclusion_status.dart';
 
 class TeachableItemFunctions {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -12,8 +13,8 @@ class TeachableItemFunctions {
     required String name,
     String? notes,
     int? durationInMinutes,
-    bool? isIncludedInCourse,
-    bool? isManuallyExcludedFromCourse
+    TeachableItemInclusionStatus inclusionStatus =
+        TeachableItemInclusionStatus.excluded,
   }) async {
     try {
       final courseRef = _firestore.collection('courses').doc(courseId);
@@ -43,8 +44,7 @@ class TeachableItemFunctions {
         'sortOrder': newSortOrder,
         'tagIds': [],
         'durationInMinutes': durationInMinutes,
-        'isIncludedInCourse': isIncludedInCourse,
-        'isManuallyExcludedFromCourse': isManuallyExcludedFromCourse,
+        'inclusionStatus': inclusionStatus.toInt(),
         'createdAt': FieldValue.serverTimestamp(),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
@@ -65,8 +65,7 @@ class TeachableItemFunctions {
     required String name,
     String? notes,
     int? durationInMinutes,
-    bool? isIncludedInCourse,
-    bool? isManuallyExcludedFromCourse,
+    TeachableItemInclusionStatus? inclusionStatus,
     List<DocumentReference>? tagIds,
     // categoryId and sortOrder are handled by batchUpdateItemSortOrder
   }) async {
@@ -81,12 +80,8 @@ class TeachableItemFunctions {
       if (durationInMinutes != null) {
         dataToUpdate['durationInMinutes'] = durationInMinutes;
       }
-      if (isIncludedInCourse != null) {
-        dataToUpdate['isIncludedInCourse'] = isIncludedInCourse;
-      }
-      if (isManuallyExcludedFromCourse != null) {
-        dataToUpdate['isManuallyExcludedFromCourse'] =
-            isManuallyExcludedFromCourse;
+      if (inclusionStatus != null) {
+        dataToUpdate['inclusionStatus'] = inclusionStatus.toInt();
       }
       if (tagIds != null) {
         dataToUpdate['tagIds'] = tagIds;
@@ -192,8 +187,7 @@ class TeachableItemFunctions {
         name: movedItem.name,
         notes: movedItem.notes,
         durationInMinutes: movedItem.durationInMinutes,
-        isIncludedInCourse: movedItem.isIncludedInCourse,
-        isManuallyExcludedFromCourse: movedItem.isManuallyExcludedFromCourse,
+        inclusionStatus: movedItem.inclusionStatus,
         tagIds: movedItem.tagIds,
         sortOrder: newIndex,
         requiredPrerequisiteIds: movedItem.requiredPrerequisiteIds,
@@ -394,5 +388,55 @@ class TeachableItemFunctions {
       print('Error toggling dependency for item ${target.id}: $e');
       return null;
     }
+  }
+
+  static void updateInclusionStatuses(
+      Set<TeachableItem> needToSelect, Set<TeachableItem> needToDeselect) {
+    if (needToSelect.isEmpty && needToDeselect.isEmpty) {
+      print('No items to update inclusion statuses for.');
+      return;
+    }
+
+    final batch = _firestore.batch();
+
+    for (final item in needToSelect) {
+      final docRef = _firestore.collection(_collectionPath).doc(item.id);
+      batch.update(docRef, {
+        'inclusionStatus': item.inclusionStatus.toInt(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+    }
+
+    for (final item in needToDeselect) {
+      final docRef = _firestore.collection(_collectionPath).doc(item.id);
+      batch.update(docRef, {
+        'inclusionStatus': TeachableItemInclusionStatus.excluded.toInt(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+    }
+
+    batch.commit().catchError((e) {
+      print('Error updating inclusion statuses: $e');
+    });
+  }
+
+  static updateInclusionStatus(TeachableItem item) async {
+    final docRef = _firestore.collection(_collectionPath).doc(item.id);
+    await docRef.update({
+      'inclusionStatus': item.inclusionStatus.toInt(),
+      'modifiedAt': FieldValue.serverTimestamp(),
+    }).catchError((e) {
+      print('Error updating inclusion status for item ${item.id}: $e');
+    });
+  }
+
+  static Future<void> updateDurationOverride(TeachableItem item, int? newDurationOverride) async {
+    final docRef = _firestore.collection(_collectionPath).doc(item.id);
+    await docRef.update({
+      'durationInMinutes': newDurationOverride,
+      'modifiedAt': FieldValue.serverTimestamp(),
+    }).catchError((e) {
+      print('Error updating duration override for item ${item.id}: $e');
+    });
   }
 }

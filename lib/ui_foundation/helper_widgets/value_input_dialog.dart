@@ -3,14 +3,15 @@ import 'package:flutter/material.dart';
 class ValueInputDialog extends StatelessWidget {
   final String title;
   final String currentValue;
+  final String? instructionText;
   final String hintText;
   final String okButtonLabel;
   final String? Function(String?)? validate;
   final Function(String) onConfirm;
 
-  const ValueInputDialog(this.title, this.currentValue, this.hintText,
-      this.okButtonLabel, this.validate, this.onConfirm,
-      {super.key});
+  const ValueInputDialog(this.title, this.currentValue,
+      this.hintText, this.okButtonLabel, this.validate, this.onConfirm,
+      {super.key, this.instructionText});
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +26,11 @@ class ValueInputDialog extends StatelessWidget {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (instructionText != null && instructionText!.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Align(alignment: Alignment.centerLeft, child:Text(instructionText!)),
+                ),
               TextField(
                 controller: controller,
                 decoration: InputDecoration(

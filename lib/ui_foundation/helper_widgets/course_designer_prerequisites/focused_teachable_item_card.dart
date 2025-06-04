@@ -20,7 +20,7 @@ class FocusedTeachableItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CourseDesignerCard(
-      title: 'Prerequisites',
+      title: 'Step 3: Prerequisites',
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

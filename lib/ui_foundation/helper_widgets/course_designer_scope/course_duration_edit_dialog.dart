@@ -35,12 +35,16 @@ class _CourseDurationEditDialogState extends State<CourseDurationEditDialog> {
 
     _sessionCountController.addListener(_recalculateTotal);
     _sessionDurationController.addListener(_recalculateTotal);
-    _totalMinutesController.addListener(_clearSessionCountAndDuration);
   }
 
   void _recalculateTotal() {
-    final sessionCount = int.tryParse(_sessionCountController.text) ?? 0;
-    final sessionDuration = int.tryParse(_sessionDurationController.text) ?? 0;
+    final sessionCount = int.tryParse(_sessionCountController.text);
+    final sessionDuration = int.tryParse(_sessionDurationController.text);
+
+    if (sessionCount == null || sessionDuration == null) {
+      return;
+    }
+
     int totalMinutes = sessionCount * sessionDuration;
     setState(() {
       _totalMinutesController.text = totalMinutes.toString();
@@ -66,6 +70,9 @@ class _CourseDurationEditDialogState extends State<CourseDurationEditDialog> {
   }
 
   void _clearSessionCountAndDuration() {
+    print('Clearing session count and duration');
+    if (_totalMinutesController.text.isEmpty) return;
+
     _sessionCountController.clear();
     _sessionDurationController.clear();
   }
@@ -98,7 +105,6 @@ class _CourseDurationEditDialogState extends State<CourseDurationEditDialog> {
           ),
           const Divider(height: 24),
           TextField(
-            readOnly: true,
             controller: _totalMinutesController,
             keyboardType: TextInputType.number,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -106,6 +112,7 @@ class _CourseDurationEditDialogState extends State<CourseDurationEditDialog> {
               labelText: 'Total Duration (minutes)',
               border: OutlineInputBorder(),
             ),
+            onChanged: (_) => _clearSessionCountAndDuration(),
           ),
         ],
       ),
