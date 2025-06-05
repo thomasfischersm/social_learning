@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class LearningObjective {
   final String? id;
   final DocumentReference courseId;
+  final int sortOrder;
   final String name;
   final String? description;
   final List<DocumentReference> teachableItemRefs;
@@ -12,6 +13,7 @@ class LearningObjective {
   LearningObjective({
     this.id,
     required this.courseId,
+    required this.sortOrder,
     required this.name,
     this.description,
     required this.teachableItemRefs,
@@ -24,6 +26,7 @@ class LearningObjective {
     return LearningObjective(
       id: snapshot.id,
       courseId: data['courseId'] as DocumentReference,
+      sortOrder: data['sortOrder'] as int,
       name: data['name'] as String,
       description: data['description'] as String?,
       teachableItemRefs: (data['teachableItemRefs'] as List<dynamic>)
@@ -37,6 +40,7 @@ class LearningObjective {
   Map<String, dynamic> toJson() {
     return {
       'courseId': courseId,
+      'sortOrder': sortOrder,
       'name': name,
       'description': description,
       'teachableItemRefs': teachableItemRefs,

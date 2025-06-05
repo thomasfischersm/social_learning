@@ -24,6 +24,7 @@ class LearningObjectiveFunctions {
   static Future<LearningObjective?> saveObjective({
     String? id,
     required String courseId,
+    required int sortOrder,
     required String name,
     String? description,
     List<DocumentReference>? teachableItemIds,
@@ -32,6 +33,7 @@ class LearningObjectiveFunctions {
       final courseRef = _firestore.collection('courses').doc(courseId);
       final data = {
         'courseId': courseRef,
+        'sortOrder': sortOrder,
         'name': name,
         'description': description,
         'teachableItemIds': teachableItemIds ?? [],
