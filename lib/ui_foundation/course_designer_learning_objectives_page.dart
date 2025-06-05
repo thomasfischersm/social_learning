@@ -5,6 +5,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/Learning_objectives_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/focused_teachable_item_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
@@ -15,16 +16,16 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
-class CourseDesignerScopePage extends StatefulWidget {
-  const CourseDesignerScopePage({super.key});
+class CourseDesignerLearningObjectivesPage extends StatefulWidget {
+  const CourseDesignerLearningObjectivesPage({super.key});
 
   @override
-  State<CourseDesignerScopePage> createState() =>
-      _CourseDesignerScopePageState();
+  State<CourseDesignerLearningObjectivesPage> createState() =>
+      _CourseDesignerLearningObjectivesPageState();
 }
 
-class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
-  ScopeContext? _scopeContext;
+class _CourseDesignerLearningObjectivesPageState extends State<CourseDesignerLearningObjectivesPage> {
+  LearningObjectivesContext? _objectivesContext;
 
   @override
   void initState() {
@@ -61,7 +62,7 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
       if (courseId == null) {
         return;
       }
-      final dataContext = await ScopeContext.create(
+      final dataContext = await LearningObjectivesContext.create(
         courseId: courseId,
         refresh: () => setState(() {
           // Weirdest bug ever!
@@ -69,7 +70,7 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
         }),
       );
       setState(() {
-        _scopeContext = dataContext;
+        _objectivesContext = dataContext;
       });
     }
   }
@@ -81,7 +82,7 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
     return Scaffold(
       key: scaffoldKey,
       appBar: AppBar(
-        title: const Text('Prerequisites'),
+        title: const Text('Learning Objectives'),
         leading: CourseDesignerDrawer.hamburger(scaffoldKey),
         actions: InstructorNavActions.createActions(context),
       ),
@@ -89,8 +90,8 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          NavigationEnum.courseDesignerLearningObjectives
-              .navigateCleanDelayed(context);
+          // TODO: Navigate to the next page.
+          // NavigationEnum.courseDesignerProfile.navigateCleanDelayed(context);
         },
         tooltip: 'Next Page',
         child: Icon(Icons.arrow_forward),
@@ -100,11 +101,11 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
         child: CustomUiConstants.framePage(
           enableScrolling: false,
           enableCreatorGuard: true,
-          _scopeContext == null
+          _objectivesContext == null
               ? const Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: CircularProgressIndicator(),
-                )
+            padding: EdgeInsets.all(32.0),
+            child: CircularProgressIndicator(),
+          )
               : _buildMainContent(),
         ),
       ),
@@ -112,20 +113,16 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
   }
 
   Widget _buildMainContent() {
-    if (_scopeContext == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     return NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                  ScopeOverviewCard(scopeContext: _scopeContext!),
+                  // ScopeOverviewCard(scopeContext: _scopeContext!),
                   const SizedBox(height: 24),
                   DecomposedCourseDesignerCard.buildHeader(
-                      'Select teachable items'),
+                      'Edit Learning Objectives'),
                 ],
               ),
             ),

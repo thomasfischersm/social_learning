@@ -41,7 +41,7 @@ class LearningObjective {
     return {
       'courseId': courseId,
       'sortOrder': sortOrder,
-      'name': name,
+      'name': name,navigation
       'description': description,
       'teachableItemRefs': teachableItemRefs,
       'createdAt': createdAt,
