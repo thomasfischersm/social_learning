@@ -20,6 +20,34 @@ class DecomposedCourseDesignerCard {
     );
   }
 
+  static Widget buildHeaderWithIcons(String title, List<Widget> icons) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius:
+            const BorderRadius.vertical(top: Radius.circular(_borderRadius)),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          ...icons.map((icon) => Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: icon,
+              )),
+        ],
+      ),
+    );
+  }
+
   static Widget buildBody(Widget bodyContent) {
     return Container(
       width: double.infinity,

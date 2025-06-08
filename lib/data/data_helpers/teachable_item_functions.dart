@@ -45,6 +45,7 @@ class TeachableItemFunctions {
         'tagIds': [],
         'durationInMinutes': durationInMinutes,
         'inclusionStatus': inclusionStatus.toInt(),
+        'lessonRefs': [],
         'createdAt': FieldValue.serverTimestamp(),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
@@ -67,6 +68,7 @@ class TeachableItemFunctions {
     int? durationInMinutes,
     TeachableItemInclusionStatus? inclusionStatus,
     List<DocumentReference>? tagIds,
+    List<DocumentReference>? lessonRefs,
     // categoryId and sortOrder are handled by batchUpdateItemSortOrder
   }) async {
     try {
@@ -85,6 +87,9 @@ class TeachableItemFunctions {
       }
       if (tagIds != null) {
         dataToUpdate['tagIds'] = tagIds;
+      }
+      if (lessonRefs != null) {
+        dataToUpdate['lessonRefs'] = lessonRefs;
       }
       await _firestore
           .collection(_collectionPath)
@@ -430,7 +435,8 @@ class TeachableItemFunctions {
     });
   }
 
-  static Future<void> updateDurationOverride(TeachableItem item, int? newDurationOverride) async {
+  static Future<void> updateDurationOverride(
+      TeachableItem item, int? newDurationOverride) async {
     final docRef = _firestore.collection(_collectionPath).doc(item.id);
     await docRef.update({
       'durationInMinutes': newDurationOverride,
@@ -438,5 +444,33 @@ class TeachableItemFunctions {
     }).catchError((e) {
       print('Error updating duration override for item ${item.id}: $e');
     });
+  }
+
+  static Future<void> addLessonToTeachableItem({
+    required String itemId,
+    required DocumentReference lessonRef,
+  }) async {
+    try {
+      await _firestore.collection(_collectionPath).doc(itemId).update({
+        'lessonRefs': FieldValue.arrayUnion([lessonRef]),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Error adding lesson to teachable item $itemId: $e');
+    }
+  }
+
+  static Future<void> removeLessonFromTeachableItem({
+    required String itemId,
+    required DocumentReference lessonRef,
+  }) async {
+    try {
+      await _firestore.collection(_collectionPath).doc(itemId).update({
+        'lessonRefs': FieldValue.arrayRemove([lessonRef]),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Error removing lesson from teachable item $itemId: $e');
+    }
   }
 }

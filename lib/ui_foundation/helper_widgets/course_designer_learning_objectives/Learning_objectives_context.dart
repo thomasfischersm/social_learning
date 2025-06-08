@@ -1,1 +1,125 @@
-class LearningObjectivesContext {}
+import 'package:social_learning/data/course_profile.dart';
+import 'package:social_learning/data/data_helpers/course_profile_functions.dart';
+import 'package:social_learning/data/data_helpers/learning_objective_functions.dart';
+import 'package:social_learning/data/data_helpers/teachable_item_category_functions.dart';
+import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
+import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.dart';
+import 'package:social_learning/data/learning_objective.dart';
+import 'package:social_learning/data/teachable_item.dart';
+import 'package:social_learning/data/teachable_item_category.dart';
+import 'package:social_learning/data/teachable_item_tag.dart';
+
+class LearningObjectivesContext {
+  final List<LearningObjective> learningObjectives;
+  final List<TeachableItem> items;
+  final List<TeachableItemCategory> categories;
+  final List<TeachableItemTag> tags;
+  final CourseProfile? courseProfile;
+  final void Function() refresh;
+
+  final Map<String, TeachableItem> itemById = {};
+  final Map<String, TeachableItemCategory> categoryById = {};
+  final Map<String, TeachableItemTag> tagById = {};
+
+  bool isLoading = true;
+
+  LearningObjectivesContext._({
+    required this.learningObjectives,
+    required this.items,
+    required this.categories,
+    required this.tags,
+    required this.courseProfile,
+    required this.refresh,
+  }) {
+    itemById.addEntries(items.map((item) => MapEntry(item.id!, item)));
+    categoryById.addEntries(categories.map((cat) => MapEntry(cat.id!, cat)));
+    tagById.addEntries(tags.map((tag) => MapEntry(tag.id!, tag)));
+    isLoading = false;
+  }
+
+  static Future<LearningObjectivesContext> create({
+    required String courseId,
+    required void Function() refresh,
+  }) async {
+    final learningObjectivesFuture =
+        LearningObjectiveFunctions.getObjectivesForCourse(courseId);
+    final courseProfileFuture =
+        CourseProfileFunctions.getCourseProfile(courseId);
+    final categoriesFuture =
+        TeachableItemCategoryFunctions.getCategoriesForCourse(courseId);
+    final itemsFuture = TeachableItemFunctions.getItemsForCourse(courseId);
+    final tagsFuture = TeachableItemTagFunctions.getTagsForCourse(courseId);
+
+    final results = await Future.wait([
+      learningObjectivesFuture,
+      courseProfileFuture,
+      categoriesFuture,
+      itemsFuture,
+      tagsFuture,
+    ]);
+
+    final learningObjectives = results[0] as List<LearningObjective>;
+    final courseProfile = results[1] as CourseProfile?;
+    final categories = results[2] as List<TeachableItemCategory>;
+    final items = results[3] as List<TeachableItem>;
+    final tags = results[4] as List<TeachableItemTag>;
+
+    return LearningObjectivesContext._(
+      learningObjectives: learningObjectives,
+      courseProfile: courseProfile,
+      categories: categories,
+      items: items,
+      tags: tags,
+      refresh: refresh,
+    );
+  }
+
+  List<TeachableItem> getTeachableItemsForCategory(String categoryId) {
+    return items.where((item) => item.categoryId.id == categoryId).toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+  }
+
+  deleteObjective(LearningObjective objective) {
+    LearningObjectiveFunctions.deleteObjective(objective);
+
+    // Remove local copy. (It doesn't matter if the sortOrder has a gap.)
+    learningObjectives.removeWhere((o) => o.id == objective.id);
+
+    refresh();
+  }
+
+  addObjective(String name) async {
+    // Determine the next sort order.
+    int sortOrder = learningObjectives.isEmpty
+        ? 0
+        : (learningObjectives
+                .map((o) => o.sortOrder)
+                .reduce((a, b) => a > b ? a : b) +
+            1);
+    LearningObjective objective = await LearningObjectiveFunctions.addObjective(
+        courseId: courseProfile!.id!, name: name, sortOrder: sortOrder);
+
+    learningObjectives.add(objective);
+
+    refresh();
+  }
+
+  updateObjective(
+      {required String id, required String name, String? description}) async {
+    LearningObjective objective =
+        await LearningObjectiveFunctions.updateObjective(
+      id: id,
+      name: name,
+      description: description,
+    );
+
+    // Replace local copy.
+    int index = learningObjectives.indexWhere((o) => o.id == id);
+    if (index != -1) {
+      learningObjectives[index] = objective;
+    }
+    refresh();
+  }
+
+
+}

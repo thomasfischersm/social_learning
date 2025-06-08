@@ -82,4 +82,38 @@ class LearningObjectiveFunctions {
       print('Error removing teachable item: $e');
     }
   }
+
+  static deleteObjective(LearningObjective objective) async {
+    try {
+      await _firestore.collection(_collectionPath).doc(objective.id).delete();
+    } catch (e) {
+      print('Error deleting objective ${objective.id}: $e');
+    }
+  }
+
+  static updateObjective({required String id, required String name, String? description}) async {
+    name = name.trim();
+    description = description?.trim();
+
+    await _firestore.collection(_collectionPath).doc(id).update({
+      'name': name,
+      'description': description,
+      'modifiedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  static Future<LearningObjective> addObjective({required String courseId, required String name, required int sortOrder}) async {
+    name = name.trim();
+    final courseRef = _firestore.collection('courses').doc(courseId);
+    var docRef = await _firestore.collection(_collectionPath).add({
+      'courseId': courseRef,
+      'sortOrder': sortOrder,
+      'name': name,
+      'description': null,
+      'teachableItemIds': [],
+      'createdAt': FieldValue.serverTimestamp(),
+      'modifiedAt': FieldValue.serverTimestamp(),
+    });
+    return LearningObjective.fromSnapshot(await docRef.get());
+  }
 }

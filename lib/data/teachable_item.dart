@@ -12,6 +12,7 @@ class TeachableItem {
   List<DocumentReference>? tagIds;
   List<DocumentReference>? requiredPrerequisiteIds;
   List<DocumentReference>? recommendedPrerequisiteIds;
+  List<DocumentReference>? lessonRefs;
   TeachableItemInclusionStatus inclusionStatus;
   final Timestamp createdAt;
   final Timestamp modifiedAt;
@@ -27,6 +28,7 @@ class TeachableItem {
     this.tagIds,
     this.requiredPrerequisiteIds,
     this.recommendedPrerequisiteIds,
+    this.lessonRefs,
     this.inclusionStatus = TeachableItemInclusionStatus.excluded,
     required this.createdAt,
     required this.modifiedAt,
@@ -51,6 +53,9 @@ class TeachableItem {
       recommendedPrerequisiteIds: (data['recommendedPrerequisiteIds'] as List<dynamic>?)
           ?.map((ref) => ref as DocumentReference)
           .toList(),
+      lessonRefs: (data['lessonRefs'] as List<dynamic>?)
+          ?.map((ref) => ref as DocumentReference)
+          .toList(),
       inclusionStatus: TeachableItemInclusionStatusX.fromInt(
         data['inclusionStatus'] as int? ?? 0,
       ),
@@ -70,6 +75,7 @@ class TeachableItem {
       'tagIds': tagIds,
       'requiredPrerequisiteIds': requiredPrerequisiteIds,
       'recommendedPrerequisiteIds': recommendedPrerequisiteIds,
+      'lessonRefs': lessonRefs,
       'inclusionStatus': inclusionStatus.toInt(),
       'createdAt': createdAt,
       'modifiedAt': modifiedAt,

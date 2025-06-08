@@ -6,6 +6,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart'
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/Learning_objectives_context.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/learning_objectives_overview_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/focused_teachable_item_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
@@ -24,7 +25,8 @@ class CourseDesignerLearningObjectivesPage extends StatefulWidget {
       _CourseDesignerLearningObjectivesPageState();
 }
 
-class _CourseDesignerLearningObjectivesPageState extends State<CourseDesignerLearningObjectivesPage> {
+class _CourseDesignerLearningObjectivesPageState
+    extends State<CourseDesignerLearningObjectivesPage> {
   LearningObjectivesContext? _objectivesContext;
 
   @override
@@ -103,9 +105,9 @@ class _CourseDesignerLearningObjectivesPageState extends State<CourseDesignerLea
           enableCreatorGuard: true,
           _objectivesContext == null
               ? const Padding(
-            padding: EdgeInsets.all(32.0),
-            child: CircularProgressIndicator(),
-          )
+                  padding: EdgeInsets.all(32.0),
+                  child: CircularProgressIndicator(),
+                )
               : _buildMainContent(),
         ),
       ),
@@ -113,13 +115,14 @@ class _CourseDesignerLearningObjectivesPageState extends State<CourseDesignerLea
   }
 
   Widget _buildMainContent() {
+    return Text('placeholder');
     return NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                  // ScopeOverviewCard(scopeContext: _scopeContext!),
+                  LearningObjectivesOverviewCard(),
                   const SizedBox(height: 24),
                   DecomposedCourseDesignerCard.buildHeader(
                       'Edit Learning Objectives'),
