@@ -9,6 +9,8 @@ import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 
+import '../../../data/lesson.dart';
+
 class LearningObjectivesContext {
   final List<LearningObjective> learningObjectives;
   final List<TeachableItem> items;
@@ -121,5 +123,76 @@ class LearningObjectivesContext {
     refresh();
   }
 
+  /// Attach [lesson] to [item], update local cache, and refresh UI.
+  Future<void> addLessonToTeachableItem({
+    required TeachableItem item,
+    required Lesson lesson,
+  }) async {
+    final updated = await TeachableItemFunctions.addLessonToTeachableItem(
+      itemId: item.id!,
+      lessonId: lesson.id!,
+    );
+    if (updated != null) {
+      itemById[item.id!] = updated;
+      refresh();
+    }
+  }
 
+  /// Replace [oldLesson] with [newLesson] on [item], update cache, and refresh.
+  Future<void> replaceLessonForTeachableItem({
+    required TeachableItem item,
+    required Lesson oldLesson,
+    required Lesson newLesson,
+  }) async {
+    // Single function-class call to do remove + add + fetch
+    final updated = await TeachableItemFunctions.replaceLessonOnItem(
+      itemId: item.id!,
+      oldLessonId: oldLesson.id!,
+      newLessonId: newLesson.id!,
+    );
+    if (updated != null) {
+      itemById[item.id!] = updated;
+      refresh();
+    }
+  }
+  /// Add [item] to the given [objective], update cache, and refresh UI.
+  Future<void> addTeachableItemToObjective({
+    required LearningObjective objective,
+    required TeachableItem item,
+  }) async {
+    // Delegate to the functions class, which returns the updated objective
+    final updated = await LearningObjectiveFunctions.addItemToObjective(
+      objectiveId: objective.id!,
+      teachableItemId: item.id!,
+    );
+    if (updated != null) {
+      // Replace the old objective in our local list
+      final idx = learningObjectives.indexWhere((o) => o.id == objective.id);
+      if (idx != -1) {
+        learningObjectives[idx] = updated;
+      }
+      refresh();
+    }
+  }
+
+  /// Replace [oldItem] with [newItem] on [objective], update cache, refresh UI.
+  Future<void> replaceTeachableItemInObjective({
+    required LearningObjective objective,
+    required TeachableItem oldItem,
+    required TeachableItem newItem,
+  }) async {
+    // Single functions‐class call to remove+add+fetch
+    final updated = await LearningObjectiveFunctions.replaceItemInObjective(
+      objectiveId: objective.id!,
+      oldTeachableItemId: oldItem.id!,
+      newTeachableItemId: newItem.id!,
+    );
+    if (updated != null) {
+      final idx = learningObjectives.indexWhere((o) => o.id == objective.id);
+      if (idx != -1) {
+        learningObjectives[idx] = updated;
+      }
+      refresh();
+    }
+  }
 }

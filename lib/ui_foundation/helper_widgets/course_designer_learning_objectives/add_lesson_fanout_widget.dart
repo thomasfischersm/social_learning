@@ -3,95 +3,117 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/teachable_item.dart';
-import 'package:social_learning/data/learning_objective.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/learning_objectives_context.dart';
 
 class AddLessonFanoutWidget {
+  /// Shows an overlay menu to either add a new lesson to [item]
+  /// or replace an existing [currentLesson] if provided.
   static void show({
     required BuildContext context,
     required LayerLink link,
     required TeachableItem item,
-    required Lesson currentLesson,
+    Lesson? currentLesson,
     required LearningObjectivesContext objectivesContext,
   }) {
     final library = Provider.of<LibraryState>(context, listen: false);
 
-    // Build a set of already-attached lesson IDs (minus the one we're replacing)
+    // Build a set of already-attached lesson IDs (minus the one being replaced)
     final attachedIds = (item.lessonRefs ?? [])
         .map((ref) => ref.id)
         .whereType<String>()
-        .toSet()
-      ..remove(currentLesson.id);
+        .toSet();
+    if (currentLesson != null) {
+      attachedIds.remove(currentLesson.id);
+    }
 
     late OverlayEntry entry;
+
+    // Common handler for selecting a lesson
+    void _handleSelection(Lesson lesson) {
+      entry.remove();
+      if (currentLesson != null) {
+        objectivesContext.replaceLessonForTeachableItem(
+          item: item,
+          oldLesson: currentLesson,
+          newLesson: lesson,
+        );
+      } else {
+        objectivesContext.addLessonToTeachableItem(
+          item: item,
+          lesson: lesson,
+        );
+      }
+    }
+
     entry = OverlayEntry(builder: (_) {
       final box = context.findRenderObject() as RenderBox;
       final origin = box.localToGlobal(Offset.zero);
       final size = box.size;
-
-      // Build menu items: grouped by level, then unattached
       final widgets = <Widget>[];
 
-      // 1) Lessons grouped by each level
+      // 1) Lessons grouped by level
       for (final level in library.levels ?? []) {
-        final lessons = library.getLessonsByLevel(level.id!)
+        final lessons = library
+            .getLessonsByLevel(level.id!)
             .where((l) => !attachedIds.contains(l.id))
             .toList();
         if (lessons.isEmpty) continue;
 
-        widgets.add(Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Text(
-            level.title,
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
-          ),
-        ));
-
-        for (final lesson in lessons) {
-          widgets.add(InkWell(
-            onTap: () {
-              entry.remove();
-              objectivesContext.replaceLessonForTeachableItem(
-                item: item,
-                oldLesson: currentLesson,
-                newLesson: lesson,
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Text(lesson.title),
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Text(
+              level.title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
             ),
-          ));
+          ),
+        );
+        for (final lesson in lessons) {
+          widgets.add(
+            InkWell(
+              onTap: () => _handleSelection(lesson),
+              child: Padding(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Text(lesson.title),
+              ),
+            ),
+          );
         }
       }
 
-      // 2) Unattached lessons
-      final unattached = library.getUnattachedLessons()
+      // 2) “Other lessons” (unattached to any level)
+      final unattached = library
+          .getUnattachedLessons()
           .where((l) => !attachedIds.contains(l.id))
           .toList();
       if (unattached.isNotEmpty) {
-        widgets.add(Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Text(
-            'Unattached',
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
-          ),
-        ));
-        for (final lesson in unattached) {
-          widgets.add(InkWell(
-            onTap: () {
-              entry.remove();
-              objectivesContext.replaceLessonForTeachableItem(
-                item: item,
-                oldLesson: currentLesson,
-                newLesson: lesson,
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Text(lesson.title),
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Text(
+              'Other lessons',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
             ),
-          ));
+          ),
+        );
+        for (final lesson in unattached) {
+          widgets.add(
+            InkWell(
+              onTap: () => _handleSelection(lesson),
+              child: Padding(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Text(lesson.title),
+              ),
+            ),
+          );
         }
       }
 
@@ -110,14 +132,18 @@ class AddLessonFanoutWidget {
                 elevation: 6,
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
-                  constraints: const BoxConstraints(maxHeight: 300, minWidth: 180),
+                  constraints: const BoxConstraints(
+                      maxHeight: 300, minWidth: 180),
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: SingleChildScrollView(
-                    child: Column(mainAxisSize: MainAxisSize.min, children: widgets),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: widgets,
+                    ),
                   ),
                 ),
               ),

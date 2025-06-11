@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/learning_objective.dart';
 
 class LearningObjectiveFunctions {
@@ -115,5 +116,48 @@ class LearningObjectiveFunctions {
       'modifiedAt': FieldValue.serverTimestamp(),
     });
     return LearningObjective.fromSnapshot(await docRef.get());
+  }
+
+  /// Adds a teachable item reference to the objective, then returns the updated objective.
+  static Future<LearningObjective?> addItemToObjective({
+    required String objectiveId,
+    required String teachableItemId,
+  }) async {
+    final objRef = docRef(_collectionPath, objectiveId);
+    final itemRef = docRef('teachableItems', teachableItemId);
+
+    await objRef.update({
+      'teachableItemRefs': FieldValue.arrayUnion([itemRef]),
+      'modifiedAt': FieldValue.serverTimestamp(),
+    });
+
+    final snapshot = await objRef.get();
+    if (!snapshot.exists) return null;
+    return LearningObjective.fromSnapshot(snapshot);
+  }
+
+  /// Replaces one teachable item ref with another on the objective, then returns the updated objective.
+  static Future<LearningObjective?> replaceItemInObjective({
+    required String objectiveId,
+    required String oldTeachableItemId,
+    required String newTeachableItemId,
+  }) async {
+    final objRef = docRef(_collectionPath, objectiveId);
+    final oldRef = docRef('teachableItems', oldTeachableItemId);
+    final newRef = docRef('teachableItems', newTeachableItemId);
+
+    final batch = _firestore.batch();
+    batch.update(objRef, {
+      'teachableItemRefs': FieldValue.arrayRemove([oldRef]),
+    });
+    batch.update(objRef, {
+      'teachableItemRefs': FieldValue.arrayUnion([newRef]),
+      'modifiedAt': FieldValue.serverTimestamp(),
+    });
+    await batch.commit();
+
+    final snapshot = await objRef.get();
+    if (!snapshot.exists) return null;
+    return LearningObjective.fromSnapshot(snapshot);
   }
 }

@@ -446,31 +446,46 @@ class TeachableItemFunctions {
     });
   }
 
-  static Future<void> addLessonToTeachableItem({
+  /// Attach a lesson to the item's `lessonRefs` array and return the updated item.
+  static Future<TeachableItem?> addLessonToTeachableItem({
     required String itemId,
-    required DocumentReference lessonRef,
+    required String lessonId,
   }) async {
-    try {
-      await _firestore.collection(_collectionPath).doc(itemId).update({
-        'lessonRefs': FieldValue.arrayUnion([lessonRef]),
-        'modifiedAt': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      print('Error adding lesson to teachable item $itemId: $e');
-    }
+    final itemRef = docRef(_collectionPath, itemId);
+    final lessonRef = docRef('lessons', lessonId);
+
+    await itemRef.update({
+      'lessonRefs': FieldValue.arrayUnion([lessonRef]),
+      'modifiedAt': FieldValue.serverTimestamp(),
+    });
+
+    final snapshot = await itemRef.get();
+    if (!snapshot.exists) return null;
+    return TeachableItem.fromSnapshot(snapshot);
   }
 
-  static Future<void> removeLessonFromTeachableItem({
+  /// Atomically replace one lessonRef with another and return the updated item.
+  static Future<TeachableItem?> replaceLessonOnItem({
     required String itemId,
-    required DocumentReference lessonRef,
+    required String oldLessonId,
+    required String newLessonId,
   }) async {
-    try {
-      await _firestore.collection(_collectionPath).doc(itemId).update({
-        'lessonRefs': FieldValue.arrayRemove([lessonRef]),
-        'modifiedAt': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      print('Error removing lesson from teachable item $itemId: $e');
-    }
+    final itemRef = docRef(_collectionPath, itemId);
+    final oldRef = docRef('lessons', oldLessonId);
+    final newRef = docRef('lessons', newLessonId);
+
+    final batch = _firestore.batch();
+    batch.update(itemRef, {
+      'lessonRefs': FieldValue.arrayRemove([oldRef]),
+    });
+    batch.update(itemRef, {
+      'lessonRefs': FieldValue.arrayUnion([newRef]),
+      'modifiedAt': FieldValue.serverTimestamp(),
+    });
+    await batch.commit();
+
+    final snapshot = await itemRef.get();
+    if (!snapshot.exists) return null;
+    return TeachableItem.fromSnapshot(snapshot);
   }
 }

@@ -5,7 +5,8 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/Learning_objectives_context.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/learning_objectives_context.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/learning_objectives_list_view.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/learning_objectives_overview_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/focused_teachable_item_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_card.dart';
@@ -115,7 +116,6 @@ class _CourseDesignerLearningObjectivesPageState
   }
 
   Widget _buildMainContent() {
-    return Text('placeholder');
     return NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -131,6 +131,6 @@ class _CourseDesignerLearningObjectivesPageState
             ),
           ];
         },
-        body: ScopeItemsCard(scopeContext: _scopeContext!));
+        body: LearningObjectivesListView(objectivesContext: _objectivesContext!));
   }
 }

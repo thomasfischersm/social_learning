@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/learning_objective.dart';
 import 'package:social_learning/data/data_helpers/learning_objective_functions.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/Learning_objectives_context.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/learning_objectives_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/edit_learning_objective_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
@@ -10,12 +10,12 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/dec
 
 class LearningObjectiveEntry extends StatelessWidget {
   final LearningObjective objective;
-  final LearningObjectivesContext objectiveContext;
+  final LearningObjectivesContext objectivesContext;
 
   const LearningObjectiveEntry({
     super.key,
     required this.objective,
-    required this.objectiveContext,
+    required this.objectivesContext,
   });
 
   @override
@@ -74,7 +74,7 @@ class LearningObjectiveEntry extends StatelessWidget {
       'Delete learning objective?',
       'Are you sure you want to delete "${objective.name}"?',
       () async {
-        await objectiveContext.deleteObjective(objective);
+        await objectivesContext.deleteObjective(objective);
       },
     );
   }
@@ -84,7 +84,7 @@ class LearningObjectiveEntry extends StatelessWidget {
       context: context,
       builder: (_) => EditLearningObjectiveDialog(
         objective: objective,
-        objectivesContext: objectiveContext,
+        objectivesContext: objectivesContext,
       ),
     );
   }
