@@ -12,6 +12,7 @@ import 'package:social_learning/data/teachable_item_tag.dart';
 import '../../../data/lesson.dart';
 
 class LearningObjectivesContext {
+  final String courseId;
   final List<LearningObjective> learningObjectives;
   final List<TeachableItem> items;
   final List<TeachableItemCategory> categories;
@@ -26,6 +27,7 @@ class LearningObjectivesContext {
   bool isLoading = true;
 
   LearningObjectivesContext._({
+    required this.courseId,
     required this.learningObjectives,
     required this.items,
     required this.categories,
@@ -67,6 +69,7 @@ class LearningObjectivesContext {
     final tags = results[4] as List<TeachableItemTag>;
 
     return LearningObjectivesContext._(
+      courseId: courseId,
       learningObjectives: learningObjectives,
       courseProfile: courseProfile,
       categories: categories,
@@ -91,6 +94,7 @@ class LearningObjectivesContext {
   }
 
   addObjective(String name) async {
+    print('(In context) Adding objective: $name');
     // Determine the next sort order.
     int sortOrder = learningObjectives.isEmpty
         ? 0
@@ -99,7 +103,7 @@ class LearningObjectivesContext {
                 .reduce((a, b) => a > b ? a : b) +
             1);
     LearningObjective objective = await LearningObjectiveFunctions.addObjective(
-        courseId: courseProfile!.id!, name: name, sortOrder: sortOrder);
+        courseId: courseId, name: name, sortOrder: sortOrder);
 
     learningObjectives.add(objective);
 

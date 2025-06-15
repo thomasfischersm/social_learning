@@ -30,6 +30,7 @@ class LearningObjectiveFunctions {
     String? description,
     List<DocumentReference>? teachableItemIds,
   }) async {
+    print('LearningObjectiveFunctions: Saving objective: $id, courseId: $courseId, sortOrder: $sortOrder, name: $name, description: $description, teachableItemIds: $teachableItemIds');
     try {
       final courseRef = _firestore.collection('courses').doc(courseId);
       final data = {
@@ -104,6 +105,7 @@ class LearningObjectiveFunctions {
   }
 
   static Future<LearningObjective> addObjective({required String courseId, required String name, required int sortOrder}) async {
+    print('Adding objective: courseId: $courseId, name: $name, sortOrder: $sortOrder');
     name = name.trim();
     final courseRef = _firestore.collection('courses').doc(courseId);
     var docRef = await _firestore.collection(_collectionPath).add({

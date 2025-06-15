@@ -21,7 +21,8 @@ class LearningObjective {
     required this.modifiedAt,
   });
 
-  factory LearningObjective.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+  factory LearningObjective.fromSnapshot(
+      DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data()!;
     return LearningObjective(
       id: snapshot.id,
@@ -29,9 +30,10 @@ class LearningObjective {
       sortOrder: data['sortOrder'] as int,
       name: data['name'] as String,
       description: data['description'] as String?,
-      teachableItemRefs: (data['teachableItemRefs'] as List<dynamic>)
-          .map((ref) => ref as DocumentReference)
-          .toList(),
+      teachableItemRefs: (data['teachableItemRefs'] as List<dynamic>?)
+              ?.map((ref) => ref as DocumentReference)
+              .toList() ??
+          <DocumentReference>[],
       createdAt: data['createdAt'] as Timestamp,
       modifiedAt: data['modifiedAt'] as Timestamp,
     );
