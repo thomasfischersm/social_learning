@@ -124,8 +124,8 @@ class _CourseDesignerLearningObjectivesPageState
                 children: [
                   LearningObjectivesOverviewCard(),
                   const SizedBox(height: 24),
-                  DecomposedCourseDesignerCard.buildHeader(
-                      'Edit Learning Objectives'),
+                  // DecomposedCourseDesignerCard.buildHeader(
+                  //     'Edit Learning Objectives'),
                 ],
               ),
             ),

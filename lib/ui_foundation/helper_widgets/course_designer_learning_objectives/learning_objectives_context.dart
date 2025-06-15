@@ -195,4 +195,50 @@ class LearningObjectivesContext {
       refresh();
     }
   }
+
+  /// Unlinks [item] from [objective], updates local cache and refreshes UI.
+  Future<void> removeTeachableItemFromObjective({
+    required LearningObjective objective,
+    required TeachableItem item,
+  }) async {
+    // 1) Delegate Firebase work to your functions class
+    final updated = await LearningObjectiveFunctions.removeItemFromObjective(
+      objectiveId: objective.id!,
+      teachableItemId: item.id!,
+    );
+
+    // 2) Update in-memory list if we got a fresh model back
+    if (updated != null) {
+      final idx = learningObjectives.indexWhere((o) => o.id == objective.id);
+      if (idx != -1) {
+        learningObjectives[idx] = updated;
+      }
+      // 3) Trigger UI rebuild
+      refresh();
+    }
+  }
+
+  /// Unlink [lesson] from [item], update both caches, then refresh UI.
+  Future<void> removeLessonFromTeachableItem({
+    required TeachableItem item,
+    required Lesson lesson,
+  }) async {
+    final updated = await TeachableItemFunctions.removeLessonFromTeachableItem(
+      itemId: item.id!,
+      lessonId: lesson.id!,
+    );
+    if (updated != null) {
+      // 1) Update the map
+      itemById[item.id!] = updated;
+
+      // 2) Update the list
+      final listIndex = items.indexWhere((i) => i.id == item.id);
+      if (listIndex != -1) {
+        items[listIndex] = updated;
+      }
+
+      // 3) Rebuild the UI
+      refresh();
+    }
+  }
 }

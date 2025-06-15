@@ -488,4 +488,24 @@ class TeachableItemFunctions {
     if (!snapshot.exists) return null;
     return TeachableItem.fromSnapshot(snapshot);
   }
+
+  /// Remove a lessonRef from the item and return the updated TeachableItem.
+  static Future<TeachableItem?> removeLessonFromTeachableItem({
+    required String itemId,
+    required String lessonId,
+  }) async {
+    final itemRef = docRef(_collectionPath, itemId);
+    final lessonRef = docRef('lessons', lessonId);
+
+    // Remove the lesson from the array
+    await itemRef.update({
+      'lessonRefs': FieldValue.arrayRemove([lessonRef]),
+      'modifiedAt': FieldValue.serverTimestamp(),
+    });
+
+    // Fetch & return the fresh snapshot
+    final snapshot = await itemRef.get();
+    if (!snapshot.exists) return null;
+    return TeachableItem.fromSnapshot(snapshot);
+  }
 }

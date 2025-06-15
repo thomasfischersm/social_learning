@@ -9,6 +9,8 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_lea
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/add_lesson_fanout_widget.dart';
 
+import '../../ui_constants/custom_text_styles.dart';
+
 class ObjectiveLessonEntry extends StatefulWidget {
   final TeachableItem item;
   final Lesson lesson;
@@ -45,7 +47,7 @@ class _ObjectiveLessonEntryState extends State<ObjectiveLessonEntry> {
             Expanded(
               child: Text(
                 widget.lesson.title,
-                style: Theme.of(context).textTheme.bodyText1,
+                style: CustomTextStyles.getBody(context),
               ),
             ),
 

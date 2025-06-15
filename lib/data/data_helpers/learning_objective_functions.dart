@@ -160,4 +160,23 @@ class LearningObjectiveFunctions {
     if (!snapshot.exists) return null;
     return LearningObjective.fromSnapshot(snapshot);
   }
+
+  static Future<LearningObjective?> removeItemFromObjective({
+    required String objectiveId,
+    required String teachableItemId,
+  }) async {
+    final objRef = docRef('learningObjectives', objectiveId);
+    final itemRef = docRef('teachableItems', teachableItemId);
+
+    await objRef.update({
+      'teachableItemRefs': FieldValue.arrayRemove([itemRef]),
+      'modifiedAt': FieldValue.serverTimestamp(),
+    });
+
+    final snap = await objRef.get();
+    return snap.exists
+        ? LearningObjective.fromSnapshot(snap)
+        : null;
+  }
+
 }

@@ -3,11 +3,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/learning_objective.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/learning_objectives_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/learning_objectives_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/add_teachable_item_fanout_widget.dart';
 
-class ObjectiveTeachableItemEntry extends StatelessWidget {
+import '../../ui_constants/custom_text_styles.dart';
+
+class ObjectiveTeachableItemEntry extends StatefulWidget {
   final LearningObjective objective;
   final TeachableItem item;
   final LearningObjectivesContext objectivesContext;
@@ -20,10 +22,18 @@ class ObjectiveTeachableItemEntry extends StatelessWidget {
   });
 
   @override
+  _ObjectiveTeachableItemEntryState createState() =>
+      _ObjectiveTeachableItemEntryState();
+}
+
+class _ObjectiveTeachableItemEntryState
+    extends State<ObjectiveTeachableItemEntry> {
+  final LayerLink _link = LayerLink();
+
+  @override
   Widget build(BuildContext context) {
-    // Build TagPill list with 4px left padding each
-    final tagWidgets = (item.tagIds ?? <DocumentReference>[])
-        .map((ref) => objectivesContext.tagById[ref.id])
+    final tagWidgets = (widget.item.tagIds ?? <DocumentReference>[])
+        .map((ref) => widget.objectivesContext.tagById[ref.id])
         .where((tag) => tag != null)
         .map((tag) => Padding(
       padding: const EdgeInsets.only(left: 4.0),
@@ -42,8 +52,8 @@ class ObjectiveTeachableItemEntry extends StatelessWidget {
             // Item name
             Expanded(
               child: Text(
-                item.name ?? '(Untitled)',
-                style: Theme.of(context).textTheme.bodyText1,
+                widget.item.name ?? '(Untitled)',
+                style: CustomTextStyles.getBody(context),
               ),
             ),
 
@@ -52,18 +62,18 @@ class ObjectiveTeachableItemEntry extends StatelessWidget {
 
             const SizedBox(width: 8),
 
-            // Edit (replace) icon
+            // ✏️ Edit (replace) icon with its own LayerLink
             CompositedTransformTarget(
-              link: objectivesContext.layerLinkForObjective(objective.id!),
+              link: _link,
               child: InkWell(
                 borderRadius: BorderRadius.circular(4),
                 onTap: () {
                   AddTeachableItemFanoutWidget.show(
                     context: context,
-                    link: objectivesContext.layerLinkForObjective(objective.id!),
-                    objective: objective,
-                    objectivesContext: objectivesContext,
-                    currentItem: item,
+                    link: _link,
+                    objective: widget.objective,
+                    objectivesContext: widget.objectivesContext,
+                    currentItem: widget.item,
                   );
                 },
                 child: const Padding(
@@ -75,13 +85,13 @@ class ObjectiveTeachableItemEntry extends StatelessWidget {
 
             const SizedBox(width: 6),
 
-            // Remove (unlink) icon
+            // 🔗 off remove icon
             InkWell(
               borderRadius: BorderRadius.circular(4),
               onTap: () {
-                objectivesContext.removeTeachableItemFromObjective(
-                  objective: objective,
-                  item: item,
+                widget.objectivesContext.removeTeachableItemFromObjective(
+                  objective: widget.objective,
+                  item: widget.item,
                 );
               },
               child: const Padding(
