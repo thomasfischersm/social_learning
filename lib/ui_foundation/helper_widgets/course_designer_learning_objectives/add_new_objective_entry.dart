@@ -43,7 +43,7 @@ class _AddNewObjectiveEntryState extends State<AddNewObjectiveEntry> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
       child: Form(
         key: _formKey,
         child: TextFormField(

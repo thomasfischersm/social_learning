@@ -6,7 +6,8 @@ class LearningObjectiveFunctions {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const String _collectionPath = 'learningObjectives';
 
-  static Future<List<LearningObjective>> getObjectivesForCourse(String courseId) async {
+  static Future<List<LearningObjective>> getObjectivesForCourse(
+      String courseId) async {
     try {
       final courseRef = _firestore.collection('courses').doc(courseId);
       final snapshot = await _firestore
@@ -30,7 +31,8 @@ class LearningObjectiveFunctions {
     String? description,
     List<DocumentReference>? teachableItemIds,
   }) async {
-    print('LearningObjectiveFunctions: Saving objective: $id, courseId: $courseId, sortOrder: $sortOrder, name: $name, description: $description, teachableItemIds: $teachableItemIds');
+    print(
+        'LearningObjectiveFunctions: Saving objective: $id, courseId: $courseId, sortOrder: $sortOrder, name: $name, description: $description, teachableItemIds: $teachableItemIds');
     try {
       final courseRef = _firestore.collection('courses').doc(courseId);
       final data = {
@@ -48,7 +50,8 @@ class LearningObjectiveFunctions {
         return LearningObjective.fromSnapshot(snapshot);
       } else {
         await _firestore.collection(_collectionPath).doc(id).update(data);
-        final snapshot = await _firestore.collection(_collectionPath).doc(id).get();
+        final snapshot =
+            await _firestore.collection(_collectionPath).doc(id).get();
         return LearningObjective.fromSnapshot(snapshot);
       }
     } catch (e) {
@@ -93,19 +96,26 @@ class LearningObjectiveFunctions {
     }
   }
 
-  static updateObjective({required String id, required String name, String? description}) async {
+  static Future<LearningObjective> updateObjective(
+      {required String id, required String name, String? description}) async {
     name = name.trim();
     description = description?.trim();
 
-    await _firestore.collection(_collectionPath).doc(id).update({
-      'name': name,
-      'description': description,
-      'modifiedAt': FieldValue.serverTimestamp(),
-    });
+    var docRef = _firestore.collection(_collectionPath).doc(id);
+    await docRef.update({
+        'name': name,
+        'description': description,
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+    return LearningObjective.fromSnapshot(await docRef.get());
   }
 
-  static Future<LearningObjective> addObjective({required String courseId, required String name, required int sortOrder}) async {
-    print('Adding objective: courseId: $courseId, name: $name, sortOrder: $sortOrder');
+  static Future<LearningObjective> addObjective(
+      {required String courseId,
+      required String name,
+      required int sortOrder}) async {
+    print(
+        'Adding objective: courseId: $courseId, name: $name, sortOrder: $sortOrder');
     name = name.trim();
     final courseRef = _firestore.collection('courses').doc(courseId);
     var docRef = await _firestore.collection(_collectionPath).add({
@@ -176,9 +186,6 @@ class LearningObjectiveFunctions {
     });
 
     final snap = await objRef.get();
-    return snap.exists
-        ? LearningObjective.fromSnapshot(snap)
-        : null;
+    return snap.exists ? LearningObjective.fromSnapshot(snap) : null;
   }
-
 }

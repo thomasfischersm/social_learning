@@ -25,11 +25,11 @@ class LearningObjectivesListView extends StatelessWidget {
     final rows = <Widget>[];
 
     // Bottom card header
-    rows.add(
-      DecomposedCourseDesignerCard.buildHeader(
-        'Map learning outcomes → what → how',
-      ),
-    );
+    // rows.add(
+    //   DecomposedCourseDesignerCard.buildHeader(
+    //     'Map learning outcomes → what → how',
+    //   ),
+    // );
 
     // Build entries for each objective
     for (final objective in objectivesContext.learningObjectives) {
@@ -55,14 +55,17 @@ class LearningObjectivesListView extends StatelessWidget {
 
         // Lessons under this teachable item
         for (final lessonRef in item.lessonRefs ?? []) {
-          final lesson = library.findLesson(lessonRef.id)!;
-          rows.add(
-            ObjectiveLessonEntry(
-              item: item,
-              lesson: lesson,
-              objectivesContext: objectivesContext,
-            ),
-          );
+          print('Looking for lesson: ${lessonRef.id} for item: ${item.id}');
+          final lesson = library.findLesson(lessonRef.id);
+          if (lesson != null) {
+            rows.add(
+              ObjectiveLessonEntry(
+                item: item,
+                lesson: lesson,
+                objectivesContext: objectivesContext,
+              ),
+            );
+          }
         }
 
         // Row to add a lesson
@@ -81,6 +84,11 @@ class LearningObjectivesListView extends StatelessWidget {
           objectivesContext: objectivesContext,
         ),
       );
+
+        // Add a footer for the current objective
+        rows.add(
+          DecomposedCourseDesignerCard.buildFooter(bottomMargin: 16),
+        );
     }
 
     // Row to add a new learning objective
@@ -89,11 +97,11 @@ class LearningObjectivesListView extends StatelessWidget {
         objectivesContext: objectivesContext,
       ),
     );
-
-    // Bottom card footer
-    rows.add(
-      DecomposedCourseDesignerCard.buildFooter(),
-    );
+    //
+    // // Bottom card footer
+    // rows.add(
+    //   DecomposedCourseDesignerCard.buildFooter(),
+    // );
 
     return ListView(children: rows);
   }

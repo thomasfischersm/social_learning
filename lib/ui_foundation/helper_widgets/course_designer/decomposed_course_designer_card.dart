@@ -63,21 +63,22 @@ class DecomposedCourseDesignerCard {
     );
   }
 
-  static Widget buildFooter() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          left: BorderSide(color: Colors.grey.shade300),
-          right: BorderSide(color: Colors.grey.shade300),
-          bottom: BorderSide(color: Colors.grey.shade300),
-          top: BorderSide.none,
+    static Widget buildFooter({double bottomMargin = 0}) {
+      return Container(
+        margin: EdgeInsets.only(bottom: bottomMargin),
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            left: BorderSide(color: Colors.grey.shade300),
+            right: BorderSide(color: Colors.grey.shade300),
+            bottom: BorderSide(color: Colors.grey.shade300),
+            top: BorderSide.none,
+          ),
+          borderRadius:
+              const BorderRadius.vertical(bottom: Radius.circular(_borderRadius)),
         ),
-        borderRadius:
-            const BorderRadius.vertical(bottom: Radius.circular(_borderRadius)),
-      ),
-      height: 12, // Minimal height just to apply border and corner radius
-    );
-  }
+        height: 12, // Minimal height just to apply border and corner radius
+      );
+    }
 }

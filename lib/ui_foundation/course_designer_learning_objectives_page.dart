@@ -116,21 +116,23 @@ class _CourseDesignerLearningObjectivesPageState
   }
 
   Widget _buildMainContent() {
-    return NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  LearningObjectivesOverviewCard(),
-                  const SizedBox(height: 24),
-                  // DecomposedCourseDesignerCard.buildHeader(
-                  //     'Edit Learning Objectives'),
-                ],
-              ),
-            ),
-          ];
-        },
-        body: LearningObjectivesListView(objectivesContext: _objectivesContext!));
+    return Consumer<LibraryState>(
+        builder: (context, libraryState, child) => NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              return [
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      LearningObjectivesOverviewCard(),
+                      const SizedBox(height: 24),
+                      // DecomposedCourseDesignerCard.buildHeader(
+                      //     'Edit Learning Objectives'),
+                    ],
+                  ),
+                ),
+              ];
+            },
+            body: LearningObjectivesListView(
+                objectivesContext: _objectivesContext!)));
   }
 }

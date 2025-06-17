@@ -30,7 +30,9 @@ class _AddLessonEntryState extends State<AddLessonEntry> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           children: [
-            const Expanded(child: SizedBox()),
+            // const Expanded(child: SizedBox()),
+
+            SizedBox(width: 16),
 
             CompositedTransformTarget(
               link: _layerLink,
@@ -53,7 +55,7 @@ class _AddLessonEntryState extends State<AddLessonEntry> {
                       Icon(Icons.add_circle_outline,
                           size: 18, color: Colors.grey),
                       SizedBox(width: 4),
-                      Text('Add lesson — how to teach this teachable item'),
+                      Text('Add lesson'),
                     ],
                   ),
                 ),

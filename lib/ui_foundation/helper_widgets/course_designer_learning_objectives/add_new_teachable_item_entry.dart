@@ -28,7 +28,7 @@ class _AddTeachableItemEntryState extends State<AddTeachableItemEntry> {
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           children: [
-            const Expanded(child: SizedBox()),
+
 
             CompositedTransformTarget(
               link: _layerLink,
@@ -49,7 +49,7 @@ class _AddTeachableItemEntryState extends State<AddTeachableItemEntry> {
                     children: const [
                       Icon(Icons.add_circle_outline, size: 18, color: Colors.grey),
                       SizedBox(width: 4),
-                      Text('Add teachable item to this objective'),
+                      Text('Add teachable item'),
                     ],
                   ),
                 ),

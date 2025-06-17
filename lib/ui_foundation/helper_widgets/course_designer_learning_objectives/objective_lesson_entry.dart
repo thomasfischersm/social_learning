@@ -44,22 +44,23 @@ class _ObjectiveLessonEntryState extends State<ObjectiveLessonEntry> {
         child: Row(
           children: [
             // Lesson title
-            Expanded(
-              child: Text(
+            // Expanded(
+            const SizedBox(width: 16),
+              Text(
                 widget.lesson.title,
-                style: CustomTextStyles.getBody(context),
+                // style: CustomTextStyles.getBody(context),
               ),
-            ),
+            // ),
 
             // Level pill
-            if (level != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 4.0),
-                child: TagPill(
-                  label: level.title,
-                  color: Colors.grey.shade300,
-                ),
-              ),
+            // if (level != null)
+            //   Padding(
+            //     padding: const EdgeInsets.only(left: 4.0),
+            //     child: TagPill(
+            //       label: level.title,
+            //       color: Colors.grey.shade300,
+            //     ),
+            //   ),
 
             const SizedBox(width: 8),
 
@@ -97,7 +98,7 @@ class _ObjectiveLessonEntryState extends State<ObjectiveLessonEntry> {
               },
               child: const Padding(
                 padding: EdgeInsets.all(4.0),
-                child: Icon(Icons.delete_outline, size: 18, color: Colors.grey),
+                child: Icon(Icons.close, size: 18, color: Colors.grey),
               ),
             ),
           ],

@@ -50,12 +50,11 @@ class _ObjectiveTeachableItemEntryState
         child: Row(
           children: [
             // Item name
-            Expanded(
-              child: Text(
+            Text(
                 widget.item.name ?? '(Untitled)',
-                style: CustomTextStyles.getBody(context),
+                // style: CustomTextStyles.getBody(context),
               ),
-            ),
+
 
             // Tags
             ...tagWidgets,
@@ -96,7 +95,7 @@ class _ObjectiveTeachableItemEntryState
               },
               child: const Padding(
                 padding: EdgeInsets.all(4),
-                child: Icon(Icons.link_off, size: 18, color: Colors.grey),
+                child: Icon(Icons.close, size: 18, color: Colors.grey),
               ),
             ),
           ],
