@@ -419,7 +419,7 @@ class LibraryState extends ChangeNotifier {
     });
   }
 
-  Future<void> createLesson(
+  Future<Lesson> createLesson(
       DocumentReference? levelId,
       String title,
       String? synopsis,
@@ -463,6 +463,8 @@ class LibraryState extends ChangeNotifier {
       studentState.recordTeaching(
           newLessonRef.id, selectedCourse!.id!, currentUser, true);
     }
+
+    return Lesson.fromSnapshot(await newLessonRef.get());
   }
 
   @Deprecated('Left over from the first version of the CMS.')

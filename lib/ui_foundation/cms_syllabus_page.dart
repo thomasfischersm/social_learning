@@ -172,7 +172,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             child: InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
-                      arguments: CmsLessonDetailArgument(levelId, lesson.id));
+                      arguments: CmsLessonDetailArgument.forEditExistingLesson(levelId, lesson.id));
                 },
                 child: CustomUiConstants.getIndentationTextPadding(Text(
                   overflow: TextOverflow.ellipsis,
@@ -227,7 +227,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             child: InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
-                      arguments: CmsLessonDetailArgument(null, lesson.id));
+                      arguments: CmsLessonDetailArgument.forEditExistingLesson(null, lesson.id));
                 },
                 child: CustomUiConstants.getIndentationTextPadding(Text(
                   lesson.title,

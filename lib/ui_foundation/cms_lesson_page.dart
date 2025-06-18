@@ -11,11 +11,26 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/upload_lesson_cover_widget.dart';
 
-class CmsLessonDetailArgument {
-  String? levelId;
-  String? lessonId;
+import '../data/data_helpers/teachable_item_functions.dart';
 
-  CmsLessonDetailArgument(this.levelId, this.lessonId);
+class CmsLessonDetailArgument {
+  final String? levelId;
+  final String? lessonId;
+  final String? attachToTeachableItemId;
+
+  CmsLessonDetailArgument._(
+      {this.levelId, this.lessonId, this.attachToTeachableItemId});
+
+  factory CmsLessonDetailArgument.forEditExistingLesson(
+      String? lessonId, String? levelId) {
+    return CmsLessonDetailArgument._(lessonId: lessonId, levelId: levelId);
+  }
+
+  factory CmsLessonDetailArgument.forNewLessonToAttachToTeachableItem(
+      String attachToTeachableItemId) {
+    return CmsLessonDetailArgument._(
+        attachToTeachableItemId: attachToTeachableItemId);
+  }
 }
 
 class CmsLessonPage extends StatefulWidget {
@@ -38,6 +53,7 @@ class CmsLessonState extends State<CmsLessonPage> {
   DocumentReference? _levelDocRef;
   Lesson? _lesson;
   bool _isAdd = true;
+  String? _attachToTeachableItemId;
   String? _titleError;
   String? _synopsisError;
   String? _instructionsError;
@@ -83,6 +99,8 @@ class CmsLessonState extends State<CmsLessonPage> {
           _instructionsController.text = lesson.instructions;
         }
       }
+
+      _attachToTeachableItemId = argument.attachToTeachableItemId;
     }
   }
 
@@ -396,7 +414,7 @@ class CmsLessonState extends State<CmsLessonPage> {
         Provider.of<StudentState>(context, listen: false);
 
     if (_isAdd) {
-      libraryState.createLesson(
+      Lesson newLesson = await libraryState.createLesson(
           _levelDocRef,
           _titleController.text,
           _synopsisController.text,
@@ -409,6 +427,12 @@ class CmsLessonState extends State<CmsLessonPage> {
               .toList()
               .removeBlankStrings(),
           studentState);
+
+      String? newLessonId = newLesson.id;
+      if (_attachToTeachableItemId != null && newLessonId != null) {
+        TeachableItemFunctions.addLessonToTeachableItem(
+            itemId: _attachToTeachableItemId!, lessonId: newLessonId);
+      }
     } else {
       var lesson = _lesson;
 
@@ -428,7 +452,14 @@ class CmsLessonState extends State<CmsLessonPage> {
       }
     }
 
-    Navigator.pushNamed(context, NavigationEnum.cmsSyllabus.route);
+    if (mounted) {
+      if (_attachToTeachableItemId == null) {
+        NavigationEnum.cmsSyllabus.navigateCleanDelayed(context);
+      } else {
+        NavigationEnum.courseDesignerLearningObjectives
+            .navigateCleanDelayed(context);
+      }
+    }
   }
 
   bool _validateInput() {
