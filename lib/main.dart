@@ -21,6 +21,7 @@ import 'package:social_learning/ui_foundation/course_designer_learning_objective
 import 'package:social_learning/ui_foundation/course_designer_prerequisites_page.dart';
 import 'package:social_learning/ui_foundation/course_designer_profile_page.dart';
 import 'package:social_learning/ui_foundation/course_designer_scope_page.dart';
+import 'package:social_learning/ui_foundation/course_designer_session_plan_page.dart';
 import 'package:social_learning/ui_foundation/course_generation_review_page.dart';
 import 'package:social_learning/ui_foundation/course_create_page.dart';
 import 'package:social_learning/ui_foundation/course_generation_page.dart';
@@ -176,6 +177,8 @@ class SocialLearningApp extends StatelessWidget {
         '/course_designer_scope': (context) => const CourseDesignerScopePage(),
         '/course_designer_learning_objectives': (context) =>
             const CourseDesignerLearningObjectivesPage(),
+        '/course_designer_session_plan': (context) =>
+            const CourseDesignerSessionPlanPage(),
       },
     );
   }

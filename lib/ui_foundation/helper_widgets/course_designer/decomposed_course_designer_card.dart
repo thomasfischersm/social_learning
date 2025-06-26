@@ -68,50 +68,46 @@ class DecomposedCourseDesignerCard {
     required Color color,
     String? leadingText,
   }) {
-    final Color backgroundColor = color.withAlpha((0.08 * 255).round());
-    final Color leadingBackgroundColor = color.withAlpha((0.18 * 255).round());
+    final Color backgroundColor = color.withAlpha((0.08 * 255).round());  // subtle tint
+    final Color leadingBackgroundColor = color.withAlpha((0.18 * 255).round());  // stronger tint
 
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor,
-        border: Border.all(color: color, width: 1.2),
-        borderRadius: BorderRadius.circular(6.0),
+        border: Border.all(color: color, width: 1.2), // colored border on all sides
       ),
-      padding: const EdgeInsets.all(0),
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (leadingText != null)
-            Container(
-              width: 48,
-              decoration: BoxDecoration(
-                color: leadingBackgroundColor,
-                border: Border(
-                  right: BorderSide(color: color, width: 1.2),
+      // No outer margin or padding
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (leadingText != null)
+              Container(
+                width: 48,
+                decoration: BoxDecoration(
+                  color: leadingBackgroundColor,
+                  border: Border(
+                    right: BorderSide(color: color, width: 1.2),
+                  ),
                 ),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(6.0),
-                  bottomLeft: Radius.circular(6.0),
-                ),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                leadingText,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black87,
+                alignment: Alignment.center,
+                child: Text(
+                  leadingText,
+                  style: const TextStyle(
+                    // fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+                child: child,
+              ),
             ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-              child: child,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

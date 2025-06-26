@@ -15,7 +15,7 @@ class AddLessonFanoutWidget {
     Lesson? currentLesson,
     required LearningObjectivesContext objectivesContext,
   }) {
-    final library = Provider.of<LibraryState>(context, listen: false);
+    final libraryState = Provider.of<LibraryState>(context, listen: false);
 
     // Build a set of already-attached lesson IDs (minus the one being replaced)
     final attachedIds = (item.lessonRefs ?? [])
@@ -52,8 +52,8 @@ class AddLessonFanoutWidget {
       final widgets = <Widget>[];
 
       // 1) Lessons grouped by level
-      for (final level in library.levels ?? []) {
-        final lessons = library
+      for (final level in libraryState.levels ?? []) {
+        final lessons = libraryState
             .getLessonsByLevel(level.id!)
             .where((l) => !attachedIds.contains(l.id))
             .toList();
@@ -86,7 +86,7 @@ class AddLessonFanoutWidget {
       }
 
       // 2) “Other lessons” (unattached to any level)
-      final unattached = library
+      final unattached = libraryState
           .getUnattachedLessons()
           .where((l) => !attachedIds.contains(l.id))
           .toList();

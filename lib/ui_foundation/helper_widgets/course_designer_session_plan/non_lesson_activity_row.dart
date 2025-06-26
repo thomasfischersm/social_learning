@@ -76,7 +76,7 @@ class NonLessonActivityRow extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Text(
-                    title,
+                    '${activity.activityType.humanLabel}: $title',
                     style: TextStyle(
                       fontSize: 14,
                       fontStyle: title == '(enter name)' ? FontStyle.italic : FontStyle.normal,

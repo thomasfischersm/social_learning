@@ -35,6 +35,7 @@ enum NavigationEnum {
   courseDesignerPrerequisites('/course_designer_prerequisites'),
   courseDesignerScope('/course_designer_scope'),
   courseDesignerLearningObjectives('/course_designer_learning_objectives'),
+  courseDesignerSessionPlan('/course_designer_session_plan'),
   ;
 
   final String route;

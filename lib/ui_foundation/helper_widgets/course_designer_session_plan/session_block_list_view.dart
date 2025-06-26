@@ -17,8 +17,8 @@ class SessionBlocksListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final blocks = sessionPlanContext.blocks;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return ListView(
+      padding: EdgeInsets.zero,
       children: [
         for (final block in blocks) ...[
           SessionBlockHeaderRow(
@@ -42,10 +42,12 @@ class SessionBlocksListView extends StatelessWidget {
             sessionPlanBlockId: block.id!,
             sessionPlanContext: sessionPlanContext,
           ),
+          SizedBox(height: 16),
         ],
 
         AddBlockRow(sessionPlanContext: sessionPlanContext),
       ],
     );
   }
+
 }

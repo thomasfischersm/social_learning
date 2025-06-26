@@ -4,22 +4,24 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_plan_activity.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/select_lesson_for_activity_fanout_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_context.dart';
-
 import '../../../data/session_play_activity_type.dart';
 import '../course_designer/decomposed_course_designer_card.dart';
 
 class LessonActivityRow extends StatelessWidget {
   final SessionPlanActivity activity;
   final SessionPlanContext sessionPlanContext;
+  final LayerLink _layerLink = LayerLink();
 
-  const LessonActivityRow({
+  LessonActivityRow({
     super.key,
     required this.activity,
     required this.sessionPlanContext,
   });
 
   int _getDefaultDuration() {
-    return sessionPlanContext.courseProfile?.defaultTeachableItemDurationInMinutes ?? 15;
+    return sessionPlanContext
+            .courseProfile?.defaultTeachableItemDurationInMinutes ??
+        15;
   }
 
   String _durationText() {
@@ -35,7 +37,9 @@ class LessonActivityRow extends StatelessWidget {
     return TextStyle(
       fontSize: 13,
       color: activity.overrideDuration != null ? Colors.black : Colors.grey,
-      fontStyle: activity.overrideDuration != null ? FontStyle.normal : FontStyle.italic,
+      fontStyle: activity.overrideDuration != null
+          ? FontStyle.normal
+          : FontStyle.italic,
     );
   }
 
@@ -90,7 +94,6 @@ class LessonActivityRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lesson = sessionPlanContext.getLessonByActivity(activity);
-    final _layerLink = LayerLink();
     final time = sessionPlanContext.getStartTimeStringForActivity(activity);
     final color = SessionPlanActivityType.lesson.color;
 
@@ -111,7 +114,8 @@ class LessonActivityRow extends StatelessWidget {
               onTap: () => _showDurationDialog(context),
               borderRadius: BorderRadius.circular(4),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
                 child: Text(
                   _durationText(),
                   style: _durationStyle(),
@@ -119,21 +123,25 @@ class LessonActivityRow extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            CompositedTransformTarget(
-              link: _layerLink,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(4),
-                onTap: () {
-                  SelectLessonForActivityFanoutWidget.show(
-                    context: context,
-                    link: _layerLink,
-                    activity: activity,
-                    sessionPlanContext: sessionPlanContext,
-                  );
-                },
-                child: const Padding(
-                  padding: EdgeInsets.all(4.0),
-                  child: Icon(Icons.edit, size: 20, color: Colors.grey),
+            Builder(
+              builder: (iconContext) => CompositedTransformTarget(
+                link: _layerLink,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(4),
+                  onTap: () {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      SelectLessonForActivityFanoutWidget.show(
+                        context: iconContext, // << use the icon's context
+                        link: _layerLink,
+                        activity: activity,
+                        sessionPlanContext: sessionPlanContext,
+                      );
+                    });
+                  },
+                  child: const Padding(
+                    padding: EdgeInsets.all(4.0),
+                    child: Icon(Icons.edit, size: 20, color: Colors.grey),
+                  ),
                 ),
               ),
             ),

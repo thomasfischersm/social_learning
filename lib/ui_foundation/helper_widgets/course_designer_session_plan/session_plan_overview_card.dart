@@ -12,7 +12,7 @@ class SessionPlanOverviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CourseDesignerCard(
-      title: "Session Plan",
+      title: "Step 6: Session Plan",
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -26,9 +26,10 @@ class SelectLessonForActivityFanoutWidget {
     }
 
     entry = OverlayEntry(builder: (_) {
-      final box = context.findRenderObject() as RenderBox;
-      final origin = box.localToGlobal(Offset.zero);
-      final size = box.size;
+      final renderBox = context.findRenderObject() as RenderBox;
+      final origin = renderBox.localToGlobal(Offset.zero);
+      final size = renderBox.size;
+
       final widgets = <Widget>[];
 
       for (final level in libraryState.levels ?? []) {
@@ -58,7 +59,11 @@ class SelectLessonForActivityFanoutWidget {
               onTap: () => _handleSelection(lesson),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: Text(lesson.title),
+                child: Text(
+                  lesson.title,
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                ),
               ),
             ),
           );
@@ -90,7 +95,11 @@ class SelectLessonForActivityFanoutWidget {
               onTap: () => _handleSelection(lesson),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: Text(lesson.title),
+                child: Text(
+                  lesson.title,
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                ),
               ),
             ),
           );
@@ -100,36 +109,39 @@ class SelectLessonForActivityFanoutWidget {
       return GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () => entry.remove(),
-        child: Stack(children: [
-          Positioned(
-            left: origin.dx,
-            top: origin.dy + size.height + 4,
-            child: CompositedTransformFollower(
-              link: link,
-              offset: Offset(0, size.height + 4),
-              showWhenUnlinked: false,
-              child: Material(
-                elevation: 6,
-                borderRadius: BorderRadius.circular(8),
-                child: Container(
-                  constraints: const BoxConstraints(
-                      maxHeight: 300, minWidth: 200),
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: widgets,
+        child: Stack(
+          children: [
+            Positioned(
+              left: origin.dx,
+              top: origin.dy + size.height + 4,
+              child: CompositedTransformFollower(
+                link: link,
+                offset: Offset(0, size.height + 4),
+                showWhenUnlinked: false,
+                child: Material(
+                  elevation: 6,
+                  borderRadius: BorderRadius.circular(8),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      maxHeight: 300,
+                      minWidth: 200,
+                      maxWidth: 320,
+                    ),
+                    child: IntrinsicWidth(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: widgets,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ]),
+          ],
+        ),
       );
     });
 

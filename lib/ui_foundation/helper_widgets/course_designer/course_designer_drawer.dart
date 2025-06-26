@@ -21,6 +21,7 @@ class CourseDesignerDrawer extends StatelessWidget {
     _CurriculumStep('Scoping', NavigationEnum.courseDesignerScope),
     _CurriculumStep(
         'Objectives', NavigationEnum.courseDesignerLearningObjectives),
+    _CurriculumStep('Session Plan', NavigationEnum.courseDesignerSessionPlan),
     // _CurriculumStep('Scoping', NavigationEnum.courseGenerationReview),
     // _CurriculumStep('Skill Dimensions', NavigationEnum.cmsLesson),
     // _CurriculumStep('Learning Outcomes', NavigationEnum.instructorClipboard),

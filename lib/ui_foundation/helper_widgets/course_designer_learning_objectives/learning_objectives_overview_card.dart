@@ -6,6 +6,6 @@ class LearningObjectivesOverviewCard extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return CourseDesignerCard(title: 'Learning Outcomes', body: Text('Map learning outcomes\n  → what (teachable item)\n    → how (lesson)\n\nExample:\nLearning Outcome: Play a simple chess game\n  Teachable item: Pawn rules\n    Lesson: Rule review with mentor\n    Lesson: Solve 5 tricky situations'));
+    return CourseDesignerCard(title: 'Step 5: Learning Outcomes', body: Text('Map learning outcomes\n  → what (teachable item)\n    → how (lesson)\n\nExample:\nLearning Outcome: Play a simple chess game\n  Teachable item: Pawn rules\n    Lesson: Rule review with mentor\n    Lesson: Solve 5 tricky situations'));
   }
 }

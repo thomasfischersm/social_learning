@@ -11,17 +11,7 @@ class AddBlockRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        DecomposedCourseDesignerCard.buildHeader(''),
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.symmetric(
-              horizontal: BorderSide(color: Colors.grey.shade300),
-            ),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Center(
+        Center(
             child: ElevatedButton.icon(
               onPressed: () {
                 sessionPlanContext.addBlock(null);
@@ -35,8 +25,7 @@ class AddBlockRow extends StatelessWidget {
               ),
             ),
           ),
-        ),
-        DecomposedCourseDesignerCard.buildFooter(),
+
       ],
     );
   }
