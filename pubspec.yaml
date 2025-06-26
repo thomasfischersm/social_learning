@@ -63,6 +63,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   collection: any
   cloud_functions: ^5.5.0
+  percent_indicator: ^4.2.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

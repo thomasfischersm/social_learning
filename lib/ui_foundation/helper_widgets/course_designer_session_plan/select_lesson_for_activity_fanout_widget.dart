@@ -1,0 +1,138 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data/session_plan_activity.dart';
+import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_context.dart';
+
+class SelectLessonForActivityFanoutWidget {
+  static void show({
+    required BuildContext context,
+    required LayerLink link,
+    required SessionPlanActivity activity,
+    required SessionPlanContext sessionPlanContext,
+  }) {
+    final libraryState = Provider.of<LibraryState>(context, listen: false);
+    final currentLessonId = activity.lessonId?.id;
+
+    late OverlayEntry entry;
+
+    void _handleSelection(Lesson lesson) {
+      entry.remove();
+      sessionPlanContext.setLessonForActivity(
+        activityId: activity.id!,
+        lesson: lesson,
+      );
+    }
+
+    entry = OverlayEntry(builder: (_) {
+      final box = context.findRenderObject() as RenderBox;
+      final origin = box.localToGlobal(Offset.zero);
+      final size = box.size;
+      final widgets = <Widget>[];
+
+      for (final level in libraryState.levels ?? []) {
+        final lessons = libraryState
+            .getLessonsByLevel(level.id!)
+            .where((l) => l.id != currentLessonId)
+            .toList();
+
+        if (lessons.isEmpty) continue;
+
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Text(
+              level.title,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+        );
+
+        for (final lesson in lessons) {
+          widgets.add(
+            InkWell(
+              onTap: () => _handleSelection(lesson),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Text(lesson.title),
+              ),
+            ),
+          );
+        }
+      }
+
+      final unattached = libraryState
+          .getUnattachedLessons()
+          .where((l) => l.id != currentLessonId)
+          .toList();
+
+      if (unattached.isNotEmpty) {
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Text(
+              'Other lessons',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+        );
+
+        for (final lesson in unattached) {
+          widgets.add(
+            InkWell(
+              onTap: () => _handleSelection(lesson),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Text(lesson.title),
+              ),
+            ),
+          );
+        }
+      }
+
+      return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => entry.remove(),
+        child: Stack(children: [
+          Positioned(
+            left: origin.dx,
+            top: origin.dy + size.height + 4,
+            child: CompositedTransformFollower(
+              link: link,
+              offset: Offset(0, size.height + 4),
+              showWhenUnlinked: false,
+              child: Material(
+                elevation: 6,
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  constraints: const BoxConstraints(
+                      maxHeight: 300, minWidth: 200),
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: widgets,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ]),
+      );
+    });
+
+    Overlay.of(context)!.insert(entry);
+  }
+}

@@ -140,6 +140,13 @@ class SessionPlanContext {
 
   List<Lesson>? get allLessons => libraryState.lessons;
 
+  Lesson? getLessonByActivity(SessionPlanActivity activity) {
+    if (activity.lessonId == null) {
+      return null;
+    }
+    return libraryState.findLesson(activity.lessonId!.id);
+  }
+
   double getCompletionForObjective(LearningObjective objective) {
     final lessonIdsFromObjective = <String>{};
 
@@ -396,4 +403,111 @@ class SessionPlanContext {
     refresh();
   }
 
+  Future<void> setLessonForActivity({
+    required String activityId,
+    required Lesson lesson,
+  }) async {
+    final updated = await SessionPlanActivityFunctions.update(
+      activityId: activityId,
+      lessonId: lesson.id,
+    );
+
+    if (updated != null) {
+      // Replace the updated activity in the list
+      final index = activities.indexWhere((a) => a.id == activityId);
+      if (index != -1) {
+        activities[index] = updated;
+      }
+
+      // Replace the updated activity in the map
+      activityById[activityId] = updated;
+
+      // Notify the refresh callback
+      refresh();
+    }
+  }
+
+  String getStartTimeStringForActivity(SessionPlanActivity activity) {
+    final block = blockById[activity.sessionPlanBlockId.id];
+    if (block == null) return '';
+
+    final blockActivities = activities
+        .where((a) => a.sessionPlanBlockId.id == block.id)
+        .toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+
+    int totalMinutes = 0;
+
+    for (final a in blockActivities) {
+      if (a.id == activity.id) break;
+      totalMinutes += a.overrideDuration ??
+          courseProfile?.defaultTeachableItemDurationInMinutes ??
+          15;
+    }
+
+    final hours = totalMinutes ~/ 60;
+    final minutes = totalMinutes % 60;
+
+    if (hours == 0) {
+      return ':${minutes.toString().padLeft(2, '0')}';
+    } else {
+      return '$hours:${minutes.toString().padLeft(2, '0')}';
+    }
+  }
+
+  String getStartTimeStringForNextActivity(String sessionPlanBlockId) {
+    final block = blockById[sessionPlanBlockId];
+    if (block == null) return '';
+
+    final blockActivities = activities
+        .where((a) => a.sessionPlanBlockId.id == block.id)
+        .toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+
+    int totalMinutes = 0;
+
+    for (final a in blockActivities) {
+      totalMinutes += a.overrideDuration ??
+          courseProfile?.defaultTeachableItemDurationInMinutes ??
+          15;
+    }
+
+    final hours = totalMinutes ~/ 60;
+    final minutes = totalMinutes % 60;
+
+    if (hours == 0) {
+      return ':${minutes.toString().padLeft(2, '0')}';
+    } else {
+      return '$hours:${minutes.toString().padLeft(2, '0')}';
+    }
+  }
+
+
+  Future<void> updateActivityOverrideDuration({
+    required String activityId,
+    int? overrideDuration,
+  }) async {
+    final updated = await SessionPlanActivityFunctions.update(
+      activityId: activityId,
+      overrideDuration: overrideDuration,
+    );
+
+    if (updated == null) return;
+
+    // Update local state
+    final index = activities.indexWhere((a) => a.id == activityId);
+    if (index != -1) {
+      activities[index] = updated;
+    }
+    activityById[activityId] = updated;
+
+    refresh(); // Notify listeners/UI
+  }
+
+  getActivitiesForBlock(String blockId) {
+    return activities
+        .where((a) => a.sessionPlanBlockId.id == blockId)
+        .toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+  }
 }

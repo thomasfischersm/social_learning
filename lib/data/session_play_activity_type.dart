@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 enum SessionPlanActivityType {
   lesson,
   spacedPractice,
@@ -46,6 +48,44 @@ extension SessionPlanActivityTypeX on SessionPlanActivityType {
         return SessionPlanActivityType.groupDiscussion;
       default:
         throw ArgumentError('Invalid SessionPlanActivityType value: $value');
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case SessionPlanActivityType.lesson:
+        return const Color(0xFF81C784); // leafy green
+      case SessionPlanActivityType.spacedPractice:
+        return const Color(0xFF4DD0E1); // minty teal
+      case SessionPlanActivityType.circleTime:
+        return const Color(0xFFFFB74D); // apricot
+      case SessionPlanActivityType.lectureDemo:
+        return const Color(0xFFFFD54F); // golden yellow
+      case SessionPlanActivityType.exercise:
+        return const Color(0xFFF06292); // coral pink
+      case SessionPlanActivityType.breakTime:
+        return const Color(0xFFB0BEC5); // lavender gray
+      case SessionPlanActivityType.groupDiscussion:
+        return const Color(0xFF9575CD); // periwinkle
+    }
+  }
+
+  String get humanLabel {
+    switch (this) {
+      case SessionPlanActivityType.lesson:
+        return 'Lesson';
+      case SessionPlanActivityType.spacedPractice:
+        return 'Spaced Practice';
+      case SessionPlanActivityType.circleTime:
+        return 'Circle Time';
+      case SessionPlanActivityType.lectureDemo:
+        return 'Lecture/Demo';
+      case SessionPlanActivityType.exercise:
+        return 'Exercise';
+      case SessionPlanActivityType.breakTime:
+        return 'Break';
+      case SessionPlanActivityType.groupDiscussion:
+        return 'Group Discussion';
     }
   }
 }

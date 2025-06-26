@@ -63,22 +63,76 @@ class DecomposedCourseDesignerCard {
     );
   }
 
-    static Widget buildFooter({double bottomMargin = 0}) {
-      return Container(
-        margin: EdgeInsets.only(bottom: bottomMargin),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            left: BorderSide(color: Colors.grey.shade300),
-            right: BorderSide(color: Colors.grey.shade300),
-            bottom: BorderSide(color: Colors.grey.shade300),
-            top: BorderSide.none,
+  static Widget buildColorHighlightedBody({
+    required Widget child,
+    required Color color,
+    String? leadingText,
+  }) {
+    final Color backgroundColor = color.withAlpha((0.08 * 255).round());
+    final Color leadingBackgroundColor = color.withAlpha((0.18 * 255).round());
+
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        border: Border.all(color: color, width: 1.2),
+        borderRadius: BorderRadius.circular(6.0),
+      ),
+      padding: const EdgeInsets.all(0),
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (leadingText != null)
+            Container(
+              width: 48,
+              decoration: BoxDecoration(
+                color: leadingBackgroundColor,
+                border: Border(
+                  right: BorderSide(color: color, width: 1.2),
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(6.0),
+                  bottomLeft: Radius.circular(6.0),
+                ),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                leadingText,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+              child: child,
+            ),
           ),
-          borderRadius:
-              const BorderRadius.vertical(bottom: Radius.circular(_borderRadius)),
+        ],
+      ),
+    );
+  }
+
+
+  static Widget buildFooter({double bottomMargin = 0}) {
+    return Container(
+      margin: EdgeInsets.only(bottom: bottomMargin),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          left: BorderSide(color: Colors.grey.shade300),
+          right: BorderSide(color: Colors.grey.shade300),
+          bottom: BorderSide(color: Colors.grey.shade300),
+          top: BorderSide.none,
         ),
-        height: 12, // Minimal height just to apply border and corner radius
-      );
-    }
+        borderRadius:
+            const BorderRadius.vertical(bottom: Radius.circular(_borderRadius)),
+      ),
+      height: 12, // Minimal height just to apply border and corner radius
+    );
+  }
 }
