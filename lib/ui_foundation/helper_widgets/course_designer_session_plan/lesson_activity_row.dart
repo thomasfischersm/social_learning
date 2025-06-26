@@ -122,7 +122,7 @@ class LessonActivityRow extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            // const SizedBox(width: 8),
             Builder(
               builder: (iconContext) => CompositedTransformTarget(
                 link: _layerLink,
@@ -145,7 +145,7 @@ class LessonActivityRow extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            // const SizedBox(width: 8),
             InkWell(
               borderRadius: BorderRadius.circular(4),
               onTap: () {

@@ -17,16 +17,11 @@ class NonLessonActivityRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = activity.activityType.color;
-    final title = activity.name?.isNotEmpty == true
-        ? activity.name!
-        : '(enter name)';
+    final title = activity.name?.isNotEmpty == true ? activity.name! : '(enter name)';
     final startTime = sessionPlanContext.getStartTimeStringForActivity(activity);
 
     final overrideDuration = activity.overrideDuration;
-    final defaultDuration =
-        sessionPlanContext.courseProfile?.defaultTeachableItemDurationInMinutes ??
-            15;
-
+    final defaultDuration = sessionPlanContext.courseProfile?.defaultTeachableItemDurationInMinutes ?? 15;
     final showDuration = overrideDuration ?? defaultDuration;
     final isOverride = overrideDuration != null;
 
@@ -38,51 +33,12 @@ class NonLessonActivityRow extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: InkWell(
-                onTap: () async {
-                  final controller = TextEditingController(text: activity.name ?? '');
-                  final result = await showDialog<String>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Edit activity name'),
-                      content: TextField(
-                        controller: controller,
-                        autofocus: true,
-                        decoration: const InputDecoration(
-                          hintText: 'Activity name',
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, controller.text.trim()),
-                          child: const Text('Save'),
-                        ),
-                      ],
-                    ),
-                  );
-
-                  if (result != null && result != activity.name) {
-                    await sessionPlanContext.updateActivity(
-                      activityId: activity.id!,
-                      name: result,
-                    );
-                  }
-                },
-                borderRadius: BorderRadius.circular(4),
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    '${activity.activityType.humanLabel}: $title',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontStyle: title == '(enter name)' ? FontStyle.italic : FontStyle.normal,
-                      color: title == '(enter name)' ? Colors.grey : Colors.black,
-                    ),
-                  ),
+              child: Text(
+                '${activity.activityType.humanLabel}: $title',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontStyle: title == '(enter name)' ? FontStyle.italic : FontStyle.normal,
+                  color: title == '(enter name)' ? Colors.grey : Colors.black,
                 ),
               ),
             ),
@@ -99,9 +55,7 @@ class NonLessonActivityRow extends StatelessWidget {
                     content: TextField(
                       controller: controller,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        hintText: 'Duration in minutes',
-                      ),
+                      decoration: const InputDecoration(hintText: 'Duration in minutes'),
                     ),
                     actions: [
                       TextButton(
@@ -143,6 +97,45 @@ class NonLessonActivityRow extends StatelessWidget {
                 ),
               ),
             ),
+            InkWell(
+              onTap: () async {
+                final controller = TextEditingController(text: activity.name ?? '');
+                final result = await showDialog<String>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Edit activity name'),
+                    content: TextField(
+                      controller: controller,
+                      autofocus: true,
+                      decoration: const InputDecoration(hintText: 'Activity name'),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, controller.text.trim()),
+                        child: const Text('Save'),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (result != null && result != activity.name) {
+                  await sessionPlanContext.updateActivity(
+                    activityId: activity.id!,
+                    name: result,
+                  );
+                }
+              },
+              borderRadius: BorderRadius.circular(4),
+              child: const Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Icon(Icons.edit, size: 20, color: Colors.grey),
+              ),
+            ),
+
             InkWell(
               onTap: () => sessionPlanContext.deleteActivity(activity.id!),
               borderRadius: BorderRadius.circular(4),
