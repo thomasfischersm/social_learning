@@ -86,7 +86,7 @@ class LessonActivityRow extends StatelessWidget {
     if (result != null) {
       await sessionPlanContext.updateActivityOverrideDuration(
         activityId: activity.id!,
-        overrideDuration: result == 0 ? null : result,
+        overrideDuration: result == 0 ? -1 : result,
       );
     }
   }

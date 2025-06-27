@@ -73,7 +73,11 @@ class SessionPlanActivityFunctions {
         updates['lessonId'] = docRef('lessons', lessonId);
       }
       if (overrideDuration != null) {
-        updates['overrideDuration'] = overrideDuration;
+        if (overrideDuration <= 0) {
+          updates['overrideDuration'] = FieldValue.delete();
+        } else {
+          updates['overrideDuration'] = overrideDuration;
+        }
       }
       if (sortOrder != null) {
         updates['sortOrder'] = sortOrder;
