@@ -15,6 +15,8 @@ class SelectLessonForActivityFanoutWidget {
     final libraryState = Provider.of<LibraryState>(context, listen: false);
     final currentLessonId = activity.lessonId?.id;
 
+    final neededLessonIds = sessionPlanContext.getUnscheduledObjectiveLessonIds().toSet();
+
     late OverlayEntry entry;
 
     void _handleSelection(Lesson lesson) {
@@ -54,13 +56,14 @@ class SelectLessonForActivityFanoutWidget {
         );
 
         for (final lesson in lessons) {
+          final needDot = neededLessonIds.contains(lesson.id);
           widgets.add(
             InkWell(
               onTap: () => _handleSelection(lesson),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Text(
-                  lesson.title,
+                    needDot ? '• ${lesson.title}' : lesson.title,
                   softWrap: true,
                   overflow: TextOverflow.visible,
                 ),
@@ -90,13 +93,14 @@ class SelectLessonForActivityFanoutWidget {
         );
 
         for (final lesson in unattached) {
+          final needDot = neededLessonIds.contains(lesson.id);
           widgets.add(
             InkWell(
               onTap: () => _handleSelection(lesson),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Text(
-                  lesson.title,
+                    needDot ? '• ${lesson.title}' : lesson.title,
                   softWrap: true,
                   overflow: TextOverflow.visible,
                 ),

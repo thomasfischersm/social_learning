@@ -182,6 +182,16 @@ class SessionPlanContext {
     return matchedLessonCount / totalLessonCount;
   }
 
+  Future<void> moveBlockBefore(
+      {required String fromBlockId, required String? beforeBlockId}) async {
+    moveBlock(
+      blockId: fromBlockId,
+      newIndex: (beforeBlockId == null)
+          ? blocks.length
+          : blocks.indexWhere((b) => b.id == beforeBlockId),
+    );
+  }
+
   Future<void> moveBlock({
     required String blockId,
     required int newIndex,
@@ -217,6 +227,91 @@ class SessionPlanContext {
 
     refresh();
   }
+
+  Future<void> moveActivity2a(
+      {required String activityId,
+      required String fromBlockId,
+      required String toBlockId,
+      required String? beforeActivityId}) async {
+    moveActivity(
+      activityId: activityId,
+      newBlockId: toBlockId,
+      newIndex: beforeActivityId == null
+          ? activities.where((a) => a.sessionPlanBlockId.id == toBlockId).length
+          : activities.indexWhere((a) => a.id == beforeActivityId),
+    );
+  }
+
+  /// Lean, self-contained replacement for `moveActivity2`
+  Future<void> moveActivity3({
+    required String activityId,
+    required String fromBlockId,
+    required String toBlockId,
+    required String? beforeActivityId,
+  }) async {
+    final activity = activityById[activityId];
+    if (activity == null) return;
+
+    final sameBlock = fromBlockId == toBlockId;
+
+    // Build source list (without the moving item)
+    final srcActivities = activities
+        .where((a) => a.sessionPlanBlockId.id == fromBlockId && a.id != activityId)
+        .toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+
+    // Build destination list (also without the moving item)
+    final destActivities = sameBlock
+        ? srcActivities
+        : activities
+        .where((a) => a.sessionPlanBlockId.id == toBlockId)
+        .toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+
+    // Determine insertion index
+    final destIndex = (beforeActivityId == null)
+        ? destActivities.length
+        : destActivities.indexWhere((a) => a.id == beforeActivityId).clamp(0, destActivities.length);
+
+    // Insert in destination list
+    destActivities.insert(destIndex, activity);
+
+    // If block changed, update the reference
+    if (!sameBlock) {
+      activity.sessionPlanBlockId = docRef('sessionPlanBlocks', toBlockId);
+    }
+
+    // Re-assign sortOrder where needed
+    final changed = <SessionPlanActivity>[];
+
+    void syncSortOrders(List<SessionPlanActivity> list) {
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].sortOrder != i) {
+          list[i].sortOrder = i;
+          changed.add(list[i]);
+        }
+      }
+    }
+
+    syncSortOrders(destActivities);
+    if (!sameBlock) syncSortOrders(srcActivities);
+
+    if (changed.isNotEmpty) {
+      await SessionPlanActivityFunctions.updateSortOrdersAndBlockChanges(changed);
+    }
+
+    // Resort the master list now that sortOrders are correct
+    activities.sort((a, b) {
+      final orderA = blockById[a.sessionPlanBlockId.id]?.sortOrder ?? 0;
+      final orderB = blockById[b.sessionPlanBlockId.id]?.sortOrder ?? 0;
+      return orderA != orderB
+          ? orderA.compareTo(orderB)
+          : a.sortOrder.compareTo(b.sortOrder);
+    });
+
+    refresh();
+  }
+
 
   Future<void> moveActivity({
     required String activityId,
@@ -482,7 +577,6 @@ class SessionPlanContext {
     }
   }
 
-
   Future<void> updateActivityOverrideDuration({
     required String activityId,
     int? overrideDuration,
@@ -504,10 +598,60 @@ class SessionPlanContext {
     refresh(); // Notify listeners/UI
   }
 
-  getActivitiesForBlock(String blockId) {
-    return activities
-        .where((a) => a.sessionPlanBlockId.id == blockId)
-        .toList()
+  List<SessionPlanActivity> getActivitiesForBlock(String blockId) {
+    return activities.where((a) => a.sessionPlanBlockId.id == blockId).toList()
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
   }
+
+  /// Total duration (in minutes) of all activities in the block.
+  int getTotalDurationMinutesForBlock(String blockId) {
+    final blockActivities = getActivitiesForBlock(blockId);
+
+    int totalMinutes = 0;
+    for (final a in blockActivities) {
+      totalMinutes += a.overrideDuration ??
+          courseProfile?.defaultTeachableItemDurationInMinutes ??
+          15;
+    }
+    return totalMinutes;
+  }
+
+  /// Human-readable “h:mm” duration string for the block (e.g. "1:30", ":45").
+  String getDurationStringForBlock(String blockId) {
+    final mins = getTotalDurationMinutesForBlock(blockId);
+    final hours = mins ~/ 60;
+    final minutes = mins % 60;
+    return hours == 0
+        ? ':${minutes.toString().padLeft(2, '0')}'
+        : '$hours:${minutes.toString().padLeft(2, '0')}';
+  }
+
+  /// IDs of lessons that are referenced—via learning-objective → teachable-item
+  /// links—but have **not yet been scheduled** in any session-plan activity.
+  ///
+  /// No inclusion-status filtering: if an instructor mapped a teachable item to
+  /// an objective, its lessons are treated as required.
+  List<String> getUnscheduledObjectiveLessonIds() {
+    // 1. Collect lesson IDs pulled in by learning objectives
+    final needed = <String>{};
+
+    for (final objective in learningObjectives) {
+      for (final tiRef in objective.teachableItemRefs) {
+        final item = itemById[tiRef.id];
+        if (item?.lessonRefs == null) continue;
+
+        for (final lessonRef in item!.lessonRefs!) {
+          needed.add(lessonRef.id);
+        }
+      }
+    }
+
+    // 2. Remove lessons already scheduled in activities
+    for (final act in activities) {
+      if (act.lessonId != null) needed.remove(act.lessonId!.id);
+    }
+
+    return needed.toList();
+  }
+
 }

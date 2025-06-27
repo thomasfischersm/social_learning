@@ -65,6 +65,7 @@ class _AddActivityRowState extends State<AddActivityRow> {
           ),
         ),
         DecomposedCourseDesignerCard.buildFooter(),
+        SizedBox(height: 16),
       ],
     );
   }

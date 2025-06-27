@@ -23,13 +23,11 @@ class SessionBlockHeaderRow extends StatelessWidget {
         block.name ?? '(Untitled)',
         'Block name',
         'Save',
-        (value) => (value == null || value.trim().isEmpty)
+            (value) => (value == null || value.trim().isEmpty)
             ? 'Name cannot be empty'
             : null,
-        (newName) async {
-          await contextData.updateBlockName(
-              blockId: block.id!, newName: newName.trim());
-        },
+            (newName) =>
+            contextData.updateBlockName(blockId: block.id!, newName: newName.trim()),
       ),
     );
   }
@@ -39,28 +37,45 @@ class SessionBlockHeaderRow extends StatelessWidget {
       context,
       'Delete Block?',
       'Are you sure you want to delete this session block and all its activities?',
-      () async {
-        await contextData.deleteBlock(block.id!);
-      },
+          () => contextData.deleteBlock(block.id!),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    // --- duration ----------
+    final totalMinutes = contextData.getTotalDurationMinutesForBlock(block.id!);
+    final String? durationStr =
+    totalMinutes == 0 ? null : contextData.getDurationStringForBlock(block.id!);
+
+    // --- actions / icons ----
+    final List<Widget> actions = [
+      if (durationStr != null)
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0), // space before real icons
+          child: Text(
+            durationStr,
+            style: const TextStyle(
+              fontWeight: FontWeight.normal,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+      IconButton(
+        icon: const Icon(Icons.edit, size: 20),
+        tooltip: 'Edit block name',
+        onPressed: () => _editBlockName(context),
+      ),
+      IconButton(
+        icon: const Icon(Icons.delete_outline, size: 20),
+        tooltip: 'Delete block',
+        onPressed: () => _confirmDeleteBlock(context),
+      ),
+    ];
+
     return DecomposedCourseDesignerCard.buildHeaderWithIcons(
       block.name ?? '(Untitled)',
-      [
-        IconButton(
-          icon: const Icon(Icons.edit, size: 20),
-          tooltip: 'Edit block name',
-          onPressed: () => _editBlockName(context),
-        ),
-        IconButton(
-          icon: const Icon(Icons.delete_outline, size: 20),
-          tooltip: 'Delete block',
-          onPressed: () => _confirmDeleteBlock(context),
-        ),
-      ],
+      actions,
     );
   }
 }

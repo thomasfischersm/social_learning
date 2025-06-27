@@ -181,7 +181,7 @@ class SessionPlanActivityFunctions {
       final docRef = _firestore.collection(_collectionPath).doc(activity.id);
       batch.update(docRef, {
         'sortOrder': activity.sortOrder,
-        'blockId': activity.sessionPlanBlockId,
+        'sessionPlanBlockId': activity.sessionPlanBlockId,
         'modified': FieldValue.serverTimestamp(),
       });
     }
