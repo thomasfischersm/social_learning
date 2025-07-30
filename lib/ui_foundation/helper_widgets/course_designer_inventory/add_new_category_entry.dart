@@ -92,7 +92,7 @@ class AddNewCategoryEntry extends InventoryEntry {
       await DialogUtils.showInfoDialog(
         context,
         'AI inventory generation',
-        'This AI function can only be used for an empty course. Delete your existing categories or teachable items to proceed.',
+        'This AI function can only be used for an empty course.\n\nDelete your existing categories or teachable items to proceed.',
         () {},
       );
     } else {
