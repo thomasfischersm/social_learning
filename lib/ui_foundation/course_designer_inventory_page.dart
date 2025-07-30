@@ -21,6 +21,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_tag_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
+import 'package:social_learning/cloud_functions/cloud_functions.dart';
 
 class CourseDesignerInventoryPage extends StatefulWidget {
   const CourseDesignerInventoryPage({super.key});
@@ -205,6 +206,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
     inventoryEntries.add(
       AddNewCategoryEntry(
         onAdd: (name) => _onAddNewCategory(courseId, name),
+        onGenerate: _onGenerateInventory,
         contextData: this,
       ),
     );
@@ -306,5 +308,18 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
     });
 
     setState(() {});
+  }
+
+  Future<void> _onGenerateInventory() async {
+    if (_courseId == null) return;
+
+    setState(() => isLoading = true);
+    try {
+      await CloudFunctions.generateCourseInventory(_courseId!);
+    } catch (e, stack) {
+      print('Failed to generate inventory: $e\n$stack');
+    }
+
+    await loadInventoryData(_courseId!);
   }
 }
