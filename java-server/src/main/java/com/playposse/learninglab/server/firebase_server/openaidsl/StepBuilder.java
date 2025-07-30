@@ -120,7 +120,7 @@ public class StepBuilder {
     }
 
     /** Build the immutable SimpleStep instance. */
-    SimpleStep build() {
+    public SimpleStep build() {
         ChatConfig cfg = overrideCfg != null
                 ? overrideCfg.build()
                 : baseConfig;

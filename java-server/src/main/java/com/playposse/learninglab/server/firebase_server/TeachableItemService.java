@@ -3,7 +3,10 @@ package com.playposse.learninglab.server.firebase_server;
 import com.playposse.learninglab.server.firebase_server.openaidsl.*;
 import com.openai.models.ChatModel;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import java.util.Map;
 
@@ -18,8 +21,16 @@ public class TeachableItemService {
     private final OpenAiClient openAiClient;
     private final ChatConfig defaults;
 
-    public TeachableItemService(OpenAiService openAiService) {
-        this.openAiClient = new OpenAiServiceAdapter(openAiService);
+    @Autowired
+    public TeachableItemService(SecretFetcher secretFetcher) {
+        String apiKey;
+        try {
+            apiKey = secretFetcher.getOpenAiApiKey();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch OpenAI API key", e);
+        }
+
+        this.openAiClient = new OpenAiClientImpl(apiKey);;
         this.defaults = new DefaultsBuilder()
                 .temperature(0.7)
                 .maxTokens(3000)
@@ -35,9 +46,9 @@ public class TeachableItemService {
         String info = buildInfo(request);
 
         // labels
-        Label<List<String>> CATEGORIES = Label.of("categories", List.class);
-        Label<List<String>> ITEM_LIST = Label.of("itemList", List.class);
-        Label<List<List<String>>> ITEMS = Label.of("items", List.class);
+        Label<List<String>> CATEGORIES = Label.of("categories", new TypeReference<List<String>>() {});
+        Label<List<String>> ITEM_LIST = Label.of("itemList", new TypeReference<List<String>>() {});
+        Label<List<List<String>>> ITEMS = Label.of("items", new TypeReference<List<List<String>>>() {});
 
         String systemMessage =
                 "You are an expert course designer. A 'teachable item' is the smallest " +
@@ -106,31 +117,5 @@ public class TeachableItemService {
 
     private static String safe(String s) {
         return s == null ? "" : s;
-    }
-
-    /** Adapter so we can use OpenAiService with the OpenAi DSL. */
-    private static class OpenAiServiceAdapter implements OpenAiClient {
-        private final OpenAiService svc;
-        OpenAiServiceAdapter(OpenAiService svc) {
-            this.svc = svc;
-        }
-        @Override
-        public ChatCompletionResult chatCompletion(
-                java.util.List<ChatMsg> messages,
-                ChatConfig config
-        ) throws Exception {
-            java.util.List<java.util.Map<String,String>> sdkMsgs = messages.stream()
-                    .map(m -> java.util.Map.of(
-                            "role", m.role().name().toLowerCase(),
-                            "content", m.content()))
-                    .toList();
-            String text = svc.chat(
-                    sdkMsgs,
-                    ChatModel.CHATGPT_4_1,
-                    config.temperature(),
-                    config.maxTokens()
-            );
-            return new ChatCompletionResult(text, null, 0);
-        }
     }
 }
