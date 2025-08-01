@@ -95,7 +95,7 @@ class InventoryItemEntry extends InventoryEntry {
                 'Remove tag?',
                 'Do you want to remove the tag "${tag.name}"?',
                     () async {
-                  final tagRef = docRef('teachableItemTags', tag.id);
+                  final tagRef = docRef('teachableItemTags', tag.id!);
                   await TeachableItemFunctions.removeItemTagFromItem(
                     itemId: item.id!,
                     tagRef: tagRef,
@@ -126,7 +126,7 @@ class InventoryItemEntry extends InventoryEntry {
             TagFanoutWidget(
               availableTags: availableTags,
               onTagSelected: (tag) async {
-                final tagRef = docRef('teachableItemTags', tag.id);
+                final tagRef = docRef('teachableItemTags', tag.id!);
 
                 await TeachableItemFunctions.assignTagToItem(
                   itemId: item.id!,
@@ -176,5 +176,5 @@ class InventoryItemEntry extends InventoryEntry {
   }
 
   String _getRefPath(TeachableItemTag tag) =>
-      docRef('teachableItemTags', tag.id).path;
+      docRef('teachableItemTags', tag.id!).path;
 }

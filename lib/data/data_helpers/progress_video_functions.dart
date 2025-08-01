@@ -38,7 +38,7 @@ class ProgressVideoFunctions {
       'userUid': user.uid,
       'courseId':
           docRef('courses', lesson.courseId.id),
-      'lessonId': docRef('lessons', lesson.id),
+      'lessonId': docRef('lessons', lesson.id!),
       'youtubeUrl': youtubeUrl,
       'youtubeVideoId': extractYouTubeVideoId(youtubeUrl),
       'isProfilePrivate': user.isProfilePrivate,

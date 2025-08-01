@@ -451,7 +451,7 @@ class LessonDetailState extends State<LessonDetailPage> {
 
   Widget _createCommentsView(Lesson lesson, BuildContext context,
       LibraryState libraryState, ApplicationState applicationState) {
-    DocumentReference lessonId = docRef('lessons', lesson.id);
+    DocumentReference lessonId = docRef('lessons', lesson.id!);
     print('Querying for comments for lesson: $lessonId');
     Widget commentColumn = StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
@@ -784,7 +784,7 @@ class LessonDetailState extends State<LessonDetailPage> {
 
   _createConnectView(BuildContext context, Lesson lesson,
       ApplicationState applicationState, LibraryState libraryState) {
-    DocumentReference lessonId = docRef('lessons', lesson.id);
+    DocumentReference lessonId = docRef('lessons', lesson.id!);
     User? currentUser = applicationState.currentUser;
     GeoPoint? currentLocation = currentUser?.location;
 

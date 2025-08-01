@@ -39,7 +39,7 @@ class CourseProfileFunctions {
         };
         dataToUpdate.remove('createdAt');
 
-        await docRef(_collectionPath, profile.id).update(dataToUpdate);
+        await docRef(_collectionPath, profile.id!).update(dataToUpdate);
         print('Course profile updated successfully.');
       } else {
         // Create new

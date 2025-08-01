@@ -182,7 +182,7 @@ class UserFunctions {
     await docRef('users', user.id).update({
       'courseProficiencies': FieldValue.arrayUnion([
         {
-          'courseId': docRef('courses', course.id),
+          'courseId': docRef('courses', course.id!),
           'proficiency': proficiency,
         }
       ]),
@@ -193,7 +193,7 @@ class UserFunctions {
       courseProficiency.proficiency = proficiency;
     } else {
       user.courseProficiencies?.add(CourseProficiency(
-          docRef('courses', course.id),
+          docRef('courses', course.id!),
           proficiency));
     }
 

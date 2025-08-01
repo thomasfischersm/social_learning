@@ -42,16 +42,16 @@ class TeachableItemCategoryFunctions {
 
       // Create new document
       print('Adding new category: $name with sortOrder: $newSortOrder');
-      final docRef = await _firestore.collection(_collectionPath).add({
+      final categoryDocRef = await _firestore.collection(_collectionPath).add({
         'courseId': courseRef,
         'name': name,
         'sortOrder': newSortOrder,
         'createdAt': FieldValue.serverTimestamp(),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
-      print('Category added with ID: ${docRef.id}');
+      print('Category added with ID: ${categoryDocRef.id}');
 
-      final snapshot = await docRef.get();
+      final snapshot = await categoryDocRef.get();
       if (!snapshot.exists) return null;
 
       return TeachableItemCategory.fromSnapshot(snapshot);
@@ -174,7 +174,7 @@ class TeachableItemCategoryFunctions {
       for (int i = 0; i < sorted.length; i++) {
         final category = sorted[i];
         if (category.sortOrder != i) {
-          final ref = docRef(_collectionPath, category.id);
+          final ref = docRef(_collectionPath, category.id!);
           batch.update(ref, {
             'sortOrder': i,
             'modifiedAt': FieldValue.serverTimestamp(),

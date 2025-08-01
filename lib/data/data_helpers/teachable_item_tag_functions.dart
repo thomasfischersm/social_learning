@@ -15,7 +15,7 @@ class TeachableItemTagFunctions {
     try {
       final courseRef = docRef('courses', courseId);
 
-      final docRef = await _firestore.collection(_collectionPath).add({
+      final tagDocRef = await _firestore.collection(_collectionPath).add({
         'courseId': courseRef,
         'name': name,
         'color': color,
@@ -23,7 +23,7 @@ class TeachableItemTagFunctions {
         'modifiedAt': FieldValue.serverTimestamp(),
       });
 
-      final snapshot = await docRef.get();
+      final snapshot = await tagDocRef.get();
       return TeachableItemTag.fromSnapshot(snapshot as DocumentSnapshot<Map<String, dynamic>>);
     } catch (e) {
       print('Error adding tag: $e');

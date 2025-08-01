@@ -96,19 +96,19 @@ class InventoryDragHelper {
 
       newIndexInCategory = itemsInCategory.indexWhere((i) => i.id == target.item.id);
     } else if (target is AddNewItemEntry) {
-      newCategoryRef = docRef('teachableItemCategories', target.category.id);
+      newCategoryRef = docRef('teachableItemCategories', target.category.id!);
 
       final itemsInCategory = context.getItemsForCategory(target.category.id!);
       newIndexInCategory = itemsInCategory.length;
     } else if (target is InventoryCategoryEntry) {
-      newCategoryRef = docRef('teachableItemCategories', target.category.id);
+      newCategoryRef = docRef('teachableItemCategories', target.category.id!);
       newIndexInCategory = 0;
     } else if (target is AddNewCategoryEntry) {
       final lastCategory = (context.getCategories()
         ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder)))
           .last;
 
-      newCategoryRef = docRef('teachableItemCategories', lastCategory.id);
+      newCategoryRef = docRef('teachableItemCategories', lastCategory.id!);
 
       final itemsInCategory = context.getItemsForCategory(lastCategory.id!);
       newIndexInCategory = itemsInCategory.length;

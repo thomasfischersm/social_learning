@@ -86,7 +86,7 @@ class InventoryDataContext implements InventoryContext {
     final items = <TeachableItem>[];
     for (int i = 0; i < newCategories.length; i++) {
       final cat = newCategories[i];
-      final catRef = docRef('teachableItemCategories', cat.id);
+      final catRef = docRef('teachableItemCategories', cat.id!);
       final names = generated[i].items;
       for (int j = 0; j < names.length; j++) {
         items.add(

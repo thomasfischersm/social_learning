@@ -89,7 +89,7 @@ class LearningObjectiveFunctions {
 
   static deleteObjective(LearningObjective objective) async {
     try {
-      await docRef(_collectionPath, objective.id).delete();
+      await docRef(_collectionPath, objective.id!).delete();
     } catch (e) {
       print('Error deleting objective ${objective.id}: $e');
     }
@@ -100,13 +100,13 @@ class LearningObjectiveFunctions {
     name = name.trim();
     description = description?.trim();
 
-    var docRef = docRef(_collectionPath, id);
-    await docRef.update({
+    var objectiveDocRef = docRef(_collectionPath, id);
+    await objectiveDocRef.update({
         'name': name,
         'description': description,
         'modifiedAt': FieldValue.serverTimestamp(),
       });
-    return LearningObjective.fromSnapshot(await docRef.get());
+    return LearningObjective.fromSnapshot(await objectiveDocRef.get());
   }
 
   static Future<LearningObjective> addObjective(
@@ -117,7 +117,7 @@ class LearningObjectiveFunctions {
         'Adding objective: courseId: $courseId, name: $name, sortOrder: $sortOrder');
     name = name.trim();
     final courseRef = docRef('courses', courseId);
-    var docRef = await _firestore.collection(_collectionPath).add({
+    var objectiveDocRef = await _firestore.collection(_collectionPath).add({
       'courseId': courseRef,
       'sortOrder': sortOrder,
       'name': name,
@@ -126,7 +126,7 @@ class LearningObjectiveFunctions {
       'createdAt': FieldValue.serverTimestamp(),
       'modifiedAt': FieldValue.serverTimestamp(),
     });
-    return LearningObjective.fromSnapshot(await docRef.get());
+    return LearningObjective.fromSnapshot(await objectiveDocRef.get());
   }
 
   /// Adds a teachable item reference to the objective, then returns the updated objective.
