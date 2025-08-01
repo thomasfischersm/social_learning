@@ -7,6 +7,9 @@ import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.d
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
+import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/course_profile.dart';
+import 'package:social_learning/data/data_helpers/course_profile_functions.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
@@ -39,6 +42,8 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
   List<TeachableItem> _items = [];
   List<TeachableItemTag> _tags = [];
   String? _courseId;
+  Course? _course;
+  CourseProfile? _courseProfile;
 
   @override
   List<TeachableItemCategory> getCategories() => _categories;
@@ -55,6 +60,12 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
   @override
   List<InventoryEntry> getInventoryEntries() => inventoryEntries;
+
+  @override
+  Course? getCourse() => _course;
+
+  @override
+  CourseProfile? getCourseProfile() => _courseProfile;
 
   @override
   void initState() {
@@ -150,17 +161,21 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
   Future<void> loadInventoryData(String courseId) async {
     _courseId = courseId;
+    final libraryState = Provider.of<LibraryState>(context, listen: false);
+    _course = libraryState.selectedCourse;
     setState(() => isLoading = true);
 
     final results = await Future.wait([
+      CourseProfileFunctions.getCourseProfile(courseId),
       TeachableItemCategoryFunctions.getCategoriesForCourse(courseId),
       TeachableItemFunctions.getItemsForCourse(courseId),
       TeachableItemTagFunctions.getTagsForCourse(courseId),
     ]);
 
-    _categories = results[0] as List<TeachableItemCategory>;
-    _items = results[1] as List<TeachableItem>;
-    _tags = results[2] as List<TeachableItemTag>;
+    _courseProfile = results[0] as CourseProfile?;
+    _categories = results[1] as List<TeachableItemCategory>;
+    _items = results[2] as List<TeachableItem>;
+    _tags = results[3] as List<TeachableItemTag>;
 
     final itemsByCategory = <String, List<TeachableItem>>{};
     for (final item in _items) {
@@ -311,11 +326,11 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
   }
 
   Future<void> _onGenerateInventory() async {
-    if (_courseId == null) return;
+    if (_courseId == null || _course == null) return;
 
     setState(() => isLoading = true);
     try {
-      await CloudFunctions.generateCourseInventory(_courseId!);
+      await CloudFunctions.generateCourseInventory(_course!, _courseProfile);
     } catch (e, stack) {
       print('Failed to generate inventory: $e\n$stack');
     }

@@ -2,6 +2,8 @@ import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
+import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/course_profile.dart';
 
 abstract class InventoryContext {
   /// All categories in the course (ordered by sortOrder)
@@ -18,4 +20,10 @@ abstract class InventoryContext {
 
   /// The flattened list of inventory UI entries (categories, items, add-new rows, etc.)
   List<InventoryEntry> getInventoryEntries();
+
+  /// The course that owns the inventory
+  Course? getCourse();
+
+  /// Optional course profile with additional metadata
+  CourseProfile? getCourseProfile();
 }
