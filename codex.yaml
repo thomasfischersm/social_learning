@@ -1,0 +1,7 @@
+setup:
+  - ./tool/codex_setup.sh
+
+# Optionally tell Codex how to run tests
+test:
+  - flutter analyze
+  - flutter test --coverage
