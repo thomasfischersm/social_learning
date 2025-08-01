@@ -9,6 +9,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_pre
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
@@ -139,7 +140,7 @@ class _CourseDesignerPrerequisitesPageState
                     onShowItemsWithPrerequisites:
                         _handleShowItemsWithPrerequisites,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: CourseDesignerTheme.kCourseDesignerSpacingLarge),
                   DecomposedCourseDesignerCard.buildHeader('Dependency Tree'),
                 ],
               ),

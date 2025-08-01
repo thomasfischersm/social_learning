@@ -4,6 +4,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/cou
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
@@ -92,7 +93,7 @@ class _StepsBody extends StatelessWidget {
           'Blank pages are intimidating. This flow offers bite‑size prompts so you can plan faster and with less guess‑work.',
           style: base,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: CourseDesignerTheme.kCourseDesignerSpacingMedium),
         row('Inventory', 'brain dump teachable elements'),
         row('Prerequisites', 'sequence the learning'),
         row('Scope', 'flip items on/off to fit the time constraints'),
@@ -102,7 +103,7 @@ class _StepsBody extends StatelessWidget {
             'start with the result and work back to lessons'),
         row('Session outline',
             'drag lessons, breaks, and warm‑ups into a teaching agenda'),
-        const SizedBox(height: 8),
+        const SizedBox(height: CourseDesignerTheme.kCourseDesignerSpacingSmall),
         Text(
           '(Jump between steps anytime from the left‑menu.)',
           style: CustomTextStyles.getBodyNote(context),

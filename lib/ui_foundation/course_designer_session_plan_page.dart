@@ -7,6 +7,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_ses
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_overview_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_block_list_view.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
@@ -119,7 +120,7 @@ class _CourseDesignerSessionPlanPageState
               child: Column(
                 children: [
                   SessionPlanOverviewCard(context: _sessionPlanContext!),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: CourseDesignerTheme.kCourseDesignerSpacingLarge),
                 ],
               ),
             ),

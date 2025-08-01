@@ -8,6 +8,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart'
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -218,7 +219,8 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (int i = 0; i < fields.length; i++) ...[
-            if (i > 0) const SizedBox(height: 24),
+            if (i > 0)
+              const SizedBox(height: CourseDesignerTheme.kCourseDesignerSpacingLarge),
             fields[i],
           ],
         ],
@@ -234,7 +236,7 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
         Text(label, style: CustomTextStyles.getBodyEmphasized(context)),
         const SizedBox(height: 4),
         Text(help, style: CustomTextStyles.getBodyNote(context)),
-        const SizedBox(height: 12),
+        const SizedBox(height: CourseDesignerTheme.kCourseDesignerSpacingMedium),
         TextField(
           controller: controller,
           maxLines: null,

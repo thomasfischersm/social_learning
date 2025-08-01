@@ -12,6 +12,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_sco
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_scope/scope_items_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_scope/scope_overview_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
@@ -123,7 +124,7 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
               child: Column(
                 children: [
                   ScopeOverviewCard(scopeContext: _scopeContext!),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: CourseDesignerTheme.kCourseDesignerSpacingLarge),
                   DecomposedCourseDesignerCard.buildHeader(
                       'Select teachable items'),
                 ],
