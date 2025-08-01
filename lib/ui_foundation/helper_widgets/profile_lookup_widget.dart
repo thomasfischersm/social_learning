@@ -7,6 +7,7 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
 class ProfileLookupWidget extends StatefulWidget {
   final ApplicationState applicationState;
@@ -130,9 +131,9 @@ class ProfileLookupWidgetState extends State<ProfileLookupWidget> {
         // Search Input Field
         TextField(
           controller: _searchController,
-          decoration: const InputDecoration(
+          decoration: CustomUiConstants.getFilledInputDecoration(
+            context,
             hintText: 'Search for other students by name',
-            border: OutlineInputBorder(),
           ),
           onChanged: (text) => _onSearchChanged(),
         ),
