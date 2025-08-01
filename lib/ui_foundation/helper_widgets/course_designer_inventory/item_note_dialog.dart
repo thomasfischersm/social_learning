@@ -4,6 +4,7 @@ import 'package:social_learning/data/data_helpers/teachable_item_functions.dart'
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
 class ItemNoteDialog extends StatefulWidget {
   final TeachableItem item;
@@ -122,23 +123,17 @@ class _ItemNoteDialogState extends State<ItemNoteDialog> {
     return [
       TextFormField(
         controller: nameController,
-        decoration: InputDecoration(
+        decoration: CustomUiConstants.getFilledInputDecoration(
+          context,
           labelText: 'Item name',
-          filled: true,
-          fillColor: Colors.grey[100],
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
       const SizedBox(height: 12),
       TextFormField(
         controller: noteController,
-        decoration: InputDecoration(
+        decoration: CustomUiConstants.getFilledInputDecoration(
+          context,
           labelText: 'Notes',
-          filled: true,
-          fillColor: Colors.grey[100],
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         ),
         maxLines: null,
         minLines: 5,
