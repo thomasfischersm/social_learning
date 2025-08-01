@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/data/session_play_activity_type.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_context.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class AddActivityRow extends StatefulWidget {
   final SessionPlanContext sessionPlanContext;
@@ -54,6 +55,7 @@ class _AddActivityRowState extends State<AddActivityRow> {
               ElevatedButton.icon(
                 icon: const Icon(Icons.add),
                 label: const Text("Add"),
+                style: CourseDesignerTheme.secondaryButtonStyle,
                 onPressed: () async {
                   await widget.sessionPlanContext.addActivity(
                     blockId: widget.sessionPlanBlockId,

@@ -3,6 +3,7 @@ import 'package:social_learning/ui_foundation/course_designer_inventory_page.dar
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class AddNewCategoryEntry extends InventoryEntry {
   final Future<void> Function(String name) onAdd;
@@ -77,6 +78,7 @@ class AddNewCategoryEntry extends InventoryEntry {
           ElevatedButton.icon(
             icon: const Icon(Icons.auto_fix_high),
             label: const Text('AI'),
+            style: CourseDesignerTheme.secondaryButtonStyle,
             onPressed: () => _onAIPressed(context),
           ),
         ],
