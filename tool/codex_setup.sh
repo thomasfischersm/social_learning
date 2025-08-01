@@ -18,6 +18,17 @@ CACHE_DIR="${HOME}/.cache/codex_deps"
 FLUTTER_DIR="${CACHE_DIR}/flutter_${FLUTTER_VERSION}"
 PATH_TO_ADD="${FLUTTER_DIR}/bin:${HOME}/.pub-cache/bin"
 
+# Ensure java-server’s Gradle wrapper is runnable
+chmod +x java-server/gradlew
+
+# Create android/local.properties if missing
+if [[ ! -f android/local.properties ]]; then
+  cat > android/local.properties <<EOF
+flutter.sdk=${FLUTTER_DIR}
+EOF
+fi
+
+
 # Fast-exit if everything is already in place
 if [[ -x "${FLUTTER_DIR}/bin/flutter" ]] && \
    [[ "$(firebase --version 2>/dev/null || true)" == "${FIREBASE_CLI_VERSION}" ]]; then
