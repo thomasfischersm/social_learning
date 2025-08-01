@@ -25,6 +25,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/cloud_functions/cloud_functions.dart';
+import 'package:social_learning/cloud_functions/inventory_generation_response.dart';
 
 class CourseDesignerInventoryPage extends StatefulWidget {
   const CourseDesignerInventoryPage({super.key});
@@ -330,11 +331,51 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
 
     setState(() => isLoading = true);
     try {
-      await CloudFunctions.generateCourseInventory(_course!, _courseProfile);
+      final response = await CloudFunctions.generateCourseInventory(
+        _course!,
+        _courseProfile,
+      );
+      await saveGeneratedInventory(response.categories);
     } catch (e, stack) {
       print('Failed to generate inventory: $e\n$stack');
     }
 
     await loadInventoryData(_courseId!);
+  }
+
+  @override
+  Future<void> saveGeneratedInventory(List<GeneratedCategory> generated) async {
+    if (_courseId == null) return;
+
+    final categoryNames = generated.map((e) => e.category).toList();
+    final newCategories = await TeachableItemCategoryFunctions.bulkCreateCategories(
+      courseId: _courseId!,
+      names: categoryNames,
+    );
+
+    final courseRef = FirebaseFirestore.instance.collection('courses').doc(_courseId);
+    final items = <TeachableItem>[];
+    for (int i = 0; i < newCategories.length; i++) {
+      final cat = newCategories[i];
+      final catRef = FirebaseFirestore.instance
+          .collection('teachableItemCategories')
+          .doc(cat.id);
+      final names = generated[i].items;
+      for (int j = 0; j < names.length; j++) {
+        items.add(
+          TeachableItem(
+            courseId: courseRef,
+            categoryId: catRef,
+            name: names[j],
+            sortOrder: j,
+            createdAt: Timestamp.now(),
+            modifiedAt: Timestamp.now(),
+            notes: null,
+          ),
+        );
+      }
+    }
+
+    await TeachableItemFunctions.bulkCreateItems(items);
   }
 }

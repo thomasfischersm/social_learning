@@ -25,6 +25,38 @@ class CustomUiConstants {
   static Padding getIndentationTextPadding(Widget widget) =>
       Padding(padding: const EdgeInsets.only(left: 8), child: widget);
 
+  /// Standard padding used for text field content.
+  static const EdgeInsets standardInputPadding =
+      EdgeInsets.symmetric(horizontal: 12, vertical: 10);
+
+  /// Returns an [OutlineInputBorder] with consistent radius and color.
+  static OutlineInputBorder getInputBorder(
+      {Color color = const Color(0xFFBDBDBD), double width = 1, double radius = 8}) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(radius),
+      borderSide: BorderSide(color: color, width: width),
+    );
+  }
+
+  /// Builds a filled [InputDecoration] using the application's standard style.
+  static InputDecoration getFilledInputDecoration(
+    BuildContext context, {
+    String? labelText,
+    String? hintText,
+    Color enabledColor = const Color(0xFFBDBDBD),
+  }) {
+    return InputDecoration(
+      labelText: labelText,
+      hintText: hintText,
+      filled: true,
+      fillColor: Colors.grey[100],
+      contentPadding: standardInputPadding,
+      enabledBorder: getInputBorder(color: enabledColor),
+      focusedBorder:
+          getInputBorder(color: Theme.of(context).colorScheme.primary, width: 2),
+    );
+  }
+
   static Widget getGeneralFooter(BuildContext context,
       {bool withDivider = true}) {
     return Column(

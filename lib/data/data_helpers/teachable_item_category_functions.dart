@@ -59,6 +59,30 @@ class TeachableItemCategoryFunctions {
       return null;
     }
   }
+  static Future<List<TeachableItemCategory>> bulkCreateCategories({
+    required String courseId,
+    required List<String> names,
+  }) async {
+    final courseRef = _firestore.collection('courses').doc(courseId);
+    final batch = _firestore.batch();
+    final collection = _firestore.collection(_collectionPath);
+    final docRefs = <DocumentReference>[];
+    for (int i = 0; i < names.length; i++) {
+      final docRef = collection.doc();
+      docRefs.add(docRef);
+      batch.set(docRef, {
+        'courseId': courseRef,
+        'name': names[i],
+        'sortOrder': i,
+        'createdAt': FieldValue.serverTimestamp(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+    }
+    await batch.commit();
+    final snapshots = await Future.wait(docRefs.map((d) => d.get()));
+    return snapshots.where((s) => s.exists).map((s) => TeachableItemCategory.fromSnapshot(s)).toList();
+  }
+
 
 
   static Future<void> updateCategory({

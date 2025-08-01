@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CourseDesignerCard extends StatefulWidget {
@@ -68,14 +69,14 @@ class _CourseDesignerCardState extends State<CourseDesignerCard> {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      padding: CourseDesignerTheme.cardHeaderPadding,
       decoration: BoxDecoration(
         color: Colors.grey[100],
         borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
       ),
       child: Text(
         widget.title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: CourseDesignerTheme.cardHeaderTextStyle,
       ),
     );
   }

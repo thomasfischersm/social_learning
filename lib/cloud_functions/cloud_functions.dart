@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import '../data/course.dart';
 import '../data/course_profile.dart';
+import 'inventory_generation_response.dart';
 
 class CloudFunctions {
   static Future<void> generateCourseFromPlan(String coursePlanId) async {
@@ -32,7 +33,7 @@ class CloudFunctions {
     }
   }
 
-  static Future<void> generateCourseInventory(
+  static Future<InventoryGenerationResponse> generateCourseInventory(
       Course course, CourseProfile? profile) async {
     final user = FirebaseAuth.instance.currentUser;
     final idToken = await user?.getIdToken();
@@ -69,5 +70,8 @@ class CloudFunctions {
       print('Response body: ${response.body}');
       throw Exception('Cloud Run call failed: ${response.body}');
     }
+
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    return InventoryGenerationResponse.fromJson(decoded);
   }
 }

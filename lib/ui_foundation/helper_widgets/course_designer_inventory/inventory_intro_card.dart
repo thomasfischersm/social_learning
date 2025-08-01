@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class InventoryIntroCard extends StatefulWidget {
   const InventoryIntroCard({super.key});
@@ -62,8 +63,11 @@ class _InventoryIntroCardState extends State<InventoryIntroCard> {
         color: Colors.grey[100],
         borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-      child: Text("Step 2: Inventory the Building Blocks", style: CustomTextStyles.subHeadline),
+      padding: CourseDesignerTheme.cardHeaderPadding,
+      child: Text(
+        "Step 2: Inventory the Building Blocks",
+        style: CourseDesignerTheme.cardHeaderTextStyle,
+      ),
     );
   }
 
