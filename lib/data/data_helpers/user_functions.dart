@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
@@ -57,7 +58,7 @@ class UserFunctions {
   }
 
   static void updateCurrentCourse(User currentUser, String courseId) async {
-    var courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
+    var courseRef = docRef('courses', courseId);
     currentUser.currentCourseId = courseRef;
     FirebaseFirestore.instance
         .collection('users')
@@ -167,7 +168,7 @@ class UserFunctions {
     // Update course proficiency.
     if (courseProficiency != null) {
       // Remove the old entry.
-      await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+      await docRef('users', user.id).update({
         'courseProficiencies': FieldValue.arrayRemove([
           {
             'courseId': courseProficiency.courseId,
@@ -178,10 +179,10 @@ class UserFunctions {
     }
 
     // Add the new entry.
-    await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+    await docRef('users', user.id).update({
       'courseProficiencies': FieldValue.arrayUnion([
         {
-          'courseId': FirebaseFirestore.instance.doc('/courses/${course.id}'),
+          'courseId': docRef('courses', course.id),
           'proficiency': proficiency,
         }
       ]),
@@ -192,7 +193,7 @@ class UserFunctions {
       courseProficiency.proficiency = proficiency;
     } else {
       user.courseProficiencies?.add(CourseProficiency(
-          FirebaseFirestore.instance.doc('/courses/${course.id}'),
+          docRef('courses', course.id),
           proficiency));
     }
 
@@ -209,7 +210,7 @@ class UserFunctions {
     profileText = profileText.trim();
     user.profileText = profileText;
 
-    FirebaseFirestore.instance.doc('/users/${user.id}').update({
+    docRef('users', user.id).update({
       'profileText': profileText,
     });
   }
@@ -227,7 +228,7 @@ class UserFunctions {
 
     removeGeoFromPracticeRecords(user);
 
-    await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+    await docRef('users', user.id).update({
       'isGeoLocationEnabled': false,
       'location': null,
       'roughUserLocation': null,
@@ -268,7 +269,7 @@ class UserFunctions {
 
     user.isGeoLocationEnabled = true;
 
-    await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+    await docRef('users', user.id).update({
       'isGeoLocationEnabled': true,
     });
 
@@ -329,8 +330,7 @@ class UserFunctions {
       }
 
       user.location = newLocation;
-      await FirebaseFirestore.instance
-          .doc('/users/${applicationState.currentUser!.id}')
+      await docRef('users', applicationState.currentUser!.id)
           .update(userData);
 
       return true;
@@ -374,7 +374,7 @@ class UserFunctions {
       for (var doc in snapshot.docs) {
         var record = PracticeRecord.fromSnapshot(doc);
         batch.update(
-            FirebaseFirestore.instance.doc('practiceRecords/${record.id}'), {
+            docRef('practiceRecords', record.id), {
           'roughUserLocation': currentLocation,
         });
       }
@@ -425,7 +425,7 @@ class UserFunctions {
         var record = PracticeRecord.fromSnapshot(doc);
         if (record.roughUserLocation != null) {
           batch.update(
-              FirebaseFirestore.instance.doc('practiceRecords/${record.id}'), {
+              docRef('practiceRecords', record.id), {
             'roughUserLocation': null,
           });
         }
@@ -456,7 +456,7 @@ class UserFunctions {
 
     user.instagramHandle = newInstagramHandle;
 
-    await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+    await docRef('users', user.id).update({
       'instagramHandle': newInstagramHandle,
     });
   }
@@ -487,7 +487,7 @@ class UserFunctions {
 
     user.calendlyUrl = newCalendlyUrl;
 
-    await FirebaseFirestore.instance.doc('/users/${user.id}').update({
+    await docRef('users', user.id).update({
       'calendlyUrl': newCalendlyUrl,
     });
   }

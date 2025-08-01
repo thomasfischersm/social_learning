@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
 import 'package:social_learning/data/teachable_item_category.dart'; // For deleting items within a category
 
@@ -13,7 +14,7 @@ class TeachableItemCategoryFunctions {
   }) async {
     try {
       print('Adding category: $name to course: $courseId');
-      final courseRef = _firestore.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
 
       // Get highest sortOrder for the course
       QuerySnapshot<Map<String, dynamic>>? querySnapshot;
@@ -63,7 +64,7 @@ class TeachableItemCategoryFunctions {
     required String courseId,
     required List<String> names,
   }) async {
-    final courseRef = _firestore.collection('courses').doc(courseId);
+    final courseRef = docRef('courses', courseId);
     final batch = _firestore.batch();
     final collection = _firestore.collection(_collectionPath);
     final docRefs = <DocumentReference>[];
@@ -91,7 +92,7 @@ class TeachableItemCategoryFunctions {
     // Description is not part of the model, so not included here.
   }) async {
     try {
-      await _firestore.collection(_collectionPath).doc(categoryId).update({
+      await docRef(_collectionPath, categoryId).update({
         'name': name,
         'modifiedAt': FieldValue.serverTimestamp(),
       });
@@ -105,7 +106,7 @@ class TeachableItemCategoryFunctions {
     required String categoryId,
   }) async {
     try {
-      final categoryRef = _firestore.collection(_collectionPath).doc(categoryId);
+      final categoryRef = docRef(_collectionPath, categoryId);
       final categorySnapshot = await categoryRef.get();
       if (!categorySnapshot.exists) {
         print('Category $categoryId not found for deletion.');
@@ -173,7 +174,7 @@ class TeachableItemCategoryFunctions {
       for (int i = 0; i < sorted.length; i++) {
         final category = sorted[i];
         if (category.sortOrder != i) {
-          final ref = _firestore.collection(_collectionPath).doc(category.id);
+          final ref = docRef(_collectionPath, category.id);
           batch.update(ref, {
             'sortOrder': i,
             'modifiedAt': FieldValue.serverTimestamp(),
@@ -189,7 +190,7 @@ class TeachableItemCategoryFunctions {
 
   static Future<List<TeachableItemCategory>> getCategoriesForCourse(String courseId) async {
     try {
-      final courseRef = FirebaseFirestore.instance.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
 
       final snapshot = await FirebaseFirestore.instance
           .collection(_collectionPath)

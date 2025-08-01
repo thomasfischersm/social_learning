@@ -9,7 +9,7 @@ class LearningObjectiveFunctions {
   static Future<List<LearningObjective>> getObjectivesForCourse(
       String courseId) async {
     try {
-      final courseRef = _firestore.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
       final snapshot = await _firestore
           .collection(_collectionPath)
           .where('courseId', isEqualTo: courseRef)
@@ -34,7 +34,7 @@ class LearningObjectiveFunctions {
     print(
         'LearningObjectiveFunctions: Saving objective: $id, courseId: $courseId, sortOrder: $sortOrder, name: $name, description: $description, teachableItemIds: $teachableItemIds');
     try {
-      final courseRef = _firestore.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
       final data = {
         'courseId': courseRef,
         'sortOrder': sortOrder,
@@ -49,9 +49,8 @@ class LearningObjectiveFunctions {
         final snapshot = await docRef.get();
         return LearningObjective.fromSnapshot(snapshot);
       } else {
-        await _firestore.collection(_collectionPath).doc(id).update(data);
-        final snapshot =
-            await _firestore.collection(_collectionPath).doc(id).get();
+        await docRef(_collectionPath, id).update(data);
+        final snapshot = await docRef(_collectionPath, id).get();
         return LearningObjective.fromSnapshot(snapshot);
       }
     } catch (e) {
@@ -65,7 +64,7 @@ class LearningObjectiveFunctions {
     required DocumentReference teachableItemRef,
   }) async {
     try {
-      await _firestore.collection(_collectionPath).doc(objectiveId).update({
+      await docRef(_collectionPath, objectiveId).update({
         'teachableItemIds': FieldValue.arrayUnion([teachableItemRef]),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
@@ -79,7 +78,7 @@ class LearningObjectiveFunctions {
     required DocumentReference teachableItemRef,
   }) async {
     try {
-      await _firestore.collection(_collectionPath).doc(objectiveId).update({
+      await docRef(_collectionPath, objectiveId).update({
         'teachableItemIds': FieldValue.arrayRemove([teachableItemRef]),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
@@ -90,7 +89,7 @@ class LearningObjectiveFunctions {
 
   static deleteObjective(LearningObjective objective) async {
     try {
-      await _firestore.collection(_collectionPath).doc(objective.id).delete();
+      await docRef(_collectionPath, objective.id).delete();
     } catch (e) {
       print('Error deleting objective ${objective.id}: $e');
     }
@@ -101,7 +100,7 @@ class LearningObjectiveFunctions {
     name = name.trim();
     description = description?.trim();
 
-    var docRef = _firestore.collection(_collectionPath).doc(id);
+    var docRef = docRef(_collectionPath, id);
     await docRef.update({
         'name': name,
         'description': description,
@@ -117,7 +116,7 @@ class LearningObjectiveFunctions {
     print(
         'Adding objective: courseId: $courseId, name: $name, sortOrder: $sortOrder');
     name = name.trim();
-    final courseRef = _firestore.collection('courses').doc(courseId);
+    final courseRef = docRef('courses', courseId);
     var docRef = await _firestore.collection(_collectionPath).add({
       'courseId': courseRef,
       'sortOrder': sortOrder,

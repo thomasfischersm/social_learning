@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/learning_strategy_enum.dart';
 import 'package:social_learning/data/lesson.dart';
@@ -12,7 +13,7 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
   final Map<SessionParticipant, List<Lesson>> _graduatedLessons = {};
   final _course = Course(
       '/courses/malta', 'Malta', 'u58', 'A beautiful island', false, null);
-  final _courseRef = FirebaseFirestore.instance.doc('/courses/malta');
+  final _courseRef = docRef('courses', 'malta');
 
   int _uniqueIdGenerator = 2;
 
@@ -64,8 +65,8 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
         Timestamp(0, 0));
     _participantUsers.add(user);
 
-    var userRef = FirebaseFirestore.instance.doc('/users/${user.id}');
-    var sessionRef = FirebaseFirestore.instance.doc('/sessions/$_sessionId');
+    var userRef = docRef('users', user.id);
+    var sessionRef = docRef('sessions', _sessionId);
     var participant = SessionParticipant(
         nextId,
         sessionRef,

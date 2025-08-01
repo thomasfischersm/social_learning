@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 
 class TeachableItemTagFunctions {
@@ -12,7 +13,7 @@ class TeachableItemTagFunctions {
     required String color,
   }) async {
     try {
-      final courseRef = _firestore.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
 
       final docRef = await _firestore.collection(_collectionPath).add({
         'courseId': courseRef,
@@ -37,7 +38,7 @@ class TeachableItemTagFunctions {
     required String color,
   }) async {
     try {
-      await _firestore.collection(_collectionPath).doc(tagId).update({
+      await docRef(_collectionPath, tagId).update({
         'name': name,
         'color': color,
         'modifiedAt': FieldValue.serverTimestamp(),
@@ -51,7 +52,7 @@ class TeachableItemTagFunctions {
     required String tagId,
   }) async {
     try {
-      final tagRef = _firestore.collection(_collectionPath).doc(tagId);
+      final tagRef = docRef(_collectionPath, tagId);
       WriteBatch batch = _firestore.batch();
 
       // 1. Find all TeachableItems that reference this tag
@@ -79,7 +80,7 @@ class TeachableItemTagFunctions {
 
   static Future<List<TeachableItemTag>> getTagsForCourse(String courseId) async {
     try {
-      final courseRef = _firestore.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
 
       final querySnapshot = await _firestore
           .collection(_collectionPath)

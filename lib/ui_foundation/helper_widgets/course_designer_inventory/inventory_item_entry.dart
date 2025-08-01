@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
 import 'package:social_learning/data/teachable_item.dart';
@@ -94,9 +95,7 @@ class InventoryItemEntry extends InventoryEntry {
                 'Remove tag?',
                 'Do you want to remove the tag "${tag.name}"?',
                     () async {
-                  final tagRef = FirebaseFirestore.instance
-                      .collection('teachableItemTags')
-                      .doc(tag.id);
+                  final tagRef = docRef('teachableItemTags', tag.id);
                   await TeachableItemFunctions.removeItemTagFromItem(
                     itemId: item.id!,
                     tagRef: tagRef,
@@ -127,9 +126,7 @@ class InventoryItemEntry extends InventoryEntry {
             TagFanoutWidget(
               availableTags: availableTags,
               onTagSelected: (tag) async {
-                final tagRef = FirebaseFirestore.instance
-                    .collection('teachableItemTags')
-                    .doc(tag.id);
+                final tagRef = docRef('teachableItemTags', tag.id);
 
                 await TeachableItemFunctions.assignTagToItem(
                   itemId: item.id!,
@@ -179,5 +176,5 @@ class InventoryItemEntry extends InventoryEntry {
   }
 
   String _getRefPath(TeachableItemTag tag) =>
-      FirebaseFirestore.instance.collection('teachableItemTags').doc(tag.id).path;
+      docRef('teachableItemTags', tag.id).path;
 }

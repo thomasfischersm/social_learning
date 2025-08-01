@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/course_profile.dart';
 
 class CourseProfileFunctions {
@@ -7,7 +8,7 @@ class CourseProfileFunctions {
 
   static Future<CourseProfile?> getCourseProfile(String courseId) async {
     try {
-      final courseRef = _firestore.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
       final querySnapshot = await _firestore
           .collection(_collectionPath)
           .where('courseId', isEqualTo: courseRef)
@@ -38,7 +39,7 @@ class CourseProfileFunctions {
         };
         dataToUpdate.remove('createdAt');
 
-        await _firestore.collection(_collectionPath).doc(profile.id).update(dataToUpdate);
+        await docRef(_collectionPath, profile.id).update(dataToUpdate);
         print('Course profile updated successfully.');
       } else {
         // Create new

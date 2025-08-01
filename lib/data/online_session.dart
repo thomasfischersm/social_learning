@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 enum OnlineSessionStatus {
   waiting, // 0
@@ -95,7 +96,7 @@ class OnlineSession {
 
   OnlineSession.fromJson(Map<String, dynamic> json)
       : id = json['id'] as String?,
-        courseId = FirebaseFirestore.instance.doc(json['courseId'] as String),
+        courseId = docRef('courses', json['courseId'] as String),
         learnerUid = json['learnerUid'] as String?,
         mentorUid = json['mentorUid'] as String?,
         videoCallUrl = json['videoCallUrl'] as String?,

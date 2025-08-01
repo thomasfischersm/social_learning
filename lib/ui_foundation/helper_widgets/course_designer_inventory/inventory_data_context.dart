@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/cloud_functions/cloud_functions.dart';
 import 'package:social_learning/cloud_functions/inventory_generation_response.dart';
 import 'package:social_learning/data/course.dart';
@@ -81,13 +82,11 @@ class InventoryDataContext implements InventoryContext {
       names: categoryNames,
     );
 
-    final courseRef = FirebaseFirestore.instance.collection('courses').doc(courseId);
+    final courseRef = docRef('courses', courseId);
     final items = <TeachableItem>[];
     for (int i = 0; i < newCategories.length; i++) {
       final cat = newCategories[i];
-      final catRef = FirebaseFirestore.instance
-          .collection('teachableItemCategories')
-          .doc(cat.id);
+      final catRef = docRef('teachableItemCategories', cat.id);
       final names = generated[i].items;
       for (int j = 0; j < names.length; j++) {
         items.add(

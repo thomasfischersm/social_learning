@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
@@ -73,8 +74,7 @@ class CmsLessonState extends State<CmsLessonPage> {
     if (argument != null) {
       String? levelId = argument.levelId;
       if (levelId != null) {
-        _levelDocRef =
-            FirebaseFirestore.instance.collection('levels').doc(levelId);
+        _levelDocRef = docRef('levels', levelId);
       }
 
       String? lessonId = argument.lessonId;
