@@ -67,7 +67,7 @@ class TeachableItemCategoryFunctions {
     final courseRef = docRef('courses', courseId);
     final batch = _firestore.batch();
     final collection = _firestore.collection(_collectionPath);
-    final docRefs = <DocumentReference>[];
+    final docRefs = <DocumentReference<Map<String, dynamic>>>[];
     for (int i = 0; i < names.length; i++) {
       final docRef = collection.doc();
       docRefs.add(docRef);
