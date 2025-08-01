@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:social_learning/ui_foundation/course_designer_inventory_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
