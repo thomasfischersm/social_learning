@@ -10,6 +10,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 class InventoryItemEntry extends InventoryEntry {
   TeachableItem item;
@@ -178,6 +179,5 @@ class InventoryItemEntry extends InventoryEntry {
     }
   }
 
-  String _getRefPath(TeachableItemTag tag) =>
-      FirebaseFirestore.instance.collection('teachableItemTags').doc(tag.id).path;
+  String _getRefPath(TeachableItemTag tag) => docRef('teachableItemTags', tag.id!).path;
 }

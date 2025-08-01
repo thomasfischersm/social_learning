@@ -3,6 +3,7 @@ import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/state/firestore_subscription/firestore_list_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
@@ -88,12 +89,10 @@ class SessionParticipantsSubscription
       // TODO: This seems to create entries too aggressively.
       print('Student added itself as a participant');
       FirebaseFirestore.instance.collection('sessionParticipants').add({
-        'sessionId': FirebaseFirestore.instance.doc('/sessions/${session.id}'),
-        'participantId':
-            FirebaseFirestore.instance.doc('/users/${currentUser?.id}'),
+        'sessionId': docRef('sessions', session.id),
+        'participantId': docRef('users', currentUser!.id),
         'participantUid': currentUser?.uid,
-        'courseId':
-            FirebaseFirestore.instance.doc('/courses/${session.courseId.id}'),
+        'courseId': docRef('courses', session.courseId.id),
         'isInstructor': currentUser?.isAdmin,
         'isActive': true,
         'teachCount': 0,

@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/progress_video.dart';
 import 'package:social_learning/data/user.dart';
@@ -33,11 +34,11 @@ class ProgressVideoFunctions {
     await FirebaseFirestore.instance
         .collection('progressVideos')
         .add(<String, dynamic>{
-      'userId': FirebaseFirestore.instance.doc('/users/${user.id}'),
+      'userId': docRef('users', user.id!),
       'userUid': user.uid,
       'courseId':
-          FirebaseFirestore.instance.doc('/courses/${lesson.courseId.id}'),
-      'lessonId': FirebaseFirestore.instance.doc('/lessons/${lesson.id}'),
+          docRef('courses', lesson.courseId.id),
+      'lessonId': docRef('lessons', lesson.id!),
       'youtubeUrl': youtubeUrl,
       'youtubeVideoId': extractYouTubeVideoId(youtubeUrl),
       'isProfilePrivate': user.isProfilePrivate,
@@ -53,8 +54,7 @@ class ProgressVideoFunctions {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('progressVideos')
-            .where('lessonId',
-                isEqualTo: FirebaseFirestore.instance.doc('/lessons/$lessonId'))
+            .where('lessonId', isEqualTo: docRef('lessons', lessonId))
             .snapshots(),
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
@@ -78,10 +78,8 @@ class ProgressVideoFunctions {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('progressVideos')
-            .where('lessonId',
-                isEqualTo: FirebaseFirestore.instance.doc('/lessons/$lessonId'))
-            .where('userId',
-                isEqualTo: FirebaseFirestore.instance.doc('/users/${user.id}'))
+            .where('lessonId', isEqualTo: docRef('lessons', lessonId))
+            .where('userId', isEqualTo: docRef('users', user.id!))
             .snapshots(),
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
@@ -104,8 +102,7 @@ class ProgressVideoFunctions {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('progressVideos')
-            .where('lessonId',
-                isEqualTo: FirebaseFirestore.instance.doc('/lessons/$lessonId'))
+            .where('lessonId', isEqualTo: docRef('lessons', lessonId))
             .where('isProfilePrivate', isNotEqualTo: true)
             .snapshots(),
         builder: (BuildContext context,

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 class CoursePlan {
   String? id;
@@ -36,8 +37,7 @@ class CoursePlan {
     'created': created ?? FieldValue.serverTimestamp(),
   };
 
-  DocumentReference get docRef =>
-      FirebaseFirestore.instance.doc('/coursePlans/$id');
+  DocumentReference get docRef => docRef('coursePlans', id!);
 
   static CollectionReference<Map<String, dynamic>> get collection =>
       FirebaseFirestore.instance.collection('coursePlans');

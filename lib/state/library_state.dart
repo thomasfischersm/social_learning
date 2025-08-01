@@ -67,9 +67,11 @@ class LibraryState extends ChangeNotifier {
         currentUser != null &&
         currentUser.currentCourseId?.id != courseId) {
       () async {
-        FirebaseFirestore.instance.collection('users').doc(currentUser.id).set({
-          'currentCourseId':
-              FirebaseFirestore.instance.doc('/courses/$courseId')
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.id)
+            .set({
+          'currentCourseId': docRef('courses', courseId)
         }, SetOptions(merge: true));
       }();
     }
@@ -215,12 +217,9 @@ class LibraryState extends ChangeNotifier {
         _lessonListListener = null;
       }
 
-      String coursePath = '/courses/$courseId';
-
       _lessonListListener = FirebaseFirestore.instance
           .collection('lessons')
-          .where('courseId',
-              isEqualTo: FirebaseFirestore.instance.doc(coursePath))
+          .where('courseId', isEqualTo: docRef('courses', courseId))
           .orderBy('sortOrder', descending: false)
           .snapshots()
           .listen((snapshot) {
@@ -239,12 +238,9 @@ class LibraryState extends ChangeNotifier {
         _levelListListener = null;
       }
 
-      String coursePath = '/courses/$courseId';
-
       _levelListListener = FirebaseFirestore.instance
           .collection('levels')
-          .where('courseId',
-              isEqualTo: FirebaseFirestore.instance.doc(coursePath))
+          .where('courseId', isEqualTo: docRef('courses', courseId))
           .orderBy('sortOrder', descending: false)
           .snapshots()
           .listen((snapshot) {
@@ -358,7 +354,7 @@ class LibraryState extends ChangeNotifier {
   void _setSortOrder(Lesson lesson, int newSortOrder) async {
     print(
         '### Set sort order for ${lesson.title} from ${lesson.sortOrder} to $newSortOrder');
-    await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
+    await docRef('lessons', lesson.id!).set({
       'sortOrder': newSortOrder,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid
     }, SetOptions(merge: true)).onError((error, stackTrace) {
@@ -368,7 +364,7 @@ class LibraryState extends ChangeNotifier {
   }
 
   void _setLevelSortOrder(Level level, int newSortOrder) async {
-    await FirebaseFirestore.instance.doc('/levels/${level.id}').set({
+    await docRef('levels', level.id!).set({
       'sortOrder': newSortOrder,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid
     }, SetOptions(merge: true));
@@ -382,7 +378,7 @@ class LibraryState extends ChangeNotifier {
     }
 
     // Delete lesson.
-    FirebaseFirestore.instance.doc('/lessons/${deletedLesson.id}').delete();
+    docRef('lessons', deletedLesson.id!).delete();
 
     // Update sortOrder for following lessons.
     for (Lesson lesson in lessons) {
@@ -410,7 +406,7 @@ class LibraryState extends ChangeNotifier {
   void createLessonLegacy(
       String courseId, String title, String instructions, bool isLevel) async {
     FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
-      'courseId': FirebaseFirestore.instance.doc('/courses/$courseId'),
+      'courseId': docRef('courses', courseId),
       'sortOrder': _lessons?.length ?? 0,
       'title': title,
       'instructions': instructions,
@@ -437,7 +433,7 @@ class LibraryState extends ChangeNotifier {
             .collection('lessons')
             .add(<String, dynamic>{
       'courseId':
-          FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
+          docRef('courses', selectedCourse?.id ?? ''),
       'levelId': levelId,
       'sortOrder': _findHighestLessonSortOrder() + 1,
       // TODO: If levelId is null, use the highest sort order of the level.
@@ -470,7 +466,7 @@ class LibraryState extends ChangeNotifier {
   @Deprecated('Left over from the first version of the CMS.')
   void updateLessonLegacy(
       String lessonId, String title, String instructions, bool isLevel) {
-    FirebaseFirestore.instance.doc('/lessons/$lessonId').set({
+    docRef('lessons', lessonId).set({
       'title': title,
       'instructions': instructions,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
@@ -484,7 +480,7 @@ class LibraryState extends ChangeNotifier {
       lesson.graduationRequirements!.removeWhere((element) => element.isEmpty);
     }
 
-    await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
+    await docRef('lessons', lesson.id!).set({
       'levelId': lesson.levelId,
       'sortOrder': lesson.sortOrder,
       'title': lesson.title,
@@ -500,7 +496,7 @@ class LibraryState extends ChangeNotifier {
   }
 
   void updateLevel(Level level) async {
-    await FirebaseFirestore.instance.doc('levels/${level.id}').set({
+    await docRef('levels', level.id!).set({
       'title': level.title,
       'description': level.description,
       'sortOrder': level.sortOrder,
@@ -579,7 +575,7 @@ class LibraryState extends ChangeNotifier {
     }
 
     // Delete level.
-    FirebaseFirestore.instance.doc('/levels/${level.id}').delete();
+    docRef('levels', level.id!).delete();
 
     // Update sortOrder for following levels.
     for (Level otherLevel in levels) {
@@ -594,7 +590,7 @@ class LibraryState extends ChangeNotifier {
 
     await FirebaseFirestore.instance.collection('/levels').add({
       'courseId':
-          FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
+          docRef('courses', selectedCourse?.id ?? ''),
       'title': title,
       'description': description,
       'sortOrder': sortOrder + 1,
@@ -630,7 +626,7 @@ class LibraryState extends ChangeNotifier {
 
   void detachLesson(Lesson lesson) async {
     // Remove the level.
-    await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
+    await docRef('lessons', lesson.id!).set({
       'levelId': null,
     }, SetOptions(merge: true));
 
@@ -658,8 +654,8 @@ class LibraryState extends ChangeNotifier {
   }
 
   void attachLesson(Level level, Lesson selectedLesson, int sortOrder) async {
-    await FirebaseFirestore.instance.doc('/lessons/${selectedLesson.id}').set({
-      'levelId': FirebaseFirestore.instance.doc('/levels/${level.id}'),
+    await docRef('lessons', selectedLesson.id!).set({
+      'levelId': docRef('levels', level.id!),
     }, SetOptions(merge: true));
 
     updateSortOrder(selectedLesson, sortOrder);
@@ -741,10 +737,8 @@ class LibraryState extends ChangeNotifier {
 
   addLessonComment(Lesson lesson, String comment) async {
     User user = _applicationState.currentUser!;
-    DocumentReference userId =
-        FirebaseFirestore.instance.doc('/users/${user.id}');
-    DocumentReference lessonId =
-        FirebaseFirestore.instance.doc('/lessons/${lesson.id}');
+    DocumentReference userId = docRef('users', user.id!);
+    DocumentReference lessonId = docRef('lessons', lesson.id!);
 
     await FirebaseFirestore.instance.collection('lessonComments').add({
       'lessonId': lessonId,
@@ -758,9 +752,7 @@ class LibraryState extends ChangeNotifier {
 
   deleteLessonComment(LessonComment comment) async {
     print('Deleting comment: ${comment.id}');
-    await FirebaseFirestore.instance
-        .doc('/lessonComments/${comment.id}')
-        .delete()
+    await docRef('lessonComments', comment.id!).delete()
         .onError((error, stackTrace) {
       print('Failed to delete comment: $error');
       debugPrintStack(stackTrace: stackTrace);

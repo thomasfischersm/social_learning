@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_category_functions.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
@@ -353,7 +354,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage>
       names: categoryNames,
     );
 
-    final courseRef = FirebaseFirestore.instance.collection('courses').doc(_courseId);
+    final courseRef = docRef('courses', _courseId!);
     final items = <TeachableItem>[];
     for (int i = 0; i < newCategories.length; i++) {
       final cat = newCategories[i];

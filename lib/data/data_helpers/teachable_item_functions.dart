@@ -17,9 +17,8 @@ class TeachableItemFunctions {
         TeachableItemInclusionStatus.excluded,
   }) async {
     try {
-      final courseRef = _firestore.collection('courses').doc(courseId);
-      final categoryRef =
-          _firestore.collection('teachableItemCategories').doc(categoryId);
+      final courseRef = docRef('courses', courseId);
+      final categoryRef = docRef('teachableItemCategories', categoryId);
 
       // Determine next sortOrder
       final querySnapshot = await _firestore
@@ -303,8 +302,7 @@ class TeachableItemFunctions {
 
   static Future<List<TeachableItem>> getItemsForCourse(String courseId) async {
     try {
-      final courseRef =
-          FirebaseFirestore.instance.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
 
       final snapshot = await FirebaseFirestore.instance
           .collection(_collectionPath)

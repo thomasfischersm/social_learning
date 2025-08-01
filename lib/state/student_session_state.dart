@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/session_participant.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_pairings_subscription.dart';
@@ -91,7 +92,7 @@ class StudentSessionState extends ChangeNotifier {
     }
 
     print('Checking active session for user ${currentUser.id}');
-    var userIdRef = FirebaseFirestore.instance.doc('/users/${currentUser.id}');
+    var userIdRef = docRef('users', currentUser.id);
     FirebaseFirestore.instance
         .collection('sessionParticipants')
         .where('participantId', isEqualTo: userIdRef)
@@ -120,12 +121,12 @@ class StudentSessionState extends ChangeNotifier {
     _sessionSubscription.resubscribe(() => '/sessions/$sessionId');
 
     _sessionParticipantsSubscription.resubscribe((collectionReference) =>
-        collectionReference.where('sessionId',
-            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
+        collectionReference.where(
+            'sessionId', isEqualTo: docRef('sessions', sessionId)));
 
     _sessionPairingSubscription.resubscribe((collectionReference) =>
-        collectionReference.where('sessionId',
-            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
+        collectionReference.where(
+            'sessionId', isEqualTo: docRef('sessions', sessionId)));
 
     // TODO: Check if organizer and re-direct.
     // TODO: Add self as participant if needed.

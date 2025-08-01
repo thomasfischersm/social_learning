@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
@@ -130,7 +131,7 @@ class ApplicationState extends ChangeNotifier {
   enrollInPrivateCourse(Course course) async {
     var currentUser = this.currentUser!;
 
-    await FirebaseFirestore.instance.doc('/users/${currentUser.id}').update({
+    await docRef('users', currentUser.id).update({
       'enrolledCourseIds': FieldValue.arrayUnion([course.docRef])
     });
 
@@ -144,7 +145,7 @@ class ApplicationState extends ChangeNotifier {
   unenrollCourse(Course course) async {
     var currentUser = this.currentUser!;
 
-    FirebaseFirestore.instance.doc('/users/${currentUser.id}').update({
+    docRef('users', currentUser.id).update({
       'enrolledCourseIds': FieldValue.arrayRemove([course.docRef])
     });
 
@@ -193,7 +194,7 @@ class ApplicationState extends ChangeNotifier {
 
   void setIsProfilePrivate(
       bool isProfilePrivate, ApplicationState applicationState) {
-    FirebaseFirestore.instance.doc('/users/${currentUser?.id}').update({
+    docRef('users', currentUser!.id).update({
       'isProfilePrivate': isProfilePrivate,
     });
     currentUser!.isProfilePrivate = isProfilePrivate;
@@ -218,9 +219,7 @@ class ApplicationState extends ChangeNotifier {
   void _setProgressVideosPrivate(bool isProfilePrivate) {
     FirebaseFirestore.instance
         .collection('progressVideos')
-        .where('userId',
-            isEqualTo:
-                FirebaseFirestore.instance.doc('/users/${currentUser?.id}'))
+        .where('userId', isEqualTo: docRef('users', currentUser!.id))
         .get()
         .then((snapshot) {
       for (var doc in snapshot.docs) {

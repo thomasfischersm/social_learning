@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 class TeachableItemTagFunctions {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -12,7 +13,7 @@ class TeachableItemTagFunctions {
     required String color,
   }) async {
     try {
-      final courseRef = _firestore.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
 
       final docRef = await _firestore.collection(_collectionPath).add({
         'courseId': courseRef,
@@ -79,7 +80,7 @@ class TeachableItemTagFunctions {
 
   static Future<List<TeachableItemTag>> getTagsForCourse(String courseId) async {
     try {
-      final courseRef = _firestore.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
 
       final querySnapshot = await _firestore
           .collection(_collectionPath)

@@ -4,6 +4,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_pairing.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/globals.dart';
@@ -142,7 +143,7 @@ class OrganizerSessionState extends ChangeNotifier {
         .instance
         .collection('sessions')
         .add(<String, dynamic>{
-      'courseId': FirebaseFirestore.instance.doc('/courses/${course.id}'),
+      'courseId': docRef('courses', course.id!),
       'name': sessionName,
       'organizerUid': organizer.uid,
       'organizerName': organizer.displayName,
@@ -158,10 +159,10 @@ class OrganizerSessionState extends ChangeNotifier {
         await FirebaseFirestore.instance
             .collection('sessionParticipants')
             .add(<String, dynamic>{
-      'sessionId': FirebaseFirestore.instance.doc('/sessions/$sessionId'),
-      'participantId': FirebaseFirestore.instance.doc('/users/${organizer.id}'),
+      'sessionId': docRef('sessions', sessionId),
+      'participantId': docRef('users', organizer.id!),
       'participantUid': organizer.uid,
-      'courseId': FirebaseFirestore.instance.doc('/courses/${course.id}'),
+      'courseId': docRef('courses', course.id!),
       'isInstructor': organizer.isAdmin,
       'isActive': true,
       'teachCount': 0,
@@ -183,12 +184,12 @@ class OrganizerSessionState extends ChangeNotifier {
     _sessionSubscription.resubscribe(() => '/sessions/$sessionId');
 
     _sessionParticipantsSubscription.resubscribe((collectionReference) =>
-        collectionReference.where('sessionId',
-            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
+        collectionReference.where(
+            'sessionId', isEqualTo: docRef('sessions', sessionId)));
 
     _sessionPairingSubscription.resubscribe((collectionReference) =>
-        collectionReference.where('sessionId',
-            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
+        collectionReference.where(
+            'sessionId', isEqualTo: docRef('sessions', sessionId)));
   }
 
   void saveNextRound(PairedSession pairedSession) {
@@ -203,15 +204,13 @@ class OrganizerSessionState extends ChangeNotifier {
       FirebaseFirestore.instance
           .collection('sessionPairings')
           .add(<String, dynamic>{
-        'sessionId':
-            FirebaseFirestore.instance.doc('/sessions/${currentSession?.id}'),
+        'sessionId': docRef('sessions', currentSession!.id!),
         'roundNumber': currentRound,
-        'mentorId': FirebaseFirestore.instance
-            .doc('/users/${pair.teachingParticipant.participantId.id}'),
-        'menteeId': FirebaseFirestore.instance
-            .doc('/users/${pair.learningParticipant.participantId.id}'),
-        'lessonId':
-            FirebaseFirestore.instance.doc('/lessons/${pair.lesson!.id}'),
+        'mentorId':
+            docRef('users', pair.teachingParticipant.participantId.id),
+        'menteeId':
+            docRef('users', pair.learningParticipant.participantId.id),
+        'lessonId': docRef('lessons', pair.lesson!.id!),
       }).catchError((error) {
         print('Failed to save session pairing: $error');
       });
@@ -247,9 +246,7 @@ class OrganizerSessionState extends ChangeNotifier {
 
   void endSession() {
     // Set the session to inactive.
-    FirebaseFirestore.instance
-        .doc('/sessions/${currentSession?.id}')
-        .update({'isActive': false});
+    docRef('sessions', currentSession!.id!).update({'isActive': false});
 
     _sessionSubscription.cancel();
     _sessionParticipantsSubscription.cancel();
@@ -301,8 +298,7 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void removeMentor(SessionPairing sessionPairing) {
-    FirebaseFirestore.instance
-        .doc('/sessionPairings/${sessionPairing.id}')
+    docRef('sessionPairings', sessionPairing.id!)
         .update({
       'mentorId': null,
     }).then((value) {
@@ -313,8 +309,7 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void removeMentee(SessionPairing sessionPairing) {
-    FirebaseFirestore.instance
-        .doc('/sessionPairings/${sessionPairing.id}')
+    docRef('sessionPairings', sessionPairing.id!)
         .update({
       'menteeId': null,
     }).then((value) {
@@ -325,10 +320,9 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void addMentor(User selectedUser, SessionPairing sessionPairing) {
-    FirebaseFirestore.instance
-        .doc('/sessionPairings/${sessionPairing.id}')
+    docRef('sessionPairings', sessionPairing.id!)
         .update({
-      'mentorId': FirebaseFirestore.instance.doc('/users/${selectedUser.id}'),
+      'mentorId': docRef('users', selectedUser.id!),
     }).then((value) {
       print('Added mentor to session pairing.');
     }).catchError((error) {
@@ -337,10 +331,9 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void addMentee(User selectedUser, SessionPairing sessionPairing) {
-    FirebaseFirestore.instance
-        .doc('/sessionPairings/${sessionPairing.id}')
+    docRef('sessionPairings', sessionPairing.id!)
         .update({
-      'menteeId': FirebaseFirestore.instance.doc('/users/${selectedUser.id}'),
+      'menteeId': docRef('users', selectedUser.id!),
     }).then((value) {
       print('Added mentee to session pairing.');
     }).catchError((error) {
@@ -353,8 +346,7 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void removeLesson(SessionPairing sessionPairing) {
-    FirebaseFirestore.instance
-        .doc('/sessionPairings/${sessionPairing.id}')
+    docRef('sessionPairings', sessionPairing.id!)
         .update({
       'lessonId': null,
     }).then((value) {
@@ -365,10 +357,9 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void addLesson(Lesson lesson, SessionPairing sessionPairing) {
-    FirebaseFirestore.instance
-        .doc('/sessionPairings/${sessionPairing.id}')
+    docRef('sessionPairings', sessionPairing.id!)
         .update({
-      'lessonId': FirebaseFirestore.instance.doc('/lessons/${lesson.id}'),
+      'lessonId': docRef('lessons', lesson.id!),
     }).then((value) {
       print('Added lesson to session pairing.');
     }).catchError((error) {

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
 import 'package:social_learning/data/teachable_item_category.dart'; // For deleting items within a category
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 class TeachableItemCategoryFunctions {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -13,7 +14,7 @@ class TeachableItemCategoryFunctions {
   }) async {
     try {
       print('Adding category: $name to course: $courseId');
-      final courseRef = _firestore.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
 
       // Get highest sortOrder for the course
       QuerySnapshot<Map<String, dynamic>>? querySnapshot;
@@ -63,7 +64,7 @@ class TeachableItemCategoryFunctions {
     required String courseId,
     required List<String> names,
   }) async {
-    final courseRef = _firestore.collection('courses').doc(courseId);
+    final courseRef = docRef('courses', courseId);
     final batch = _firestore.batch();
     final collection = _firestore.collection(_collectionPath);
     final docRefs = <DocumentReference>[];
@@ -189,7 +190,7 @@ class TeachableItemCategoryFunctions {
 
   static Future<List<TeachableItemCategory>> getCategoriesForCourse(String courseId) async {
     try {
-      final courseRef = FirebaseFirestore.instance.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
 
       final snapshot = await FirebaseFirestore.instance
           .collection(_collectionPath)

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 class Course {
   String? id;
@@ -27,6 +28,5 @@ class Course {
         isPrivate = doc.data()?['isPrivate'] as bool? ?? false,
         invitationCode = doc.data()?['invitationCode'] as String?;
 
-  DocumentReference get docRef =>
-      FirebaseFirestore.instance.doc('/courses/$id');
+  DocumentReference get docRef => docRef('courses', id!);
 }

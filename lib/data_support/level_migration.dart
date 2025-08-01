@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 /// Migrates the db version where levels were a type of lesson to where it's
 /// a high level object.
@@ -98,7 +99,7 @@ class LevelMigration {
           print('Updating lesson to refer to level.');
           var lessonDocRef = db.collection('lessons').doc(lesson.id);
           transaction.update(lessonDocRef, {
-            'levelId': FirebaseFirestore.instance.doc('/levels/$lastLevelId')
+            'levelId': docRef('levels', lastLevelId)
           });
         }
         // }

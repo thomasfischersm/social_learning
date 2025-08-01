@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/online_session.dart';
 import 'package:social_learning/data/online_session_review.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 class OnlineSessionReviewFunctions {
   static CollectionReference<Map<String, dynamic>> get _reviewCollection =>
@@ -9,8 +10,7 @@ class OnlineSessionReviewFunctions {
   static Future<void> createPendingReviewsForSession(
       OnlineSession session) async {
     // Build DocumentReferences for the session and lesson.
-    DocumentReference sessionRef =
-        FirebaseFirestore.instance.collection('onlineSessions').doc(session.id);
+    DocumentReference sessionRef = docRef('onlineSessions', session.id);
     DocumentReference? lessonRef = session.lessonId;
     if (lessonRef == null) {
       print(

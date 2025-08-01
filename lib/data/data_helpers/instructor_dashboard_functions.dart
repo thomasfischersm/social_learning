@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 /// Collection of helper functions for the Instructor Dashboard.
 class InstructorDashboardFunctions {
@@ -12,7 +13,7 @@ class InstructorDashboardFunctions {
   /// Returns null on error or if the count is unavailable.
   static Future<int?> getStudentCount(String courseId) async {
     try {
-      final courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
+      final courseRef = docRef('courses', courseId);
       final agg = await FirebaseFirestore.instance
           .collection('users')
           .where('enrolledCourseIds', arrayContains: courseRef)
@@ -30,7 +31,7 @@ class InstructorDashboardFunctions {
   /// Returns null on error or if the count is unavailable.
   static Future<int?> getLessonCount(String courseId) async {
     try {
-      final courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
+      final courseRef = docRef('courses', courseId);
       final agg = await FirebaseFirestore.instance
           .collection('lessons')
           .where('courseId', isEqualTo: courseRef)
@@ -89,8 +90,7 @@ class InstructorDashboardFunctions {
       return null;
     }
 
-    final userSnap =
-        await FirebaseFirestore.instance.collection('users').doc(topId).get();
+    final userSnap = await docRef('users', topId).get();
 
     print('Got most advanced student: ${userSnap.data()}');
     return userSnap.exists ? User.fromSnapshot(userSnap) : null;
@@ -111,7 +111,7 @@ class InstructorDashboardFunctions {
     StudentSortOption sort = StudentSortOption.alphabetical,
     String? nameFilter,
   }) async {
-    final courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
+    final courseRef = docRef('courses', courseId);
     Query<Map<String, dynamic>> query = FirebaseFirestore.instance
         .collection('users')
         .where('enrolledCourseIds', arrayContains: courseRef);

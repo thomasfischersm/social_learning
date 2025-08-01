@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/course_profile.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 class CourseProfileFunctions {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -7,7 +8,7 @@ class CourseProfileFunctions {
 
   static Future<CourseProfile?> getCourseProfile(String courseId) async {
     try {
-      final courseRef = _firestore.collection('courses').doc(courseId);
+      final courseRef = docRef('courses', courseId);
       final querySnapshot = await _firestore
           .collection(_collectionPath)
           .where('courseId', isEqualTo: courseRef)

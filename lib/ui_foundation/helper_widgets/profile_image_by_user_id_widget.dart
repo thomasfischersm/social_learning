@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/belt_color_functions.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 
@@ -81,7 +82,7 @@ class ProfileImageByUserIdWidgetState
   }
 
   Future<void> init() async {
-    var userRef = FirebaseFirestore.instance.doc('/users/${widget.userId.id}');
+    var userRef = docRef('users', widget.userId.id);
     // TODO: Add caching!
     DocumentSnapshot<Map<String, dynamic>> userSnapshot = await userRef.get();
 
