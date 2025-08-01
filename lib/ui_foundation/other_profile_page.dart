@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -55,8 +56,7 @@ class OtherProfileState extends State<OtherProfilePage> {
 
     String? otherUserId = _otherUserId;
     if (otherUserId != null) {
-      FirebaseFirestore.instance
-          .doc('users/$_otherUserId')
+      docRef('users', _otherUserId!)
           .get()
           .then((DocumentSnapshot<Map<String, dynamic>> snapshot) {
         if (snapshot.exists) {

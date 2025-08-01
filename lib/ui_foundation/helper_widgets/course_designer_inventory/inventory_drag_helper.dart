@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_category_functions.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
 import 'package:social_learning/data/teachable_item.dart';
@@ -95,25 +96,19 @@ class InventoryDragHelper {
 
       newIndexInCategory = itemsInCategory.indexWhere((i) => i.id == target.item.id);
     } else if (target is AddNewItemEntry) {
-      newCategoryRef = FirebaseFirestore.instance
-          .collection('teachableItemCategories')
-          .doc(target.category.id);
+      newCategoryRef = docRef('teachableItemCategories', target.category.id);
 
       final itemsInCategory = context.getItemsForCategory(target.category.id!);
       newIndexInCategory = itemsInCategory.length;
     } else if (target is InventoryCategoryEntry) {
-      newCategoryRef = FirebaseFirestore.instance
-          .collection('teachableItemCategories')
-          .doc(target.category.id);
+      newCategoryRef = docRef('teachableItemCategories', target.category.id);
       newIndexInCategory = 0;
     } else if (target is AddNewCategoryEntry) {
       final lastCategory = (context.getCategories()
         ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder)))
           .last;
 
-      newCategoryRef = FirebaseFirestore.instance
-          .collection('teachableItemCategories')
-          .doc(lastCategory.id);
+      newCategoryRef = docRef('teachableItemCategories', lastCategory.id);
 
       final itemsInCategory = context.getItemsForCategory(lastCategory.id!);
       newIndexInCategory = itemsInCategory.length;

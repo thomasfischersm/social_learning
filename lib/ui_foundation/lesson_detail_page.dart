@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -450,8 +451,7 @@ class LessonDetailState extends State<LessonDetailPage> {
 
   Widget _createCommentsView(Lesson lesson, BuildContext context,
       LibraryState libraryState, ApplicationState applicationState) {
-    DocumentReference lessonId =
-        FirebaseFirestore.instance.doc('/lessons/${lesson.id}');
+    DocumentReference lessonId = docRef('lessons', lesson.id);
     print('Querying for comments for lesson: $lessonId');
     Widget commentColumn = StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
@@ -784,8 +784,7 @@ class LessonDetailState extends State<LessonDetailPage> {
 
   _createConnectView(BuildContext context, Lesson lesson,
       ApplicationState applicationState, LibraryState libraryState) {
-    DocumentReference lessonId =
-        FirebaseFirestore.instance.doc('/lessons/${lesson.id}');
+    DocumentReference lessonId = docRef('lessons', lesson.id);
     User? currentUser = applicationState.currentUser;
     GeoPoint? currentLocation = currentUser?.location;
 

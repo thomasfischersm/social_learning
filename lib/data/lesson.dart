@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 
 class Lesson {
   String? id;
@@ -76,9 +77,8 @@ class Lesson {
 
   Lesson.fromJson(Map<String, dynamic> json, String fullLevelId)
       : id = json['id'],
-        courseId = FirebaseFirestore.instance.doc(json['courseId']),
-        levelId =
-            FirebaseFirestore.instance.doc(json['levelId'] ?? fullLevelId),
+        courseId = docRef('courses', json['courseId']),
+        levelId = docRef('levels', json['levelId'] ?? fullLevelId),
         sortOrder = -1,
         title = json['title'],
         synopsis = json['synopsis'],

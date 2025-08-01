@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
@@ -52,8 +53,7 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
     String? otherUserId = _otherUserId;
     if (otherUserId != null) {
       // Load the other user info.
-      FirebaseFirestore.instance
-          .doc('users/$otherUserId')
+      docRef('users', otherUserId)
           .get()
           .then((DocumentSnapshot<Map<String, dynamic>> snapshot) {
         if (snapshot.exists) {
