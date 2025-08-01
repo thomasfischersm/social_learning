@@ -4,6 +4,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
 class AddNewCategoryEntry extends InventoryEntry {
   final Future<void> Function(String name) onAdd;
@@ -29,21 +30,10 @@ class AddNewCategoryEntry extends InventoryEntry {
             child: TextField(
               controller: controller,
               focusNode: focusNode,
-              decoration: InputDecoration(
+              decoration: CustomUiConstants.getFilledInputDecoration(
+                context,
                 labelText: 'Add new category...',
-                filled: true,
-                fillColor: Colors.grey[100],
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.grey.shade400),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(
-                      color: Theme.of(context).colorScheme.primary, width: 2),
-                ),
+                enabledColor: Colors.grey.shade400,
               ),
               onSubmitted: (text) async {
                 final trimmed = text.trim();

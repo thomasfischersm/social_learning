@@ -10,6 +10,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 
 /// Roster widget that loads students lazily, allows sorting & filtering.
@@ -130,15 +131,13 @@ class InstructorDashboardRosterWidgetState
               // Search field
               Expanded(
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: CustomUiConstants.getFilledInputDecoration(
+                    context,
                     hintText: 'Search students…',
+                    enabledColor: Colors.grey.shade300,
+                  ).copyWith(
                     prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
                     isDense: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   onChanged: (text) {
                     final f = text.trim();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
 class ValueInputDialog extends StatelessWidget {
   final String title;
@@ -33,13 +34,10 @@ class ValueInputDialog extends StatelessWidget {
                 ),
               TextField(
                 controller: controller,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
+                decoration: CustomUiConstants.getFilledInputDecoration(
+                  context,
                   hintText: hintText,
-                  errorText: errorMessage,
-                ),
+                ).copyWith(errorText: errorMessage),
                 onChanged: (value) {
                   // Validate and update error message dynamically
                   errorMessage = validate?.call(value);

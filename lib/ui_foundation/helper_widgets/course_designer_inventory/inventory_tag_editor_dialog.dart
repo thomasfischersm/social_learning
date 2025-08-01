@@ -4,6 +4,7 @@ import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.d
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/color_picker_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
 class InventoryTagEditorDialog extends StatefulWidget {
   final List<TeachableItemTag> initialTags;
@@ -162,25 +163,11 @@ class _InventoryTagEditorDialogState extends State<InventoryTagEditorDialog> {
         Expanded(
           child: TextField(
             controller: _newTagController,
-            decoration: InputDecoration(
+            decoration: CustomUiConstants.getFilledInputDecoration(
+              context,
               labelText: 'New tag',
-              isDense: true,
-              filled: true,
-              fillColor: Colors.grey[100],
-              contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(6),
-                borderSide: BorderSide(color: Colors.grey.shade300),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(6),
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 2,
-                ),
-              ),
-            ),
+              enabledColor: Colors.grey.shade300,
+            ).copyWith(isDense: true),
             onSubmitted: (_) => _addNewTag(),
           ),
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/learning_objectives_context.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
 class AddNewObjectiveEntry extends StatefulWidget {
   final LearningObjectivesContext objectivesContext;
@@ -49,29 +50,14 @@ class _AddNewObjectiveEntryState extends State<AddNewObjectiveEntry> {
         child: TextFormField(
           controller: _controller,
           focusNode: _focusNode,
-          decoration: InputDecoration(
+          decoration: CustomUiConstants.getFilledInputDecoration(
+            context,
             labelText: 'Add new objective…',
-            filled: true,
-            fillColor: Colors.grey[100],
-            contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.primary, width: 2),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.red),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.red, width: 2),
-            ),
+            enabledColor: Colors.grey.shade300,
+          ).copyWith(
+            errorBorder: CustomUiConstants.getInputBorder(color: Colors.red),
+            focusedErrorBorder:
+                CustomUiConstants.getInputBorder(color: Colors.red, width: 2),
           ),
           validator: (value) {
             final trimmed = value?.trim() ?? '';
