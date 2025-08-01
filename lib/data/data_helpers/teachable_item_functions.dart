@@ -63,7 +63,7 @@ class TeachableItemFunctions {
   static Future<List<TeachableItem>> bulkCreateItems(List<TeachableItem> items) async {
     final batch = _firestore.batch();
     final collection = _firestore.collection(_collectionPath);
-    final docRefs = <DocumentReference>[];
+    final docRefs = <DocumentReference<Map<String, dynamic>>>[];
     for (final item in items) {
       final docRef = collection.doc();
       docRefs.add(docRef);
