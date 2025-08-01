@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
-import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
@@ -89,34 +89,26 @@ class CourseCreateState extends State<CourseCreatePage> {
                                 padding: EdgeInsets.all(8),
                                 child: Column(children: [
                                   TextField(
-                                      decoration: InputDecoration(
+                                      decoration:
+                                          CustomUiConstants.getFilledInputDecoration(
+                                        context,
                                         labelText: 'Course Name',
-                                        errorText: courseNameError,
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                      ),
+                                      ).copyWith(errorText: courseNameError),
                                       controller: courseNameController),
                                   SizedBox(height: 8),
                                   TextField(
-                                      decoration: InputDecoration(
+                                      decoration:
+                                          CustomUiConstants.getFilledInputDecoration(
+                                        context,
                                         labelText: 'Invitation Code',
-                                        errorText: invitationCodeError,
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                      ),
+                                      ).copyWith(errorText: invitationCodeError),
                                       controller: invitationCodeController),
                                   SizedBox(height: 8),
                                   TextField(
-                                    decoration: InputDecoration(
+                                    decoration:
+                                        CustomUiConstants.getFilledInputDecoration(
+                                      context,
                                       labelText: 'Description',
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                      ),
                                     ),
                                     controller: descriptionController,
                                     minLines: 5,
