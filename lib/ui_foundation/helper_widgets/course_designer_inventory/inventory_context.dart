@@ -4,6 +4,7 @@ import 'package:social_learning/data/teachable_item_tag.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/course_profile.dart';
+import 'package:social_learning/cloud_functions/inventory_generation_response.dart';
 
 abstract class InventoryContext {
   /// All categories in the course (ordered by sortOrder)
@@ -26,4 +27,6 @@ abstract class InventoryContext {
 
   /// Optional course profile with additional metadata
   CourseProfile? getCourseProfile();
+
+  Future<void> saveGeneratedInventory(List<GeneratedCategory> generated);
 }

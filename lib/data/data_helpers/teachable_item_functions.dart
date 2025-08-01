@@ -60,6 +60,34 @@ class TeachableItemFunctions {
       return null;
     }
   }
+  static Future<List<TeachableItem>> bulkCreateItems(List<TeachableItem> items) async {
+    final batch = _firestore.batch();
+    final collection = _firestore.collection(_collectionPath);
+    final docRefs = <DocumentReference>[];
+    for (final item in items) {
+      final docRef = collection.doc();
+      docRefs.add(docRef);
+      batch.set(docRef, {
+        'courseId': item.courseId,
+        'categoryId': item.categoryId,
+        'name': item.name,
+        'notes': item.notes,
+        'sortOrder': item.sortOrder,
+        'tagIds': item.tagIds ?? [],
+        'durationInMinutes': item.durationInMinutes,
+        'requiredPrerequisiteIds': item.requiredPrerequisiteIds ?? [],
+        'recommendedPrerequisiteIds': item.recommendedPrerequisiteIds ?? [],
+        'lessonRefs': item.lessonRefs ?? [],
+        'inclusionStatus': item.inclusionStatus.toInt(),
+        'createdAt': FieldValue.serverTimestamp(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+    }
+    await batch.commit();
+    final snapshots = await Future.wait(docRefs.map((d) => d.get()));
+    return snapshots.where((s) => s.exists).map((s) => TeachableItem.fromSnapshot(s)).toList();
+  }
+
 
   static Future<void> updateItem({
     required String itemId,
