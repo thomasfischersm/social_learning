@@ -51,8 +51,8 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
     }
   }
 
-  Future<void> _loadContext(String courseId, Course? course) async {
-    final ctx = await InventoryDataContext.create(
+  void _loadContext(String courseId, Course? course) {
+    final ctx = InventoryDataContext.create(
       courseId: courseId,
       course: course,
       refresh: () => setState(() {}),
@@ -108,7 +108,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
                         oldIndex: oldIndex,
                         newIndex: newIndex,
                       );
-                      await dataContext.loadInventoryData();
+                      dataContext.loadInventoryData();
                     },
                     itemBuilder: (context, index) {
                       final entry = dataContext.inventoryEntries[index];

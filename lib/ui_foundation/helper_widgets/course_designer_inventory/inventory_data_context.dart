@@ -30,6 +30,8 @@ class InventoryDataContext implements InventoryContext {
   });
 
   bool isLoading = true;
+  bool _processingQueue = false;
+  bool _loadQueued = false;
 
   List<TeachableItemCategory> _categories = [];
   List<TeachableItem> _items = [];
@@ -38,17 +40,17 @@ class InventoryDataContext implements InventoryContext {
 
   List<InventoryEntry> inventoryEntries = [];
 
-  static Future<InventoryDataContext> create({
+  static InventoryDataContext create({
     required String courseId,
     required Course? course,
     required void Function() refresh,
-  }) async {
+  }) {
     final ctx = InventoryDataContext._(
       courseId: courseId,
       course: course,
       refresh: refresh,
     );
-    await ctx.loadInventoryData();
+    ctx.loadInventoryData();
     return ctx;
   }
 
@@ -106,7 +108,25 @@ class InventoryDataContext implements InventoryContext {
     await TeachableItemFunctions.bulkCreateItems(items);
   }
 
-  Future<void> loadInventoryData() async {
+  void loadInventoryData() {
+    _loadQueued = true;
+    if (_processingQueue) return;
+    _processingQueue = true;
+    _processQueue();
+  }
+
+  Future<void> _processQueue() async {
+    while (_loadQueued) {
+      _loadQueued = false;
+      await _loadInventoryDataInternal();
+    }
+    _processingQueue = false;
+    if (_loadQueued) {
+      loadInventoryData();
+    }
+  }
+
+  Future<void> _loadInventoryDataInternal() async {
     isLoading = true;
     refresh();
 
@@ -281,6 +301,6 @@ class InventoryDataContext implements InventoryContext {
       print('Failed to generate inventory: $e\n$stack');
     }
 
-    await loadInventoryData();
+    loadInventoryData();
   }
 }
