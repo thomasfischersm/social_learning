@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/flutter_percent_indicator.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_context.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 import '../course_designer/course_designer_card.dart';
 
@@ -16,9 +17,9 @@ class SessionPlanOverviewCard extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Plan your session minute-by-minute with lessons and other classroom activities (e.g. opening circle, breaks, etc.)",
-            style: TextStyle(fontSize: 14),
+            style: CustomTextStyles.getBody(context),
           ),
           const SizedBox(height: 16),
           Wrap(
@@ -44,7 +45,7 @@ class SessionPlanOverviewCard extends StatelessWidget {
                   Text(
                     objective.name ?? "Untitled",
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 12),
+                    style: CustomTextStyles.getBodyNote(context),
                   ),
                 ],
               );

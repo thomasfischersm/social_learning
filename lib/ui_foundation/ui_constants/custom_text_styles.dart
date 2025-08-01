@@ -24,6 +24,12 @@ class CustomTextStyles {
   static TextStyle? getBodySmall(BuildContext context) =>
       Theme.of(context).textTheme.bodySmall;
 
+  static TextStyle? getBodyTiny(BuildContext context) =>
+      Theme.of(context).textTheme.bodySmall?.copyWith(
+        fontSize: 11,
+        height: 1,
+      );
+
   static TextStyle? getPartiallyLearned(BuildContext context) =>
       getBody(context)?.copyWith(color: partiallyLearnedColor);
 

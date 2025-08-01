@@ -29,6 +29,7 @@ class _AddActivityRowState extends State<AddActivityRow> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DecomposedCourseDesignerCard.buildColorHighlightedBody(
+          context: context,
           color: _selectedType.color,
           leadingText: startTimeText,
           child: Row(

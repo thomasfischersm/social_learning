@@ -88,11 +88,10 @@ class _InventoryTagCardState extends State<InventoryTagCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
       child: _localTags.isEmpty
-          ? const Text(
+          ? Text(
         'No tags yet. Create tags like "easy", "hard", or "optional" to categorize your items.',
-        style: TextStyle(
+        style: CustomTextStyles.getBodyNote(context)?.copyWith(
           color: Colors.grey,
-          fontSize: 13,
           fontStyle: FontStyle.italic,
         ),
       )

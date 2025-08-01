@@ -3,6 +3,7 @@ import 'package:social_learning/data/session_plan_activity.dart';
 import 'package:social_learning/data/session_play_activity_type.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_context.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class NonLessonActivityRow extends StatelessWidget {
   final SessionPlanActivity activity;
@@ -26,6 +27,7 @@ class NonLessonActivityRow extends StatelessWidget {
     final isOverride = overrideDuration != null;
 
     return DecomposedCourseDesignerCard.buildColorHighlightedBody(
+      context: context,
       color: color,
       leadingText: startTime,
       child: Padding(
@@ -35,8 +37,7 @@ class NonLessonActivityRow extends StatelessWidget {
             Expanded(
               child: Text(
                 '${activity.activityType.humanLabel}: $title',
-                style: TextStyle(
-                  fontSize: 14,
+                style: CustomTextStyles.getBody(context)?.copyWith(
                   fontStyle: title == '(enter name)' ? FontStyle.italic : FontStyle.normal,
                   color: title == '(enter name)' ? Colors.grey : Colors.black,
                 ),
@@ -89,8 +90,7 @@ class NonLessonActivityRow extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Text(
                   isOverride ? '$showDuration min' : '($defaultDuration min)',
-                  style: TextStyle(
-                    fontSize: 13,
+                  style: CustomTextStyles.getBodyNote(context)?.copyWith(
                     color: isOverride ? Colors.black : Colors.grey,
                     fontStyle: isOverride ? FontStyle.normal : FontStyle.italic,
                   ),

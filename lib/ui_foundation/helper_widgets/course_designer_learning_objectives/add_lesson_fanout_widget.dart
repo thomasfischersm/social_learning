@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/teachable_item.dart';
@@ -64,8 +65,7 @@ class AddLessonFanoutWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Text(
               level.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
+              style: CustomTextStyles.getBodyEmphasized(context)?.copyWith(
                 color: Colors.grey,
               ),
             ),
@@ -96,8 +96,7 @@ class AddLessonFanoutWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Text(
               'Other lessons',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
+              style: CustomTextStyles.getBodyEmphasized(context)?.copyWith(
                 color: Colors.grey,
               ),
             ),

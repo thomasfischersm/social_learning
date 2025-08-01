@@ -4,6 +4,7 @@ import '../../../data/session_plan_block.dart';
 import '../course_designer/decomposed_course_designer_card.dart';
 import '../dialog_utils.dart';
 import '../value_input_dialog.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class SessionBlockHeaderRow extends StatelessWidget {
   final SessionPlanBlock block;
@@ -55,8 +56,7 @@ class SessionBlockHeaderRow extends StatelessWidget {
           padding: const EdgeInsets.only(right: 8.0), // space before real icons
           child: Text(
             durationStr,
-            style: const TextStyle(
-              fontWeight: FontWeight.normal,
+            style: CustomTextStyles.getBodyNote(context)?.copyWith(
               color: Colors.grey,
             ),
           ),

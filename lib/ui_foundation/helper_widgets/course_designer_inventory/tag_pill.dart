@@ -1,4 +1,5 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
   class TagPill extends StatelessWidget {
     final String label;
@@ -22,11 +23,9 @@
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 11,
-            height: 1,
-            color: textColor,
+          style: CustomTextStyles.getBodyTiny(context)?.copyWith(
             fontWeight: FontWeight.w500,
+            color: textColor,
           ),
         ),
       );

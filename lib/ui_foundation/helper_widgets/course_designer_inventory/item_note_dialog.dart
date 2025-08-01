@@ -4,6 +4,7 @@ import 'package:social_learning/data/data_helpers/teachable_item_functions.dart'
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class ItemNoteDialog extends StatefulWidget {
   final TeachableItem item;
@@ -182,10 +183,7 @@ class _ItemNoteDialogState extends State<ItemNoteDialog> {
         spans.add(
           TextSpan(
             text: url,
-            style: const TextStyle(
-              color: Colors.blue,
-              decoration: TextDecoration.underline,
-            ),
+            style: CustomTextStyles.getLink(context),
             recognizer: TapGestureRecognizer()
               ..onTap = () => launchUrlString(url),
           ),

@@ -4,6 +4,7 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_plan_activity.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_context.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class SelectLessonForActivityFanoutWidget {
   static void show({
@@ -47,8 +48,7 @@ class SelectLessonForActivityFanoutWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Text(
               level.title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
+              style: CustomTextStyles.getBodyEmphasized(context)?.copyWith(
                 color: Colors.grey,
               ),
             ),
@@ -84,8 +84,7 @@ class SelectLessonForActivityFanoutWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Text(
               'Other lessons',
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
+              style: CustomTextStyles.getBodyEmphasized(context)?.copyWith(
                 color: Colors.grey,
               ),
             ),

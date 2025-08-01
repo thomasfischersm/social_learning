@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/add_prerequisite_fanout_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
@@ -102,7 +103,8 @@ class PrerequisiteItemEntry extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             item.name ?? '(Untitled)',
-            style: isRoot ? const TextStyle(fontWeight: FontWeight.bold) : null,
+            style:
+                isRoot ? CustomTextStyles.getBodyEmphasized(context) : null,
           ),
           ...tagWidgets,
           const SizedBox(width: 4),

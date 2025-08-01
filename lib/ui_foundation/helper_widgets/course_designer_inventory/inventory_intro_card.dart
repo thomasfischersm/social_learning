@@ -73,21 +73,24 @@ class _InventoryIntroCardState extends State<InventoryIntroCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Brainstorm all the small, teachable pieces of your subject. "
                 "You're not creating lessons yet — just listing the core concepts and skills.\n\n"
                 "🎯 Example (chess):\n"
                 "• Movement → Bishop, Pawn, Knight\n"
                 "• Tactics → Fork, Pin\n"
                 "• Rules → Castling, En Passant",
-            style: TextStyle(fontSize: 13, color: Colors.black87),
+            style: CustomTextStyles.getBodyNote(context)?.copyWith(color: Colors.black87),
           ),
           const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
               onPressed: _dismissCardBody,
-              child: const Text("Dismiss", style: TextStyle(fontSize: 13)),
+              child: Text(
+                "Dismiss",
+                style: CustomTextStyles.getBodyNote(context),
+              ),
             ),
           )
         ],

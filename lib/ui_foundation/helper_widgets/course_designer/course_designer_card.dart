@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class CourseDesignerCard extends StatefulWidget {
   final String title;
@@ -75,7 +76,7 @@ class _CourseDesignerCardState extends State<CourseDesignerCard> {
       ),
       child: Text(
         widget.title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: CustomTextStyles.getBodyEmphasized(context),
       ),
     );
   }

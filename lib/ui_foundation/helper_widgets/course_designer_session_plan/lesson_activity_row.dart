@@ -6,6 +6,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_ses
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_context.dart';
 import '../../../data/session_play_activity_type.dart';
 import '../course_designer/decomposed_course_designer_card.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class LessonActivityRow extends StatelessWidget {
   final SessionPlanActivity activity;
@@ -33,13 +34,11 @@ class LessonActivityRow extends StatelessWidget {
     }
   }
 
-  TextStyle _durationStyle() {
-    return TextStyle(
-      fontSize: 13,
+  TextStyle? _durationStyle(BuildContext context) {
+    return CustomTextStyles.getBodyNote(context)?.copyWith(
       color: activity.overrideDuration != null ? Colors.black : Colors.grey,
-      fontStyle: activity.overrideDuration != null
-          ? FontStyle.normal
-          : FontStyle.italic,
+      fontStyle:
+          activity.overrideDuration != null ? FontStyle.normal : FontStyle.italic,
     );
   }
 
@@ -98,6 +97,7 @@ class LessonActivityRow extends StatelessWidget {
     final color = SessionPlanActivityType.lesson.color;
 
     return DecomposedCourseDesignerCard.buildColorHighlightedBody(
+      context: context,
       color: color,
       leadingText: time,
       child: Padding(
@@ -107,7 +107,7 @@ class LessonActivityRow extends StatelessWidget {
             Expanded(
               child: Text(
                 'Lesson: ${lesson?.title ?? '(select a lesson)'}',
-                style: const TextStyle(fontSize: 14),
+                style: CustomTextStyles.getBody(context),
               ),
             ),
             InkWell(
@@ -118,7 +118,7 @@ class LessonActivityRow extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4.0),
                 child: Text(
                   _durationText(),
-                  style: _durationStyle(),
+                  style: _durationStyle(context),
                 ),
               ),
             ),

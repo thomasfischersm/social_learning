@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class DecomposedCourseDesignerCard {
   static const _borderRadius = 8.0;
@@ -15,7 +16,7 @@ class DecomposedCourseDesignerCard {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Text(
         title,
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style: CustomTextStyles.subHeadline,
       ),
     );
   }
@@ -36,7 +37,7 @@ class DecomposedCourseDesignerCard {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: CustomTextStyles.subHeadline,
             ),
           ),
           ...icons.map((icon) => Padding(
@@ -64,6 +65,7 @@ class DecomposedCourseDesignerCard {
   }
 
   static Widget buildColorHighlightedBody({
+    required BuildContext context,
     required Widget child,
     required Color color,
     String? leadingText,
@@ -93,8 +95,7 @@ class DecomposedCourseDesignerCard {
                 alignment: Alignment.center,
                 child: Text(
                   leadingText,
-                  style: const TextStyle(
-                    // fontSize: 13,
+                  style: CustomTextStyles.getBody(context)?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: Colors.black87,
                   ),

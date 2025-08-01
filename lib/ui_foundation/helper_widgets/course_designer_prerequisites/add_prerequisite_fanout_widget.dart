@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class AddPrerequisiteFanoutWidget extends StatefulWidget {
   final PrerequisiteContext context;
@@ -104,8 +105,9 @@ class _AddPrerequisiteFanoutWidgetState
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6),
           child: Text(
             category.name,
-            style:
-            const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+            style: CustomTextStyles.getBodyEmphasized(context)?.copyWith(
+              color: Colors.grey,
+            ),
           ),
         ),
       );
@@ -125,7 +127,7 @@ class _AddPrerequisiteFanoutWidgetState
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Text(
                 item.name ?? '(Untitled)',
-                style: TextStyle(
+                style: CustomTextStyles.getBody(context)?.copyWith(
                   color: isDisabled ? Colors.grey.shade400 : Colors.black,
                 ),
               ),

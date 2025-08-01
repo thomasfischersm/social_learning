@@ -4,6 +4,7 @@ import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.d
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/color_picker_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class InventoryTagEditorDialog extends StatefulWidget {
   final List<TeachableItemTag> initialTags;
@@ -95,7 +96,10 @@ class _InventoryTagEditorDialogState extends State<InventoryTagEditorDialog> {
 
           // Tag name
           Expanded(
-            child: Text(tag.tag.name, style: const TextStyle(fontSize: 14)),
+            child: Text(
+              tag.tag.name,
+              style: CustomTextStyles.getBody(context),
+            ),
           ),
 
           // Edit icon

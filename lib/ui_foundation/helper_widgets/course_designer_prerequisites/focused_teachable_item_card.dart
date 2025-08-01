@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
 
@@ -56,10 +57,8 @@ class FocusedTeachableItemCard extends StatelessWidget {
                           enabled: false,
                           child: Text(
                             category.name,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey,
-                            ),
+                            style: CustomTextStyles.getBodyEmphasized(context)
+                                ?.copyWith(color: Colors.grey),
                           ),
                         ),
                         for (final item in this
@@ -78,16 +77,12 @@ class FocusedTeachableItemCard extends StatelessWidget {
               const SizedBox(width: 8),
               InkWell(
                 onTap: onShowItemsWithPrerequisites,
-                child: const Padding(
+                child: Padding(
                   padding:
-                      EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+                      const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
                   child: Text(
                     'View All',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.blue,
-                    ),
+                    style: CustomTextStyles.getLink(context),
                   ),
                 ),
               ),
