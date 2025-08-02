@@ -1,4 +1,5 @@
-  import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
   class TagPill extends StatelessWidget {
     final String label;
@@ -14,22 +15,19 @@
     Widget build(BuildContext context) {
       final textColor = _getContrastingTextColor(color);
 
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            height: 1,
-            color: textColor,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      );
+    return Container(
+      padding: CourseDesignerTheme.tagPillPadding,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius:
+            BorderRadius.circular(CourseDesignerTheme.tagPillBorderRadius),
+      ),
+      child: Text(
+        label,
+        style: CourseDesignerTheme.tagPillTextStyle
+            .copyWith(color: textColor),
+      ),
+    );
     }
 
     Color _getContrastingTextColor(Color background) {

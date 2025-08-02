@@ -6,6 +6,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class InventoryCategoryEntry extends InventoryEntry {
   final TeachableItemCategory category;
@@ -23,11 +24,12 @@ class InventoryCategoryEntry extends InventoryEntry {
   @override
   Widget buildWidget(BuildContext context, VoidCallback refresh, InventoryContext _) {
     return Container(
-      margin: const EdgeInsets.only(top: 12.0),
+      margin: CourseDesignerTheme.cardMargin,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+        color: CourseDesignerTheme.cardHeaderBackgroundColor,
+        border: Border.all(color: CourseDesignerTheme.cardBorderColor),
+        borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(CourseDesignerTheme.cardBorderRadius)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),

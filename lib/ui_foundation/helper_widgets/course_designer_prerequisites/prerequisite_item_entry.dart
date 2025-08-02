@@ -5,6 +5,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_pre
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class PrerequisiteItemEntry extends StatelessWidget {
   final PrerequisiteContext context;
@@ -121,10 +122,11 @@ class PrerequisiteItemEntry extends StatelessWidget {
           if (!isRoot) ...[
             const SizedBox(width: 4),
             InkWell(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius:
+                  BorderRadius.circular(CourseDesignerTheme.tagPillBorderRadius),
               onTap: () => _remove(context),
               child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: CourseDesignerTheme.tagPillPadding,
                 child: Icon(Icons.remove_circle_outline),
               ),
             ),

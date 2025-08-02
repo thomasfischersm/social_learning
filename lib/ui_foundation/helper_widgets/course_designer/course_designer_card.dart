@@ -50,11 +50,11 @@ class _CourseDesignerCardState extends State<CourseDesignerCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 12.0),
+      margin: CourseDesignerTheme.cardMargin,
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: CourseDesignerTheme.cardBorderColor),
+        borderRadius: BorderRadius.circular(CourseDesignerTheme.cardBorderRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,8 +71,9 @@ class _CourseDesignerCardState extends State<CourseDesignerCard> {
       width: double.infinity,
       padding: CourseDesignerTheme.cardHeaderPadding,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+        color: CourseDesignerTheme.cardHeaderBackgroundColor,
+        borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(CourseDesignerTheme.cardBorderRadius)),
       ),
       child: Text(
         widget.title,
@@ -83,7 +84,7 @@ class _CourseDesignerCardState extends State<CourseDesignerCard> {
 
   Widget _buildBodyWithOptionalDismiss() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: CourseDesignerTheme.cardBodyPadding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

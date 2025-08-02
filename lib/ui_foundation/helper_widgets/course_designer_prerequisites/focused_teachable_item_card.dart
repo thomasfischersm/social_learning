@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class FocusedTeachableItemCard extends StatelessWidget {
   final PrerequisiteContext dataContext;
@@ -36,8 +37,9 @@ class FocusedTeachableItemCard extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade50,
-                    border: Border.all(color: Colors.grey.shade300),
-                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: CourseDesignerTheme.cardBorderColor),
+                    borderRadius:
+                        BorderRadius.circular(CourseDesignerTheme.cardBorderRadius),
                   ),
                   child: DropdownButton<String>(
                     isExpanded: true,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class AddPrerequisiteFanoutWidget extends StatefulWidget {
   final PrerequisiteContext context;
@@ -150,14 +151,16 @@ class _AddPrerequisiteFanoutWidgetState
                 showWhenUnlinked: false,
                 child: Material(
                   elevation: 6,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius:
+                      BorderRadius.circular(CourseDesignerTheme.cardBorderRadius),
                   child: Container(
                     constraints:
                     const BoxConstraints(maxHeight: 300, minWidth: 180),
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                          CourseDesignerTheme.cardBorderRadius),
                     ),
                     child: SingleChildScrollView(
                       child:
@@ -178,10 +181,11 @@ class _AddPrerequisiteFanoutWidgetState
     return CompositedTransformTarget(
       link: _layerLink,
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius:
+            BorderRadius.circular(CourseDesignerTheme.tagPillBorderRadius),
         onTap: _toggleOverlay,
         child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: CourseDesignerTheme.tagPillPadding,
           child: Icon(Icons.add_circle_outline),
         ),
       ),

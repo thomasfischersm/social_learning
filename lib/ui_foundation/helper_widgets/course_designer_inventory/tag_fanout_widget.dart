@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class TagFanoutWidget extends StatefulWidget {
   final List<TeachableItemTag> availableTags;
@@ -61,12 +62,14 @@ class _TagFanoutWidgetState extends State<TagFanoutWidget> {
                 showWhenUnlinked: false,
                 child: Material(
                   elevation: 6,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius:
+                      BorderRadius.circular(CourseDesignerTheme.cardBorderRadius),
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(
+                          CourseDesignerTheme.cardBorderRadius),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -76,7 +79,8 @@ class _TagFanoutWidgetState extends State<TagFanoutWidget> {
                             _removeOverlay();
                             widget.onTagSelected(tag);
                           },
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(
+                              CourseDesignerTheme.tagPillBorderRadius),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             child: TagPill(
@@ -102,7 +106,8 @@ class _TagFanoutWidgetState extends State<TagFanoutWidget> {
     return CompositedTransformTarget(
       link: _layerLink,
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius:
+            BorderRadius.circular(CourseDesignerTheme.tagPillBorderRadius),
         onTap: _toggleOverlay,
         child: TagPill(
           label: '+',

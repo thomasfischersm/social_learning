@@ -4,6 +4,7 @@ import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.d
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_tag_editor_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class InventoryTagCard extends StatefulWidget {
   final List<TeachableItemTag> tags;
@@ -31,11 +32,12 @@ class _InventoryTagCardState extends State<InventoryTagCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 12.0),
+      margin: CourseDesignerTheme.cardMargin,
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: CourseDesignerTheme.cardBorderColor),
+        borderRadius:
+            BorderRadius.circular(CourseDesignerTheme.cardBorderRadius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,8 +52,9 @@ class _InventoryTagCardState extends State<InventoryTagCard> {
   Widget _buildHeader(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+        color: CourseDesignerTheme.cardHeaderBackgroundColor,
+        borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(CourseDesignerTheme.cardBorderRadius)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
       child: Row(
