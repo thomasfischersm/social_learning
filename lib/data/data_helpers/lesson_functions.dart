@@ -16,9 +16,9 @@ class LessonFunctions {
             isEqualTo: FirestoreService.instance.doc(coursePath))
         .orderBy('sortOrder', descending: false)
         .snapshots()
-        .listen((snapshot) {
-      onData(snapshot.docs.map((e) => Lesson.fromSnapshot(e)).toList());
-    });
+        .map((snapshot) =>
+            snapshot.docs.map((e) => Lesson.fromSnapshot(e)).toList())
+        .listen(onData);
   }
 
   static Future<void> setSortOrder(String lessonId, int newSortOrder) {

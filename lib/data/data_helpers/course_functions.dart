@@ -12,9 +12,9 @@ class CourseFunctions {
         .collection('courses')
         .where('isPrivate', isEqualTo: false)
         .snapshots()
-        .listen((snapshot) {
-      onData(snapshot.docs.map((e) => Course.fromSnapshot(e)).toList());
-    }, onError: onError);
+        .map((snapshot) =>
+            snapshot.docs.map((e) => Course.fromSnapshot(e)).toList())
+        .listen(onData, onError: onError);
   }
 
   static Future<List<Course>> fetchEnrolledPrivateCourses(

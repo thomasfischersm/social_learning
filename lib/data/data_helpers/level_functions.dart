@@ -15,9 +15,9 @@ class LevelFunctions {
             isEqualTo: FirestoreService.instance.doc(coursePath))
         .orderBy('sortOrder', descending: false)
         .snapshots()
-        .listen((snapshot) {
-      onData(snapshot.docs.map((e) => Level.fromQuerySnapshot(e)).toList());
-    });
+        .map((snapshot) =>
+            snapshot.docs.map((e) => Level.fromQuerySnapshot(e)).toList())
+        .listen(onData);
   }
 
   static Future<void> setSortOrder(String levelId, int newSortOrder) {
