@@ -42,9 +42,9 @@ class SignInPage extends StatelessWidget {
                 Provider.of<ApplicationState>(context, listen: false);
             LibraryState libraryState =
                 Provider.of<LibraryState>(context, listen: false);
-            if ((await applicationState.currentUserBlocking)?.currentCourseId !=
-                null) {
-              await libraryState.initialized;
+            var currentUser = await applicationState.currentUserBlocking;
+            await libraryState.initialize();
+            if (currentUser?.currentCourseId != null) {
               if (libraryState.selectedCourse != null) {
                 Navigator.of(context).pushNamedAndRemoveUntil(
                     NavigationEnum.courseHome.route,
