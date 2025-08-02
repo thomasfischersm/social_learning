@@ -36,10 +36,8 @@ class SessionCreateState extends State<SessionCreatePage> {
           children: [
             CustomUiConstants.getTextPadding(
                 Text('Create Session', style: CustomTextStyles.headline)),
-            Consumer<LibraryState>(
-              builder: (context, libraryState, child) {
-                return Consumer<ApplicationState>(
-                    builder: (context, applicationState, child) {
+              Consumer2<LibraryState, ApplicationState>(
+                builder: (context, libraryState, applicationState, child) {
                   return Table(columnWidths: const <int, TableColumnWidth>{
                     0: IntrinsicColumnWidth(),
                     1: FlexColumnWidth(),
@@ -60,7 +58,7 @@ class SessionCreateState extends State<SessionCreatePage> {
                       CustomUiConstants.getTextPadding(
                           Text('${libraryState.selectedCourse?.title}')),
                     ]),
-                  ]);
+                    ]);
                   // return GridView.count(
                   //   crossAxisCount: 2, shrinkWrap: true,
                   //   children: [
@@ -75,9 +73,8 @@ class SessionCreateState extends State<SessionCreatePage> {
                   //     Text('${libraryState.selectedCourse?.title}'),
                   //   ],
                   // );
-                });
-              },
-            ),
+                },
+              ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

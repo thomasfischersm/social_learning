@@ -76,24 +76,23 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
             alignment: Alignment.topCenter,
             child: CustomUiConstants.framePage(
                 enableCourseLoadingGuard: true,
-                Consumer<ApplicationState>(
-              builder: (context, applicationState, child) {
-                return Consumer<LibraryState>(
-                    builder: (context, libraryState, child) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _createHeaderWidget(applicationState, libraryState),
-                      _createComparisonTable(context, libraryState)
-                    ],
-                  );
-                });
+                Consumer3<ApplicationState, LibraryState, StudentState>(
+              builder: (context, applicationState, libraryState, studentState, child) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _createHeaderWidget(applicationState, libraryState),
+                    _createComparisonTable(
+                        context, applicationState, libraryState, studentState)
+                  ],
+                );
               },
             ))));
   }
 
-  Widget _createComparisonTable(
-      BuildContext context, LibraryState libraryState) {
+  Widget _createComparisonTable(BuildContext context,
+      ApplicationState applicationState, LibraryState libraryState,
+      StudentState studentState) {
     if (_otherUser == null) {
       return const CircularProgressIndicator();
     }
@@ -121,29 +120,20 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
               .map((practiceRecord) => practiceRecord.lessonId.id)
               .toSet();
 
-          return Consumer<StudentState>(
-              builder: (context, studentState, child) {
-            ApplicationState applicationState =
-                Provider.of<ApplicationState>(context, listen: false);
+          Iterable<String> currentUserGraduatedLessonIds =
+              studentState.getGraduatedLessonIds();
 
-            Iterable<String> currentUserGraduatedLessonIds =
-                studentState.getGraduatedLessonIds();
+          currentUserGraduatedLessonIds = _handleAdminCase(
+              applicationState.currentUser,
+              currentUserGraduatedLessonIds,
+              context,
+              libraryState);
+          otherUserGraduatedLessonIds = _handleAdminCase(
+                  _otherUser, otherUserGraduatedLessonIds, context, libraryState)
+              .toSet();
 
-            currentUserGraduatedLessonIds = _handleAdminCase(
-                applicationState.currentUser,
-                currentUserGraduatedLessonIds,
-                context,
-                libraryState);
-            otherUserGraduatedLessonIds = _handleAdminCase(_otherUser,
-                    otherUserGraduatedLessonIds, context, libraryState)
-                .toSet();
-
-            return ProfileComparisonTable(
-                _otherUser,
-                currentUserGraduatedLessonIds,
-                otherUserGraduatedLessonIds,
-                libraryState);
-          });
+          return ProfileComparisonTable(_otherUser, currentUserGraduatedLessonIds,
+              otherUserGraduatedLessonIds, libraryState);
         });
   }
 

@@ -51,31 +51,28 @@ class SessionHostState extends State<SessionHostPage> {
             alignment: Alignment.topCenter,
             child: CustomUiConstants.framePage(
                 enableCourseLoadingGuard: true,
-                Consumer<OrganizerSessionState>(
-                    builder: (context, organizerSessionState, child) {
-              return Consumer<LibraryState>(
-                  builder: (context, libraryState, child) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomUiConstants.getTextPadding(Text(
-                        'Host Session: ${organizerSessionState.currentSession?.name}',
-                        style: CustomTextStyles.headline)),
-                    CustomUiConstants.getTextPadding(Text(
-                        '${organizerSessionState.currentSession?.participantCount} Participants',
-                        style: CustomTextStyles.subHeadline)),
-                    _createParticipantTable(
-                        organizerSessionState, libraryState),
-                    // Align(
-                    //     alignment: Alignment.centerRight,
-                    //     child: TextButton(
-                    //         onPressed: () =>
-                    //             SessionPairingAlgorithmTest().testAll(),
-                    //         child: const Text('Test'))),
-                    _createPairingTable(organizerSessionState, libraryState),
-                  ],
-                );
-              });
+                Consumer2<OrganizerSessionState, LibraryState>(
+                    builder: (context, organizerSessionState, libraryState, child) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomUiConstants.getTextPadding(Text(
+                      'Host Session: ${organizerSessionState.currentSession?.name}',
+                      style: CustomTextStyles.headline)),
+                  CustomUiConstants.getTextPadding(Text(
+                      '${organizerSessionState.currentSession?.participantCount} Participants',
+                      style: CustomTextStyles.subHeadline)),
+                  _createParticipantTable(
+                      organizerSessionState, libraryState),
+                  // Align(
+                  //     alignment: Alignment.centerRight,
+                  //     child: TextButton(
+                  //         onPressed: () =>
+                  //             SessionPairingAlgorithmTest().testAll(),
+                  //         child: const Text('Test'))),
+                  _createPairingTable(organizerSessionState, libraryState),
+                ],
+              );
             }))));
   }
 

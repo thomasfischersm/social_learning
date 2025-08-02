@@ -65,37 +65,35 @@ class CourseCreateState extends State<CourseCreatePage> {
             child: CustomUiConstants.framePage(Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Consumer<LibraryState>(
-                  builder: (context, libraryState, child) {
-                    return Consumer<ApplicationState>(
-                        builder: (context, applicationState, child) {
-                      return Card(
-                          margin: const EdgeInsets.all(8.0),
-                          child: Column(children: [
-                            Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(8.0),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor,
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(16.0),
-                                    topRight: Radius.circular(16.0),
-                                  ),
+                Consumer2<LibraryState, ApplicationState>(
+                  builder: (context, libraryState, applicationState, child) {
+                    return Card(
+                        margin: const EdgeInsets.all(8.0),
+                        child: Column(children: [
+                          Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(16.0),
+                                  topRight: Radius.circular(16.0),
                                 ),
-                                child: Text('Create Course',
-                                    style: CustomTextStyles.headline)),
-                            SizedBox(height: 8),
-                            Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Column(children: [
-                                  TextField(
-                                      decoration:
-                                          CustomUiConstants.getFilledInputDecoration(
-                                        context,
-                                        labelText: 'Course Name',
-                                      ).copyWith(errorText: courseNameError),
-                                      controller: courseNameController),
-                                  SizedBox(height: 8),
+                              ),
+                              child: Text('Create Course',
+                                  style: CustomTextStyles.headline)),
+                          SizedBox(height: 8),
+                          Padding(
+                              padding: EdgeInsets.all(8),
+                              child: Column(children: [
+                                TextField(
+                                    decoration:
+                                        CustomUiConstants.getFilledInputDecoration(
+                                      context,
+                                      labelText: 'Course Name',
+                                    ).copyWith(errorText: courseNameError),
+                                    controller: courseNameController),
+                                SizedBox(height: 8),
                                   TextField(
                                       decoration:
                                           CustomUiConstants.getFilledInputDecoration(

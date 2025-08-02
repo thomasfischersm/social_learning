@@ -35,81 +35,77 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
       ),
       body: Align(
           alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(Consumer<ApplicationState>(
-              builder: (context, applicationState, child) {
-            return Consumer<OnlineSessionState>(
-                builder: (context, onlineSessionState, child) {
-              String? sessionId = onlineSessionState.activeSession?.id;
-              print('Active onnline session page has sessionId: $sessionId');
-              if (sessionId == null) {
-                return Center(
-                    child: CircularProgressIndicator(color: Colors.red));
-              } else {
-                return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-                    stream: OnlineSessionFunctions.getSessionStream(sessionId),
-                    builder: (context, snapshot) {
-                      print('Active page has snapshot: ${snapshot.data}');
-                      if (!snapshot.hasData) {
-                        return Center(
-                            child: CircularProgressIndicator(
-                                color: Colors.yellow));
-                      }
+          child: CustomUiConstants.framePage(
+              Consumer3<ApplicationState, OnlineSessionState, LibraryState>(
+                  builder: (context, applicationState, onlineSessionState,
+                      libraryState, child) {
+            String? sessionId = onlineSessionState.activeSession?.id;
+            print('Active onnline session page has sessionId: $sessionId');
+            if (sessionId == null) {
+              return Center(
+                  child: CircularProgressIndicator(color: Colors.red));
+            } else {
+              return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                  stream: OnlineSessionFunctions.getSessionStream(sessionId),
+                  builder: (context, snapshot) {
+                    print('Active page has snapshot: ${snapshot.data}');
+                    if (!snapshot.hasData) {
+                      return Center(
+                          child:
+                              CircularProgressIndicator(color: Colors.yellow));
+                    }
 
-                      // Session no longer exists, so navigate away.
-                      if (!snapshot.data!.exists) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          Navigator.pushNamed(
-                              context, NavigationEnum.sessionHome.route);
-                        });
-                        return Container();
-                      }
+                    // Session no longer exists, so navigate away.
+                    if (!snapshot.data!.exists) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        Navigator.pushNamed(
+                            context, NavigationEnum.sessionHome.route);
+                      });
+                      return Container();
+                    }
 
-                      LibraryState libraryState =
-                          Provider.of<LibraryState>(context);
+                    OnlineSession session =
+                        OnlineSession.fromSnapshot(snapshot.data!);
+                    Lesson? lesson =
+                        libraryState.findLesson(session.lessonId!.id);
 
-                      OnlineSession session =
-                          OnlineSession.fromSnapshot(snapshot.data!);
-                      Lesson? lesson =
-                          libraryState.findLesson(session.lessonId!.id);
+                    // Navigate away if the session has ended.
+                    if (session.status != OnlineSessionStatus.active) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) async {
+                        await onlineSessionState.completeSession();
 
-                      // Navigate away if the session has ended.
-                      if (session.status != OnlineSessionStatus.active) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) async {
-                          await onlineSessionState.completeSession();
+                        if (context.mounted) {
+                          NavigationEnum.onlineSessionReview
+                              .navigateClean(context);
+                        }
+                      });
+                      return Container();
+                    }
 
-                          if (context.mounted) {
-                            NavigationEnum.onlineSessionReview
-                                .navigateClean(context);
+                    String? otherUserUid =
+                        session.mentorUid == applicationState.currentUser!.uid
+                            ? session.learnerUid
+                            : session.mentorUid;
+                    return FutureBuilder(
+                        future: UserFunctions.getUserByUid(otherUserUid!),
+                        builder: (context, userSnapshot) {
+                          print(
+                              'Active online session page has other user: ${userSnapshot.data}');
+                          if (!userSnapshot.hasData) {
+                            return Center(
+                                child: CircularProgressIndicator(
+                                    color: Colors.pink));
+                          } else {
+                            print('Active session page is ready to render.');
+                            return ActiveOnlineSessionCard(
+                                session: session,
+                                currentUser: applicationState.currentUser!,
+                                partner: userSnapshot.data!,
+                                lesson: lesson!);
                           }
                         });
-                        return Container();
-                      }
-
-                      String? otherUserUid =
-                          session.mentorUid == applicationState.currentUser!.uid
-                              ? session.learnerUid
-                              : session.mentorUid;
-                      return FutureBuilder(
-                          future: UserFunctions.getUserByUid(otherUserUid!),
-                          builder: (context, userSnapshot) {
-                            print(
-                                'Active online session page has other user: ${userSnapshot.data}');
-                            if (!userSnapshot.hasData) {
-                              return Center(
-                                  child: CircularProgressIndicator(
-                                      color: Colors.pink));
-                            } else {
-                              print('Active session page is ready to render.');
-                              return ActiveOnlineSessionCard(
-                                  session: session,
-                                  currentUser: applicationState.currentUser!,
-                                  partner: userSnapshot.data!,
-                                  lesson: lesson!);
-                            }
-                          });
-                    });
-              }
-            });
+                  });
+            }
           }))),
     );
   }

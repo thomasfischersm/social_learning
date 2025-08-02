@@ -20,12 +20,10 @@ class AutoSignInWidgetState extends State<AutoSignInWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ApplicationState>(
-        builder: (context, applicationState, child) {
-      return Consumer<LibraryState>(builder: (context, libraryState, child) {
-        maybeRedirect(applicationState, libraryState);
-        return SizedBox.shrink();
-      });
+    return Consumer2<ApplicationState, LibraryState>(
+        builder: (context, applicationState, libraryState, child) {
+      maybeRedirect(applicationState, libraryState);
+      return SizedBox.shrink();
     });
   }
 
