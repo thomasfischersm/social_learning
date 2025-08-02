@@ -39,13 +39,19 @@ class BeltColorFunctions {
     int lowerIndex = colorIndex.floor();
     int upperIndex = colorIndex.ceil();
 
-    // Calculate the interpolation factor
-    double interpolationFactor =
-        (colorIndex - lowerIndex) * (colors.length - 1);
+    // If the proficiency lines up exactly with a defined color, return it
+    if (lowerIndex == upperIndex) {
+      return colors[lowerIndex];
+    }
+
+    // Calculate the interpolation factor between the two colors.
+    // The factor should be the fractional part of [colorIndex], giving a value
+    // between 0 and 1 for [Color.lerp].
+    final double interpolationFactor = colorIndex - lowerIndex;
 
     // Interpolate between the two colors
-    Color lowerColor = colors[lowerIndex];
-    Color upperColor = colors[upperIndex];
+    final Color lowerColor = colors[lowerIndex];
+    final Color upperColor = colors[upperIndex];
     return Color.lerp(lowerColor, upperColor, interpolationFactor)!;
   }
 }

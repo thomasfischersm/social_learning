@@ -3,4 +3,7 @@ import 'package:social_learning/data/firestore_service.dart';
 
 DocumentReference<Map<String, dynamic>> docRef(
         String collectionName, String docId) =>
-    FirestoreService.instance.doc('/$collectionName/$docId');
+    // The Firebase SDK expects document paths without a leading slash.
+    // Using a leading slash causes lookups to fail when working with
+    // FakeFirebaseFirestore in tests, resulting in "not-found" errors.
+    FirestoreService.instance.doc('$collectionName/$docId');
