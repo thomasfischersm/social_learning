@@ -41,34 +41,30 @@ class SessionStudentState extends State<SessionStudentPage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(Consumer<ApplicationState>(
-                builder: (context, applicationState, child) {
-              return Consumer<LibraryState>(
-                  builder: (context, libraryState, child) {
-                return Consumer<StudentSessionState>(
-                    builder: (context, studentSessionState, child) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (studentSessionState.currentSession?.isActive == false)
-                        CustomUiConstants.getTextPadding(Text(
-                            'The session has ended!',
-                            style: CustomTextStyles.subHeadline)),
-                      Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Session: ${studentSessionState.currentSession?.name ?? ''}',
-                                style: CustomTextStyles.headline,
-                                textAlign: TextAlign.center,
-                              ))),
-                      _createPairingTable2(
-                          studentSessionState, libraryState, applicationState),
-                    ],
-                  );
-                });
-              });
+            child: CustomUiConstants.framePage(
+                Consumer3<ApplicationState, LibraryState, StudentSessionState>(
+                    builder: (context, applicationState, libraryState,
+                        studentSessionState, child) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (studentSessionState.currentSession?.isActive == false)
+                    CustomUiConstants.getTextPadding(Text(
+                        'The session has ended!',
+                        style: CustomTextStyles.subHeadline)),
+                  Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Session: ${studentSessionState.currentSession?.name ?? ''}',
+                            style: CustomTextStyles.headline,
+                            textAlign: TextAlign.center,
+                          ))),
+                  _createPairingTable2(
+                      studentSessionState, libraryState, applicationState),
+                ],
+              );
             }))));
   }
 

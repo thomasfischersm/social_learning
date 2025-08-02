@@ -13,53 +13,38 @@ class BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-        child: Consumer<ApplicationState>(
-            builder: (context, applicationState, child) => Row(
+        child: Consumer4<ApplicationState, LibraryState, StudentSessionState,
+            OrganizerSessionState>(
+            builder: (context, applicationState, libraryState, studentSessionState,
+                    organizerSessionState, child) =>
+                Row(
                   children: [
-                    Consumer<LibraryState>(
-                      builder: (context, libraryState, child) => addIcon(
-                          context,
-                          Icons.home,
-                          libraryState.isCourseSelected
-                              ? NavigationEnum.courseHome
-                              : NavigationEnum.home,
-                          true),
-                    ),
-                    Consumer<LibraryState>(
-                      builder: (context, libraryState, child) => addIcon(
-                          context,
-                          Icons.list_alt_rounded,
-                          NavigationEnum.levelList,
-                          libraryState.isCourseSelected &&
-                              applicationState.isLoggedIn),
-                    ),
-                    Consumer<LibraryState>(
-                        builder: (context, libraryState, child) =>
-                            _isCourseAdmin(applicationState, libraryState)
-                                ? addIcon(context, Icons.settings,
-                                    NavigationEnum.cmsSyllabus, true)
-                                : const Spacer()),
-                    Consumer<StudentSessionState>(
-                      builder: (context, studentSessionState, child) =>
-                          Consumer<OrganizerSessionState>(
-                        builder: (context, organizerSessionState, child) =>
-                            Consumer<LibraryState>(
-                          builder: (context, libraryState, child) => addIcon(
-                            context,
-                            Icons.calendar_today,
-                            _getSessionNavigationTarget(
-                                applicationState,
-                                libraryState,
-                                studentSessionState,
-                                organizerSessionState),
-                            applicationState.isLoggedIn &&
-                                (libraryState.isCourseSelected ||
-                                    studentSessionState.isInitialized ||
-                                    organizerSessionState.isInitialized),
-                          ),
-                        ),
-                      ),
-                    ),
+                    addIcon(
+                        context,
+                        Icons.home,
+                        libraryState.isCourseSelected
+                            ? NavigationEnum.courseHome
+                            : NavigationEnum.home,
+                        true),
+                    addIcon(
+                        context,
+                        Icons.list_alt_rounded,
+                        NavigationEnum.levelList,
+                        libraryState.isCourseSelected &&
+                            applicationState.isLoggedIn),
+                    _isCourseAdmin(applicationState, libraryState)
+                        ? addIcon(context, Icons.settings,
+                            NavigationEnum.cmsSyllabus, true)
+                        : const Spacer(),
+                    addIcon(
+                        context,
+                        Icons.calendar_today,
+                        _getSessionNavigationTarget(applicationState, libraryState,
+                            studentSessionState, organizerSessionState),
+                        applicationState.isLoggedIn &&
+                            (libraryState.isCourseSelected ||
+                                studentSessionState.isInitialized ||
+                                organizerSessionState.isInitialized)),
                     addIcon(context, Icons.person, NavigationEnum.profile,
                         applicationState.isLoggedIn),
                   ],

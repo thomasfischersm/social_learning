@@ -9,81 +9,75 @@ import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart'
 
 class BottomBarV2 {
   static Widget build(BuildContext context) {
-    return Consumer<ApplicationState>(
-        builder: (context, applicationState, child) => Consumer<LibraryState>(
-            builder: (context, libraryState, child) =>
-                Consumer<StudentSessionState>(
-                    builder: (context, studentSessionState, child) =>
-                        Consumer<OrganizerSessionState>(
-                            builder: (context, organizerSessionState, child) {
-                          bool isLessonsVisible =
-                              libraryState.isCourseSelected &&
-                                  applicationState.isLoggedIn;
-                          bool isManageVisible =
-                              _isCourseAdmin(applicationState, libraryState);
-                          bool isSessionsVisible =
-                              applicationState.isLoggedIn &&
-                                  (libraryState.isCourseSelected ||
-                                      studentSessionState.isInitialized ||
-                                      organizerSessionState.isInitialized);
-                          bool isProfileVisible = applicationState.isLoggedIn;
+    return Consumer4<ApplicationState, LibraryState, StudentSessionState,
+        OrganizerSessionState>(
+        builder: (context, applicationState, libraryState, studentSessionState,
+            organizerSessionState, child) {
+      bool isLessonsVisible =
+          libraryState.isCourseSelected && applicationState.isLoggedIn;
+      bool isManageVisible =
+          _isCourseAdmin(applicationState, libraryState);
+      bool isSessionsVisible = applicationState.isLoggedIn &&
+          (libraryState.isCourseSelected ||
+              studentSessionState.isInitialized ||
+              organizerSessionState.isInitialized);
+      bool isProfileVisible = applicationState.isLoggedIn;
 
-                          var currentIndex = _determineCurrentIndex(
-                              context,
-                              applicationState,
-                              libraryState,
-                              studentSessionState,
-                              organizerSessionState,
-                              isLessonsVisible,
-                              isManageVisible,
-                              isSessionsVisible,
-                              isProfileVisible);
+      var currentIndex = _determineCurrentIndex(
+          context,
+          applicationState,
+          libraryState,
+          studentSessionState,
+          organizerSessionState,
+          isLessonsVisible,
+          isManageVisible,
+          isSessionsVisible,
+          isProfileVisible);
 
-                          return BottomNavigationBar(
-                            items: [
-                              const BottomNavigationBarItem(
-                                icon: Icon(Icons.home),
-                                label: 'Home',
-                              ),
-                              if (isLessonsVisible)
-                                const BottomNavigationBarItem(
-                                  icon: Icon(Icons.list_alt_rounded),
-                                  label: 'Lessons',
-                                ),
-                              if (isManageVisible)
-                                const BottomNavigationBarItem(
-                                  icon: Icon(Icons.settings),
-                                  label: 'Manage',
-                                ),
-                              if (isSessionsVisible)
-                                const BottomNavigationBarItem(
-                                  icon: Icon(Icons.calendar_today),
-                                  label: 'Sessions',
-                                ),
-                              if (isProfileVisible)
-                                const BottomNavigationBarItem(
-                                  icon: Icon(Icons.person),
-                                  label: 'Profile',
-                                ),
-                            ],
-                            currentIndex: currentIndex == -1 ? 0 : currentIndex,
-                            onTap: (index) => _handleTap(
-                                index,
-                                context,
-                                applicationState,
-                                libraryState,
-                                studentSessionState,
-                                organizerSessionState,
-                                isLessonsVisible,
-                                isManageVisible,
-                                isSessionsVisible,
-                                isProfileVisible),
-                            selectedItemColor: currentIndex == -1
-                                ? Theme.of(context).hintColor
-                                : Theme.of(context).primaryColor,
-                            unselectedItemColor: Theme.of(context).hintColor,
-                          );
-                        }))));
+      return BottomNavigationBar(
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          if (isLessonsVisible)
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.list_alt_rounded),
+              label: 'Lessons',
+            ),
+          if (isManageVisible)
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: 'Manage',
+            ),
+          if (isSessionsVisible)
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today),
+              label: 'Sessions',
+            ),
+          if (isProfileVisible)
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+        ],
+        currentIndex: currentIndex == -1 ? 0 : currentIndex,
+        onTap: (index) => _handleTap(
+            index,
+            context,
+            applicationState,
+            libraryState,
+            studentSessionState,
+            organizerSessionState,
+            isLessonsVisible,
+            isManageVisible,
+            isSessionsVisible,
+            isProfileVisible),
+        selectedItemColor:
+            currentIndex == -1 ? Theme.of(context).hintColor : Theme.of(context).primaryColor,
+        unselectedItemColor: Theme.of(context).hintColor,
+      );
+    });
   }
 
   static NavigationEnum _getSessionNavigationTarget(
