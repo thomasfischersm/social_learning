@@ -116,13 +116,22 @@ class CourseDesignerState extends ChangeNotifier {
 
   Future<void> _loadDataForCourse(String courseId) async {
     final planFuture = SessionPlanFunctions.getOrCreateSessionPlanForCourse(courseId);
-    final objectivesFuture = LearningObjectiveFunctions.getObjectivesForCourse(courseId);
+    final objectivesFuture =
+        LearningObjectiveFunctions.getObjectivesForCourse(courseId);
     final profileFuture = CourseProfileFunctions.getCourseProfile(courseId);
-    final categoriesFuture = TeachableItemCategoryFunctions.getCategoriesForCourse(courseId);
+    final categoriesFuture =
+        TeachableItemCategoryFunctions.getCategoriesForCourse(courseId);
     final itemsFuture = TeachableItemFunctions.getItemsForCourse(courseId);
     final tagsFuture = TeachableItemTagFunctions.getTagsForCourse(courseId);
 
-    final plan = await planFuture;
+    SessionPlan plan;
+    try {
+      plan = await planFuture;
+    } on FirebaseException catch (e) {
+      print(
+          'Error retrieving session plan for course $courseId: ${e.code} ${e.message}');
+      rethrow;
+    }
 
     final blockAndActivityFutures = await Future.wait([
       SessionPlanBlockFunctions.getBySessionPlan(plan.id!),
