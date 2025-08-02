@@ -34,7 +34,13 @@ class LessonCoverImageWidgetState extends State<LessonCoverImageWidget> {
           child:
               Image(image: NetworkImage(coverPhotoUrl), fit: BoxFit.contain));
     } else {
-      return const Placeholder();
+      return AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Container(
+              color: Colors.grey[200],
+              child: const Center(
+                  child: Icon(Icons.image_not_supported,
+                      color: Colors.grey))));
     }
   }
 

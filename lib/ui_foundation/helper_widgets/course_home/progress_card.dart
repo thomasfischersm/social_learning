@@ -33,23 +33,33 @@ class ProgressCard extends StatelessWidget {
                   LayoutBuilder(
                     builder: (context, constraints) {
                       double size = constraints.maxWidth;
+                      double strokeWidth = 8;
                       return SizedBox(
                         height: size,
                         width: size,
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            CircularProgressIndicator(
-                              value: progress,
-                              strokeWidth: 8,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(beltColor),
-                              backgroundColor: beltColor.withOpacity(.25),
+                            SizedBox.expand(
+                              child: CircularProgressIndicator(
+                                value: progress,
+                                strokeWidth: strokeWidth,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(beltColor),
+                                backgroundColor: beltColor.withOpacity(.25),
+                              ),
                             ),
-                            Text('$completed of $totalLessons\nlessons completed',
-                                textAlign: TextAlign.center,
-                                style:
-                                    CustomTextStyles.getBody(context))
+                            SizedBox(
+                              width: size - strokeWidth * 2,
+                              height: size - strokeWidth * 2,
+                              child: Center(
+                                child: Text(
+                                    '$completed of $totalLessons\nlessons completed',
+                                    textAlign: TextAlign.center,
+                                    style:
+                                        CustomTextStyles.getBody(context)),
+                              ),
+                            )
                           ],
                         ),
                       );
