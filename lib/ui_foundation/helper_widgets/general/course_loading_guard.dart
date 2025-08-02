@@ -35,7 +35,7 @@ class _CourseLoadingGuardState extends State<CourseLoadingGuard> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _loadFuture =
-        Provider.of<LibraryState>(context, listen: false).ensureSelectedCourseLoaded();
+        Provider.of<LibraryState>(context, listen: false).initialized;
   }
 
   @override
