@@ -6,6 +6,7 @@ import 'package:social_learning/data/data_helpers/session_plan_block_functions.d
 import 'package:social_learning/data/data_helpers/session_plan_functions.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/session_plan_activity.dart';
+import 'package:social_learning/data/session_play_activity_type.dart';
 
 void main() {
   late FakeFirebaseFirestore fake;

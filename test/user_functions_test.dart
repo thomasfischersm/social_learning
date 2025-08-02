@@ -47,6 +47,6 @@ void main() {
 
     final updated = await fake.collection('users').doc('u1').get();
     final ref = updated.data()?['currentCourseId'] as DocumentReference;
-    expect(ref.path, '/courses/course1');
+    expect(ref.path, 'courses/course1');
   });
 }
