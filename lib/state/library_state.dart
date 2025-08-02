@@ -12,7 +12,6 @@ import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:social_learning/data/lesson_comment.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:collection/collection.dart';
@@ -811,33 +810,6 @@ class LibraryState extends ChangeNotifier {
     }
   }
 
-  addLessonComment(Lesson lesson, String comment) async {
-    User user = _applicationState.currentUser!;
-    DocumentReference userId =
-        FirebaseFirestore.instance.doc('/users/${user.id}');
-    DocumentReference lessonId =
-        FirebaseFirestore.instance.doc('/lessons/${lesson.id}');
-
-    await FirebaseFirestore.instance.collection('lessonComments').add({
-      'lessonId': lessonId,
-      'text': comment,
-      'creatorId': userId,
-      'creatorUid': user.uid,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
-    print('finished firebase call to create comment');
-  }
-
-  deleteLessonComment(LessonComment comment) async {
-    print('Deleting comment: ${comment.id}');
-    await FirebaseFirestore.instance
-        .doc('/lessonComments/${comment.id}')
-        .delete()
-        .onError((error, stackTrace) {
-      print('Failed to delete comment: $error');
-      debugPrintStack(stackTrace: stackTrace);
-    });
-  }
 
   Future<bool> doesCourseTitleExist(String title) async {
     return await FirebaseFirestore.instance
