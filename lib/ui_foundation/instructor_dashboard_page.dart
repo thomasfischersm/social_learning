@@ -25,6 +25,7 @@ class InstructorDashboardState extends State<InstructorDashboardPage> {
         child: CustomUiConstants.framePage(
           enableScrolling: false,
           enableCreatorGuard: true,
+          enableCourseLoadingGuard: true,
           Consumer<LibraryState>(
             builder: (context, libraryState, child) {
               final course = libraryState.selectedCourse;

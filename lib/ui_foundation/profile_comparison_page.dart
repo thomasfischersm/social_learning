@@ -74,7 +74,9 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(Consumer<ApplicationState>(
+            child: CustomUiConstants.framePage(
+                enableCourseLoadingGuard: true,
+                Consumer<ApplicationState>(
               builder: (context, applicationState, child) {
                 return Consumer<LibraryState>(
                     builder: (context, libraryState, child) {

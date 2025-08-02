@@ -87,6 +87,7 @@ class CourseGenerationPageState extends State<CourseGenerationPage> {
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
           enableCreatorGuard: true,
+          enableCourseLoadingGuard: true,
           Consumer<LibraryState>(
             builder: (context, libraryState, _) {
               final course = libraryState.selectedCourse;

@@ -25,14 +25,6 @@ class CmsSyllabusPage extends StatefulWidget {
 class CmsSyllabusState extends State<CmsSyllabusPage> {
   @override
   Widget build(BuildContext context) {
-    if (Provider.of<LibraryState>(context, listen: false).selectedCourse ==
-        null) {
-      print('No course selected. Redirecting to home page.');
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        Navigator.pushNamed(context, NavigationEnum.home.route);
-      });
-    }
-
     return Scaffold(
         appBar: AppBar(
           title:
@@ -57,6 +49,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
           alignment: Alignment.topCenter,
           child: CustomUiConstants.framePage(
               enableCreatorGuard: true,
+              enableCourseLoadingGuard: true,
               Consumer<LibraryState>(
                   builder: (context, libraryState, child) =>
                       Consumer<StudentState>(

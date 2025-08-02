@@ -99,6 +99,7 @@ class _CourseDesignerSessionPlanPageState
         child: CustomUiConstants.framePage(
           enableScrolling: false,
           enableCreatorGuard: true,
+          enableCourseLoadingGuard: true,
           _sessionPlanContext == null
               ? const Padding(
             padding: EdgeInsets.all(32.0),

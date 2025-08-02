@@ -49,8 +49,10 @@ class SessionHostState extends State<SessionHostPage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(Consumer<OrganizerSessionState>(
-                builder: (context, organizerSessionState, child) {
+            child: CustomUiConstants.framePage(
+                enableCourseLoadingGuard: true,
+                Consumer<OrganizerSessionState>(
+                    builder: (context, organizerSessionState, child) {
               return Consumer<LibraryState>(
                   builder: (context, libraryState, child) {
                 return Column(

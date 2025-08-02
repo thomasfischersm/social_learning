@@ -23,30 +23,29 @@ class SessionHomePageState extends State<SessionHomePage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
           alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(enableScrolling: false,
+          child: CustomUiConstants.framePage(
+              enableScrolling: false,
+              enableCourseLoadingGuard: true,
               Consumer<LibraryState>(builder: (context, libraryState, child) {
-            if (libraryState.selectedCourse == null) {
-              return Center(child: CircularProgressIndicator());
-            } else {
-              return Column(
-                children: [
-                  // Top section: scrollable in-person sessions.
-                  Flexible(
-                      flex: 1,
-                      child: const Column(
-                        children: [InPersonSessionSection(), Spacer()],
-                      )),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                  // Bottom section: online session section (fixed at bottom).
-                  Flexible(
-                      flex: 1,
-                      child: const Column(
-                        children: [OnlineSessionSection()],
-                      )),
-                ],
-              );
-            }
-          })),
+                return Column(
+                  children: [
+                    // Top section: scrollable in-person sessions.
+                    Flexible(
+                        flex: 1,
+                        child: const Column(
+                          children: [InPersonSessionSection(), Spacer()],
+                        )),
+                    SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.02),
+                    // Bottom section: online session section (fixed at bottom).
+                    Flexible(
+                        flex: 1,
+                        child: const Column(
+                          children: [OnlineSessionSection()],
+                        )),
+                  ],
+                );
+              })),
         ));
   }
 }
