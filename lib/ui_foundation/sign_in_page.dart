@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class SignInPage extends StatelessWidget {
@@ -39,9 +40,20 @@ class SignInPage extends StatelessWidget {
 
             ApplicationState applicationState =
                 Provider.of<ApplicationState>(context, listen: false);
-            if ((await applicationState.currentUserBlocking)?.currentCourseId != null) {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  NavigationEnum.levelList.route, (Route<dynamic> route) => false);
+            LibraryState libraryState =
+                Provider.of<LibraryState>(context, listen: false);
+            if ((await applicationState.currentUserBlocking)?.currentCourseId !=
+                null) {
+              await libraryState.ensureSelectedCourseLoaded();
+              if (libraryState.selectedCourse != null) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    NavigationEnum.courseHome.route,
+                    (Route<dynamic> route) => false);
+              } else {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                    NavigationEnum.home.route,
+                    (Route<dynamic> route) => false);
+              }
             } else {
               Navigator.of(context).pushNamedAndRemoveUntil(
                   NavigationEnum.home.route, (Route<dynamic> route) => false);

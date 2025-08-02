@@ -7,7 +7,7 @@ import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart'
 
 /// This is an invisible widget for the landing page. It checks if the user
 /// is still signed in and then re-directs either to the home page or the
-/// curriculum page for the selected course.
+/// course home page for the selected course.
 class AutoSignInWidget extends StatefulWidget {
   const AutoSignInWidget({super.key});
 
@@ -42,8 +42,6 @@ class AutoSignInWidgetState extends State<AutoSignInWidget> {
       return;
     }
 
-    // If the user doesn't have a course selected, we can re-direct to the home
-    // page right away.
     if (currentUser.currentCourseId == null) {
       _isRedirecting = true;
       SchedulerBinding.instance.addPostFrameCallback((_) {
@@ -54,17 +52,25 @@ class AutoSignInWidgetState extends State<AutoSignInWidget> {
       return;
     }
 
-    // If the user has a course selected, wait for the course to be loaded.
+    await libraryState.ensureSelectedCourseLoaded();
+
     if (libraryState.selectedCourse != null) {
       _isRedirecting = true;
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) {
-          print('Going from the landing page to the level page.');
+          print('Going from the landing page to the course home page.');
           Navigator.of(context)
-              .pushReplacementNamed(NavigationEnum.levelList.route);
+              .pushReplacementNamed(NavigationEnum.courseHome.route);
         }
       });
       return;
     }
+
+    _isRedirecting = true;
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (context.mounted) {
+        Navigator.of(context).pushReplacementNamed(NavigationEnum.home.route);
+      }
+    });
   }
 }
