@@ -34,7 +34,11 @@ class CreatorGuardState extends State<CreatorGuard> {
         if (!_navigationScheduled) {
           _navigationScheduled = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            NavigationEnum.home.navigateCleanDelayed(context);
+            if (libraryState.isCourseSelected) {
+              NavigationEnum.courseHome.navigateCleanDelayed(context);
+            } else {
+              NavigationEnum.home.navigateCleanDelayed(context);
+            }
           });
         }
         return const SizedBox();  // render nothing while redirecting

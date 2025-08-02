@@ -116,8 +116,9 @@ class BottomBarV2 {
     } else if (libraryState.isCourseSelected && applicationState.isLoggedIn) {
       return NavigationEnum.sessionHome;
     } else {
-      // The user needs to select a course first.
-      return NavigationEnum.home;
+      return libraryState.isCourseSelected
+          ? NavigationEnum.courseHome
+          : NavigationEnum.home;
     }
   }
 

@@ -16,7 +16,15 @@ class BottomBar extends StatelessWidget {
         child: Consumer<ApplicationState>(
             builder: (context, applicationState, child) => Row(
                   children: [
-                    addIcon(context, Icons.home, NavigationEnum.home, true),
+                    Consumer<LibraryState>(
+                      builder: (context, libraryState, child) => addIcon(
+                          context,
+                          Icons.home,
+                          libraryState.isCourseSelected
+                              ? NavigationEnum.courseHome
+                              : NavigationEnum.home,
+                          true),
+                    ),
                     Consumer<LibraryState>(
                       builder: (context, libraryState, child) => addIcon(
                           context,
@@ -92,8 +100,9 @@ class BottomBar extends StatelessWidget {
     } else if (libraryState.isCourseSelected && applicationState.isLoggedIn) {
       return NavigationEnum.sessionHome;
     } else {
-      // The user needs to select a course first.
-      return NavigationEnum.sessionHome;
+      return libraryState.isCourseSelected
+          ? NavigationEnum.courseHome
+          : NavigationEnum.home;
     }
   }
 }
