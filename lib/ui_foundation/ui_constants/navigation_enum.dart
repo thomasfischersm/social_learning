@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 enum NavigationEnum {
   landing('/landing'),
   home('/home'),
+  courseHome('/course_home'),
   profile('/profile'),
   otherProfile('/other_profile'),
   profileComparison('/profile_comparison'),

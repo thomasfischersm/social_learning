@@ -27,6 +27,7 @@ import 'package:social_learning/ui_foundation/course_generation_review_page.dart
 import 'package:social_learning/ui_foundation/course_create_page.dart';
 import 'package:social_learning/ui_foundation/course_generation_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
+import 'package:social_learning/ui_foundation/course_home_page.dart';
 import 'package:social_learning/ui_foundation/instructor_dashboard_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
@@ -142,6 +143,7 @@ class SocialLearningApp extends StatelessWidget {
       routes: {
         '/landing': (context) => const LandingPage(),
         '/home': (context) => const HomePage(),
+        '/course_home': (context) => const CourseHomePage(),
         '/profile': (context) => const ProfilePage(),
         '/other_profile': (context) => const OtherProfilePage(),
         '/profile_comparison': (context) => const ProfileComparisonPage(),

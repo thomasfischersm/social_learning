@@ -232,4 +232,32 @@ class ProgressVideoFunctions {
         progressVideosByLessonId.values.toList();
     return progressVideosList;
   }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> streamCourseVideos(
+      String courseId,
+      {int limit = 5}) {
+    return FirestoreService.instance
+        .collection('progressVideos')
+        .where('courseId', isEqualTo: docRef('courses', courseId))
+        .where('isProfilePrivate', isNotEqualTo: true)
+        .orderBy('timestamp', descending: true)
+        .limit(limit)
+        .snapshots();
+  }
+
+  static Future<QuerySnapshot<Map<String, dynamic>>> fetchCourseVideos(
+      String courseId,
+      {DocumentSnapshot? startAfter,
+      int limit = 5}) {
+    Query<Map<String, dynamic>> query = FirestoreService.instance
+        .collection('progressVideos')
+        .where('courseId', isEqualTo: docRef('courses', courseId))
+        .where('isProfilePrivate', isNotEqualTo: true)
+        .orderBy('timestamp', descending: true)
+        .limit(limit);
+    if (startAfter != null) {
+      query = query.startAfterDocument(startAfter);
+    }
+    return query.get();
+  }
 }
