@@ -25,7 +25,7 @@ void main() {
   });
 
   tearDown(() {
-    FirestoreService.instance = FirebaseFirestore.instance;
+    FirestoreService.instance = null;
   });
 
   test('getUserById retrieves the user document', () async {

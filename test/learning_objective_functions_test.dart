@@ -13,7 +13,7 @@ void main() {
   });
 
   tearDown(() {
-    FirestoreService.instance = FirebaseFirestore.instance;
+    FirestoreService.instance = null;
   });
 
   test('addObjective creates and fetches objective', () async {

@@ -14,7 +14,7 @@ void main() {
   });
 
   tearDown(() {
-    FirestoreService.instance = FirebaseFirestore.instance;
+    FirestoreService.instance = null;
   });
 
   test('createPendingReviewsForSession creates two reviews', () async {
