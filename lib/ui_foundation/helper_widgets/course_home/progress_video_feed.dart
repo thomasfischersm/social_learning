@@ -142,7 +142,7 @@ class _ProgressVideoFeedState extends State<ProgressVideoFeed> {
                           onTap: () => LessonDetailArgument.goToLessonDetailPage(
                               context, video.lessonId.id),
                           child: Text(lessonTitle,
-                              style: CustomTextStyles.getBody(context).copyWith(
+                              style: CustomTextStyles.getBody(context)?.copyWith(
                                   color: Theme.of(context)
                                       .colorScheme
                                       .primary)),
