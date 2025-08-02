@@ -138,7 +138,8 @@ class BottomBarV2 {
       return -1;
     }
 
-    if (currentRoute == NavigationEnum.home.route) {
+    if ({NavigationEnum.home.route, NavigationEnum.courseHome.route}
+        .contains(currentRoute)) {
       return 0;
     } else if (isLessonsVisible &&
         {
@@ -228,8 +229,12 @@ class BottomBarV2 {
 
     // Home
     if (index == 0) {
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil(NavigationEnum.home.route, (route) => false);
+      if (libraryState.isCourseSelected) {
+        NavigationEnum.courseHome.navigateClean(context);
+      } else {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            NavigationEnum.home.route, (route) => false);
+      }
       return;
     } else {
       index--;
