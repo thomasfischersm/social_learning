@@ -125,20 +125,17 @@ class CmsLessonState extends State<CmsLessonPage> {
                   children: [
                     CustomUiConstants.getTextPadding(Text('Create Lesson',
                         style: CustomTextStyles.headline)),
-                    Consumer<LibraryState>(
-                      builder: (context, libraryState, child) {
-                        return Consumer<ApplicationState>(
-                            builder: (context, applicationState, child) {
-                          return Column(
-                            children: [
-                              _createCoreCard(context),
-                              SizedBox(height: 8),
-                              _createGraduationRequirementsCard(context),
-                              SizedBox(height: 8),
-                              _createVideoCard(context)
-                            ],
-                          );
-                        });
+                    Consumer2<LibraryState, ApplicationState>(
+                      builder: (context, libraryState, applicationState, child) {
+                        return Column(
+                          children: [
+                            _createCoreCard(context),
+                            SizedBox(height: 8),
+                            _createGraduationRequirementsCard(context),
+                            SizedBox(height: 8),
+                            _createVideoCard(context)
+                          ],
+                        );
                       },
                     ),
                     Row(

@@ -56,27 +56,25 @@ class LevelDetailState extends State<LevelDetailPage> {
           alignment: Alignment.topCenter,
           child: CustomUiConstants.framePage(
               enableCourseLoadingGuard: true,
-              Consumer<LibraryState>(
-                  builder: (context, libraryState, child) =>
-                      Consumer<StudentState>(
-                      builder: (context, studentState, child) {
-                    LevelDetailArgument? argument = ModalRoute.of(context)!
-                        .settings
-                        .arguments as LevelDetailArgument?;
-                    var levelId = argument?.levelId;
-                    var isFlexLessons = argument?.isFlexLessons;
-                    if ((levelId == null) && (isFlexLessons != true)) {
-                      return const Text('Failed to load (1).');
-                    }
+              Consumer2<LibraryState, StudentState>(
+                  builder: (context, libraryState, studentState, child) {
+                LevelDetailArgument? argument = ModalRoute.of(context)!
+                    .settings
+                    .arguments as LevelDetailArgument?;
+                var levelId = argument?.levelId;
+                var isFlexLessons = argument?.isFlexLessons;
+                if ((levelId == null) && (isFlexLessons != true)) {
+                  return const Text('Failed to load (1).');
+                }
 
-                    if (isFlexLessons == true) {
-                      return _generateFlexLessonView(
-                          libraryState, studentState);
-                    } else {
-                      return _generateRegularLessonView(
-                          levelId!, libraryState, studentState);
-                    }
-                  }))),
+                if (isFlexLessons == true) {
+                  return _generateFlexLessonView(
+                      libraryState, studentState);
+                } else {
+                  return _generateRegularLessonView(
+                      levelId!, libraryState, studentState);
+                }
+              })),
         ));
   }
 

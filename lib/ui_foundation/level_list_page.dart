@@ -34,42 +34,40 @@ class LevelListState extends State<LevelListPage> {
           alignment: Alignment.topCenter,
           child: CustomUiConstants.framePage(
               enableCourseLoadingGuard: true,
-              Consumer<LibraryState>(
-                  builder: (context, libraryState, child) =>
-                      Consumer<StudentState>(
-                      builder: (context, studentState, child) {
-                    List<LevelCompletion> levelCompletions =
-                        studentState.getLevelCompletions(libraryState);
+              Consumer2<LibraryState, StudentState>(
+                  builder: (context, libraryState, studentState, child) {
+                List<LevelCompletion> levelCompletions =
+                    studentState.getLevelCompletions(libraryState);
 
-                    return SingleChildScrollView(
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomUiConstants.getTextPadding(Text(
-                          '${libraryState.selectedCourse?.title} Curriculum',
-                          style: CustomTextStyles.headline,
-                        )),
-                        generateLevelList(levelCompletions, libraryState),
-                        CustomUiConstants.getTextPadding(Text(
-                          '\nStats',
-                          style: CustomTextStyles.headline,
-                        )),
-                        Text(
-                          'Lessons practiced: ${studentState.getPracticeCount()}',
-                          style: CustomTextStyles.getBody(context),
-                        ),
-                        Text(
-                          'Lessons completed: ${studentState.getGraduationCount()}',
-                          style: CustomTextStyles.getBody(context),
-                        ),
-                        Text(
-                          'Lessons taught: ${studentState.getTeachCount()}',
-                          style: CustomTextStyles.getBody(context),
-                        ),
-                        CustomUiConstants.getGeneralFooter(context)
-                      ],
-                    ));
-                  }))),
+                return SingleChildScrollView(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomUiConstants.getTextPadding(Text(
+                      '${libraryState.selectedCourse?.title} Curriculum',
+                      style: CustomTextStyles.headline,
+                    )),
+                    generateLevelList(levelCompletions, libraryState),
+                    CustomUiConstants.getTextPadding(Text(
+                      '\nStats',
+                      style: CustomTextStyles.headline,
+                    )),
+                    Text(
+                      'Lessons practiced: ${studentState.getPracticeCount()}',
+                      style: CustomTextStyles.getBody(context),
+                    ),
+                    Text(
+                      'Lessons completed: ${studentState.getGraduationCount()}',
+                      style: CustomTextStyles.getBody(context),
+                    ),
+                    Text(
+                      'Lessons taught: ${studentState.getTeachCount()}',
+                      style: CustomTextStyles.getBody(context),
+                    ),
+                    CustomUiConstants.getGeneralFooter(context)
+                  ],
+                ));
+              })),
         ));
   }
 

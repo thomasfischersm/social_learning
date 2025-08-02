@@ -161,11 +161,9 @@ class OnlineSessionReviewPageState extends State<OnlineSessionReviewPage> {
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
           SingleChildScrollView(
-            child: Consumer<OnlineSessionState>(
-                builder: (context, onlineSessionState, child) {
+            child: Consumer2<OnlineSessionState, LibraryState>(
+                builder: (context, onlineSessionState, libraryState, child) {
               // Get the pending review from the state.
-              OnlineSessionState onlineSessionState =
-                  Provider.of<OnlineSessionState>(context, listen: false);
               OnlineSessionReview? pendingReview =
                   onlineSessionState.pendingReview;
               if (pendingReview == null) {
@@ -184,15 +182,13 @@ class OnlineSessionReviewPageState extends State<OnlineSessionReviewPage> {
                       return const Center(child: CircularProgressIndicator());
                     }
                     User otherUser = userSnapshot.data!;
-                    return Consumer<LibraryState>(
-                        builder: (context, libraryState, child) {
-                      Lesson? lesson =
-                          libraryState.findLesson(_review.lessonId.id);
-                      if (lesson == null) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+                    Lesson? lesson =
+                        libraryState.findLesson(_review.lessonId.id);
+                    if (lesson == null) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                      return Column(
+                    return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Card(

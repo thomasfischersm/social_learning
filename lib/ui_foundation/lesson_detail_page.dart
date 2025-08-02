@@ -99,15 +99,13 @@ class LessonDetailState extends State<LessonDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ApplicationState>(
-        builder: (context, applicationState, child) {
-      return Consumer<StudentState>(builder: (context, studentState, child) {
-        return Consumer<LibraryState>(builder: (context, libraryState, child) {
-          Lesson? lesson = _getLesson(libraryState, context);
-          int? levelPosition = _findLevelPosition(lesson, libraryState);
+    return Consumer3<ApplicationState, StudentState, LibraryState>(
+        builder: (context, applicationState, studentState, libraryState, child) {
+      Lesson? lesson = _getLesson(libraryState, context);
+      int? levelPosition = _findLevelPosition(lesson, libraryState);
 
-          if (lesson != null) {
-            var counts = studentState.getCountsForLesson(lesson);
+      if (lesson != null) {
+        var counts = studentState.getCountsForLesson(lesson);
 
             return Scaffold(
                 appBar: AppBar(title: Text('Lesson: ${lesson.title}')),
@@ -205,14 +203,12 @@ class LessonDetailState extends State<LessonDetailPage> {
                         ))));
           }
 
-          return Scaffold(
-              appBar: AppBar(title: const Text('Nothing loaded')),
-              bottomNavigationBar: BottomBarV2.build(context),
-              body: const SizedBox.shrink());
-        });
+        return Scaffold(
+            appBar: AppBar(title: const Text('Nothing loaded')),
+            bottomNavigationBar: BottomBarV2.build(context),
+            body: const SizedBox.shrink());
       });
-    });
-  }
+    }
 
   int? _findLevelPosition(Lesson? lesson, LibraryState libraryState) {
     var levelId = lesson?.levelId;
