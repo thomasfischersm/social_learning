@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:cloud_firestore_mocks/cloud_firestore_mocks.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:social_learning/data/data_helpers/learning_objective_functions.dart';
 import 'package:social_learning/data/firestore_service.dart';
 
 void main() {
-  late FakeFirebaseFirestore fake;
+  late MockFirestoreInstance fake;
 
   setUp(() {
-    fake = FakeFirebaseFirestore();
+    fake = MockFirestoreInstance();
     FirestoreService.instance = fake;
   });
 
