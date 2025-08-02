@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/auth_guard.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/creator_guard.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/course_loading_guard.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -83,13 +84,18 @@ class CustomUiConstants {
   static Widget framePage(Widget child,
       {bool enableScrolling = true,
       bool enableAuthGuard = true,
-      bool enableCreatorGuard = false}) {
+      bool enableCreatorGuard = false,
+      bool enableCourseLoadingGuard = false}) {
     if (enableAuthGuard) {
       child = AuthGuard(child: child);
     }
 
     if (enableCreatorGuard) {
       child = CreatorGuard(child: child);
+    }
+
+    if (enableCourseLoadingGuard) {
+      child = CourseLoadingGuard(child: child);
     }
 
     if (enableScrolling) {

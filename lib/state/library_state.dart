@@ -84,6 +84,12 @@ class LibraryState extends ChangeNotifier {
   var _publicCourses = <Course>[];
   var _enrolledPrivateCourses = <Course>[];
   bool _isCourseListLoaded = false;
+  bool _isCourseListPending = false;
+  Completer<void>? _courseListCompleter;
+  bool _hasLoadedPublicCourses = false;
+  bool _hasLoadedEnrolledCourses = false;
+
+  bool get isCourseListPending => _isCourseListPending;
 
   List<Course> get availableCourses {
     if (!_isCourseListLoaded) {
@@ -121,6 +127,46 @@ class LibraryState extends ChangeNotifier {
     });
   }
 
+  Future<void> ensureSelectedCourseLoaded() async {
+    if (_selectedCourse != null || _isSelectedCourseInitializedFromDb) {
+      return;
+    }
+
+    // Trigger loading of courses.
+    availableCourses;
+
+    // Wait for the current user to be loaded.
+    await _applicationState.currentUserBlocking;
+
+    final String? currentCourseId =
+        _applicationState.currentUser?.currentCourseId?.id;
+    if (currentCourseId == null) {
+      _isSelectedCourseInitializedFromDb = true;
+      return;
+    }
+
+    final Course? immediateCourse =
+        _availableCourses.firstWhereOrNull((c) => c.id == currentCourseId);
+    if (immediateCourse != null) {
+      _isSelectedCourseInitializedFromDb = true;
+      selectedCourse = immediateCourse;
+      return;
+    }
+
+    if (_isCourseListPending) {
+      await _courseListCompleter?.future;
+    }
+
+    final Course? foundCourse =
+        _availableCourses.firstWhereOrNull((c) => c.id == currentCourseId);
+    if (foundCourse != null) {
+      _isSelectedCourseInitializedFromDb = true;
+      selectedCourse = foundCourse;
+    } else {
+      _isSelectedCourseInitializedFromDb = true;
+    }
+  }
+
   Future<void> loadCourseList() async {
     // Create courses.
     // FirebaseFirestore.instance.collection('courses').add(<String, dynamic>{
@@ -132,6 +178,11 @@ class LibraryState extends ChangeNotifier {
       _publicCourseListListener?.cancel();
     }
 
+    _courseListCompleter = Completer<void>();
+    _hasLoadedPublicCourses = false;
+    _hasLoadedEnrolledCourses = false;
+    _isCourseListPending = true;
+
     _publicCourseListListener = FirebaseFirestore.instance
         .collection('courses')
         .where('isPrivate', isEqualTo: false)
@@ -140,6 +191,8 @@ class LibraryState extends ChangeNotifier {
       _publicCourses =
           snapshot.docs.map((e) => Course.fromSnapshot(e)).toList();
       _rebuildAvailableCourses();
+      _hasLoadedPublicCourses = true;
+      _maybeCompleteCourseList();
       print('Loaded ${_publicCourses.length} public courses');
       notifyListeners();
     }, onError: (error, stackTrace) {
@@ -150,6 +203,12 @@ class LibraryState extends ChangeNotifier {
   }
 
   Future<void> _reloadEnrolledCourses() async {
+    _hasLoadedEnrolledCourses = false;
+    _isCourseListPending = true;
+    if (_courseListCompleter == null || _courseListCompleter!.isCompleted) {
+      _courseListCompleter = Completer<void>();
+    }
+
     var enrolledCourseIds = _applicationState.currentUser?.enrolledCourseIds;
 
     if (enrolledCourseIds != null && enrolledCourseIds.isNotEmpty) {
@@ -166,6 +225,8 @@ class LibraryState extends ChangeNotifier {
       _enrolledPrivateCourses =
           snapshot.docs.map((e) => Course.fromSnapshot(e)).toList();
       _rebuildAvailableCourses();
+      _hasLoadedEnrolledCourses = true;
+      _maybeCompleteCourseList();
       print('Loaded ${_enrolledPrivateCourses.length} enrolled courses');
       notifyListeners();
     } else {
@@ -178,6 +239,17 @@ class LibraryState extends ChangeNotifier {
               'LibraryState.notifyListeners because of reload private courses.');
           notifyListeners();
         });
+      }
+      _hasLoadedEnrolledCourses = true;
+      _maybeCompleteCourseList();
+    }
+  }
+
+  void _maybeCompleteCourseList() {
+    if (_hasLoadedPublicCourses && _hasLoadedEnrolledCourses) {
+      _isCourseListPending = false;
+      if (_courseListCompleter != null && !_courseListCompleter!.isCompleted) {
+        _courseListCompleter!.complete();
       }
     }
   }

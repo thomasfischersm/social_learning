@@ -29,7 +29,9 @@ class SessionCreateState extends State<SessionCreatePage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(Column(
+            child: CustomUiConstants.framePage(
+                enableCourseLoadingGuard: true,
+                Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CustomUiConstants.getTextPadding(

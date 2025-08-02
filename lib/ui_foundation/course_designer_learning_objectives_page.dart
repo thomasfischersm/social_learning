@@ -104,6 +104,7 @@ class _CourseDesignerLearningObjectivesPageState
         child: CustomUiConstants.framePage(
           enableScrolling: false,
           enableCreatorGuard: true,
+          enableCourseLoadingGuard: true,
           _objectivesContext == null
               ? const Padding(
                   padding: EdgeInsets.all(32.0),

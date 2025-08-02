@@ -100,6 +100,7 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
         child: CustomUiConstants.framePage(
           enableScrolling: false,
           enableCreatorGuard: true,
+          enableCourseLoadingGuard: true,
           _scopeContext == null
               ? const Padding(
                   padding: EdgeInsets.all(32.0),

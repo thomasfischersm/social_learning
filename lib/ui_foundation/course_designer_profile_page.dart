@@ -138,6 +138,7 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
               child: CustomUiConstants.framePage(
                 enableScrolling: true,
                 enableCreatorGuard: true,
+                enableCourseLoadingGuard: true,
                 // Inside the build method:
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,

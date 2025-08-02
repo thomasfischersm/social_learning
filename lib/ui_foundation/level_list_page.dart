@@ -24,13 +24,6 @@ class LevelListPage extends StatefulWidget {
 class LevelListState extends State<LevelListPage> {
   @override
   Widget build(BuildContext context) {
-    if (Provider.of<LibraryState>(context, listen: false).selectedCourse ==
-        null) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        Navigator.pushNamed(context, NavigationEnum.home.route);
-      });
-    }
-
     return Scaffold(
         appBar: AppBar(title:
             Consumer<LibraryState>(builder: (context, libraryState, child) {
@@ -39,8 +32,11 @@ class LevelListState extends State<LevelListPage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
           alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(Consumer<LibraryState>(
-              builder: (context, libraryState, child) => Consumer<StudentState>(
+          child: CustomUiConstants.framePage(
+              enableCourseLoadingGuard: true,
+              Consumer<LibraryState>(
+                  builder: (context, libraryState, child) =>
+                      Consumer<StudentState>(
                       builder: (context, studentState, child) {
                     List<LevelCompletion> levelCompletions =
                         studentState.getLevelCompletions(libraryState);

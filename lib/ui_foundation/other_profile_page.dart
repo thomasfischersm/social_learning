@@ -81,7 +81,9 @@ class OtherProfileState extends State<OtherProfilePage> {
           bottomNavigationBar: BottomBarV2.build(context),
           body: Align(
               alignment: Alignment.topCenter,
-              child: CustomUiConstants.framePage(Column(
+              child: CustomUiConstants.framePage(
+                  enableCourseLoadingGuard: true,
+                  Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomUiConstants.getTextPadding(Text('Loading profile',
@@ -97,7 +99,9 @@ class OtherProfileState extends State<OtherProfilePage> {
           bottomNavigationBar: BottomBarV2.build(context),
           body: Align(
               alignment: Alignment.topCenter,
-              child: CustomUiConstants.framePage(Column(
+              child: CustomUiConstants.framePage(
+                  enableCourseLoadingGuard: true,
+                  Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomUiConstants.getTextPadding(Text(otherUser.displayName,
@@ -131,7 +135,9 @@ class OtherProfileState extends State<OtherProfilePage> {
           bottomNavigationBar: BottomBarV2.build(context),
           body: Align(
               alignment: Alignment.topCenter,
-              child: CustomUiConstants.framePage(Column(
+              child: CustomUiConstants.framePage(
+                  enableCourseLoadingGuard: true,
+                  Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(

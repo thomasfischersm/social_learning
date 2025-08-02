@@ -49,6 +49,7 @@ class _CourseGenerationReviewPageState
         child: CustomUiConstants.framePage(
           enableScrolling: false,
           enableCreatorGuard: true,
+          enableCourseLoadingGuard: true,
           Consumer<LibraryState>(
             builder: (context, libraryState, _) {
               print(

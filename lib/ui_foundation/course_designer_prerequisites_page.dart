@@ -114,6 +114,7 @@ class _CourseDesignerPrerequisitesPageState
         child: CustomUiConstants.framePage(
           enableScrolling: false,
           enableCreatorGuard: true,
+          enableCourseLoadingGuard: true,
           _prerequisiteContext == null
               ? const Padding(
                   padding: EdgeInsets.all(32.0),
