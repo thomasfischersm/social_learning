@@ -145,9 +145,11 @@ class LibraryState extends ChangeNotifier {
   }
 
   Future<void> _reloadEnrolledCourses() async {
-    var enrolledCourseIds = _applicationState.currentUser?.enrolledCourseIds;
+    var enrolledCourseRefs = _applicationState.currentUser?.enrolledCourseIds;
 
-    if (enrolledCourseIds != null && enrolledCourseIds.isNotEmpty) {
+    if (enrolledCourseRefs != null && enrolledCourseRefs.isNotEmpty) {
+      final enrolledCourseIds =
+          enrolledCourseRefs.map((ref) => ref.id).toList();
       _enrolledPrivateCourses =
           await CourseFunctions.fetchEnrolledPrivateCourses(enrolledCourseIds);
       _rebuildAvailableCourses();
@@ -644,17 +646,13 @@ class LibraryState extends ChangeNotifier {
 
   addLessonComment(Lesson lesson, String comment) async {
     User user = _applicationState.currentUser!;
-    await LessonCommentFunctions.addComment(
-        lessonId: lesson.id!,
-        userId: user.id,
-        creatorUid: user.uid,
-        text: comment);
+    await LessonCommentFunctions.addLessonComment(lesson, comment, user);
   }
 
   deleteLessonComment(LessonComment comment) async {
     print('Deleting comment: ${comment.id}');
     try {
-      await LessonCommentFunctions.deleteComment(comment.id!);
+      await LessonCommentFunctions.deleteLessonComment(comment);
     } catch (error, stackTrace) {
       print('Failed to delete comment: $error');
       debugPrintStack(stackTrace: stackTrace);

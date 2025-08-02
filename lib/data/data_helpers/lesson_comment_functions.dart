@@ -34,4 +34,4 @@ class LessonCommentFunctions {
       debugPrintStack(stackTrace: stackTrace);
     });
   }
-}1
+}
