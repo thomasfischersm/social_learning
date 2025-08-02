@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/course_profile.dart';
 
 class CourseProfileFunctions {
-  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseFirestore _firestore = FirestoreService.instance;
   static const String _collectionPath = 'courseProfiles';
 
   static Future<CourseProfile?> getCourseProfile(String courseId) async {

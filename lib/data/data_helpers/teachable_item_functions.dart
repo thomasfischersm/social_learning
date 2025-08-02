@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_inclusion_status.dart';
+import 'package:social_learning/data/firestore_service.dart';
 
 class TeachableItemFunctions {
-  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseFirestore _firestore = FirestoreService.instance;
   static const String _collectionPath = 'teachableItems';
 
   static Future<TeachableItem?> addItem({
@@ -304,9 +305,9 @@ class TeachableItemFunctions {
   static Future<List<TeachableItem>> getItemsForCourse(String courseId) async {
     try {
       final courseRef =
-          FirebaseFirestore.instance.collection('courses').doc(courseId);
+          FirestoreService.instance.collection('courses').doc(courseId);
 
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await FirestoreService.instance
           .collection(_collectionPath)
           .where('courseId', isEqualTo: courseRef)
           .get();
@@ -322,7 +323,7 @@ class TeachableItemFunctions {
 
   static Future<TeachableItem?> getItemById(String itemId) async {
     try {
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await FirestoreService.instance
           .collection(_collectionPath)
           .doc(itemId)
           .get();

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/firestore_service.dart';
 
 class CoursePlan {
   String? id;
@@ -37,8 +38,8 @@ class CoursePlan {
   };
 
   DocumentReference get docRef =>
-      FirebaseFirestore.instance.doc('/coursePlans/$id');
+      FirestoreService.instance.doc('/coursePlans/$id');
 
   static CollectionReference<Map<String, dynamic>> get collection =>
-      FirebaseFirestore.instance.collection('coursePlans');
+      FirestoreService.instance.collection('coursePlans');
 }

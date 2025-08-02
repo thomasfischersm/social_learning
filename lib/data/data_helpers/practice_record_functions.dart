@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/practice_record.dart';
 
 class PracticeRecordFunctions {
   static Future<List<DocumentReference>> getLearnedLessonIds(
       String menteeUid) async {
     // Query the practiceRecords collection for records where the user has graduated.
-    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirestoreService
         .instance
         .collection('practiceRecords')
         .where('menteeUid', isEqualTo: menteeUid)
@@ -23,7 +24,7 @@ class PracticeRecordFunctions {
 
   /// Returns the count of graduated lessons where [menteeUid] is the student.
   static Future<int> getLessonsLearnedCount(String menteeUid) async {
-    final agg = await FirebaseFirestore.instance
+    final agg = await FirestoreService.instance
         .collection('practiceRecords')
         .where('menteeUid', isEqualTo: menteeUid)
         .where('isGraduation', isEqualTo: true)
@@ -34,7 +35,7 @@ class PracticeRecordFunctions {
 
   /// Returns the count of graduated lessons where [mentorUid] is the instructor.
   static Future<int> getLessonsTaughtCount(String mentorUid) async {
-    final agg = await FirebaseFirestore.instance
+    final agg = await FirestoreService.instance
         .collection('practiceRecords')
         .where('mentorUid', isEqualTo: mentorUid)
         .where('isGraduation', isEqualTo: true)
@@ -47,7 +48,7 @@ class PracticeRecordFunctions {
   /// for the given mentee UID.
   static Future<List<PracticeRecord>> fetchPracticeRecordsForMentee(
       String menteeUid) async {
-    final snapshot = await FirebaseFirestore.instance
+    final snapshot = await FirestoreService.instance
         .collection('practiceRecords')
         .where('menteeUid', isEqualTo: menteeUid)
         .get();

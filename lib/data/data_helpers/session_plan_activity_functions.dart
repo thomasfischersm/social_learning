@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/session_plan_activity.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/data/firestore_service.dart';
 
 import '../session_play_activity_type.dart';
 
 class SessionPlanActivityFunctions {
-  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseFirestore _firestore = FirestoreService.instance;
   static const String _collectionPath = 'sessionPlanActivities';
 
   /// Create a new activity

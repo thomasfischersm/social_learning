@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
@@ -31,7 +32,7 @@ class ProgressVideoFunctions {
 
   static void createProgressVideo(
       Lesson lesson, User user, String youtubeUrl) async {
-    await FirebaseFirestore.instance
+    await FirestoreService.instance
         .collection('progressVideos')
         .add(<String, dynamic>{
       'userId': docRef('users', user.id),
@@ -52,7 +53,7 @@ class ProgressVideoFunctions {
       Widget Function(BuildContext context, List<ProgressVideo> progressVideos)
           builder) {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: FirebaseFirestore.instance
+        stream: FirestoreService.instance
             .collection('progressVideos')
             .where('lessonId', isEqualTo: docRef('lessons', lessonId))
             .snapshots(),
@@ -76,7 +77,7 @@ class ProgressVideoFunctions {
       Widget Function(BuildContext context, List<ProgressVideo> progressVideos)
           builder) {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: FirebaseFirestore.instance
+        stream: FirestoreService.instance
             .collection('progressVideos')
             .where('lessonId', isEqualTo: docRef('lessons', lessonId))
             .where('userId', isEqualTo: docRef('users', user.id))
@@ -100,7 +101,7 @@ class ProgressVideoFunctions {
       Widget Function(BuildContext context, List<ProgressVideo> progressVideos)
           builder) {
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: FirebaseFirestore.instance
+        stream: FirestoreService.instance
             .collection('progressVideos')
             .where('lessonId', isEqualTo: docRef('lessons', lessonId))
             .where('isProfilePrivate', isNotEqualTo: true)
@@ -168,7 +169,7 @@ class ProgressVideoFunctions {
         docRef('courses', libraryState.selectedCourse?.id ?? '');
 
     return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: FirebaseFirestore.instance
+        stream: FirestoreService.instance
             .collection('progressVideos')
             .where('userId', isEqualTo: currentUserRef)
             .where('courseId', isEqualTo: currentDocRef)

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/practice_record_functions.dart';
@@ -25,7 +26,7 @@ class OnlineSessionFunctions {
 
   static CollectionReference<Map<String, dynamic>>
       get _onlineSessionsCollection =>
-          FirebaseFirestore.instance.collection('onlineSessions');
+          FirestoreService.instance.collection('onlineSessions');
 
   /// Creates a new OnlineSession document in Firestore.
   /// The 'created' and 'lastActive' fields use the server timestamp.
@@ -308,7 +309,7 @@ class OnlineSessionFunctions {
 
     // Start transaction.
     bool success = false;
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
+    await FirestoreService.instance.runTransaction((transaction) async {
       print('Start transaction to pair with session: $sessionId');
       var sessionRef = docRef('onlineSessions', sessionId);
       DocumentSnapshot<Map<String, dynamic>> snapshot =
