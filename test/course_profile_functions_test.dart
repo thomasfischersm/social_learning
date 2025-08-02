@@ -26,6 +26,6 @@ void main() {
       instructionalTimePercent: 70,
     );
     final saved = await CourseProfileFunctions.saveCourseProfile(profile);
-    expect(saved.courseId.path, '/courses/c1');
+    expect(saved.courseId.path, 'courses/c1');
   });
 }
