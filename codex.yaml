@@ -1,3 +1,6 @@
+# Tells Codex to run the tiny bootstrap first
+setup_script: ./bootstrap_codex.sh
+
 setup:
   - ./tool/codex_setup.sh
 
