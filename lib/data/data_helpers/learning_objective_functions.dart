@@ -4,7 +4,11 @@ import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/learning_objective.dart';
 
 class LearningObjectiveFunctions {
-  static final FirebaseFirestore _firestore = FirestoreService.instance;
+  // Access Firestore through a getter so that tests can inject a
+  // [FakeFirebaseFirestore] instance. A static `final` field would hold on to
+  // the default instance created at import time and prevent the override,
+  // causing tests to operate on a different database instance.
+  static FirebaseFirestore get _firestore => FirestoreService.instance;
   static const String _collectionPath = 'learningObjectives';
 
   static Future<List<LearningObjective>> getObjectivesForCourse(

@@ -7,7 +7,9 @@ import 'package:social_learning/data/lesson_comment.dart';
 import 'package:social_learning/data/user.dart';
 
 class LessonCommentFunctions {
-  static final FirebaseFirestore _firestore = FirestoreService.instance;
+  // Use a getter instead of a `final` field so tests can substitute
+  // [FakeFirebaseFirestore] via [FirestoreService].
+  static FirebaseFirestore get _firestore => FirestoreService.instance;
 
   static Future<void> addLessonComment(
       Lesson lesson, String comment, User user) async {

@@ -5,7 +5,8 @@ import 'package:social_learning/data/teachable_item_category.dart'; // For delet
 import 'package:social_learning/data/firestore_service.dart';
 
 class TeachableItemCategoryFunctions {
-  static final FirebaseFirestore _firestore = FirestoreService.instance;
+  // Getter for Firestore so tests can override the instance.
+  static FirebaseFirestore get _firestore => FirestoreService.instance;
   static const String _collectionPath = 'teachableItemCategories';
   static const String _itemsCollectionPath = 'teachableItems';
 

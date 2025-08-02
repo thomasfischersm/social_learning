@@ -4,7 +4,11 @@ import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/course_profile.dart';
 
 class CourseProfileFunctions {
-  static final FirebaseFirestore _firestore = FirestoreService.instance;
+  // Use a getter so tests can override the Firestore instance via
+  // [FirestoreService]. If this were a `final` field it would capture the
+  // default instance at import time and ignore the test override, leading to
+  // "not-found" errors when using [FakeFirebaseFirestore].
+  static FirebaseFirestore get _firestore => FirestoreService.instance;
   static const String _collectionPath = 'courseProfiles';
 
   static Future<CourseProfile?> getCourseProfile(String courseId) async {
