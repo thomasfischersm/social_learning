@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/foundation.dart';
@@ -15,7 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class UserFunctions {
   static void createUser(String uid, String? displayName, String? email) {
-    FirebaseFirestore.instance.collection('users').add(<String, dynamic>{
+    FirestoreService.instance.collection('users').add(<String, dynamic>{
       'uid': auth.FirebaseAuth.instance.currentUser!.uid,
       'displayName': displayName,
       'sortName': displayName?.toLowerCase(),
@@ -28,11 +29,11 @@ class UserFunctions {
   }
 
   static void updateDisplayName(String uid, String displayName) async {
-    var querySnapshot = await FirebaseFirestore.instance
+    var querySnapshot = await FirestoreService.instance
         .collection('users')
         .where('uid', isEqualTo: uid)
         .get();
-    FirebaseFirestore.instance
+    FirestoreService.instance
         .collection('users')
         .doc(querySnapshot.docs[0].id)
         .update({
@@ -44,11 +45,11 @@ class UserFunctions {
 
   static void updateProfilePhoto(String profileFireStoragePath) async {
     String uid = auth.FirebaseAuth.instance.currentUser!.uid;
-    var querySnapshot = await FirebaseFirestore.instance
+    var querySnapshot = await FirestoreService.instance
         .collection('users')
         .where('uid', isEqualTo: uid)
         .get();
-    FirebaseFirestore.instance
+    FirestoreService.instance
         .collection('users')
         .doc(querySnapshot.docs[0].id)
         .update({
@@ -60,7 +61,7 @@ class UserFunctions {
   static void updateCurrentCourse(User currentUser, String courseId) async {
     var courseRef = docRef('courses', courseId);
     currentUser.currentCourseId = courseRef;
-    FirebaseFirestore.instance
+    FirestoreService.instance
         .collection('users')
         .doc(currentUser.id)
         .set({'currentCourseId': courseRef}, SetOptions(merge: true));
@@ -80,7 +81,7 @@ class UserFunctions {
         String.fromCharCode(
             partialDisplayName.codeUnits[partialDisplayName.length - 1] + 1);
 
-    var snapshot = await FirebaseFirestore.instance
+    var snapshot = await FirestoreService.instance
         .collection('users')
         .where('sortName', isGreaterThanOrEqualTo: minStr)
         .where('sortName', isLessThan: maxStr)
@@ -95,7 +96,7 @@ class UserFunctions {
 
   static Future<User> getCurrentUser() async {
     String uid = auth.FirebaseAuth.instance.currentUser!.uid;
-    var snapshot = await FirebaseFirestore.instance
+    var snapshot = await FirestoreService.instance
         .collection('users')
         .where('uid', isEqualTo: uid)
         .get();
@@ -104,7 +105,7 @@ class UserFunctions {
   }
 
   static Future<User> getUserByUid(String uid) async {
-    var snapshot = await FirebaseFirestore.instance
+    var snapshot = await FirestoreService.instance
         .collection('users')
         .where('uid', isEqualTo: uid)
         .get();
@@ -113,7 +114,7 @@ class UserFunctions {
   }
 
   static Future<User> getUserById(String id) async {
-    var doc = await FirebaseFirestore.instance
+    var doc = await FirestoreService.instance
         .collection('users')
         .doc(id)
         .get();
@@ -363,14 +364,14 @@ class UserFunctions {
     }
 
     // Update the practice records.
-    FirebaseFirestore.instance
+    FirestoreService.instance
         .collection('practiceRecords')
         .where('menteeUid', isEqualTo: applicationState.currentUser!.uid)
         .where('isGraduation', isEqualTo: true)
         .get()
         .then((snapshot) {
       // TODO: Perhaps batch the writes.
-      WriteBatch batch = FirebaseFirestore.instance.batch();
+      WriteBatch batch = FirestoreService.instance.batch();
       for (var doc in snapshot.docs) {
         var record = PracticeRecord.fromSnapshot(doc);
         batch.update(
@@ -413,13 +414,13 @@ class UserFunctions {
   }
 
   static void removeGeoFromPracticeRecords(User user) {
-    FirebaseFirestore.instance
+    FirestoreService.instance
         .collection('practiceRecords')
         .where('menteeUid', isEqualTo: user.uid)
         .where('isGraduation', isEqualTo: true)
         .get()
         .then((snapshot) {
-      WriteBatch batch = FirebaseFirestore.instance.batch();
+      WriteBatch batch = FirestoreService.instance.batch();
       for (var doc in snapshot.docs) {
         // TODO: Perhaps batch the writes.
         var record = PracticeRecord.fromSnapshot(doc);
