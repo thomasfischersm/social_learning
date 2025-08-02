@@ -1,16 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/online_session.dart';
 import 'package:social_learning/data/online_session_review.dart';
+import 'package:social_learning/data/firestore_service.dart';
 
 class OnlineSessionReviewFunctions {
   static CollectionReference<Map<String, dynamic>> get _reviewCollection =>
-      FirebaseFirestore.instance.collection('onlineSessionReviews');
+      FirestoreService.instance.collection('onlineSessionReviews');
 
   static Future<void> createPendingReviewsForSession(
       OnlineSession session) async {
     // Build DocumentReferences for the session and lesson.
     DocumentReference sessionRef =
-        FirebaseFirestore.instance.collection('onlineSessions').doc(session.id);
+        FirestoreService.instance.collection('onlineSessions').doc(session.id);
     DocumentReference? lessonRef = session.lessonId;
     if (lessonRef == null) {
       print(
@@ -18,7 +19,7 @@ class OnlineSessionReviewFunctions {
       return;
     }
 
-    WriteBatch batch = FirebaseFirestore.instance.batch();
+    WriteBatch batch = FirestoreService.instance.batch();
 
     // Create the mentor's pending review.
     DocumentReference mentorReviewRef = _reviewCollection.doc();

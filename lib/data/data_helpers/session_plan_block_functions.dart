@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/session_plan_block.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/data/firestore_service.dart';
 
 class SessionPlanBlockFunctions {
-  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseFirestore _firestore = FirestoreService.instance;
   static const String _collectionPath = 'sessionPlanBlocks';
 
   /// Create a new block under a session plan
@@ -117,7 +118,7 @@ class SessionPlanBlockFunctions {
 
   static Future<void> batchUpdateSortOrders(
       List<SessionPlanBlock> blocksToUpdate) async {
-    final batch = FirebaseFirestore.instance.batch();
+    final batch = FirestoreService.instance.batch();
 
     for (var block in blocksToUpdate) {
       if (block.id == null) continue;

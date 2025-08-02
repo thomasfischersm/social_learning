@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/firestore_service.dart';
 
 class Course {
   String? id;
@@ -28,5 +29,5 @@ class Course {
         invitationCode = doc.data()?['invitationCode'] as String?;
 
   DocumentReference get docRef =>
-      FirebaseFirestore.instance.doc('/courses/$id');
+      FirestoreService.instance.doc('/courses/$id');
 }

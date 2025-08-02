@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
 
@@ -12,8 +13,8 @@ class InstructorDashboardFunctions {
   /// Returns null on error or if the count is unavailable.
   static Future<int?> getStudentCount(String courseId) async {
     try {
-      final courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
-      final agg = await FirebaseFirestore.instance
+      final courseRef = FirestoreService.instance.doc('/courses/$courseId');
+      final agg = await FirestoreService.instance
           .collection('users')
           .where('enrolledCourseIds', arrayContains: courseRef)
           .count()
@@ -30,8 +31,8 @@ class InstructorDashboardFunctions {
   /// Returns null on error or if the count is unavailable.
   static Future<int?> getLessonCount(String courseId) async {
     try {
-      final courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
-      final agg = await FirebaseFirestore.instance
+      final courseRef = FirestoreService.instance.doc('/courses/$courseId');
+      final agg = await FirestoreService.instance
           .collection('lessons')
           .where('courseId', isEqualTo: courseRef)
           .count()
@@ -47,7 +48,7 @@ class InstructorDashboardFunctions {
   /// Uses Firestore aggregation query. Returns null on error.
   static Future<int?> getSessionsTaughtCount(Course course) async {
     try {
-      final agg = await FirebaseFirestore.instance
+      final agg = await FirestoreService.instance
           .collection('practiceRecords')
           .where('courseId', isEqualTo: course.docRef)
           .where('menteeUid', isNotEqualTo: course.creatorId)
@@ -65,7 +66,7 @@ class InstructorDashboardFunctions {
   static Future<String?> _getTopStudentId(String courseId) async {
     print('Fetching top student ID for course $courseId');
     try {
-      final analyticsSnap = await FirebaseFirestore.instance
+      final analyticsSnap = await FirestoreService.instance
           .collection('courseAnalytics')
           .doc(courseId)
           .get();
@@ -90,7 +91,7 @@ class InstructorDashboardFunctions {
     }
 
     final userSnap =
-        await FirebaseFirestore.instance.collection('users').doc(topId).get();
+        await FirestoreService.instance.collection('users').doc(topId).get();
 
     print('Got most advanced student: ${userSnap.data()}');
     return userSnap.exists ? User.fromSnapshot(userSnap) : null;
@@ -111,8 +112,8 @@ class InstructorDashboardFunctions {
     StudentSortOption sort = StudentSortOption.alphabetical,
     String? nameFilter,
   }) async {
-    final courseRef = FirebaseFirestore.instance.doc('/courses/$courseId');
-    Query<Map<String, dynamic>> query = FirebaseFirestore.instance
+    final courseRef = FirestoreService.instance.doc('/courses/$courseId');
+    Query<Map<String, dynamic>> query = FirestoreService.instance
         .collection('users')
         .where('enrolledCourseIds', arrayContains: courseRef);
 

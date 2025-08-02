@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
 import 'package:social_learning/data/teachable_item_category.dart'; // For deleting items within a category
+import 'package:social_learning/data/firestore_service.dart';
 
 class TeachableItemCategoryFunctions {
-  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseFirestore _firestore = FirestoreService.instance;
   static const String _collectionPath = 'teachableItemCategories';
   static const String _itemsCollectionPath = 'teachableItems';
 
@@ -192,7 +193,7 @@ class TeachableItemCategoryFunctions {
     try {
       final courseRef = docRef('courses', courseId);
 
-      final snapshot = await FirebaseFirestore.instance
+      final snapshot = await FirestoreService.instance
           .collection(_collectionPath)
           .where('courseId', isEqualTo: courseRef)
           .orderBy('sortOrder')

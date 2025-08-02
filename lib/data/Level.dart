@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/firestore_service.dart';
 
 class Level {
   String? id;
@@ -29,7 +30,7 @@ class Level {
 
   Level.fromJson(Map<String, dynamic> json)
       : id = json['id'],
-        courseId = FirebaseFirestore.instance.doc(json['courseId']),
+        courseId = FirestoreService.instance.doc(json['courseId']),
         title = json['title'] as String,
         description = json['description'] as String,
         sortOrder = -1,
