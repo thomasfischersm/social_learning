@@ -4,6 +4,7 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_plan_activity.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_context.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class SelectLessonForActivityFanoutWidget {
   static void show({
@@ -124,7 +125,8 @@ class SelectLessonForActivityFanoutWidget {
                 showWhenUnlinked: false,
                 child: Material(
                   elevation: 6,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius:
+                      BorderRadius.circular(CourseDesignerTheme.cardBorderRadius),
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(
                       maxHeight: 300,

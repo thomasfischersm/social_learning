@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class DecomposedCourseDesignerCard {
-  static const _borderRadius = 8.0;
 
   static Widget buildHeader(String title) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(_borderRadius)),
-        border: Border.all(color: Colors.grey.shade300),
+        color: CourseDesignerTheme.cardHeaderBackgroundColor,
+        borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(CourseDesignerTheme.cardBorderRadius)),
+        border: Border.all(color: CourseDesignerTheme.cardBorderColor),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: CourseDesignerTheme.cardHeaderPadding,
       child: Text(
         title,
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style: CourseDesignerTheme.cardHeaderTextStyle,
       ),
     );
   }
@@ -24,20 +24,20 @@ class DecomposedCourseDesignerCard {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(_borderRadius)),
-        border: Border.all(color: Colors.grey.shade300),
+        color: CourseDesignerTheme.cardHeaderBackgroundColor,
+        borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(CourseDesignerTheme.cardBorderRadius)),
+        border: Border.all(color: CourseDesignerTheme.cardBorderColor),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: CourseDesignerTheme.cardHeaderPadding,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+              style: CourseDesignerTheme.cardHeaderTextStyle,
+              ),
           ),
           ...icons.map((icon) => Padding(
                 padding: const EdgeInsets.only(left: 8.0),
@@ -54,11 +54,11 @@ class DecomposedCourseDesignerCard {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          left: BorderSide(color: Colors.grey.shade300),
-          right: BorderSide(color: Colors.grey.shade300),
+          left: BorderSide(color: CourseDesignerTheme.cardBorderColor),
+          right: BorderSide(color: CourseDesignerTheme.cardBorderColor),
         ),
       ),
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      padding: CourseDesignerTheme.decomposedBodyPadding,
       child: bodyContent,
     );
   }
@@ -120,13 +120,13 @@ class DecomposedCourseDesignerCard {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          left: BorderSide(color: Colors.grey.shade300),
-          right: BorderSide(color: Colors.grey.shade300),
-          bottom: BorderSide(color: Colors.grey.shade300),
+          left: BorderSide(color: CourseDesignerTheme.cardBorderColor),
+          right: BorderSide(color: CourseDesignerTheme.cardBorderColor),
+          bottom: BorderSide(color: CourseDesignerTheme.cardBorderColor),
           top: BorderSide.none,
         ),
-        borderRadius:
-            const BorderRadius.vertical(bottom: Radius.circular(_borderRadius)),
+        borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(CourseDesignerTheme.cardBorderRadius)),
       ),
       height: 12, // Minimal height just to apply border and corner radius
     );

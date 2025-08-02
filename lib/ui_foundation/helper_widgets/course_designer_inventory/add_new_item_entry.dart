@@ -4,6 +4,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class AddNewItemEntry extends InventoryEntry {
   final TeachableItemCategory category;
@@ -25,11 +26,12 @@ class AddNewItemEntry extends InventoryEntry {
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          left: BorderSide(color: Colors.grey.shade300),
-          right: BorderSide(color: Colors.grey.shade300),
-          bottom: BorderSide(color: Colors.grey.shade300),
+          left: BorderSide(color: CourseDesignerTheme.cardBorderColor),
+          right: BorderSide(color: CourseDesignerTheme.cardBorderColor),
+          bottom: BorderSide(color: CourseDesignerTheme.cardBorderColor),
         ),
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(8)),
+        borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(CourseDesignerTheme.cardBorderRadius)),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
