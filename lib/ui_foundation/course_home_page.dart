@@ -63,12 +63,15 @@ class _CourseHomePageState extends State<CourseHomePage> {
                 ),
                 const SizedBox(height: 16),
               ],
-              Row(
-                children: const [
-                  Expanded(child: ProgressCard()),
-                  SizedBox(width: 8),
-                  Expanded(child: NextLessonCard()),
-                ],
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: const [
+                    Expanded(child: ProgressCard()),
+                    SizedBox(width: 8, height: double.infinity),
+                    Expanded(child: NextLessonCard()),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
               Text('Community activity',

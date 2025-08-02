@@ -36,28 +36,28 @@ class NextLessonCard extends StatelessWidget {
       return Card(
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
+          LessonCoverImageWidget(lesson.coverFireStoragePath),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child:
                 Text('Next lesson', style: CustomTextStyles.subHeadline),
           ),
-          LessonCoverImageWidget(lesson.coverFireStoragePath),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child:
                 Text(lesson.title, style: CustomTextStyles.getBody(context)),
           ),
           Align(
-              alignment: Alignment.bottomRight,
+              alignment: Alignment.centerRight,
               child: Padding(
-                  padding: const EdgeInsets.only(right: 8, bottom: 8),
-                  child: ElevatedButton.icon(
+                  padding: const EdgeInsets.only(right: 8, bottom: 8, top: 8),
+                  child: ElevatedButton(
                       onPressed: () =>
                           LessonDetailArgument.goToLessonDetailPage(
                               context, lesson.id!),
-                      icon: const Icon(Icons.play_arrow),
-                      label: const Text('Start'))))
+                      child: const Icon(Icons.play_arrow))))
         ],
       ));
     });
