@@ -84,11 +84,19 @@ class CourseDesignerState extends ChangeNotifier {
 
       _isLoading = true;
       notifyListeners();
-      await _loadDataForCourse(loadId);
-      _activeCourse = selected;
-      _isLoading = false;
-      _isInitialized = true;
-      notifyListeners();
+      try {
+        await _loadDataForCourse(loadId);
+        _activeCourse = selected;
+        _isInitialized = true;
+      } catch (e, st) {
+        debugPrint('Failed to load course data: $e');
+        debugPrint('$st');
+        _activeCourse = null;
+        _isInitialized = false;
+      } finally {
+        _isLoading = false;
+        notifyListeners();
+      }
 
       if (loadId != _libraryState.selectedCourse?.id) {
         _isInitialized = false;
