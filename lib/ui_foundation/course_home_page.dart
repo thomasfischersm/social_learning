@@ -34,7 +34,7 @@ class _CourseHomePageState extends State<CourseHomePage> {
               onPressed: () {
                 NavigationEnum.home.navigateClean(context);
               },
-              icon: const Icon(Icons.switch_right))
+              icon: const Icon(Icons.swap_horiz))
         ],
       ),
       bottomNavigationBar: BottomBarV2.build(context),
