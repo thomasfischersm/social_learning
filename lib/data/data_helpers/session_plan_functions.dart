@@ -34,26 +34,39 @@ class SessionPlanFunctions {
 
   static Future<SessionPlan> getOrCreateSessionPlanForCourse(String courseId) async {
     final courseRef = docRef('courses', courseId);
-    final query = await _firestore
-        .collection(_collectionPath)
-        .where('courseId', isEqualTo: courseRef)
-        .limit(1)
-        .get();
+    try {
+      print('Fetching session plan for course: $courseId');
+      final query = await _firestore
+          .collection(_collectionPath)
+          .where('courseId', isEqualTo: courseRef)
+          .limit(1)
+          .get();
+      print('Session plan query returned ${query.docs.length} documents');
 
-    if (query.docs.isNotEmpty) {
-      return SessionPlan.fromSnapshot(query.docs.first);
+      if (query.docs.isNotEmpty) {
+        return SessionPlan.fromSnapshot(query.docs.first);
+      }
+    } on FirebaseException catch (e) {
+      print('Error fetching session plan for course $courseId: ${e.code} ${e.message}');
+      rethrow;
     }
 
-    // No plan exists yet — create a new one
-    final docRefPlan = await _firestore.collection(_collectionPath).add({
-      'courseId': courseRef,
-      'name': 'Session Plan',
-      'created': FieldValue.serverTimestamp(),
-      'modified': FieldValue.serverTimestamp(),
-    });
+    try {
+      print('No session plan found for $courseId; creating new plan');
+      final docRefPlan = await _firestore.collection(_collectionPath).add({
+        'courseId': courseRef,
+        'name': 'Session Plan',
+        'created': FieldValue.serverTimestamp(),
+        'modified': FieldValue.serverTimestamp(),
+      });
 
-    final snapshot = await docRefPlan.get();
-    return SessionPlan.fromSnapshot(snapshot);
+      final snapshot = await docRefPlan.get();
+      print('Created session plan ${docRefPlan.id} for course $courseId');
+      return SessionPlan.fromSnapshot(snapshot);
+    } on FirebaseException catch (e) {
+      print('Error creating session plan for course $courseId: ${e.code} ${e.message}');
+      rethrow;
+    }
   }
 
 
