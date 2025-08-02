@@ -58,7 +58,7 @@ class UserFunctions {
     });
   }
 
-  static void updateCurrentCourse(User currentUser, String courseId) async {
+  static Future<void> updateCurrentCourse(User currentUser, String courseId) async {
     var courseRef = docRef('courses', courseId);
     currentUser.currentCourseId = courseRef;
     FirestoreService.instance
