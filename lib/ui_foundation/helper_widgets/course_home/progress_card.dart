@@ -26,47 +26,46 @@ class ProgressCard extends StatelessWidget {
       Color beltColor = BeltColorFunctions.getBeltColor(progress);
       return Card(
           child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      double size = constraints.maxWidth;
-                      double strokeWidth = 8;
-                      return SizedBox(
-                        height: size,
-                        width: size,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox.expand(
-                              child: CircularProgressIndicator(
-                                value: progress,
-                                strokeWidth: strokeWidth,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(beltColor),
-                                backgroundColor: beltColor.withOpacity(.25),
-                              ),
-                            ),
-                            SizedBox(
-                              width: size - strokeWidth * 2,
-                              height: size - strokeWidth * 2,
-                              child: Center(
-                                child: Text(
-                                    '$completed of $totalLessons\nlessons completed',
-                                    textAlign: TextAlign.center,
-                                    style:
-                                        CustomTextStyles.getBody(context)),
-                              ),
-                            )
-                          ],
+        padding: const EdgeInsets.all(16),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            double size = constraints.maxWidth;
+            double strokeWidth = 8;
+            return SizedBox.expand(
+              child: Center(
+                child: SizedBox(
+                  height: size,
+                  width: size,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox.expand(
+                        child: CircularProgressIndicator(
+                          value: progress,
+                          strokeWidth: strokeWidth,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(beltColor),
+                          backgroundColor: beltColor.withOpacity(.25),
                         ),
-                      );
-                    },
+                      ),
+                      SizedBox(
+                        width: size - strokeWidth * 2,
+                        height: size - strokeWidth * 2,
+                        child: Center(
+                          child: Text(
+                              '$completed of $totalLessons\nlessons completed',
+                              textAlign: TextAlign.center,
+                              style: CustomTextStyles.getBody(context)),
+                        ),
+                      )
+                    ],
                   ),
-                ],
-              )));
+                ),
+              ),
+            );
+          },
+        ),
+      ));
     });
   }
 }
