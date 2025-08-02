@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/lesson_comment.dart';
+import 'package:social_learning/data/data_helpers/lesson_comment_functions.dart';
 import 'package:social_learning/data/data_helpers/progress_video_functions.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
@@ -98,15 +99,13 @@ class LessonDetailState extends State<LessonDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ApplicationState>(
-        builder: (context, applicationState, child) {
-      return Consumer<StudentState>(builder: (context, studentState, child) {
-        return Consumer<LibraryState>(builder: (context, libraryState, child) {
-          Lesson? lesson = _getLesson(libraryState, context);
-          int? levelPosition = _findLevelPosition(lesson, libraryState);
+    return Consumer3<ApplicationState, StudentState, LibraryState>(
+        builder: (context, applicationState, studentState, libraryState, child) {
+      Lesson? lesson = _getLesson(libraryState, context);
+      int? levelPosition = _findLevelPosition(lesson, libraryState);
 
-          if (lesson != null) {
-            var counts = studentState.getCountsForLesson(lesson);
+      if (lesson != null) {
+        var counts = studentState.getCountsForLesson(lesson);
 
             return Scaffold(
                 appBar: AppBar(title: Text('Lesson: ${lesson.title}')),
@@ -176,8 +175,8 @@ class LessonDetailState extends State<LessonDetailPage> {
                                         ),
                                       ),
                                       /*),*/
-                                      _createCommentsView(lesson, context,
-                                          libraryState, applicationState),
+                                      _createCommentsView(
+                                          lesson, context, applicationState),
                                       SingleChildScrollView(
                                         child: Column(
                                           children: <Widget>[
@@ -204,14 +203,12 @@ class LessonDetailState extends State<LessonDetailPage> {
                         ))));
           }
 
-          return Scaffold(
-              appBar: AppBar(title: const Text('Nothing loaded')),
-              bottomNavigationBar: BottomBarV2.build(context),
-              body: const SizedBox.shrink());
-        });
+        return Scaffold(
+            appBar: AppBar(title: const Text('Nothing loaded')),
+            bottomNavigationBar: BottomBarV2.build(context),
+            body: const SizedBox.shrink());
       });
-    });
-  }
+    }
 
   int? _findLevelPosition(Lesson? lesson, LibraryState libraryState) {
     var levelId = lesson?.levelId;
@@ -448,8 +445,8 @@ class LessonDetailState extends State<LessonDetailPage> {
         });
   }
 
-  Widget _createCommentsView(Lesson lesson, BuildContext context,
-      LibraryState libraryState, ApplicationState applicationState) {
+  Widget _createCommentsView(
+      Lesson lesson, BuildContext context, ApplicationState applicationState) {
     DocumentReference lessonId = docRef('lessons', lesson.id!);
     print('Querying for comments for lesson: $lessonId');
     Widget commentColumn = StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -546,7 +543,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                         if (isSelf)
                           IconButton(
                               onPressed: () {
-                                _deleteComment(comment, libraryState);
+                                _deleteComment(comment);
                               },
                               icon: Icon(Icons.close, color: Colors.grey)),
                       ])));
@@ -561,7 +558,7 @@ class LessonDetailState extends State<LessonDetailPage> {
       children: [
         Expanded(
             child: TextField(
-          onSubmitted: (_) => _sendComment(lesson, libraryState),
+          onSubmitted: (_) => _sendComment(lesson, applicationState),
           controller: _commentController,
           decoration: const InputDecoration(
               hintText: 'Leave a comment...',
@@ -569,7 +566,7 @@ class LessonDetailState extends State<LessonDetailPage> {
         )),
         IconButton(
             icon: const Icon(Icons.send),
-            onPressed: () => _sendComment(lesson, libraryState))
+            onPressed: () => _sendComment(lesson, applicationState))
       ],
     );
 
@@ -579,7 +576,7 @@ class LessonDetailState extends State<LessonDetailPage> {
     ]);
   }
 
-  void _sendComment(Lesson lesson, LibraryState libraryState) {
+  void _sendComment(Lesson lesson, ApplicationState applicationState) {
     // Send the comment
     print('send clicked');
     if (_commentController.text.isNotEmpty) {
@@ -587,7 +584,8 @@ class LessonDetailState extends State<LessonDetailPage> {
       _commentController.clear();
 
       print('attempting to create comment');
-      libraryState.addLessonComment(lesson, comment);
+      LessonCommentFunctions.addLessonComment(
+          lesson, comment, applicationState.currentUser!);
     }
   }
 
@@ -820,7 +818,7 @@ class LessonDetailState extends State<LessonDetailPage> {
     setState(() {});
   }
 
-  void _deleteComment(LessonComment comment, LibraryState libraryState) {
+  void _deleteComment(LessonComment comment) {
     // Show a dialog to confirm
     showDialog(
         context: context,
@@ -837,7 +835,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                   child: const Text('Cancel')),
               ElevatedButton(
                   onPressed: () {
-                    libraryState.deleteLessonComment(comment);
+                    LessonCommentFunctions.deleteLessonComment(comment);
                     Navigator.pop(context);
                   },
                   child: const Text('Delete'))

@@ -41,49 +41,44 @@ class OnlineSessionWaitingRoomState
             bottomNavigationBar: BottomBarV2.build(context),
             body: Align(
               alignment: Alignment.topCenter,
-              child: CustomUiConstants.framePage(
+                child: CustomUiConstants.framePage(
                 enableScrolling: false,
-                Consumer<ApplicationState>(
-                    builder: (context, applicationState, child) {
-                  return Consumer<OnlineSessionState>(
-                      builder: (context, onlineSessionState, child) {
-                    String? sessionId = onlineSessionState.waitingSession?.id;
-                    if (sessionId == null) {
-                      return Center(child: CircularProgressIndicator());
-                    } else {
-                      return StreamBuilder<
-                              DocumentSnapshot<Map<String, dynamic>>>(
-                          stream: OnlineSessionFunctions.getSessionStream(
-                              sessionId),
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(child: CircularProgressIndicator());
-                            }
+                Consumer2<ApplicationState, OnlineSessionState>(
+                    builder: (context, applicationState, onlineSessionState, child) {
+                  String? sessionId = onlineSessionState.waitingSession?.id;
+                  if (sessionId == null) {
+                    return Center(child: CircularProgressIndicator());
+                  } else {
+                    return StreamBuilder<
+                            DocumentSnapshot<Map<String, dynamic>>>(
+                        stream: OnlineSessionFunctions.getSessionStream(
+                            sessionId),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(child: CircularProgressIndicator());
+                          }
 
-                            // Session no longer exists, so navigate away.
-                            if (!snapshot.data!.exists) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                Navigator.pushNamed(
-                                    context, NavigationEnum.sessionHome.route);
-                              });
-                              return Container();
-                            }
+                          // Session no longer exists, so navigate away.
+                          if (!snapshot.data!.exists) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              Navigator.pushNamed(
+                                  context, NavigationEnum.sessionHome.route);
+                            });
+                            return Container();
+                          }
 
-                            // The session has become active, redirect to the active session page.
-                            OnlineSession session =
-                                OnlineSession.fromSnapshot(snapshot.data!);
-                            if (session.status == OnlineSessionStatus.active) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                OnlineSessionState onlineSessionState =
-                                    Provider.of<OnlineSessionState>(context,
-                                        listen: false);
-                                onlineSessionState.setActiveSession(session);
+                          // The session has become active, redirect to the active session page.
+                          OnlineSession session =
+                              OnlineSession.fromSnapshot(snapshot.data!);
+                          if (session.status == OnlineSessionStatus.active) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              onlineSessionState.setActiveSession(session);
 
-                                Navigator.pushNamed(context,
-                                    NavigationEnum.onlineSessionActive.route);
-                              });
-                              return Container();
-                            }
+                              Navigator.pushNamed(context,
+                                  NavigationEnum.onlineSessionActive.route);
+                            });
+                            return Container();
+                          }
 
                             String sessionTypeText = session.isMentorInitiated
                                 ? 'Teaching'

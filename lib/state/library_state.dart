@@ -10,6 +10,7 @@ import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/lesson_comment.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:collection/collection.dart';
@@ -659,6 +660,7 @@ class LibraryState extends ChangeNotifier {
       debugPrintStack(stackTrace: stackTrace);
     }
   }
+
 
   Future<bool> doesCourseTitleExist(String title) async {
     return CourseFunctions.titleExists(title);

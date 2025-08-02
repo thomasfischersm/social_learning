@@ -50,45 +50,39 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
           child: CustomUiConstants.framePage(
               enableCreatorGuard: true,
               enableCourseLoadingGuard: true,
-              Consumer<LibraryState>(
-                  builder: (context, libraryState, child) =>
-                      Consumer<StudentState>(
-                          builder: (context, studentState, child) {
-                        return OneTimeBanner(
-                            prefsKey: 'instructorDashboardHint',
-                            message:
-                                'Tap the chart icon above to open your Instructor Dashboard.',
-                            leading: Icon(Icons.bar_chart, color: Colors.blue),
-                            child: SingleChildScrollView(
-                                child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomUiConstants.getTextPadding(Text(
-                                  '${libraryState.selectedCourse?.title} Curriculum',
-                                  style: CustomTextStyles.headline,
-                                )),
-                                if (libraryState
-                                        .selectedCourse?.invitationCode !=
-                                    null)
-                                  CustomUiConstants.getTextPadding(Text(
-                                      'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
-                                      style:
-                                          CustomTextStyles.getBody(context))),
-                                generateLevelList(context, libraryState),
-                                InkWell(
-                                    onTap: () {
-                                      _addLevel(context, libraryState);
-                                    },
-                                    child: Text('Add level',
-                                        style:
-                                            CustomTextStyles.getLinkNoUnderline(
-                                                context))),
-                                _generateUnattachedLessons(
-                                    context, libraryState),
-                                CustomUiConstants.getGeneralFooter(context)
-                              ],
-                            )));
-                      }))),
+                Consumer2<LibraryState, StudentState>(
+                    builder: (context, libraryState, studentState, child) {
+                  return OneTimeBanner(
+                      prefsKey: 'instructorDashboardHint',
+                      message:
+                          'Tap the chart icon above to open your Instructor Dashboard.',
+                      leading: Icon(Icons.bar_chart, color: Colors.blue),
+                      child: SingleChildScrollView(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomUiConstants.getTextPadding(Text(
+                            '${libraryState.selectedCourse?.title} Curriculum',
+                            style: CustomTextStyles.headline,
+                          )),
+                          if (libraryState.selectedCourse?.invitationCode !=
+                              null)
+                            CustomUiConstants.getTextPadding(Text(
+                                'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
+                                style: CustomTextStyles.getBody(context))),
+                          generateLevelList(context, libraryState),
+                          InkWell(
+                              onTap: () {
+                                _addLevel(context, libraryState);
+                              },
+                              child: Text('Add level',
+                                  style: CustomTextStyles.getLinkNoUnderline(
+                                      context))),
+                          _generateUnattachedLessons(context, libraryState),
+                          CustomUiConstants.getGeneralFooter(context)
+                        ],
+                      )));
+                })),
         ));
   }
 

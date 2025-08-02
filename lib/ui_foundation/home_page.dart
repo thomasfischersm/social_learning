@@ -107,15 +107,13 @@ class HomePageState extends State<HomePage> {
                 style:
                     CustomTextStyles.subHeadline.copyWith(color: Colors.white)),
           ),
-          Consumer<LibraryState>(builder: (context, libraryState, child) {
-            return Consumer<ApplicationState>(
-                builder: (context, applicationState, child) {
-              return Column(
-                  children: libraryState.availableCourses
-                      .map((course) => _createCourseWidget(
-                          course, libraryState, applicationState))
-                      .toList());
-            });
+          Consumer2<LibraryState, ApplicationState>(
+              builder: (context, libraryState, applicationState, child) {
+            return Column(
+                children: libraryState.availableCourses
+                    .map((course) => _createCourseWidget(
+                        course, libraryState, applicationState))
+                    .toList());
           }),
         ],
       ),
