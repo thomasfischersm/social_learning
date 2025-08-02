@@ -6,6 +6,11 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/cou
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_drag_helper.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_intro_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_tag_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_category_entry.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_item_entry.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_item_entry.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_category_entry.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 
@@ -103,8 +108,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
 
   List<InventoryEntry> _buildEntries(CourseDesignerState state) {
     final entries = <InventoryEntry>[];
-    final categories = [...state.categories]
-      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    final categories = state.categories;
     for (final category in categories) {
       final expanded = _expanded[category.id!] ?? true;
       final catEntry = InventoryCategoryEntry(

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/cloud_functions/cloud_functions.dart';
 import 'package:social_learning/cloud_functions/inventory_generation_response.dart';
 import 'package:social_learning/data/course.dart';
@@ -675,6 +676,7 @@ class CourseDesignerState extends ChangeNotifier {
     }
   }
 
+
   List<TeachableItem> getItemsForCategory(String categoryId) {
     return items.where((item) => item.categoryId.id == categoryId).toList()
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
@@ -960,7 +962,7 @@ class CourseDesignerState extends ChangeNotifier {
     final newActivity = await SessionPlanActivityFunctions.create(
       courseId: _activeCourse!.id!,
       sessionPlanId: sessionPlan!.id!,
-      blockId: blockId,
+      sessionPlanBlockId: blockId,
       lessonId: lessonId,
       name: name,
       notes: notes,

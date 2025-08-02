@@ -52,17 +52,17 @@ class InventoryDragHelper {
     final target = inventoryEntries[newIndex];
 
     if (target is InventoryCategoryEntry) {
-      newSortOrder = context.getCategories().indexWhere((c) => c.id == target.category.id);
+      newSortOrder = context.categories.indexWhere((c) => c.id == target.category.id);
     } else if (target is InventoryItemEntry || target is AddNewItemEntry) {
       final targetCategoryId = target is InventoryItemEntry
           ? target.item.categoryId.id
           : (target as AddNewItemEntry).category.id;
 
       final targetIndex =
-      context.getCategories().indexWhere((c) => c.id == targetCategoryId);
+      context.categories.indexWhere((c) => c.id == targetCategoryId);
       newSortOrder = targetIndex + 1;
     } else if (target is AddNewCategoryEntry) {
-      newSortOrder = context.getCategories().length - 1;
+      newSortOrder = context.categories.length - 1;
     } else {
       return;
     }
@@ -70,7 +70,7 @@ class InventoryDragHelper {
     await TeachableItemCategoryFunctions.updateCategorySortOrder(
       movedCategory: draggedCategory,
       newIndex: newSortOrder,
-      allCategoriesForCourse: context.getCategories(),
+      allCategoriesForCourse: context.categories,
     );
   }
 
@@ -81,7 +81,7 @@ class InventoryDragHelper {
     required int newIndex,
   }) async {
     final draggedItem = draggedEntry.item;
-    final allItems = context.getItems();
+    final allItems = context.items;
     final target = inventoryEntries[newIndex];
 
     DocumentReference newCategoryRef;
@@ -104,9 +104,7 @@ class InventoryDragHelper {
       newCategoryRef = docRef('teachableItemCategories', target.category.id!);
       newIndexInCategory = 0;
     } else if (target is AddNewCategoryEntry) {
-      final lastCategory = (context.getCategories()
-        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder)))
-          .last;
+      final lastCategory = context.categories.last;
 
       newCategoryRef = docRef('teachableItemCategories', lastCategory.id!);
 
