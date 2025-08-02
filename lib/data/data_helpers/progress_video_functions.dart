@@ -30,7 +30,7 @@ class ProgressVideoFunctions {
     return match?.group(1); // Returns the video ID if found, else null
   }
 
-  static void createProgressVideo(
+  static Future<void> createProgressVideo(
       Lesson lesson, User user, String youtubeUrl) async {
     await FirestoreService.instance
         .collection('progressVideos')

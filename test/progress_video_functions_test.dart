@@ -92,9 +92,8 @@ void main() {
 
   test('convertAsyncSnapshotToSortedProgressVideos returns empty when null',
       () {
-    final asyncSnapshot =
-        AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>.withData(
-            ConnectionState.done, null);
+    const asyncSnapshot =
+        AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>>.nothing();
     final videos = ProgressVideoFunctions
         .convertAsyncSnapshotToSortedProgressVideos(asyncSnapshot);
     expect(videos, isEmpty);
