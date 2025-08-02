@@ -1,12 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/user.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late FakeFirebaseFirestore fake;
+
+  setUpAll(() async {
+    await Firebase.initializeApp();
+  });
 
   setUp(() async {
     fake = FakeFirebaseFirestore();
@@ -39,14 +45,36 @@ void main() {
     expect(user.id, 'u1');
   });
 
-  test('updateCurrentCourse writes reference', () async {
+  test('updateCurrentCourse writes reference and updates user object',
+      () async {
     final snap = await fake.collection('users').doc('u1').get();
     final user = User.fromSnapshot(snap);
 
     await UserFunctions.updateCurrentCourse(user, 'course1');
 
+    // In-memory update on the user model.
+    expect(user.currentCourseId!.path, 'courses/course1');
+
+    // Firestore document is updated.
     final updated = await fake.collection('users').doc('u1').get();
     final ref = updated.data()?['currentCourseId'] as DocumentReference;
     expect(ref.path, 'courses/course1');
+  });
+
+  test('findUsersByPartialDisplayName returns empty list for short query',
+      () async {
+    final results =
+        await UserFunctions.findUsersByPartialDisplayName('Al', 5);
+    expect(results, isEmpty);
+  });
+
+  test('extractNumberId returns the last path segment or null', () {
+    final ref = fake.doc('courses/123');
+    expect(UserFunctions.extractNumberId(ref), '123');
+    expect(UserFunctions.extractNumberId(null), isNull);
+  });
+
+  test('isFirebaseAuthLoggedOut is true when no user signed in', () {
+    expect(UserFunctions.isFirebaseAuthLoggedOut, isTrue);
   });
 }
