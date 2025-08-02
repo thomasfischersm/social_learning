@@ -3,252 +3,165 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-// import 'package:googleapis/docs/v1.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data/lesson_comment.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:collection/collection.dart';
 import 'package:social_learning/state/student_state.dart';
+import 'package:social_learning/data/data_helpers/course_functions.dart';
+import 'package:social_learning/data/data_helpers/lesson_functions.dart';
+import 'package:social_learning/data/data_helpers/level_functions.dart';
+import 'package:social_learning/data/data_helpers/lesson_comment_functions.dart';
+import 'package:social_learning/data/data_helpers/user_functions.dart';
 
 class LibraryState extends ChangeNotifier {
   final ApplicationState _applicationState;
 
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>?
-      _publicCourseListListener;
+  StreamSubscription<List<Course>>? _publicCourseListListener;
 
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _levelListListener;
+  StreamSubscription<List<Level>>? _levelListListener;
 
-  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _lessonListListener;
+  StreamSubscription<List<Lesson>>? _lessonListListener;
 
   bool get isCourseSelected => _selectedCourse != null;
 
   Course? _selectedCourse;
-  bool _isSelectedCourseInitializedFromDb = false;
+  bool _isInitialized = false;
+  late Completer<void> _initializationCompleter;
 
-  Course? get selectedCourse {
-    if (_selectedCourse == null &&
-        availableCourses.isNotEmpty &&
-        !_isSelectedCourseInitializedFromDb) {
-      var currentCourseId = _applicationState.currentUser?.currentCourseId;
-      if (currentCourseId != null) {
-        Course? foundCourse = availableCourses
-            .firstWhereOrNull((course) => course.id == currentCourseId.id);
-
-        if (foundCourse != null) {
-          _isSelectedCourseInitializedFromDb = true;
-          selectedCourse = foundCourse;
-        }
-      }
-    }
-
-    return _selectedCourse;
-  }
+  Course? get selectedCourse => _selectedCourse;
 
   set selectedCourse(Course? course) {
     if (_selectedCourse != course) {
+      _lessonListListener?.cancel();
+      _levelListListener?.cancel();
       _lessons = null;
-      _isLessonListLoaded = false;
-      _isLevelListLoaded = false;
+      _levels = null;
+
+      _selectedCourse = course;
+
+      if (course?.id != null) {
+        _loadSelectedCourseData(course!.id!);
+      }
+
+      String? courseId = course?.id;
+      User? currentUser = _applicationState.currentUser;
+      if (courseId != null &&
+          currentUser != null &&
+          currentUser.currentCourseId?.id != courseId) {
+        UserFunctions.updateCurrentCourse(currentUser, courseId);
+      }
+
+      print('LibraryState.notifyListeners because of selectedCourse');
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        notifyListeners();
+      });
     }
-
-    _selectedCourse = course;
-
-    String? courseId = course?.id;
-    User? currentUser = _applicationState.currentUser;
-    if (courseId != null &&
-        currentUser != null &&
-        currentUser.currentCourseId?.id != courseId) {
-      () async {
-        FirebaseFirestore.instance.collection('users').doc(currentUser.id).set({
-          'currentCourseId':
-              FirebaseFirestore.instance.doc('/courses/$courseId')
-        }, SetOptions(merge: true));
-      }();
-    }
-
-    print('LibraryState.notifyListeners because of selectedCourse');
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      notifyListeners();
-    });
   }
 
   var _availableCourses = <Course>[];
   var _publicCourses = <Course>[];
   var _enrolledPrivateCourses = <Course>[];
-  bool _isCourseListLoaded = false;
-  bool _isCourseListPending = false;
-  Completer<void>? _courseListCompleter;
-  bool _hasLoadedPublicCourses = false;
-  bool _hasLoadedEnrolledCourses = false;
 
-  bool get isCourseListPending => _isCourseListPending;
-
-  List<Course> get availableCourses {
-    if (!_isCourseListLoaded) {
-      _isCourseListLoaded = true;
-      loadCourseList();
-    }
-    return _availableCourses;
-  }
+  List<Course> get availableCourses => _availableCourses;
 
   List<Lesson>? _lessons;
-  bool _isLessonListLoaded = false;
-
-  List<Lesson>? get lessons {
-    if (!_isLessonListLoaded) {
-      _isLessonListLoaded = true;
-      loadLessonList();
-    }
-    return _lessons;
-  }
+  List<Lesson>? get lessons => _lessons;
 
   List<Level>? _levels;
-  bool _isLevelListLoaded = false;
-
-  List<Level>? get levels {
-    if (!_isLevelListLoaded) {
-      _isLevelListLoaded = true;
-      loadLevelList();
-    }
-    return _levels;
-  }
+  List<Level>? get levels => _levels;
 
   LibraryState(this._applicationState) {
+    _initializationCompleter = Completer<void>();
     _applicationState.addListener(() {
       _reloadEnrolledCourses();
+      final currentCourseId =
+          _applicationState.currentUser?.currentCourseId?.id;
+      if (currentCourseId != null &&
+          (_selectedCourse == null || _selectedCourse!.id != currentCourseId)) {
+        final Course? found =
+            _availableCourses.firstWhereOrNull((c) => c.id == currentCourseId);
+        if (found != null) {
+          selectedCourse = found;
+        }
+      }
     });
   }
 
-  Future<void> ensureSelectedCourseLoaded() async {
-    if (_selectedCourse != null || _isSelectedCourseInitializedFromDb) {
-      return;
+  Future<void> initialize() async {
+    if (_isInitialized) {
+      return _initializationCompleter.future;
     }
+    _isInitialized = true;
 
-    // Trigger loading of courses.
-    availableCourses;
-
-    // Wait for the current user to be loaded.
-    await _applicationState.currentUserBlocking;
-
-    final String? currentCourseId =
+    final currentCourseId =
         _applicationState.currentUser?.currentCourseId?.id;
-    if (currentCourseId == null) {
-      _isSelectedCourseInitializedFromDb = true;
-      return;
+
+    final futures = <Future<void>>[loadCourseList()];
+    if (currentCourseId != null) {
+      futures.add(_loadSelectedCourseData(currentCourseId));
     }
 
-    final Course? immediateCourse =
-        _availableCourses.firstWhereOrNull((c) => c.id == currentCourseId);
-    if (immediateCourse != null) {
-      _isSelectedCourseInitializedFromDb = true;
-      selectedCourse = immediateCourse;
-      return;
+    await Future.wait(futures);
+
+    if (currentCourseId != null) {
+      final Course? course =
+          _availableCourses.firstWhereOrNull((c) => c.id == currentCourseId);
+      if (course != null) {
+        _selectedCourse = course;
+      }
     }
 
-    if (_isCourseListPending) {
-      await _courseListCompleter?.future;
-    }
-
-    final Course? foundCourse =
-        _availableCourses.firstWhereOrNull((c) => c.id == currentCourseId);
-    if (foundCourse != null) {
-      _isSelectedCourseInitializedFromDb = true;
-      selectedCourse = foundCourse;
-    } else {
-      _isSelectedCourseInitializedFromDb = true;
-    }
+    _initializationCompleter.complete();
+    return _initializationCompleter.future;
   }
 
+  Future<void> get initialized => _initializationCompleter.future;
+
   Future<void> loadCourseList() async {
-    // Create courses.
-    // FirebaseFirestore.instance.collection('courses').add(<String, dynamic>{
-    //   'title': 'Argentine Tango',
-    //   'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
-    // });
+    _publicCourseListListener?.cancel();
+    final publicCompleter = Completer<void>();
 
-    if (_publicCourseListListener != null) {
-      _publicCourseListListener?.cancel();
-    }
-
-    _courseListCompleter = Completer<void>();
-    _hasLoadedPublicCourses = false;
-    _hasLoadedEnrolledCourses = false;
-    _isCourseListPending = true;
-
-    _publicCourseListListener = FirebaseFirestore.instance
-        .collection('courses')
-        .where('isPrivate', isEqualTo: false)
-        .snapshots()
-        .listen((snapshot) {
-      _publicCourses =
-          snapshot.docs.map((e) => Course.fromSnapshot(e)).toList();
+    _publicCourseListListener = CourseFunctions.listenPublicCourses((courses) {
+      _publicCourses = courses;
       _rebuildAvailableCourses();
-      _hasLoadedPublicCourses = true;
-      _maybeCompleteCourseList();
+      if (!publicCompleter.isCompleted) {
+        publicCompleter.complete();
+      }
       print('Loaded ${_publicCourses.length} public courses');
       notifyListeners();
     }, onError: (error, stackTrace) {
       print('Failed to load public courses: $error');
     });
 
-    _reloadEnrolledCourses();
+    await Future.wait([publicCompleter.future, _reloadEnrolledCourses()]);
   }
 
   Future<void> _reloadEnrolledCourses() async {
-    _hasLoadedEnrolledCourses = false;
-    _isCourseListPending = true;
-    if (_courseListCompleter == null || _courseListCompleter!.isCompleted) {
-      _courseListCompleter = Completer<void>();
-    }
-
     var enrolledCourseIds = _applicationState.currentUser?.enrolledCourseIds;
 
     if (enrolledCourseIds != null && enrolledCourseIds.isNotEmpty) {
-      QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
-          .instance
-          .collection('courses')
-          .where(FieldPath.documentId, whereIn: enrolledCourseIds)
-          .where('isPrivate', isEqualTo: true)
-          .get()
-          .onError((Object error, StackTrace stackTrace) {
-        print('Failed to load private courses: $error');
-        return Future.error(error, stackTrace);
-      });
       _enrolledPrivateCourses =
-          snapshot.docs.map((e) => Course.fromSnapshot(e)).toList();
+          await CourseFunctions.fetchEnrolledPrivateCourses(enrolledCourseIds);
       _rebuildAvailableCourses();
-      _hasLoadedEnrolledCourses = true;
-      _maybeCompleteCourseList();
       print('Loaded ${_enrolledPrivateCourses.length} enrolled courses');
       notifyListeners();
     } else {
       if (_enrolledPrivateCourses.isNotEmpty) {
         _enrolledPrivateCourses = [];
         _rebuildAvailableCourses();
-
         WidgetsBinding.instance.addPostFrameCallback((_) {
           print(
               'LibraryState.notifyListeners because of reload private courses.');
           notifyListeners();
         });
-      }
-      _hasLoadedEnrolledCourses = true;
-      _maybeCompleteCourseList();
-    }
-  }
-
-  void _maybeCompleteCourseList() {
-    if (_hasLoadedPublicCourses && _hasLoadedEnrolledCourses) {
-      _isCourseListPending = false;
-      if (_courseListCompleter != null && !_courseListCompleter!.isCompleted) {
-        _courseListCompleter!.complete();
       }
     }
   }
@@ -260,70 +173,47 @@ class LibraryState extends ChangeNotifier {
       ..sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
   }
 
-  Future<void> loadLessonList() async {
-    // Create courses.
-    // FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
-    //   'courseId': FirebaseFirestore.instance.doc('/courses/4ZUgIakaAbcCiVWMxSKb'),
-    //   'sortOrder': 1,
-    //   'title': 'Wohoo!',
-    //   'instructions': 'Couple work: Basic and inside turn',
-    //   'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
-    //   'isLevel': false,
-    // });
-    // FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
-    //   'courseId': FirebaseFirestore.instance.doc('/courses/4ZUgIakaAbcCiVWMxSKb'),
-    //   'sortOrder': 2,
-    //   'title': 'First dance',
-    //   'instructions': 'Couple work: Basic and inside turn',
-    //   'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
-    //   'isLevel': false,
-    // });
+  Future<void> _loadSelectedCourseData(String courseId) {
+    return Future.wait([loadLessonList(courseId), loadLevelList(courseId)]);
+  }
 
-    var courseId = selectedCourse?.id;
+  Future<void> loadLessonList([String? courseId]) async {
+    courseId = courseId ?? _selectedCourse?.id;
     if (courseId != null) {
-      if (_lessonListListener != null) {
-        _lessonListListener?.cancel();
-        _lessonListListener = null;
-      }
+      _lessonListListener?.cancel();
+      final completer = Completer<void>();
 
-      String coursePath = '/courses/$courseId';
-
-      _lessonListListener = FirebaseFirestore.instance
-          .collection('lessons')
-          .where('courseId',
-              isEqualTo: FirebaseFirestore.instance.doc(coursePath))
-          .orderBy('sortOrder', descending: false)
-          .snapshots()
-          .listen((snapshot) {
-        _lessons = snapshot.docs.map((e) => Lesson.fromSnapshot(e)).toList();
+      _lessonListListener =
+          LessonFunctions.listenLessons(courseId, (lessonList) {
+        _lessons = lessonList;
+        if (!completer.isCompleted) {
+          completer.complete();
+        }
         print('Loaded ${_lessons?.length} lessons');
         notifyListeners();
       });
+
+      await completer.future;
     }
   }
 
-  Future<void> loadLevelList() async {
-    var courseId = selectedCourse?.id;
+  Future<void> loadLevelList([String? courseId]) async {
+    courseId = courseId ?? _selectedCourse?.id;
     if (courseId != null) {
-      if (_levelListListener != null) {
-        _levelListListener?.cancel();
-        _levelListListener = null;
-      }
+      _levelListListener?.cancel();
+      final completer = Completer<void>();
 
-      String coursePath = '/courses/$courseId';
-
-      _levelListListener = FirebaseFirestore.instance
-          .collection('levels')
-          .where('courseId',
-              isEqualTo: FirebaseFirestore.instance.doc(coursePath))
-          .orderBy('sortOrder', descending: false)
-          .snapshots()
-          .listen((snapshot) {
-        _levels = snapshot.docs.map((e) => Level.fromQuerySnapshot(e)).toList();
+      _levelListListener =
+          LevelFunctions.listenLevels(courseId, (levelList) {
+        _levels = levelList;
+        if (!completer.isCompleted) {
+          completer.complete();
+        }
         print('Loaded ${_levels?.length} levels');
         notifyListeners();
       });
-      // TODO: Cancel this subscription and other subscriptions.
+
+      await completer.future;
     }
   }
 
@@ -429,20 +319,16 @@ class LibraryState extends ChangeNotifier {
   void _setSortOrder(Lesson lesson, int newSortOrder) async {
     print(
         '### Set sort order for ${lesson.title} from ${lesson.sortOrder} to $newSortOrder');
-    await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
-      'sortOrder': newSortOrder,
-      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid
-    }, SetOptions(merge: true)).onError((error, stackTrace) {
-      print('Failed to set sort order: $error');
+    try {
+      await LessonFunctions.setSortOrder(lesson.id!, newSortOrder);
+    } catch (e, stackTrace) {
+      print('Failed to set sort order: $e');
       debugPrintStack(stackTrace: stackTrace);
-    });
+    }
   }
 
   void _setLevelSortOrder(Level level, int newSortOrder) async {
-    await FirebaseFirestore.instance.doc('/levels/${level.id}').set({
-      'sortOrder': newSortOrder,
-      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid
-    }, SetOptions(merge: true));
+    await LevelFunctions.setSortOrder(level.id!, newSortOrder);
   }
 
   void deleteLesson(Lesson deletedLesson) {
@@ -453,7 +339,7 @@ class LibraryState extends ChangeNotifier {
     }
 
     // Delete lesson.
-    FirebaseFirestore.instance.doc('/lessons/${deletedLesson.id}').delete();
+    LessonFunctions.deleteLesson(deletedLesson.id!);
 
     // Update sortOrder for following lessons.
     for (Lesson lesson in lessons) {
@@ -462,32 +348,14 @@ class LibraryState extends ChangeNotifier {
       }
     }
 
-    // TODO: Delete cover photo.
-    _deleteCoverPhoto(deletedLesson);
-  }
-
-  void _deleteCoverPhoto(Lesson lesson) async {
-    var fireStoragePath = '/lesson_covers/${lesson.id}/coverPhoto';
-    var storageRef = FirebaseStorage.instance.ref(fireStoragePath);
-    try {
-      // var imageData = await file.readAsBytes();
-      await storageRef.delete();
-    } catch (e) {
-      print('Error deleting photo: $e');
-    }
+    // Delete cover photo.
+    LessonFunctions.deleteCoverPhoto(deletedLesson.id!);
   }
 
   @Deprecated('Left over from the first version of the CMS.')
   void createLessonLegacy(
       String courseId, String title, String instructions, bool isLevel) async {
-    FirebaseFirestore.instance.collection('lessons').add(<String, dynamic>{
-      'courseId': FirebaseFirestore.instance.doc('/courses/$courseId'),
-      'sortOrder': _lessons?.length ?? 0,
-      'title': title,
-      'instructions': instructions,
-      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
-      'isLevel': isLevel,
-    });
+    await LessonFunctions.createLessonLegacy(courseId, title, instructions, isLevel);
   }
 
   Future<Lesson> createLesson(
@@ -504,25 +372,18 @@ class LibraryState extends ChangeNotifier {
     var currentUser = _applicationState.currentUser;
 
     DocumentReference<Map<String, dynamic>> newLessonRef =
-        await FirebaseFirestore.instance
-            .collection('lessons')
-            .add(<String, dynamic>{
-      'courseId':
-          FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
-      'levelId': levelId,
-      'sortOrder': _findHighestLessonSortOrder() + 1,
-      // TODO: If levelId is null, use the highest sort order of the level.
-      'title': title,
-      'synopsis': synopsis,
-      'instructions': instructions,
-      // 'cover': cover, // TODO: Implement image upload.
-      // 'coverFireStoragePath': coverFireStoragePath,
-      'recapVideo': recapVideo,
-      'lessonVideo': lessonVideo,
-      'practiceVideo': practiceVideo,
-      'creatorId': currentUser!.uid,
-      'graduationRequirements': graduationRequirements,
-    });
+        await LessonFunctions.createLesson(
+            courseId: selectedCourse!.id!,
+            levelId: levelId,
+            sortOrder: _findHighestLessonSortOrder() + 1,
+            title: title,
+            synopsis: synopsis,
+            instructions: instructions,
+            recapVideo: recapVideo,
+            lessonVideo: lessonVideo,
+            practiceVideo: practiceVideo,
+            graduationRequirements: graduationRequirements,
+            creatorId: currentUser!.uid);
 
     if (levelId == null) {
       sortUnattachedLessons();
@@ -541,12 +402,7 @@ class LibraryState extends ChangeNotifier {
   @Deprecated('Left over from the first version of the CMS.')
   void updateLessonLegacy(
       String lessonId, String title, String instructions, bool isLevel) {
-    FirebaseFirestore.instance.doc('/lessons/$lessonId').set({
-      'title': title,
-      'instructions': instructions,
-      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
-      'isLevel': isLevel,
-    }, SetOptions(merge: true));
+    LessonFunctions.updateLessonLegacy(lessonId, title, instructions, isLevel);
   }
 
   Future<void> updateLesson(Lesson lesson) async {
@@ -555,7 +411,7 @@ class LibraryState extends ChangeNotifier {
       lesson.graduationRequirements!.removeWhere((element) => element.isEmpty);
     }
 
-    await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
+    await LessonFunctions.updateLesson(lesson.id!, {
       'levelId': lesson.levelId,
       'sortOrder': lesson.sortOrder,
       'title': lesson.title,
@@ -567,15 +423,15 @@ class LibraryState extends ChangeNotifier {
       'lessonVideo': lesson.lessonVideo,
       'practiceVideo': lesson.practiceVideo,
       'graduationRequirements': lesson.graduationRequirements,
-    }, SetOptions(merge: true));
+    });
   }
 
   void updateLevel(Level level) async {
-    await FirebaseFirestore.instance.doc('levels/${level.id}').set({
+    await LevelFunctions.updateLevel(level.id!, {
       'title': level.title,
       'description': level.description,
       'sortOrder': level.sortOrder,
-    }, SetOptions(merge: true));
+    });
   }
 
   Level? findLevel(String levelId) =>
@@ -593,18 +449,13 @@ class LibraryState extends ChangeNotifier {
       String description,
       ApplicationState applicationState,
       LibraryState libraryState) async {
-    DocumentReference<Map<String, dynamic>> docRef = await FirebaseFirestore
-        .instance
-        .collection('/courses')
-        .add(<String, dynamic>{
-      'title': courseName,
-      'description': description,
-      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
-      'isPrivate': true,
-      'invitationCode': invitationCode
-    });
-    var doc = await docRef.get();
-    var course = Course.fromDocument(doc);
+    DocumentReference<Map<String, dynamic>> docRef =
+        await CourseFunctions.createPrivateCourse(
+            title: courseName,
+            description: description,
+            invitationCode: invitationCode,
+            creatorId: _applicationState.currentUser!.uid);
+    var course = Course.fromDocument(await docRef.get());
 
     // Automatically enroll the creator in their own course.
     _applicationState.enrollInPrivateCourse(course);
@@ -613,28 +464,15 @@ class LibraryState extends ChangeNotifier {
   }
 
   Future<Course?> joinPrivateCourse(String invitationCode) async {
-    var snapshot = await FirebaseFirestore.instance
-        .collection('courses')
-        .where('invitationCode', isEqualTo: invitationCode)
-        .get();
-    if (snapshot.docs.isNotEmpty) {
-      var course = Course.fromSnapshot(snapshot.docs.first);
-
-      // Enroll in the private course.
+    final course =
+        await CourseFunctions.findCourseByInvitationCode(invitationCode);
+    if (course != null) {
       await _applicationState.enrollInPrivateCourse(course);
-
-      // Load the enrolled course into LibraryState.
       await _reloadEnrolledCourses();
-
-      // Select the private course.
-      selectedCourse = _availableCourses
-          .firstWhereOrNull((element) => element.id == course.id);
-
-      return course;
-    } else {
-      // Course not found.
-      return Future.value(null);
+      selectedCourse =
+          _availableCourses.firstWhereOrNull((element) => element.id == course.id);
     }
+    return course;
   }
 
   void deleteLevel(Level level) {
@@ -650,7 +488,7 @@ class LibraryState extends ChangeNotifier {
     }
 
     // Delete level.
-    FirebaseFirestore.instance.doc('/levels/${level.id}').delete();
+    LevelFunctions.deleteLevel(level.id!);
 
     // Update sortOrder for following levels.
     for (Level otherLevel in levels) {
@@ -663,14 +501,12 @@ class LibraryState extends ChangeNotifier {
   void addLevel(String title, String description) async {
     var sortOrder = _findHighestLevelSortOrder();
 
-    await FirebaseFirestore.instance.collection('/levels').add({
-      'courseId':
-          FirebaseFirestore.instance.doc('/courses/${selectedCourse?.id}'),
-      'title': title,
-      'description': description,
-      'sortOrder': sortOrder + 1,
-      'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
-    });
+    await LevelFunctions.addLevel(
+        courseId: selectedCourse!.id!,
+        title: title,
+        description: description,
+        sortOrder: sortOrder + 1,
+        creatorId: _applicationState.currentUser!.uid);
   }
 
   _findHighestLevelSortOrder() {
@@ -701,9 +537,7 @@ class LibraryState extends ChangeNotifier {
 
   void detachLesson(Lesson lesson) async {
     // Remove the level.
-    await FirebaseFirestore.instance.doc('/lessons/${lesson.id}').set({
-      'levelId': null,
-    }, SetOptions(merge: true));
+    await LessonFunctions.detachLesson(lesson.id!);
 
     // Sort the unattached lessons.
     var unattachedLessons = getUnattachedLessons().toList();
@@ -729,9 +563,7 @@ class LibraryState extends ChangeNotifier {
   }
 
   void attachLesson(Level level, Lesson selectedLesson, int sortOrder) async {
-    await FirebaseFirestore.instance.doc('/lessons/${selectedLesson.id}').set({
-      'levelId': FirebaseFirestore.instance.doc('/levels/${level.id}'),
-    }, SetOptions(merge: true));
+    await LessonFunctions.attachLessonToLevel(selectedLesson.id!, level.id!);
 
     updateSortOrder(selectedLesson, sortOrder);
 
@@ -810,33 +642,32 @@ class LibraryState extends ChangeNotifier {
     }
   }
 
+  addLessonComment(Lesson lesson, String comment) async {
+    User user = _applicationState.currentUser!;
+    await LessonCommentFunctions.addComment(
+        lessonId: lesson.id!,
+        userId: user.id,
+        creatorUid: user.uid,
+        text: comment);
+  }
+
+  deleteLessonComment(LessonComment comment) async {
+    print('Deleting comment: ${comment.id}');
+    try {
+      await LessonCommentFunctions.deleteComment(comment.id!);
+    } catch (error, stackTrace) {
+      print('Failed to delete comment: $error');
+      debugPrintStack(stackTrace: stackTrace);
+    }
+  }
+
 
   Future<bool> doesCourseTitleExist(String title) async {
-    return await FirebaseFirestore.instance
-        .collection('courses')
-        .where('title', isEqualTo: title)
-        .get()
-        .then((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    return CourseFunctions.titleExists(title);
   }
 
   Future<bool> doesInvitationCodeExist(String title) async {
-    return await FirebaseFirestore.instance
-        .collection('courses')
-        .where('invitationCode', isEqualTo: title)
-        .get()
-        .then((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    return CourseFunctions.invitationCodeExists(title);
   }
 
   void signOut() {
@@ -851,11 +682,12 @@ class LibraryState extends ChangeNotifier {
     _levelListListener = null;
 
     _selectedCourse = null;
-    _isSelectedCourseInitializedFromDb = false;
-    _selectedCourse = null;
+    _availableCourses = [];
+    _publicCourses = [];
     _enrolledPrivateCourses = [];
-    _isCourseListLoaded = false;
-    _isLevelListLoaded = false;
-    _isLessonListLoaded = false;
+    _lessons = null;
+    _levels = null;
+    _isInitialized = false;
+    _initializationCompleter = Completer<void>();
   }
 }

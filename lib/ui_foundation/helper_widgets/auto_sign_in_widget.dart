@@ -50,7 +50,7 @@ class AutoSignInWidgetState extends State<AutoSignInWidget> {
       return;
     }
 
-    await libraryState.ensureSelectedCourseLoaded();
+    await libraryState.initialized;
 
     if (libraryState.selectedCourse != null) {
       _isRedirecting = true;

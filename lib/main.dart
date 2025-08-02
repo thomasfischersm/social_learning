@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -72,6 +74,8 @@ void main() async {
   ApplicationState applicationState = ApplicationState();
   LibraryState libraryState = LibraryState(applicationState);
   CourseDesignerState courseDesignerState = CourseDesignerState(libraryState);
+
+  unawaited(libraryState.initialize());
 
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
