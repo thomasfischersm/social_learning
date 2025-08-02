@@ -4,7 +4,8 @@ import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/firestore_service.dart';
 
 class SessionPlanBlockFunctions {
-  static final FirebaseFirestore _firestore = FirestoreService.instance;
+  // Getter for Firestore so tests can supply a fake instance.
+  static FirebaseFirestore get _firestore => FirestoreService.instance;
   static const String _collectionPath = 'sessionPlanBlocks';
 
   /// Create a new block under a session plan

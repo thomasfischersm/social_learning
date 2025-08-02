@@ -5,7 +5,10 @@ import 'package:social_learning/data/teachable_item_inclusion_status.dart';
 import 'package:social_learning/data/firestore_service.dart';
 
 class TeachableItemFunctions {
-  static final FirebaseFirestore _firestore = FirestoreService.instance;
+  // Getter for Firestore so that tests can provide a fake instance via
+  // [FirestoreService]. Keeping a `final` field here would lock in the default
+  // instance at import time and break test isolation.
+  static FirebaseFirestore get _firestore => FirestoreService.instance;
   static const String _collectionPath = 'teachableItems';
 
   static Future<TeachableItem?> addItem({

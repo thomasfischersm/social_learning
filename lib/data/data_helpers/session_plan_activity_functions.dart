@@ -6,7 +6,8 @@ import 'package:social_learning/data/firestore_service.dart';
 import '../session_play_activity_type.dart';
 
 class SessionPlanActivityFunctions {
-  static final FirebaseFirestore _firestore = FirestoreService.instance;
+  // Getter for Firestore to allow injecting a fake instance during tests.
+  static FirebaseFirestore get _firestore => FirestoreService.instance;
   static const String _collectionPath = 'sessionPlanActivities';
 
   /// Create a new activity

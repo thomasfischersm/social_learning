@@ -4,7 +4,8 @@ import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 
 class TeachableItemTagFunctions {
-  static final FirebaseFirestore _firestore = FirestoreService.instance;
+  // Getter for Firestore allows injecting fakes in tests.
+  static FirebaseFirestore get _firestore => FirestoreService.instance;
   static const String _collectionPath = 'teachableItemTags';
   static const String _itemsCollectionPath = 'teachableItems';
 
