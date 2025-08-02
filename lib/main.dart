@@ -50,7 +50,6 @@ import 'package:flutter/foundation.dart';
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 
 import 'firebase_options.dart';
-import 'ui_foundation/bottom_bar.dart';
 import 'ui_foundation/profile_page.dart';
 import 'ui_foundation/sign_out_page.dart';
 

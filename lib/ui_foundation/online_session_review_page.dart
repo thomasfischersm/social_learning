@@ -346,9 +346,9 @@ class OnlineSessionReviewPageState extends State<OnlineSessionReviewPage> {
                           ),
                         ],
                       );
-                    });
-                  });
-            }),
+                      });
+                    },
+                  ),
           ),
         ),
       ),
