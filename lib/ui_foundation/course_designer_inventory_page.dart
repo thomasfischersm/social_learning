@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:social_learning/data/course.dart';
-import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_data_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_drag_helper.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_intro_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_tag_card.dart';
@@ -19,114 +17,130 @@ class CourseDesignerInventoryPage extends StatefulWidget {
 }
 
 class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
-  InventoryDataContext? _context;
+  final Map<String, bool> _expanded = {};
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final libraryState = Provider.of<LibraryState>(context, listen: false);
-      if (libraryState.selectedCourse?.id != null) {
-        _loadContext(libraryState.selectedCourse!.id!, libraryState.selectedCourse);
-      } else {
-        libraryState.addListener(_libraryStateListener);
-      }
+      context.read<CourseDesignerState>().getItemsWithDependencies();
     });
   }
 
   @override
   void dispose() {
-    final libraryState = Provider.of<LibraryState>(context, listen: false);
-    libraryState.removeListener(_libraryStateListener);
     super.dispose();
-  }
-
-  void _libraryStateListener() {
-    final libraryState = Provider.of<LibraryState>(context, listen: false);
-    final selectedCourse = libraryState.selectedCourse;
-
-    if (selectedCourse?.id != null) {
-      libraryState.removeListener(_libraryStateListener);
-      _loadContext(selectedCourse!.id!, selectedCourse);
-    }
-  }
-
-  void _loadContext(String courseId, Course? course) {
-    final ctx = InventoryDataContext.create(
-      courseId: courseId,
-      course: course,
-      refresh: () => setState(() {}),
-    );
-    if (mounted) {
-      setState(() {
-        _context = ctx;
-      });
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final scaffoldKey = GlobalKey<ScaffoldState>();
-
-    final dataContext = _context;
-
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-          title: const Text('Learning Lab'),
-          leading: CourseDesignerDrawer.hamburger(scaffoldKey),
-          actions: InstructorNavActions.createActions(context)),
-      drawer: CourseDesignerDrawer(),
-      bottomNavigationBar: BottomBarV2.build(context),
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: CustomUiConstants.framePage(
-          enableScrolling: false,
-          enableCreatorGuard: true,
-          dataContext == null || dataContext.isLoading
-              ? const Padding(
-                  padding: EdgeInsets.all(32.0),
-                  child: CircularProgressIndicator(),
-                )
-              : NestedScrollView(
-                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                    SliverToBoxAdapter(child: InventoryIntroCard()),
-                    SliverToBoxAdapter(
-                      child: InventoryTagCard(
-                        tags: dataContext.getTags(),
-                        courseId: dataContext.courseId,
+    return Consumer<CourseDesignerState>(
+      builder: (context, state, _) {
+        final entries = _buildEntries(state);
+        return Scaffold(
+          key: scaffoldKey,
+          appBar: AppBar(
+              title: const Text('Learning Lab'),
+              leading: CourseDesignerDrawer.hamburger(scaffoldKey),
+              actions: InstructorNavActions.createActions(context)),
+          drawer: CourseDesignerDrawer(),
+          bottomNavigationBar: BottomBarV2.build(context),
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: CustomUiConstants.framePage(
+              enableScrolling: false,
+              enableCreatorGuard: true,
+              state.isLoading
+                  ? const Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: CircularProgressIndicator(),
+                    )
+                  : NestedScrollView(
+                      headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                        const SliverToBoxAdapter(child: InventoryIntroCard()),
+                        const SliverToBoxAdapter(
+                          child: InventoryTagCard(),
+                        ),
+                      ],
+                      body: ReorderableListView.builder(
+                        buildDefaultDragHandles: false,
+                        itemCount: entries.length,
+                        onReorder: (oldIndex, newIndex) async {
+                          await InventoryDragHelper.handleReorder(
+                            context: state,
+                            inventoryEntries: entries,
+                            oldIndex: oldIndex,
+                            newIndex: newIndex,
+                          );
+                          setState(() {});
+                        },
+                        itemBuilder: (context, index) {
+                          final entry = entries[index];
+                          return ReorderableDelayedDragStartListener(
+                            key: ValueKey(entry),
+                            index: index,
+                            child: entry.buildWidget(
+                              context,
+                              () {
+                                if (entry is InventoryCategoryEntry) {
+                                  _expanded[entry.category.id!] = entry.isExpanded;
+                                }
+                                setState(() {});
+                              },
+                              state,
+                            ),
+                          );
+                        },
                       ),
                     ),
-                  ],
-                  body: ReorderableListView.builder(
-                    buildDefaultDragHandles: false,
-                    itemCount: dataContext.inventoryEntries.length,
-                    onReorder: (oldIndex, newIndex) async {
-                      await InventoryDragHelper.handleReorder(
-                        context: dataContext,
-                        inventoryEntries: dataContext.inventoryEntries,
-                        oldIndex: oldIndex,
-                        newIndex: newIndex,
-                      );
-                      dataContext.loadInventoryData();
-                    },
-                    itemBuilder: (context, index) {
-                      final entry = dataContext.inventoryEntries[index];
-                      return ReorderableDelayedDragStartListener(
-                        key: ValueKey(entry),
-                        index: index,
-                        child: entry.buildWidget(
-                          context,
-                          () => setState(() {}),
-                          dataContext,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-        ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<InventoryEntry> _buildEntries(CourseDesignerState state) {
+    final entries = <InventoryEntry>[];
+    final categories = [...state.categories]
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    for (final category in categories) {
+      final expanded = _expanded[category.id!] ?? true;
+      final catEntry = InventoryCategoryEntry(
+        category,
+        isExpanded: expanded,
+        onDelete: (cat) async => await state.deleteCategory(cat),
+        state: state,
+      );
+      entries.add(catEntry);
+      if (expanded) {
+        final items = state.getItemsForCategory(category.id!);
+        for (final item in items) {
+          entries.add(
+            InventoryItemEntry(
+              item,
+              onDelete: (itm) async => await state.deleteItem(itm),
+            ),
+          );
+        }
+        entries.add(
+          AddNewItemEntry(
+            category: category,
+            onAdd: (cat, name) => state.addNewItem(cat, name),
+            state: state,
+          ),
+        );
+      }
+    }
+    entries.add(
+      AddNewCategoryEntry(
+        onAdd: (name) => state.addNewCategory(name),
+        onGenerate: () => state.generateInventory(),
+        state: state,
       ),
     );
+    return entries;
   }
 
 }

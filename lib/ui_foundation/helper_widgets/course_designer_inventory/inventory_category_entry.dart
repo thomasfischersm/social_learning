@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_category_functions.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
@@ -12,17 +12,17 @@ class InventoryCategoryEntry extends InventoryEntry {
   final TeachableItemCategory category;
   bool isExpanded;
   final Future<void> Function(TeachableItemCategory category)? onDelete;
-  final InventoryContext contextData;
+  final CourseDesignerState state;
 
   InventoryCategoryEntry(
       this.category, {
         this.isExpanded = true,
         this.onDelete,
-        required this.contextData,
+        required this.state,
       });
 
   @override
-  Widget buildWidget(BuildContext context, VoidCallback refresh, InventoryContext _) {
+  Widget buildWidget(BuildContext context, VoidCallback refresh, CourseDesignerState _) {
     return Container(
       margin: CourseDesignerTheme.cardMargin,
       decoration: BoxDecoration(
@@ -119,8 +119,7 @@ class InventoryCategoryEntry extends InventoryEntry {
             return 'Name cannot be empty';
           }
 
-          final isDuplicate = contextData
-              .getCategories()
+          final isDuplicate = state.categories
               .any((c) => c.id != category.id && c.name.toLowerCase().trim() == trimmed);
 
           if (isDuplicate) {

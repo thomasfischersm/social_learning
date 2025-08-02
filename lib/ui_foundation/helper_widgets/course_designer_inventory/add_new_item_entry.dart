@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
@@ -9,7 +9,7 @@ import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme
 class AddNewItemEntry extends InventoryEntry {
   final TeachableItemCategory category;
   final Future<void> Function(TeachableItemCategory category, String name) onAdd;
-  final InventoryContext contextData;
+  final CourseDesignerState state;
 
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
@@ -17,11 +17,11 @@ class AddNewItemEntry extends InventoryEntry {
   AddNewItemEntry({
     required this.category,
     required this.onAdd,
-    required this.contextData,
+    required this.state,
   });
 
   @override
-  Widget buildWidget(BuildContext context, VoidCallback refresh, InventoryContext _) {
+  Widget buildWidget(BuildContext context, VoidCallback refresh, CourseDesignerState _) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -48,7 +48,7 @@ class AddNewItemEntry extends InventoryEntry {
             final trimmed = text.trim();
             if (trimmed.isEmpty) return;
 
-            final duplicate = contextData
+            final duplicate = state
                 .getItemsForCategory(category.id!)
                 .any((item) => (item.name ?? '').toLowerCase().trim() == trimmed.toLowerCase());
 

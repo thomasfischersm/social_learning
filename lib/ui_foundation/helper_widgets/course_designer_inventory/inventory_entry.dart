@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 
 abstract class InventoryEntry {
   Widget buildWidget(
-      BuildContext context, VoidCallback refresh, InventoryContext dataContext);
+      BuildContext context, VoidCallback refresh, CourseDesignerState state);
 }

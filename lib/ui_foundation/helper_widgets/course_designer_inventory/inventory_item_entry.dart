@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/item_note_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_fanout_widget.dart';
@@ -20,8 +20,8 @@ class InventoryItemEntry extends InventoryEntry {
 
   @override
   Widget buildWidget(
-      BuildContext context, VoidCallback refresh, InventoryContext dataContext) {
-    final allTags = dataContext.getTags();
+      BuildContext context, VoidCallback refresh, CourseDesignerState state) {
+    final allTags = state.tags;
     final assignedTagIds =
     (item.tagIds ?? []).map((ref) => ref.path).toSet();
 
@@ -58,7 +58,7 @@ class InventoryItemEntry extends InventoryEntry {
                   item: item,
                   onSaved: refresh,
                   startInEditMode: false,
-                  dataContext: dataContext,
+                  dataContext: state,
                 ),
               );
             }),
@@ -70,7 +70,7 @@ class InventoryItemEntry extends InventoryEntry {
                 item: item,
                 onSaved: refresh,
                 startInEditMode: true,
-                dataContext: dataContext,
+                dataContext: state,
               ),
             );
           }),
@@ -104,11 +104,10 @@ class InventoryItemEntry extends InventoryEntry {
                   final updated = await TeachableItemFunctions.getItemById(item.id!);
                   if (updated != null) {
                     item= updated; // Update local item reference
-                    final index = dataContext
-                        .getItems()
+                    final index = state.items
                         .indexWhere((i) => i.id == item.id);
                     if (index != -1) {
-                      dataContext.getItems()[index] = updated;
+                      state.items[index] = updated;
                     }
                   }
 
@@ -137,11 +136,10 @@ class InventoryItemEntry extends InventoryEntry {
                 await TeachableItemFunctions.getItemById(item.id!);
                 if (updated != null) {
                   item= updated; // Update local item reference
-                  final index = dataContext
-                      .getItems()
+                  final index = state.items
                       .indexWhere((i) => i.id == item.id);
                   if (index != -1) {
-                    dataContext.getItems()[index] = updated;
+                    state.items[index] = updated;
                   }
                 }
 
