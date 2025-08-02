@@ -37,6 +37,11 @@ class NextLessonCard extends StatelessWidget {
           child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child:
+                Text('Next lesson', style: CustomTextStyles.subHeadline),
+          ),
           LessonCoverImageWidget(lesson.coverFireStoragePath),
           Padding(
             padding: const EdgeInsets.all(8.0),

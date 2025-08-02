@@ -28,20 +28,8 @@ class _CourseHomePageState extends State<CourseHomePage> {
     var course = libraryState.selectedCourse;
     return Scaffold(
       appBar: AppBar(
-        title: Text(course?.title ?? ''),
+        title: const Text('Home'),
         actions: [
-          IconButton(
-              onPressed: () {
-                if (course != null) {
-                  showModalBottomSheet(
-                      context: context,
-                      builder: (context) => Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(course.description ?? ''),
-                          ));
-                }
-              },
-              icon: const Icon(Icons.info_outline)),
           IconButton(
               onPressed: () {
                 NavigationEnum.home.navigateClean(context);
@@ -55,6 +43,26 @@ class _CourseHomePageState extends State<CourseHomePage> {
           child: CustomUiConstants.framePage(Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (course != null) ...[
+                Row(
+                  children: [
+                    Expanded(
+                        child: Text(course.title,
+                            style: CustomTextStyles.headline)),
+                    IconButton(
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (context) => Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text(course.description ?? ''),
+                                  ));
+                        },
+                        icon: const Icon(Icons.info_outline))
+                  ],
+                ),
+                const SizedBox(height: 16),
+              ],
               Row(
                 children: const [
                   Expanded(child: ProgressCard()),
@@ -63,7 +71,8 @@ class _CourseHomePageState extends State<CourseHomePage> {
                 ],
               ),
               const SizedBox(height: 16),
-              Text('Recent progress', style: CustomTextStyles.subHeadline),
+              Text('Community activity',
+                  style: CustomTextStyles.subHeadline),
               const SizedBox(height: 8),
               const ProgressVideoFeed(),
             ],
