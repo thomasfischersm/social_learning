@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
@@ -7,7 +7,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 class AddNewCategoryEntry extends InventoryEntry {
   final Future<void> Function(String name) onAdd;
   final Future<void> Function() onGenerate;
-  final InventoryContext contextData;
+  final CourseDesignerState state;
 
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
@@ -15,11 +15,11 @@ class AddNewCategoryEntry extends InventoryEntry {
   AddNewCategoryEntry({
     required this.onAdd,
     required this.onGenerate,
-    required this.contextData,
+    required this.state,
   });
 
   @override
-  Widget buildWidget(BuildContext context, VoidCallback refresh, InventoryContext _) {
+  Widget buildWidget(BuildContext context, VoidCallback refresh, CourseDesignerState _) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
@@ -37,8 +37,8 @@ class AddNewCategoryEntry extends InventoryEntry {
                 final trimmed = text.trim();
                 if (trimmed.isEmpty) return;
 
-                final duplicate = contextData
-                    .getCategories()
+                final duplicate = state
+                    .categories
                     .any((c) =>
                         c.name.toLowerCase().trim() == trimmed.toLowerCase());
 
@@ -74,8 +74,8 @@ class AddNewCategoryEntry extends InventoryEntry {
   }
 
   Future<void> _onAIPressed(BuildContext context) async {
-    final hasCategories = contextData.getCategories().isNotEmpty;
-    final hasItems = contextData.getItems().isNotEmpty;
+    final hasCategories = state.categories.isNotEmpty;
+    final hasItems = state.items.isNotEmpty;
 
     if (hasCategories || hasItems) {
       await DialogUtils.showInfoDialog(

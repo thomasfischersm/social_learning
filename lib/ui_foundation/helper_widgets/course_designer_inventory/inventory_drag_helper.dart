@@ -7,13 +7,13 @@ import 'package:social_learning/data/teachable_item_category.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_category_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_item_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_category_entry.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_item_entry.dart';
 
 class InventoryDragHelper {
   static Future<void> handleReorder({
-    required InventoryContext context,
+    required CourseDesignerState context,
     required List<InventoryEntry> inventoryEntries,
     required int oldIndex,
     required int newIndex,
@@ -41,7 +41,7 @@ class InventoryDragHelper {
   }
 
   static Future<void> _handleCategoryDrag({
-    required InventoryContext context,
+    required CourseDesignerState context,
     required List<InventoryEntry> inventoryEntries,
     required InventoryCategoryEntry draggedEntry,
     required int newIndex,
@@ -75,7 +75,7 @@ class InventoryDragHelper {
   }
 
   static Future<void> _handleItemDrag({
-    required InventoryContext context,
+    required CourseDesignerState context,
     required List<InventoryEntry> inventoryEntries,
     required InventoryItemEntry draggedEntry,
     required int newIndex,

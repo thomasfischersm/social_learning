@@ -10,6 +10,7 @@ import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/cms_detail_page.dart';
 import 'package:social_learning/ui_foundation/cms_home_page.dart';
 import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
@@ -69,6 +70,7 @@ void main() async {
 
   ApplicationState applicationState = ApplicationState();
   LibraryState libraryState = LibraryState(applicationState);
+  CourseDesignerState courseDesignerState = CourseDesignerState(libraryState);
 
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.dumpErrorToConsole(details);
@@ -78,6 +80,7 @@ void main() async {
     providers: [
       ChangeNotifierProvider(create: (context) => applicationState),
       ChangeNotifierProvider(create: (context) => libraryState),
+      ChangeNotifierProvider(create: (context) => courseDesignerState),
       ChangeNotifierProvider(
           create: (context) => StudentState(applicationState, libraryState)),
       ChangeNotifierProvider(

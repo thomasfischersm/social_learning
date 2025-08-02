@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.dart';
+import 'package:provider/provider.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_tag_editor_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/tag_pill.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
 
 class InventoryTagCard extends StatefulWidget {
-  final List<TeachableItemTag> tags;
-  final String courseId;
-
-  const InventoryTagCard({
-    super.key,
-    required this.tags,
-    required this.courseId,
-  });
+  const InventoryTagCard({super.key});
 
   @override
   State<InventoryTagCard> createState() => _InventoryTagCardState();
@@ -26,7 +21,8 @@ class _InventoryTagCardState extends State<InventoryTagCard> {
   @override
   void initState() {
     super.initState();
-    _localTags = [...widget.tags];
+    final state = context.read<CourseDesignerState>();
+    _localTags = [...state.tags];
   }
 
   @override
@@ -67,14 +63,17 @@ class _InventoryTagCardState extends State<InventoryTagCard> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(4),
                 onTap: () async {
+                  final state = context.read<CourseDesignerState>();
+                  final courseId = state.course?.id;
+                  if (courseId == null) return;
                   await showDialog(
                     context: context,
                     builder: (_) => InventoryTagEditorDialog(
                       initialTags: _localTags,
-                      courseId: widget.courseId,
+                      courseId: courseId,
                     ),
                   );
-                  final updated = await TeachableItemTagFunctions.getTagsForCourse(widget.courseId);
+                  final updated = await TeachableItemTagFunctions.getTagsForCourse(courseId);
                   setState(() => _localTags = updated);
                 },
                 child: const Icon(Icons.edit, size: 14, color: Colors.grey),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
 import 'package:social_learning/data/teachable_item.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_context.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
@@ -10,7 +10,7 @@ class ItemNoteDialog extends StatefulWidget {
   final TeachableItem item;
   final VoidCallback onSaved;
   final bool startInEditMode;
-  final InventoryContext dataContext;
+  final CourseDesignerState dataContext;
 
   const ItemNoteDialog({
     super.key,
@@ -87,8 +87,7 @@ class _ItemNoteDialogState extends State<ItemNoteDialog> {
       return;
     }
 
-    final existingItems = widget.dataContext
-        .getItems()
+    final existingItems = widget.dataContext.items
         .where((item) =>
     item.categoryId.id == widget.item.categoryId.id &&
         item.id != widget.item.id &&
