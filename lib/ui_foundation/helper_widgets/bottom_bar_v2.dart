@@ -130,7 +130,8 @@ class BottomBarV2 {
     String? currentRoute = ModalRoute.of(context)?.settings.name;
 
     if (currentRoute == null) {
-      print('Couldn't determine the current route.');
+      // Use double quotes to avoid escaping the apostrophe in "Couldn't".
+      print("Couldn't determine the current route.");
       return -1;
     }
 

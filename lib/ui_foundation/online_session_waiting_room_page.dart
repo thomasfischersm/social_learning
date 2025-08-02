@@ -139,14 +139,17 @@ class OnlineSessionWaitingRoomState
                                     textStyle: TextStyle(fontSize: 16),
                                   ),
                                 ),
-                              ],
-                            );
-                          });
-                    }
-                  });
-                }),
+                                ],
+                              );
+                            },
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ),
               ),
-            )));
+            );
   }
 
   Future<void> _launchVC(String? videoCallUrl) async {

@@ -65,12 +65,14 @@ class CourseCreateState extends State<CourseCreatePage> {
             child: CustomUiConstants.framePage(Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Consumer2<LibraryState, ApplicationState>(
-                  builder: (context, libraryState, applicationState, child) {
-                    return Card(
+                  Consumer2<LibraryState, ApplicationState>(
+                    builder:
+                        (context, libraryState, applicationState, child) {
+                      return Card(
                         margin: const EdgeInsets.all(8.0),
-                        child: Column(children: [
-                          Container(
+                        child: Column(
+                          children: [
+                            Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
@@ -81,30 +83,35 @@ class CourseCreateState extends State<CourseCreatePage> {
                                 ),
                               ),
                               child: Text('Create Course',
-                                  style: CustomTextStyles.headline)),
-                          SizedBox(height: 8),
-                          Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Column(children: [
-                                TextField(
-                                    decoration:
-                                        CustomUiConstants.getFilledInputDecoration(
+                                  style: CustomTextStyles.headline),
+                            ),
+                            const SizedBox(height: 8),
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Column(
+                                children: [
+                                  TextField(
+                                    decoration: CustomUiConstants
+                                        .getFilledInputDecoration(
                                       context,
                                       labelText: 'Course Name',
                                     ).copyWith(errorText: courseNameError),
-                                    controller: courseNameController),
-                                SizedBox(height: 8),
+                                    controller: courseNameController,
+                                  ),
+                                  const SizedBox(height: 8),
                                   TextField(
-                                      decoration:
-                                          CustomUiConstants.getFilledInputDecoration(
-                                        context,
-                                        labelText: 'Invitation Code',
-                                      ).copyWith(errorText: invitationCodeError),
-                                      controller: invitationCodeController),
-                                  SizedBox(height: 8),
+                                    decoration: CustomUiConstants
+                                        .getFilledInputDecoration(
+                                      context,
+                                      labelText: 'Invitation Code',
+                                    ).copyWith(
+                                        errorText: invitationCodeError),
+                                    controller: invitationCodeController,
+                                  ),
+                                  const SizedBox(height: 8),
                                   TextField(
-                                    decoration:
-                                        CustomUiConstants.getFilledInputDecoration(
+                                    decoration: CustomUiConstants
+                                        .getFilledInputDecoration(
                                       context,
                                       labelText: 'Description',
                                     ),
@@ -112,13 +119,19 @@ class CourseCreateState extends State<CourseCreatePage> {
                                     minLines: 5,
                                     maxLines: null,
                                   ),
-                                ]))
-                          ]));
-                    });
-                  },
-                ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
               ],
-            ))));
+            ),
+          ),
+        ),
+      );
   }
 
   void _createCourse() async {
