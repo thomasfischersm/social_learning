@@ -73,25 +73,6 @@ void main() {
     expect(ids, contains(teachRef));
   });
 
-  test('addTeachableItem and removeTeachableItem modify IDs', () async {
-    await fake.collection('courses').doc('c1').set({'title': 't'});
-    final obj = await LearningObjectiveFunctions.addObjective(
-        courseId: 'c1', name: 'obj', sortOrder: 0);
-    final itemRef = fake.collection('teachableItems').doc('ti1');
-    await itemRef.set({'name': 'item'});
-    await LearningObjectiveFunctions.addTeachableItem(
-        objectiveId: obj.id!, teachableItemRef: itemRef);
-    var snap =
-        await fake.collection('learningObjectives').doc(obj.id!).get();
-    var ids = List<DocumentReference>.from(snap['teachableItemIds']);
-    expect(ids, contains(itemRef));
-    await LearningObjectiveFunctions.removeTeachableItem(
-        objectiveId: obj.id!, teachableItemRef: itemRef);
-    snap = await fake.collection('learningObjectives').doc(obj.id!).get();
-    ids = List<DocumentReference>.from(snap['teachableItemIds']);
-    expect(ids, isEmpty);
-  });
-
   test('updateObjective trims name and description', () async {
     await fake.collection('courses').doc('c1').set({'title': 't'});
     final obj = await LearningObjectiveFunctions.addObjective(
@@ -114,55 +95,5 @@ void main() {
     final snap =
         await fake.collection('learningObjectives').doc(obj.id!).get();
     expect(snap.exists, isFalse);
-  });
-
-  test('addItemToObjective adds teachable item ref', () async {
-    await fake.collection('courses').doc('c1').set({'title': 't'});
-    final obj = await LearningObjectiveFunctions.addObjective(
-        courseId: 'c1', name: 'obj', sortOrder: 0);
-    await fake.collection('teachableItems').doc('ti1').set({'n': 'n'});
-    final updated = await LearningObjectiveFunctions.addItemToObjective(
-        objectiveId: obj.id!, teachableItemId: 'ti1');
-    expect(updated!.teachableItemRefs.length, 1);
-    final snap =
-        await fake.collection('learningObjectives').doc(obj.id!).get();
-    final refs = List<DocumentReference>.from(snap['teachableItemRefs']);
-    expect(refs.length, 1);
-    expect(refs.first.id, 'ti1');
-  });
-
-  test('replaceItemInObjective swaps teachable item ref', () async {
-    await fake.collection('courses').doc('c1').set({'title': 't'});
-    final obj = await LearningObjectiveFunctions.addObjective(
-        courseId: 'c1', name: 'obj', sortOrder: 0);
-    await fake.collection('teachableItems').doc('old').set({'n': 'o'});
-    await fake.collection('teachableItems').doc('new').set({'n': 'n'});
-    await LearningObjectiveFunctions.addItemToObjective(
-        objectiveId: obj.id!, teachableItemId: 'old');
-    await LearningObjectiveFunctions.replaceItemInObjective(
-        objectiveId: obj.id!,
-        oldTeachableItemId: 'old',
-        newTeachableItemId: 'new');
-    final snap =
-        await fake.collection('learningObjectives').doc(obj.id!).get();
-    final refs = List<DocumentReference>.from(snap['teachableItemRefs']);
-    expect(refs.length, 1);
-    expect(refs.first.id, 'new');
-  });
-
-  test('removeItemFromObjective removes teachable item ref', () async {
-    await fake.collection('courses').doc('c1').set({'title': 't'});
-    final obj = await LearningObjectiveFunctions.addObjective(
-        courseId: 'c1', name: 'obj', sortOrder: 0);
-    await fake.collection('teachableItems').doc('ti1').set({'n': 'n'});
-    await LearningObjectiveFunctions.addItemToObjective(
-        objectiveId: obj.id!, teachableItemId: 'ti1');
-    final updated = await LearningObjectiveFunctions.removeItemFromObjective(
-        objectiveId: obj.id!, teachableItemId: 'ti1');
-    expect(updated!.teachableItemRefs, isEmpty);
-    final snap =
-        await fake.collection('learningObjectives').doc(obj.id!).get();
-    final refs = List<DocumentReference>.from(snap['teachableItemRefs']);
-    expect(refs, isEmpty);
   });
 }

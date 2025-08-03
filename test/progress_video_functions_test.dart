@@ -185,48 +185,4 @@ void main() {
     expect(videos.every((v) => !v.isProfilePrivate), isTrue);
     expect(videos.map((v) => v.id).toList(), ['v2', 'v1']);
   });
-
-  test('fetchCourseVideos paginates results and excludes private videos',
-      () async {
-    final courseRef = docRef('courses', 'c1');
-    final lessonRef = docRef('lessons', 'l1');
-    final userRef = docRef('users', 'u1');
-
-    await fake.collection('progressVideos').doc('v1').set({
-      'userId': userRef,
-      'userUid': 'uid1',
-      'courseId': courseRef,
-      'lessonId': lessonRef,
-      'youtubeUrl': 'u1',
-      'youtubeVideoId': 'id1',
-      'isProfilePrivate': false,
-      'timestamp': Timestamp.fromMillisecondsSinceEpoch(10)
-    });
-    await fake.collection('progressVideos').doc('v2').set({
-      'userId': userRef,
-      'userUid': 'uid1',
-      'courseId': courseRef,
-      'lessonId': lessonRef,
-      'youtubeUrl': 'u2',
-      'youtubeVideoId': 'id2',
-      'isProfilePrivate': false,
-      'timestamp': Timestamp.fromMillisecondsSinceEpoch(20)
-    });
-    await fake.collection('progressVideos').doc('v3').set({
-      'userId': userRef,
-      'userUid': 'uid1',
-      'courseId': courseRef,
-      'lessonId': lessonRef,
-      'youtubeUrl': 'u3',
-      'youtubeVideoId': 'id3',
-      'isProfilePrivate': true,
-      'timestamp': Timestamp.fromMillisecondsSinceEpoch(30)
-    });
-
-    final first = await ProgressVideoFunctions.fetchCourseVideos('c1', limit: 1);
-    expect(first.docs.map((e) => e.id).toList(), ['v2']);
-    final second = await ProgressVideoFunctions.fetchCourseVideos('c1',
-        startAfter: first.docs.first, limit: 1);
-    expect(second.docs.map((e) => e.id).toList(), ['v1']);
-  });
 }

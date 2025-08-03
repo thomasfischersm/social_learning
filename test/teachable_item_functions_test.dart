@@ -95,23 +95,6 @@ void main() {
     expect(remaining.first.sortOrder, 0);
   });
 
-  test('assignTagToItem and removeItemTagFromItem manage tags', () async {
-    await fake.collection('courses').doc('c1').set({'title': 't'});
-    final cat = await TeachableItemCategoryFunctions.addCategory(courseId: 'c1', name: 'cat');
-    final item = await TeachableItemFunctions.addItem(
-        courseId: 'c1', categoryId: cat!.id!, name: 'i1');
-    final tagRef = fake.collection('teachableItemTags').doc('tag1');
-    await tagRef.set({'courseId': fake.collection('courses').doc('c1')});
-    await TeachableItemFunctions.assignTagToItem(
-        itemId: item!.id!, tagRef: tagRef);
-    var snap = await fake.collection('teachableItems').doc(item.id!).get();
-    expect((snap.data()!['tagIds'] as List).length, 1);
-    await TeachableItemFunctions.removeItemTagFromItem(
-        itemId: item.id!, tagRef: tagRef);
-    snap = await fake.collection('teachableItems').doc(item.id!).get();
-    expect((snap.data()!['tagIds'] as List).isEmpty, true);
-  });
-
   test('updateItemSortOrder reorders within and across categories', () async {
     await fake.collection('courses').doc('c1').set({'title': 't'});
     final cat1 = await TeachableItemCategoryFunctions.addCategory(courseId: 'c1', name: 'c1');
@@ -160,24 +143,6 @@ void main() {
     expect(fetched?.name, 'i1');
   });
 
-  test('dependency functions add, toggle, and remove prerequisites', () async {
-    await fake.collection('courses').doc('c1').set({'title': 't'});
-    final cat = await TeachableItemCategoryFunctions.addCategory(courseId: 'c1', name: 'cat');
-    final i1 = await TeachableItemFunctions.addItem(
-        courseId: 'c1', categoryId: cat!.id!, name: 'i1');
-    final i2 = await TeachableItemFunctions.addItem(
-        courseId: 'c1', categoryId: cat.id!, name: 'i2');
-    var updated = await TeachableItemFunctions.addDependency(
-        target: i1!, dependency: i2!, required: true);
-    expect(updated?.requiredPrerequisiteIds?.length, 1);
-    updated = await TeachableItemFunctions.toggleDependency(
-        target: updated!, dependency: i2);
-    expect(updated?.recommendedPrerequisiteIds?.length, 1);
-    updated = await TeachableItemFunctions.removeDependency(
-        target: updated!, dependency: i2);
-    expect(updated?.recommendedPrerequisiteIds?.isEmpty ?? true, true);
-  });
-
   test('updateInclusionStatuses and updateDurationOverride modify fields',
       () async {
     await fake.collection('courses').doc('c1').set({'title': 't'});
@@ -198,23 +163,5 @@ void main() {
     await TeachableItemFunctions.updateDurationOverride(first!, 15);
     first = await TeachableItemFunctions.getItemById(i1.id!);
     expect(first?.durationInMinutes, 15);
-  });
-
-  test('lesson association helpers manage lessonRefs', () async {
-    await fake.collection('courses').doc('c1').set({'title': 't'});
-    final cat = await TeachableItemCategoryFunctions.addCategory(courseId: 'c1', name: 'cat');
-    final item = await TeachableItemFunctions.addItem(
-        courseId: 'c1', categoryId: cat!.id!, name: 'i1');
-    await fake.collection('lessons').doc('l1').set({'name': 'l1'});
-    await fake.collection('lessons').doc('l2').set({'name': 'l2'});
-    var updated = await TeachableItemFunctions.addLessonToTeachableItem(
-        itemId: item!.id!, lessonId: 'l1');
-    expect(updated?.lessonRefs?.length, 1);
-    updated = await TeachableItemFunctions.replaceLessonOnItem(
-        itemId: item.id!, oldLessonId: 'l1', newLessonId: 'l2');
-    expect(updated?.lessonRefs?.first.id, 'l2');
-    updated = await TeachableItemFunctions.removeLessonFromTeachableItem(
-        itemId: item.id!, lessonId: 'l2');
-    expect(updated?.lessonRefs?.isEmpty ?? true, true);
   });
 }

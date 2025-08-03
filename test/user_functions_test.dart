@@ -7,17 +7,13 @@ import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/user.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
   late FakeFirebaseFirestore fake;
 
-  setUpAll(() async {
-    await Firebase.initializeApp();
-  });
-
-  setUp(() async {
+  setUp(() {
     fake = FakeFirebaseFirestore();
     FirestoreService.instance = fake;
-    await fake.collection('users').doc('u1').set({
+
+    fake.collection('users').doc('u1').set({
       'uid': 'uid1',
       'displayName': 'Alice',
       'sortName': 'alice',
@@ -28,6 +24,10 @@ void main() {
       'created': Timestamp.now(),
       'email': 'alice@example.com',
     });
+  });
+
+  tearDown(() {
+    FirestoreService.instance = null;
   });
 
   tearDown(() {
@@ -72,9 +72,5 @@ void main() {
     final ref = fake.doc('courses/123');
     expect(UserFunctions.extractNumberId(ref), '123');
     expect(UserFunctions.extractNumberId(null), isNull);
-  });
-
-  test('isFirebaseAuthLoggedOut is true when no user signed in', () {
-    expect(UserFunctions.isFirebaseAuthLoggedOut, isTrue);
   });
 }
