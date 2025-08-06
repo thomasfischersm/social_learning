@@ -24,46 +24,29 @@ class ProgressCard extends StatelessWidget {
       double progress =
           totalLessons == 0 ? 0 : completed / totalLessons.toDouble();
       Color beltColor = BeltColorFunctions.getBeltColor(progress);
+      const double strokeWidth = 8;
       return Card(
           child: Padding(
         padding: const EdgeInsets.all(16),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            double size = constraints.maxWidth;
-            double strokeWidth = 8;
-            return SizedBox.expand(
-              child: Center(
-                child: SizedBox(
-                  height: size,
-                  width: size,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      SizedBox.expand(
-                        child: CircularProgressIndicator(
-                          value: progress,
-                          strokeWidth: strokeWidth,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(beltColor),
-                          backgroundColor: beltColor.withOpacity(.25),
-                        ),
-                      ),
-                      SizedBox(
-                        width: size - strokeWidth * 2,
-                        height: size - strokeWidth * 2,
-                        child: Center(
-                          child: Text(
-                              '$completed of $totalLessons\nlessons completed',
-                              textAlign: TextAlign.center,
-                              style: CustomTextStyles.getBody(context)),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+        child: Stack(
+          alignment: Alignment.center,
+          fit: StackFit.expand,
+          children: [
+            FittedBox(
+              fit: BoxFit.contain,
+              child: CircularProgressIndicator(
+                value: progress,
+                strokeWidth: strokeWidth,
+                color: beltColor,
+                backgroundColor: beltColor.withOpacity(.25),
               ),
-            );
-          },
+            ),
+            Center(
+              child: Text('$completed of $totalLessons\nlessons completed',
+                  textAlign: TextAlign.center,
+                  style: CustomTextStyles.getBody(context)),
+            ),
+          ],
         ),
       ));
     });
