@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # tool/codex_setup.sh – full tool-chain bootstrap
+echo "=== Codex setup script has started ==="
 set -euo pipefail
 
 # ───── Versions (latest stable as of Aug 2025) ───────────
