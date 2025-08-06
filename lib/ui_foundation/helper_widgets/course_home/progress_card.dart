@@ -24,7 +24,7 @@ class ProgressCard extends StatelessWidget {
       double progress =
           totalLessons == 0 ? 0 : completed / totalLessons.toDouble();
       Color beltColor = BeltColorFunctions.getBeltColor(progress);
-      const double strokeWidth = 8;
+      const double strokeWidth = 6;
       return Card(
           child: Padding(
         padding: const EdgeInsets.all(16),
@@ -32,8 +32,9 @@ class ProgressCard extends StatelessWidget {
           alignment: Alignment.center,
           fit: StackFit.expand,
           children: [
-            FittedBox(
-              fit: BoxFit.contain,
+            FractionallySizedBox(
+              widthFactor: 0.85,
+              heightFactor: 0.85,
               child: CircularProgressIndicator(
                 value: progress,
                 strokeWidth: strokeWidth,
@@ -42,7 +43,7 @@ class ProgressCard extends StatelessWidget {
               ),
             ),
             Center(
-              child: Text('$completed of $totalLessons\nlessons completed',
+              child: Text('$completed of $totalLessons\nlessons\ncompleted',
                   textAlign: TextAlign.center,
                   style: CustomTextStyles.getBody(context)),
             ),
