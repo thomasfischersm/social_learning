@@ -32,14 +32,13 @@ class ProgressCard extends StatelessWidget {
           alignment: Alignment.center,
           fit: StackFit.expand,
           children: [
-            FractionallySizedBox(
-              widthFactor: 0.85,
-              heightFactor: 0.85,
+            FittedBox(
+              fit: BoxFit.contain,
               child: CircularProgressIndicator(
                 value: progress,
                 strokeWidth: strokeWidth,
                 color: beltColor,
-                backgroundColor: beltColor.withOpacity(.25),
+                backgroundColor: beltColor.withValues(alpha:.25),
               ),
             ),
             Center(
