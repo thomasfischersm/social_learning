@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/course_designer_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_drag_helper.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_intro_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/inventory_tag_card.dart';
@@ -12,7 +13,6 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_item_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_category_entry.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 
 class CourseDesignerInventoryPage extends StatefulWidget {
   const CourseDesignerInventoryPage({super.key});
@@ -45,10 +45,8 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
         final entries = _buildEntries(state);
         return Scaffold(
           key: scaffoldKey,
-          appBar: AppBar(
-              title: const Text('Learning Lab'),
-              leading: CourseDesignerDrawer.hamburger(scaffoldKey),
-              actions: InstructorNavActions.createActions(context)),
+          appBar: CourseDesignerAppBar(
+              title: 'Learning Lab', scaffoldKey: scaffoldKey),
           drawer: CourseDesignerDrawer(),
           bottomNavigationBar: BottomBarV2.build(context),
           body: Align(

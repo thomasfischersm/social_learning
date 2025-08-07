@@ -5,6 +5,7 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
@@ -34,23 +35,23 @@ class LevelDetailState extends State<LevelDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title:
+        appBar:
             Consumer<LibraryState>(builder: (context, libraryState, child) {
-          LevelDetailArgument? argument = ModalRoute.of(context)!
-              .settings
-              .arguments as LevelDetailArgument?;
+          LevelDetailArgument? argument =
+              ModalRoute.of(context)!.settings.arguments as LevelDetailArgument?;
           var levelId = argument?.levelId;
           if (levelId != null) {
             Level? level = libraryState.findLevel(levelId);
             if (level != null) {
               int levelPosition = libraryState.findLevelPosition(level);
-              return Text('Level ${levelPosition + 1}: ${level.title}');
+              return LearningLabAppBar(
+                  title: 'Level ${levelPosition + 1}: ${level.title}');
             }
           } else if (argument?.isFlexLessons == true) {
-            return const Text('Flex Lessons');
+            return const LearningLabAppBar(title: 'Flex Lessons');
           }
-          return const Text('Failed to load');
-        })),
+          return const LearningLabAppBar(title: 'Failed to load');
+        }),
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
           alignment: Alignment.topCenter,

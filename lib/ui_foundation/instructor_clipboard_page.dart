@@ -10,6 +10,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/instructor_clipboard/instructor_clipboard_header_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/instructor_clipboard/instructor_clipboard_table_widget.dart';
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
@@ -74,7 +75,7 @@ class _StudentCheckOffState extends State<InstructorClipboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Coach’s Clipboard')),
+      appBar: const LearningLabAppBar(title: 'Coach’s Clipboard'),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(
         alignment: Alignment.topCenter,

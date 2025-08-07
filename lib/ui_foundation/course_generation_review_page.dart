@@ -6,6 +6,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/data/course_plan.dart';
 import 'package:social_learning/data/data_helpers/course_plan_functions.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
 class CourseGenerationReviewPage extends StatefulWidget {
@@ -42,7 +43,7 @@ class _CourseGenerationReviewPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Generated Course Review')),
+      appBar: const LearningLabAppBar(title: 'Generated Course Review'),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(
         alignment: Alignment.topCenter,

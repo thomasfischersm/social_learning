@@ -8,6 +8,7 @@ import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -81,7 +82,7 @@ class CourseGenerationPageState extends State<CourseGenerationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Curriculum Generator')),
+      appBar: const LearningLabAppBar(title: 'Curriculum Generator'),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(
         alignment: Alignment.topCenter,

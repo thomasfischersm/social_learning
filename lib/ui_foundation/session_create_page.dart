@@ -4,6 +4,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -23,9 +24,7 @@ class SessionCreateState extends State<SessionCreatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Learning Lab'),
-        ),
+        appBar: const LearningLabAppBar(title: 'Learning Lab'),
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,

@@ -14,8 +14,8 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_pre
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_scope/scope_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_scope/scope_items_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_scope/scope_overview_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/course_designer_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CourseDesignerLearningObjectivesPage extends StatefulWidget {
@@ -84,11 +84,8 @@ class _CourseDesignerLearningObjectivesPageState
 
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        title: const Text('Learning Objectives'),
-        leading: CourseDesignerDrawer.hamburger(scaffoldKey),
-        actions: InstructorNavActions.createActions(context),
-      ),
+      appBar: CourseDesignerAppBar(
+          title: 'Learning Objectives', scaffoldKey: scaffoldKey),
       drawer: CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(

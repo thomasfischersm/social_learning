@@ -17,6 +17,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/nearby_mentors_list_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
@@ -108,7 +109,7 @@ class LessonDetailState extends State<LessonDetailPage> {
         var counts = studentState.getCountsForLesson(lesson);
 
             return Scaffold(
-                appBar: AppBar(title: Text('Lesson: ${lesson.title}')),
+                appBar: LearningLabAppBar(title: 'Lesson: ${lesson.title}'),
                 bottomNavigationBar: BottomBarV2.build(context),
                 floatingActionButton: FloatingActionButton(
                   onPressed: () {
@@ -204,7 +205,7 @@ class LessonDetailState extends State<LessonDetailPage> {
           }
 
         return Scaffold(
-            appBar: AppBar(title: const Text('Nothing loaded')),
+            appBar: const LearningLabAppBar(title: 'Nothing loaded'),
             bottomNavigationBar: BottomBarV2.build(context),
             body: const SizedBox.shrink());
       });
