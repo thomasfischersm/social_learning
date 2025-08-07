@@ -8,6 +8,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_comparison_table.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_by_user_id_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
@@ -68,9 +69,7 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Learning Lab'),
-        ),
+        appBar: const LearningLabAppBar(title: 'Learning Lab'),
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,

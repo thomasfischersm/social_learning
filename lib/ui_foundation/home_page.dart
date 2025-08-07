@@ -6,6 +6,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -43,9 +44,7 @@ class HomePageState extends State<HomePage> {
     // PracticeRecordCourseIdMigration.printPracticeRecordsMissingCourseId();
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Learning Lab'),
-        ),
+        appBar: const LearningLabAppBar(title: 'Learning Lab'),
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,

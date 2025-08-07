@@ -11,6 +11,7 @@ import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/lesson_table_cell.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/mentee_table_cell.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/mentor_table_cell.dart';
@@ -32,7 +33,7 @@ class SessionHostState extends State<SessionHostPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Learning Lab')),
+        appBar: const LearningLabAppBar(title: 'Learning Lab'),
         floatingActionButton: SpeedDial(
             icon: Icons.more_vert,
             activeIcon: Icons.close,

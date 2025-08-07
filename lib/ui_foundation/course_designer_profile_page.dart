@@ -7,9 +7,9 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/course_designer_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CourseDesignerProfilePage extends StatefulWidget {
@@ -120,11 +120,8 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBar(
-        title: const Text('Learning Lab'),
-        leading: CourseDesignerDrawer.hamburger(scaffoldKey),
-        actions: InstructorNavActions.createActions(context),
-      ),
+      appBar:
+          CourseDesignerAppBar(title: 'Learning Lab', scaffoldKey: scaffoldKey),
       drawer: const CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(

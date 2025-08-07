@@ -6,6 +6,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/edit_level_title_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/one_time_banner.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -26,13 +27,13 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title:
-              Consumer<LibraryState>(builder: (context, libraryState, child) {
-            return Text('${libraryState.selectedCourse?.title} Curriculum');
-          }),
-          actions: InstructorNavActions.createActions(context),
-        ),
+        appBar: Consumer<LibraryState>(
+            builder: (context, libraryState, child) {
+          return LearningLabAppBar(
+            title: '${libraryState.selectedCourse?.title} Curriculum',
+            actions: InstructorNavActions.createActions(context),
+          );
+        }),
         bottomNavigationBar: BottomBarV2.build(context),
         floatingActionButton: FloatingActionButton(
           onPressed: () {

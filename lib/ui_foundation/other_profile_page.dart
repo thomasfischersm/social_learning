@@ -8,6 +8,7 @@ import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/expanding_text_box.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_progress_video_widget.dart';
 import 'package:social_learning/ui_foundation/profile_comparison_page.dart';
@@ -75,9 +76,7 @@ class OtherProfileState extends State<OtherProfilePage> {
     if (otherUser == null) {
       // Loading view.
       return Scaffold(
-          appBar: AppBar(
-            title: const Text('Loading profile...'),
-          ),
+          appBar: const LearningLabAppBar(title: 'Loading profile...'),
           bottomNavigationBar: BottomBarV2.build(context),
           body: Align(
               alignment: Alignment.topCenter,
@@ -93,8 +92,8 @@ class OtherProfileState extends State<OtherProfilePage> {
     } else if (otherUser.isProfilePrivate) {
       // Private profile view
       return Scaffold(
-          appBar: AppBar(
-            title: Text('Profile ${otherUser.displayName}'),
+          appBar: LearningLabAppBar(
+            title: 'Profile ${otherUser.displayName}',
           ),
           bottomNavigationBar: BottomBarV2.build(context),
           body: Align(
@@ -123,9 +122,7 @@ class OtherProfileState extends State<OtherProfilePage> {
 
       // Regular profile view
       return Scaffold(
-          appBar: AppBar(
-            title: Text(otherUser.displayName),
-          ),
+          appBar: LearningLabAppBar(title: otherUser.displayName),
           floatingActionButton: FloatingActionButton(
             child: const Text('Together'),
             onPressed: () {
