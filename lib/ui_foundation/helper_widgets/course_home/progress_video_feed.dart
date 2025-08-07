@@ -12,6 +12,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/youtube_video_widge
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
+import 'package:social_learning/ui_foundation/other_profile_page.dart';
 
 class ProgressVideoFeed extends StatefulWidget {
   const ProgressVideoFeed({super.key});
@@ -118,40 +119,103 @@ class _ProgressVideoFeedState extends State<ProgressVideoFeed> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            ProfileImageByUserIdWidget(video.userId, libraryState),
-                            const SizedBox(width: 8),
-                            FutureBuilder<User>(
-                                future:
-                                    UserFunctions.getUserById(video.userId.id),
-                                builder: (context, snapshot) {
-                                  String name =
-                                      snapshot.data?.displayName ?? 'Student';
-                                  return Text(name,
-                                      style:
-                                          CustomTextStyles.getBody(context));
-                                }),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
                         if (video.youtubeVideoId != null)
                           YouTubeVideoWidget(videoId: video.youtubeVideoId!),
                         const SizedBox(height: 8),
-                        InkWell(
-                          onTap: () => LessonDetailArgument.goToLessonDetailPage(
-                              context, video.lessonId.id),
-                          child: Text(lessonTitle,
-                              style: CustomTextStyles.getBody(context)?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primary)),
-                        ),
-                        if (video.timestamp != null)
-                          Text(video.timestamp!.toDate().toString(),
-                              style: CustomTextStyles.getBodySmall(context)),
+                        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Expanded(
+                              child: FutureBuilder<User>(
+                                  future: UserFunctions.getUserById(
+                                      video.userId.id),
+                                  builder: (context, snapshot) {
+                                    String name =
+                                        snapshot.data?.displayName ?? 'Student';
+                                    return Row(children: [
+                                      ProfileImageByUserIdWidget(video.userId,
+                                          libraryState,
+                                          maxRadius: 20,
+                                          linkToOtherProfile: true),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                          child: InkWell(
+                                        onTap: snapshot.hasData
+                                            ? () =>
+                                                OtherProfileArgument
+                                                    .goToOtherProfile(
+                                                        context,
+                                                        snapshot.data!.id,
+                                                        snapshot.data!.uid)
+                                            : null,
+                                        child: _SingleLineEllipsisText(name,
+                                            style:
+                                                CustomTextStyles.getBody(
+                                                    context)),
+                                      ))
+                                    ]);
+                                  })),
+                          const SizedBox(width: 8),
+                          Expanded(
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                InkWell(
+                                  onTap: () =>
+                                      LessonDetailArgument.goToLessonDetailPage(
+                                          context, video.lessonId.id),
+                                  child: _SingleLineEllipsisText(lessonTitle,
+                                      style: CustomTextStyles.getBody(context)?.copyWith(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary)),
+                                ),
+                                if (video.timestamp != null)
+                                  Text(_timeAgo(video.timestamp!.toDate()),
+                                      style: CustomTextStyles.getBodySmall(context)),
+                              ]))
+                        ])
                       ])));
         });
+  }
+
+  String _timeAgo(DateTime date) {
+    final Duration diff = DateTime.now().difference(date);
+    if (diff.inMinutes < 60) {
+      final int m = diff.inMinutes;
+      return '$m minute${m == 1 ? '' : 's'} ago';
+    } else if (diff.inHours < 24) {
+      final int h = diff.inHours;
+      return '$h hour${h == 1 ? '' : 's'} ago';
+    } else if (diff.inDays < 7) {
+      final int d = diff.inDays;
+      return '$d day${d == 1 ? '' : 's'} ago';
+    } else if (diff.inDays < 30) {
+      final int w = diff.inDays ~/ 7;
+      return '$w week${w == 1 ? '' : 's'} ago';
+    } else if (diff.inDays < 365) {
+      final int mo = diff.inDays ~/ 30;
+      return '$mo month${mo == 1 ? '' : 's'} ago';
+    } else {
+      final int y = diff.inDays ~/ 365;
+      return '$y year${y == 1 ? '' : 's'} ago';
+    }
+  }
+}
+
+class _SingleLineEllipsisText extends StatelessWidget {
+  final String text;
+  final TextStyle? style;
+
+  const _SingleLineEllipsisText(this.text, {this.style});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: style,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      softWrap: false,
+    );
   }
 }
 

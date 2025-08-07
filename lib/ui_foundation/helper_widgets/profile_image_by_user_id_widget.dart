@@ -12,9 +12,12 @@ class ProfileImageByUserIdWidget extends StatefulWidget {
   final DocumentReference userId;
   final LibraryState libraryState;
   final bool linkToOtherProfile;
+  final double maxRadius;
 
   const ProfileImageByUserIdWidget(this.userId, this.libraryState,
-      {super.key, this.linkToOtherProfile = false});
+      {super.key,
+      this.linkToOtherProfile = false,
+      this.maxRadius = 100});
 
   @override
   State<StatefulWidget> createState() {
@@ -64,9 +67,7 @@ class ProfileImageByUserIdWidgetState
 
   CircleAvatar _createCircleAvatar() {
     print('Creating circle avatar with url: $_profilePhotoUrl');
-    double logicalScreenWidth = MediaQuery.of(context).size.width;
     double pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    double physicalScreenWidth = logicalScreenWidth * pixelRatio;
 
     // TODO: Use the cacheSize parameter to be better with memory usage.
 
@@ -75,9 +76,9 @@ class ProfileImageByUserIdWidgetState
           NetworkImage(
             _profilePhotoUrl!,
           ),
-          width: (physicalScreenWidth * .34).toInt(),
+          width: (widget.maxRadius * 2 * pixelRatio).toInt(),
           policy: ResizeImagePolicy.fit),
-      maxRadius: 100,
+      maxRadius: widget.maxRadius,
     );
   }
 
