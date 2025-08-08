@@ -8,6 +8,7 @@ import 'package:social_learning/data/online_session_review.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/star_rating_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -146,9 +147,7 @@ class OnlineSessionReviewPageState extends State<OnlineSessionReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Submit Review'),
-      ),
+      appBar: const LearningLabAppBar(title: 'Submit Review'),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
         backgroundColor: _isFormComplete

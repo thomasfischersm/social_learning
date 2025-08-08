@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/enable_location_button.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_lookup_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_progress_video_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_text_editor.dart';
@@ -34,9 +35,7 @@ class ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Social Learning'),
-      ),
+      appBar: const LearningLabAppBar(title: 'Social Learning'),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(
           alignment: Alignment.topCenter,

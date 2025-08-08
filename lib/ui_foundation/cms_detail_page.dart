@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 
 class CmsDetailPage extends StatefulWidget {
@@ -51,9 +52,7 @@ class CmsDetailPageState extends State<CmsDetailPage> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Social Learning'),
-        ),
+        appBar: const LearningLabAppBar(title: 'Social Learning'),
         bottomNavigationBar: BottomBarV2.build(context),
         body: Center(
             child: Container(
