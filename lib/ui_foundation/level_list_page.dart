@@ -22,8 +22,11 @@ class LevelListPage extends StatefulWidget {
 }
 
 class LevelListState extends State<LevelListPage> {
+
   @override
   Widget build(BuildContext context) {
+    print('Landed on LevelListPage');
+
     return Scaffold(
         appBar: AppBar(title:
             Consumer<LibraryState>(builder: (context, libraryState, child) {

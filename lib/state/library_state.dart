@@ -96,13 +96,17 @@ class LibraryState extends ChangeNotifier {
   }
 
   Future<void> initialize() async {
+    print('LibraryState.initialize called');
     if (_isInitialized) {
+      print('LibraryState.initialize: Instant return of the future.');
       return _initializationCompleter.future;
     }
     _isInitialized = true;
 
+    print('LibraryState.initialize: Blocking on waiting for user to be signed in');
     final currentCourseId =
-        _applicationState.currentUser?.currentCourseId?.id;
+        (await _applicationState.currentUserBlocking)?.currentCourseId?.id;
+    print('LibraryState.initialize: currentUser = ${_applicationState.currentUser}');
 
     final futures = <Future<void>>[loadCourseList()];
     if (currentCourseId != null) {
@@ -119,7 +123,9 @@ class LibraryState extends ChangeNotifier {
       }
     }
 
+    print('LibraryState.initialize: Complete the future.');
     _initializationCompleter.complete();
+    print('LibraryState.initialize: Completed the future.');
     return _initializationCompleter.future;
   }
 

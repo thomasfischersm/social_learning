@@ -50,6 +50,7 @@ class _CourseLoadingGuardState extends State<CourseLoadingGuard> {
     return FutureBuilder<void>(
       future: _loadFuture,
       builder: (context, snapshot) {
+        print('CourseLoadingGuard: FutureBuilder called with state: ${snapshot.connectionState}');
         if (snapshot.connectionState == ConnectionState.done) {
           if (libraryState.selectedCourse != null) {
             return widget.child;

@@ -52,8 +52,8 @@ class AutoSignInWidgetState extends State<AutoSignInWidget> {
 
     await libraryState.initialized;
 
+    _isRedirecting = true;
     if (libraryState.selectedCourse != null) {
-      _isRedirecting = true;
       SchedulerBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) {
           print('Going from the landing page to the course home page.');
@@ -61,14 +61,12 @@ class AutoSignInWidgetState extends State<AutoSignInWidget> {
               .pushReplacementNamed(NavigationEnum.courseHome.route);
         }
       });
-      return;
+    } else {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) {
+          Navigator.of(context).pushReplacementNamed(NavigationEnum.home.route);
+        }
+      });
     }
-
-    _isRedirecting = true;
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (context.mounted) {
-        Navigator.of(context).pushReplacementNamed(NavigationEnum.home.route);
-      }
-    });
   }
 }

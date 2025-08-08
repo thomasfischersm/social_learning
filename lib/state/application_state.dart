@@ -36,11 +36,17 @@ class ApplicationState extends ChangeNotifier {
   }
 
   bool _isLoggedIn = false;
+  /// Is only true if the user is confirmed logged out. If the initialization
+  /// is still in progress, it is false.
+  bool _isLoggedOut = false;
 
   bool get isLoggedIn => _isLoggedIn;
 
   bool _isCurrentUserInitialized = false;
   User? _currentUser;
+
+  bool get isCurrentUserInitialized => _isCurrentUserInitialized;
+  Completer<void> _initializationCompleter = Completer<void>();
 
   User? get currentUser {
     _initUser();
@@ -72,7 +78,9 @@ class ApplicationState extends ChangeNotifier {
   }
 
   Future<void> _initUser() async {
+    print('ApplicationState: _initUser called');
     if (_isLoggedIn && !_isCurrentUserInitialized) {
+      print('ApplicationState: Actually initializing the user');
       _isCurrentUserInitialized = true;
       _currentUser = await UserFunctions.getCurrentUser();
 
@@ -93,14 +101,20 @@ class ApplicationState extends ChangeNotifier {
             .update({'email': currentAuthEmail});
       }
 
+      print('ApplicationState about to complete the future.');
+      if (_initializationCompleter.isCompleted) {
+        // If the completer is already completed, we need to create a new one.
+        _initializationCompleter = Completer<void>();
+      }
+      _initializationCompleter.complete();
+      print('ApplicationState completed the future.');
       notifyListeners();
     }
+
+    return _initializationCompleter.future;
   }
 
   Future<void> init() async {
-    // await Firebase.initializeApp(
-    //     options: DefaultFirebaseOptions.currentPlatform);
-
     FirebaseUIAuth.configureProviders([
       EmailAuthProvider(),
     ]);
@@ -109,8 +123,11 @@ class ApplicationState extends ChangeNotifier {
       print('FirebaseAuth state changed: user=$user');
       if (user == null) {
         _isLoggedIn = false;
+        _isLoggedOut = true;
+        _initializationCompleter.complete();
       } else {
         _isLoggedIn = true;
+        _isLoggedOut = false;
       }
 
       _isCurrentUserInitialized = false;
@@ -161,6 +178,7 @@ class ApplicationState extends ChangeNotifier {
     print('FirebaseAuth signOut done');
 
     _isLoggedIn = false;
+    _isLoggedOut = true;
     _isCurrentUserInitialized = false;
     _currentUser = null;
 
