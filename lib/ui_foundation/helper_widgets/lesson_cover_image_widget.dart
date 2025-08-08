@@ -33,25 +33,28 @@ class LessonCoverImageWidgetState extends State<LessonCoverImageWidget> {
           aspectRatio: 16 / 9,
           child:
               Image(image: NetworkImage(coverPhotoUrl), fit: BoxFit.contain));
-    } else {
-      return AspectRatio(
-          aspectRatio: 16 / 9,
-          child: Container(
-              color: Colors.grey[200],
-              child: const Center(
-                  child: Icon(Icons.image_not_supported,
-                      color: Colors.grey))));
     }
+    return const SizedBox.shrink();
   }
 
   Future<void> init() async {
     _lastCoverFireStoragePath = widget.coverFireStoragePath;
     if (widget.coverFireStoragePath != null) {
-      String url = await FirebaseStorage.instance
-          .ref(widget.coverFireStoragePath)
-          .getDownloadURL();
+      try {
+        String url = await FirebaseStorage.instance
+            .ref(widget.coverFireStoragePath)
+            .getDownloadURL();
+        setState(() {
+          _coverPhotoUrl = url;
+        });
+      } catch (_) {
+        setState(() {
+          _coverPhotoUrl = null;
+        });
+      }
+    } else {
       setState(() {
-        _coverPhotoUrl = url;
+        _coverPhotoUrl = null;
       });
     }
   }
