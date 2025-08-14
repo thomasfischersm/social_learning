@@ -45,6 +45,7 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
     if (selectedCourse?.id != null) {
       _loadData(selectedCourse!.id!);
     } else {
+      print('Adding libraryState listener for course selection');
       libraryState.addListener(_libraryStateListener);
     }
   }
@@ -52,6 +53,7 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
   void _libraryStateListener() {
     final libraryState = Provider.of<LibraryState>(context, listen: false);
     final selectedCourse = libraryState.selectedCourse;
+    print('CourseDesignerProfilePage: Library state changed, selected course: ${selectedCourse?.id}');
 
     if (selectedCourse?.id != null) {
       libraryState.removeListener(_libraryStateListener);
@@ -60,6 +62,7 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
   }
 
   Future<void> _loadData(String courseId) async {
+    print('CourseDesignerProfilePage: Loading data for course ID: $courseId');
     _courseId = courseId;
     setState(() => isLoading = true);
 
@@ -75,6 +78,7 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
     notesController.text = _courseProfile?.anythingUnusual ?? '';
 
     setState(() => isLoading = false);
+    print('CourseDesignerProfilePage: Data loaded for course ID: $courseId');
   }
 
   Future<void> _save() async {

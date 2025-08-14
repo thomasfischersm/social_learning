@@ -126,6 +126,7 @@ class LibraryState extends ChangeNotifier {
     print('LibraryState.initialize: Complete the future.');
     _initializationCompleter.complete();
     print('LibraryState.initialize: Completed the future.');
+    notifyListeners();
     return _initializationCompleter.future;
   }
 
