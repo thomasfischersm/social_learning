@@ -30,11 +30,8 @@ class CourseDesignerState extends ChangeNotifier {
   final LibraryState _libraryState;
 
   Course? _activeCourse;
-  bool _isInitialized = false;
-  bool _isLoading = false;
-  bool _isInitializing = false;
-  bool _initQueued = false;
-  Completer<void>? _initCompleter;
+  CourseDesignerStateStatus _status = CourseDesignerStateStatus.uninitialized;
+  Completer<void> _initCompleter = Completer<void>();
 
   CourseProfile? courseProfile;
   List<TeachableItemCategory> categories = [];
@@ -59,71 +56,41 @@ class CourseDesignerState extends ChangeNotifier {
     _libraryState.addListener(_onLibraryStateChanged);
   }
 
-  bool get isLoading => _isLoading;
+  CourseDesignerStateStatus get status => _status;
 
   Course? get course => _activeCourse;
 
-  Future<void> _ensureInitialized({bool wait = true}) async {
-    final selected = _libraryState.selectedCourse;
-    if (selected == null) return;
-
-    if (_isInitialized && _activeCourse?.id == selected.id && !_initQueued && !_isInitializing) {
-      return;
-    }
-
-    final future = _queueInitialization();
-    if (wait) await future;
+  void ensureInitialized() async {
+    await _ensureInitialized();
   }
 
-  Future<void> _processInitQueue() async {
-    while (_initQueued) {
-      _initQueued = false;
-      final selected = _libraryState.selectedCourse;
-      if (selected == null) break;
-      final loadId = selected.id!;
+  Future<void> _ensureInitialized() async {
+    if (_status == CourseDesignerStateStatus.uninitialized) {
+      _status = CourseDesignerStateStatus.initializing;
 
-      _isLoading = true;
+      await _libraryState.initialize();
+      await _initialize();
+    }
+
+    return _initCompleter.future;
+  }
+
+  Future<void> _initialize() async {
+    _activeCourse = _libraryState.selectedCourse;
+    var selectedCourseId = _activeCourse?.id;
+    if (selectedCourseId != null) {
+
+      await _loadDataForCourse(selectedCourseId);
+      _status = CourseDesignerStateStatus.initialized;
+      _initCompleter.complete();
       notifyListeners();
-      try {
-        await _loadDataForCourse(loadId);
-        _activeCourse = selected;
-        _isInitialized = true;
-      } catch (e, st) {
-        debugPrint('Failed to load course data: $e');
-        debugPrint('$st');
-        _activeCourse = null;
-        _isInitialized = false;
-      } finally {
-        _isLoading = false;
-        notifyListeners();
-      }
-
-      if (loadId != _libraryState.selectedCourse?.id) {
-        _isInitialized = false;
-        _initQueued = true;
-      }
     }
-    _isInitializing = false;
-    _initCompleter?.complete();
-    _initCompleter = null;
-
-    if (_initQueued) {
-      _queueInitialization();
-    }
-  }
-
-  Future<void> _queueInitialization() {
-    _initQueued = true;
-    _initCompleter ??= Completer<void>();
-    if (!_isInitializing) {
-      _isInitializing = true;
-      _processInitQueue();
-    }
-    return _initCompleter!.future;
   }
 
   Future<void> _loadDataForCourse(String courseId) async {
-    final planFuture = SessionPlanFunctions.getOrCreateSessionPlanForCourse(courseId);
+    print('Loading course data for courseId: $courseId');
+    final planFuture =
+        SessionPlanFunctions.getOrCreateSessionPlanForCourse(courseId);
     final objectivesFuture =
         LearningObjectiveFunctions.getObjectivesForCourse(courseId);
     final profileFuture = CourseProfileFunctions.getCourseProfile(courseId);
@@ -161,7 +128,8 @@ class CourseDesignerState extends ChangeNotifier {
     tags = results[4] as List<TeachableItemTag>;
     sessionPlan = plan;
     blocks = List.from(blockAndActivityFutures[0] as List<SessionPlanBlock>);
-    activities = List.from(blockAndActivityFutures[1] as List<SessionPlanActivity>);
+    activities =
+        List.from(blockAndActivityFutures[1] as List<SessionPlanActivity>);
 
     _postProcessMaps();
   }
@@ -169,22 +137,29 @@ class CourseDesignerState extends ChangeNotifier {
   void _postProcessMaps() {
     itemById
       ..clear()
-      ..addEntries(items.where((i) => i.id != null).map((i) => MapEntry(i.id!, i)));
+      ..addEntries(
+          items.where((i) => i.id != null).map((i) => MapEntry(i.id!, i)));
     objectiveById
       ..clear()
-      ..addEntries(learningObjectives.where((o) => o.id != null).map((o) => MapEntry(o.id!, o)));
+      ..addEntries(learningObjectives
+          .where((o) => o.id != null)
+          .map((o) => MapEntry(o.id!, o)));
     categoryById
       ..clear()
-      ..addEntries(categories.where((c) => c.id != null).map((c) => MapEntry(c.id!, c)));
+      ..addEntries(
+          categories.where((c) => c.id != null).map((c) => MapEntry(c.id!, c)));
     tagById
       ..clear()
-      ..addEntries(tags.where((t) => t.id != null).map((t) => MapEntry(t.id!, t)));
+      ..addEntries(
+          tags.where((t) => t.id != null).map((t) => MapEntry(t.id!, t)));
     blockById
       ..clear()
-      ..addEntries(blocks.where((b) => b.id != null).map((b) => MapEntry(b.id!, b)));
+      ..addEntries(
+          blocks.where((b) => b.id != null).map((b) => MapEntry(b.id!, b)));
     activityById
       ..clear()
-      ..addEntries(activities.where((a) => a.id != null).map((a) => MapEntry(a.id!, a)));
+      ..addEntries(
+          activities.where((a) => a.id != null).map((a) => MapEntry(a.id!, a)));
 
     blocks.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     activities.sort((a, b) {
@@ -200,18 +175,21 @@ class CourseDesignerState extends ChangeNotifier {
     _updateInclusionStatuses();
   }
 
-  void _onLibraryStateChanged() {
-    if (_activeCourse?.id != _libraryState.selectedCourse?.id) {
-      clear();
-      if (_isInitializing) {
-        _initQueued = true;
+  Future<void> _onLibraryStateChanged() async{
+    if (_activeCourse != _libraryState.selectedCourse) {
+      if (_libraryState.selectedCourse != null) {
+         _status = CourseDesignerStateStatus.initializing;
+         _initCompleter = Completer<void>();
+         await _initialize();
+      } else {
+        _status = CourseDesignerStateStatus.noCourseSelected;
+        clear();
       }
     }
   }
 
   void clear() {
     _activeCourse = _libraryState.selectedCourse;
-    _isInitialized = false;
     courseProfile = null;
     categories.clear();
     items.clear();
@@ -267,7 +245,8 @@ class CourseDesignerState extends ChangeNotifier {
 
   Future<void> deleteCategory(TeachableItemCategory category) async {
     await _ensureInitialized();
-    await TeachableItemCategoryFunctions.deleteCategory(categoryId: category.id!);
+    await TeachableItemCategoryFunctions.deleteCategory(
+        categoryId: category.id!);
     categories.removeWhere((c) => c.id == category.id);
     categoryById.remove(category.id);
     items.removeWhere((i) => i.categoryId.id == category.id);
@@ -277,7 +256,9 @@ class CourseDesignerState extends ChangeNotifier {
   Future<void> generateInventory() async {
     await _ensureInitialized();
     if (_activeCourse == null) return;
-    _isLoading = true;
+
+    var originalStatus = _status;
+    _status = CourseDesignerStateStatus.waitingOnAI;
     notifyListeners();
     try {
       final response = await CloudFunctions.generateCourseInventory(
@@ -289,13 +270,15 @@ class CourseDesignerState extends ChangeNotifier {
       // ignore
     }
     await _loadDataForCourse(_activeCourse!.id!);
-    _isLoading = false;
+    _status = originalStatus;
     notifyListeners();
   }
 
-  Future<void> _saveGeneratedInventory(List<GeneratedCategory> generated) async {
+  Future<void> _saveGeneratedInventory(
+      List<GeneratedCategory> generated) async {
     final categoryNames = generated.map((e) => e.category).toList();
-    final newCategories = await TeachableItemCategoryFunctions.bulkCreateCategories(
+    final newCategories =
+        await TeachableItemCategoryFunctions.bulkCreateCategories(
       courseId: _activeCourse!.id!,
       names: categoryNames,
     );
@@ -328,7 +311,10 @@ class CourseDesignerState extends ChangeNotifier {
     await _ensureInitialized();
     int sortOrder = learningObjectives.isEmpty
         ? 0
-        : learningObjectives.map((o) => o.sortOrder).reduce((a, b) => a > b ? a : b) + 1;
+        : learningObjectives
+                .map((o) => o.sortOrder)
+                .reduce((a, b) => a > b ? a : b) +
+            1;
     final objective = await LearningObjectiveFunctions.addObjective(
       courseId: _activeCourse!.id!,
       name: name,
@@ -339,7 +325,8 @@ class CourseDesignerState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateObjective({required String id, required String name, String? description}) async {
+  Future<void> updateObjective(
+      {required String id, required String name, String? description}) async {
     await _ensureInitialized();
     final objective = await LearningObjectiveFunctions.updateObjective(
       id: id,
@@ -362,7 +349,8 @@ class CourseDesignerState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addLessonToTeachableItem({required TeachableItem item, required Lesson lesson}) async {
+  Future<void> addLessonToTeachableItem(
+      {required TeachableItem item, required Lesson lesson}) async {
     await _ensureInitialized();
     final updated = await TeachableItemFunctions.addLessonToTeachableItem(
       itemId: item.id!,
@@ -395,7 +383,8 @@ class CourseDesignerState extends ChangeNotifier {
     }
   }
 
-  Future<void> removeLessonFromTeachableItem({required TeachableItem item, required Lesson lesson}) async {
+  Future<void> removeLessonFromTeachableItem(
+      {required TeachableItem item, required Lesson lesson}) async {
     await _ensureInitialized();
     final updated = await TeachableItemFunctions.removeLessonFromTeachableItem(
       itemId: item.id!,
@@ -409,7 +398,9 @@ class CourseDesignerState extends ChangeNotifier {
     }
   }
 
-  Future<void> addTeachableItemToObjective({required LearningObjective objective, required TeachableItem item}) async {
+  Future<void> addTeachableItemToObjective(
+      {required LearningObjective objective,
+      required TeachableItem item}) async {
     await _ensureInitialized();
     final updated = await LearningObjectiveFunctions.addItemToObjective(
       objectiveId: objective.id!,
@@ -446,7 +437,9 @@ class CourseDesignerState extends ChangeNotifier {
     }
   }
 
-  Future<void> removeTeachableItemFromObjective({required LearningObjective objective, required TeachableItem item}) async {
+  Future<void> removeTeachableItemFromObjective(
+      {required LearningObjective objective,
+      required TeachableItem item}) async {
     await _ensureInitialized();
     final updated = await LearningObjectiveFunctions.removeItemFromObjective(
       objectiveId: objective.id!,
@@ -483,14 +476,18 @@ class CourseDesignerState extends ChangeNotifier {
     _ensureInitialized();
     final filtered = items.where((item) {
       final hasRequired = item.requiredPrerequisiteIds?.isNotEmpty ?? false;
-      final hasRecommended = item.recommendedPrerequisiteIds?.isNotEmpty ?? false;
+      final hasRecommended =
+          item.recommendedPrerequisiteIds?.isNotEmpty ?? false;
       return hasRequired || hasRecommended;
     }).toList();
     filtered.sort(_itemSortComparator);
     return filtered;
   }
 
-  Future<void> addDependency({required TeachableItem target, required TeachableItem dependency, required bool required}) async {
+  Future<void> addDependency(
+      {required TeachableItem target,
+      required TeachableItem dependency,
+      required bool required}) async {
     await _ensureInitialized();
     final updated = await TeachableItemFunctions.addDependency(
       target: target,
@@ -500,7 +497,9 @@ class CourseDesignerState extends ChangeNotifier {
     _updateItemInContext(updated);
   }
 
-  Future<void> removeDependency({required TeachableItem target, required TeachableItem dependency}) async {
+  Future<void> removeDependency(
+      {required TeachableItem target,
+      required TeachableItem dependency}) async {
     await _ensureInitialized();
     final updated = await TeachableItemFunctions.removeDependency(
       target: target,
@@ -509,7 +508,9 @@ class CourseDesignerState extends ChangeNotifier {
     _updateItemInContext(updated);
   }
 
-  Future<void> toggleDependency({required TeachableItem target, required TeachableItem dependency}) async {
+  Future<void> toggleDependency(
+      {required TeachableItem target,
+      required TeachableItem dependency}) async {
     await _ensureInitialized();
     final updated = await TeachableItemFunctions.toggleDependency(
       target: target,
@@ -573,7 +574,9 @@ class CourseDesignerState extends ChangeNotifier {
     recommendedItemIds.clear();
 
     final explicitlySelectedItems = items
-        .where((item) => item.inclusionStatus == TeachableItemInclusionStatus.explicitlyIncluded)
+        .where((item) =>
+            item.inclusionStatus ==
+            TeachableItemInclusionStatus.explicitlyIncluded)
         .toSet();
 
     Set<TeachableItem> requiredItemsToVisit = {};
@@ -592,18 +595,21 @@ class CourseDesignerState extends ChangeNotifier {
       if (item.recommendedPrerequisiteIds != null) {
         for (var ref in item.recommendedPrerequisiteIds!) {
           final recommendedItem = itemById[ref.id];
-          if ((recommendedItem != null) && (!requiredItemsToVisit.contains(recommendedItem))) {
+          if ((recommendedItem != null) &&
+              (!requiredItemsToVisit.contains(recommendedItem))) {
             recommendedItemsToVisit.add(recommendedItem);
           }
         }
       }
     }
 
-    while (requiredItemsToVisit.isNotEmpty || recommendedItemsToVisit.isNotEmpty) {
+    while (
+        requiredItemsToVisit.isNotEmpty || recommendedItemsToVisit.isNotEmpty) {
       if (requiredItemsToVisit.isNotEmpty) {
         final item = requiredItemsToVisit.first;
         requiredItemsToVisit.remove(item);
-        if (item.inclusionStatus == TeachableItemInclusionStatus.explicitlyExcluded) {
+        if (item.inclusionStatus ==
+            TeachableItemInclusionStatus.explicitlyExcluded) {
           continue;
         }
         requiredItemIds.add(item.id!);
@@ -612,7 +618,8 @@ class CourseDesignerState extends ChangeNotifier {
         if (item.requiredPrerequisiteIds != null) {
           for (var ref in item.requiredPrerequisiteIds!) {
             final requiredItem = itemById[ref.id];
-            if ((requiredItem != null) && (!requiredItemIds.contains(requiredItem.id!))) {
+            if ((requiredItem != null) &&
+                (!requiredItemIds.contains(requiredItem.id!))) {
               requiredItemsToVisit.add(requiredItem);
             }
           }
@@ -631,7 +638,8 @@ class CourseDesignerState extends ChangeNotifier {
       } else if (recommendedItemsToVisit.isNotEmpty) {
         final item = recommendedItemsToVisit.first;
         recommendedItemsToVisit.remove(item);
-        if (item.inclusionStatus == TeachableItemInclusionStatus.explicitlyExcluded) {
+        if (item.inclusionStatus ==
+            TeachableItemInclusionStatus.explicitlyExcluded) {
           continue;
         }
         if (requiredItemIds.contains(item.id!)) {
@@ -669,30 +677,35 @@ class CourseDesignerState extends ChangeNotifier {
     Set<TeachableItem> needToDeselect = {};
 
     for (final item in items) {
-      if (item.inclusionStatus == TeachableItemInclusionStatus.explicitlyIncluded ||
-          item.inclusionStatus == TeachableItemInclusionStatus.explicitlyExcluded) {
+      if (item.inclusionStatus ==
+              TeachableItemInclusionStatus.explicitlyIncluded ||
+          item.inclusionStatus ==
+              TeachableItemInclusionStatus.explicitlyExcluded) {
         continue;
       }
-      bool isImplicitlyIncluded = requiredItemIds.contains(item.id!) || recommendedItemIds.contains(item.id!);
+      bool isImplicitlyIncluded = requiredItemIds.contains(item.id!) ||
+          recommendedItemIds.contains(item.id!);
       if (isImplicitlyIncluded &&
           item.inclusionStatus == TeachableItemInclusionStatus.excluded) {
         needToSelect.add(item);
       } else if (!isImplicitlyIncluded &&
-          item.inclusionStatus == TeachableItemInclusionStatus.includedAsPrerequisite) {
+          item.inclusionStatus ==
+              TeachableItemInclusionStatus.includedAsPrerequisite) {
         needToDeselect.add(item);
       }
     }
 
-    TeachableItemFunctions.updateInclusionStatuses(needToSelect, needToDeselect);
+    TeachableItemFunctions.updateInclusionStatuses(
+        needToSelect, needToDeselect);
 
     for (final item in needToSelect) {
-      item.inclusionStatus = TeachableItemInclusionStatus.includedAsPrerequisite;
+      item.inclusionStatus =
+          TeachableItemInclusionStatus.includedAsPrerequisite;
     }
     for (final item in needToDeselect) {
       item.inclusionStatus = TeachableItemInclusionStatus.excluded;
     }
   }
-
 
   List<TeachableItem> getItemsForCategory(String categoryId) {
     return items.where((item) => item.categoryId.id == categoryId).toList()
@@ -706,7 +719,8 @@ class CourseDesignerState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void saveSessionDuration(int? sessionCount, int? sessionDuration, int? totalMinutes) {
+  void saveSessionDuration(
+      int? sessionCount, int? sessionDuration, int? totalMinutes) {
     if (courseProfile == null) return;
     courseProfile!.sessionCount = sessionCount;
     courseProfile!.sessionDurationInMinutes = sessionDuration;
@@ -724,12 +738,16 @@ class CourseDesignerState extends ChangeNotifier {
 
   int getSelectedItemsTotalMinutes() {
     if (courseProfile == null) return 0;
-    final defaultDuration = courseProfile!.defaultTeachableItemDurationInMinutes ?? 15;
+    final defaultDuration =
+        courseProfile!.defaultTeachableItemDurationInMinutes ?? 15;
     return items
         .where((item) =>
-            item.inclusionStatus == TeachableItemInclusionStatus.explicitlyIncluded ||
-            item.inclusionStatus == TeachableItemInclusionStatus.includedAsPrerequisite)
-        .fold<int>(0, (sum, item) => sum + (item.durationInMinutes ?? defaultDuration));
+            item.inclusionStatus ==
+                TeachableItemInclusionStatus.explicitlyIncluded ||
+            item.inclusionStatus ==
+                TeachableItemInclusionStatus.includedAsPrerequisite)
+        .fold<int>(0,
+            (sum, item) => sum + (item.durationInMinutes ?? defaultDuration));
   }
 
   Future<void> toggleItemInclusionStatus(TeachableItem item) async {
@@ -755,12 +773,14 @@ class CourseDesignerState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveItemDurationOverride(TeachableItem item, int? newDurationOverride) async {
+  Future<void> saveItemDurationOverride(
+      TeachableItem item, int? newDurationOverride) async {
     if (item.durationInMinutes == newDurationOverride) {
       return;
     }
     item.durationInMinutes = newDurationOverride;
-    await TeachableItemFunctions.updateDurationOverride(item, newDurationOverride);
+    await TeachableItemFunctions.updateDurationOverride(
+        item, newDurationOverride);
     notifyListeners();
   }
 
@@ -780,8 +800,10 @@ class CourseDesignerState extends ChangeNotifier {
       var teachableItem = itemById[teachableItemRef.id];
       if (teachableItem != null &&
           teachableItem.lessonRefs != null &&
-          (teachableItem.inclusionStatus == TeachableItemInclusionStatus.includedAsPrerequisite ||
-              teachableItem.inclusionStatus == TeachableItemInclusionStatus.explicitlyIncluded)) {
+          (teachableItem.inclusionStatus ==
+                  TeachableItemInclusionStatus.includedAsPrerequisite ||
+              teachableItem.inclusionStatus ==
+                  TeachableItemInclusionStatus.explicitlyIncluded)) {
         for (final lessonRef in teachableItem.lessonRefs!) {
           lessonIdsFromObjective.add(lessonRef.id);
         }
@@ -795,17 +817,24 @@ class CourseDesignerState extends ChangeNotifier {
       }
     }
 
-    final matchedLessonCount = lessonIdsFromObjective.intersection(lessonIdsInPlan).length;
+    final matchedLessonCount =
+        lessonIdsFromObjective.intersection(lessonIdsInPlan).length;
     final totalLessonCount = lessonIdsFromObjective.length;
     if (totalLessonCount == 0) return 1.0;
     return matchedLessonCount / totalLessonCount;
   }
 
-  Future<void> moveBlockBefore({required String fromBlockId, required String? beforeBlockId}) async {
-    await moveBlock(blockId: fromBlockId, newIndex: (beforeBlockId == null) ? blocks.length : blocks.indexWhere((b) => b.id == beforeBlockId));
+  Future<void> moveBlockBefore(
+      {required String fromBlockId, required String? beforeBlockId}) async {
+    await moveBlock(
+        blockId: fromBlockId,
+        newIndex: (beforeBlockId == null)
+            ? blocks.length
+            : blocks.indexWhere((b) => b.id == beforeBlockId));
   }
 
-  Future<void> moveBlock({required String blockId, required int newIndex}) async {
+  Future<void> moveBlock(
+      {required String blockId, required int newIndex}) async {
     final oldIndex = blocks.indexWhere((b) => b.id == blockId);
     if (oldIndex < 0) return;
     if (newIndex < 0 || newIndex > blocks.length) return;
@@ -823,27 +852,32 @@ class CourseDesignerState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> moveActivity3({required String activityId, required String fromBlockId, required String toBlockId, required String? beforeActivityId}) async {
+  Future<void> moveActivity3(
+      {required String activityId,
+      required String fromBlockId,
+      required String toBlockId,
+      required String? beforeActivityId}) async {
     final activity = activityById[activityId];
     if (activity == null) return;
 
     final sameBlock = fromBlockId == toBlockId;
 
     final srcActivities = activities
-        .where((a) => a.sessionPlanBlockId.id == fromBlockId && a.id != activityId)
+        .where(
+            (a) => a.sessionPlanBlockId.id == fromBlockId && a.id != activityId)
         .toList()
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
     final destActivities = sameBlock
         ? srcActivities
-        : activities
-            .where((a) => a.sessionPlanBlockId.id == toBlockId)
-            .toList()
-          ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+        : activities.where((a) => a.sessionPlanBlockId.id == toBlockId).toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
     final destIndex = (beforeActivityId == null)
         ? destActivities.length
-        : destActivities.indexWhere((a) => a.id == beforeActivityId).clamp(0, destActivities.length);
+        : destActivities
+            .indexWhere((a) => a.id == beforeActivityId)
+            .clamp(0, destActivities.length);
 
     destActivities.insert(destIndex, activity);
 
@@ -866,19 +900,25 @@ class CourseDesignerState extends ChangeNotifier {
     if (!sameBlock) syncSortOrders(srcActivities);
 
     if (changed.isNotEmpty) {
-      await SessionPlanActivityFunctions.updateSortOrdersAndBlockChanges(changed);
+      await SessionPlanActivityFunctions.updateSortOrdersAndBlockChanges(
+          changed);
     }
 
     activities.sort((a, b) {
       final orderA = blockById[a.sessionPlanBlockId.id]?.sortOrder ?? 0;
       final orderB = blockById[b.sessionPlanBlockId.id]?.sortOrder ?? 0;
-      return orderA != orderB ? orderA.compareTo(orderB) : a.sortOrder.compareTo(b.sortOrder);
+      return orderA != orderB
+          ? orderA.compareTo(orderB)
+          : a.sortOrder.compareTo(b.sortOrder);
     });
 
     notifyListeners();
   }
 
-  Future<void> moveActivity({required String activityId, required String newBlockId, required int newIndex}) async {
+  Future<void> moveActivity(
+      {required String activityId,
+      required String newBlockId,
+      required int newIndex}) async {
     final activity = activityById[activityId];
     if (activity == null) return;
     final oldBlockId = activity.sessionPlanBlockId.id;
@@ -886,14 +926,17 @@ class CourseDesignerState extends ChangeNotifier {
     if (newIndex < 0) return;
 
     final oldBlockActivities = activities
-        .where((a) => a.sessionPlanBlockId.id == oldBlockId && a.id != activityId)
+        .where(
+            (a) => a.sessionPlanBlockId.id == oldBlockId && a.id != activityId)
         .toList()
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
     final newBlockActivities = isSameBlock
         ? oldBlockActivities
-        : activities.where((a) => a.sessionPlanBlockId.id == newBlockId).toList()
-          ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+        : activities
+            .where((a) => a.sessionPlanBlockId.id == newBlockId)
+            .toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
     if (newIndex > newBlockActivities.length) return;
 
@@ -923,14 +966,17 @@ class CourseDesignerState extends ChangeNotifier {
       }
     }
 
-    await SessionPlanActivityFunctions.updateSortOrdersAndBlockChanges(changedActivities);
+    await SessionPlanActivityFunctions.updateSortOrdersAndBlockChanges(
+        changedActivities);
 
     activities.sort((a, b) {
       final blockA = blockById[a.sessionPlanBlockId.id];
       final blockB = blockById[b.sessionPlanBlockId.id];
       final orderA = blockA?.sortOrder ?? 0;
       final orderB = blockB?.sortOrder ?? 0;
-      return orderA != orderB ? orderA.compareTo(orderB) : a.sortOrder.compareTo(b.sortOrder);
+      return orderA != orderB
+          ? orderA.compareTo(orderB)
+          : a.sortOrder.compareTo(b.sortOrder);
     });
 
     notifyListeners();
@@ -956,7 +1002,8 @@ class CourseDesignerState extends ChangeNotifier {
     blocks.removeWhere((b) => b.id == blockId);
     blockById.remove(blockId);
 
-    final activitiesToRemove = activities.where((a) => a.sessionPlanBlockId.id == blockId).toList();
+    final activitiesToRemove =
+        activities.where((a) => a.sessionPlanBlockId.id == blockId).toList();
     for (final a in activitiesToRemove) {
       activityById.remove(a.id);
       activities.remove(a);
@@ -1032,8 +1079,10 @@ class CourseDesignerState extends ChangeNotifier {
     await updateActivity(activityId: activityId, notes: notes);
   }
 
-  Future<void> updateActivityOverrideDuration({required String activityId, int? overrideDuration}) async {
-    await updateActivity(activityId: activityId, overrideDuration: overrideDuration);
+  Future<void> updateActivityOverrideDuration(
+      {required String activityId, int? overrideDuration}) async {
+    await updateActivity(
+        activityId: activityId, overrideDuration: overrideDuration);
   }
 
   List<SessionPlanActivity> getActivitiesForBlock(String blockId) {
@@ -1045,7 +1094,9 @@ class CourseDesignerState extends ChangeNotifier {
     final blockActivities = getActivitiesForBlock(blockId);
     int totalMinutes = 0;
     for (final a in blockActivities) {
-      totalMinutes += a.overrideDuration ?? courseProfile?.defaultTeachableItemDurationInMinutes ?? 15;
+      totalMinutes += a.overrideDuration ??
+          courseProfile?.defaultTeachableItemDurationInMinutes ??
+          15;
     }
     return totalMinutes;
   }
@@ -1054,7 +1105,9 @@ class CourseDesignerState extends ChangeNotifier {
     final mins = getTotalDurationMinutesForBlock(blockId);
     final hours = mins ~/ 60;
     final minutes = mins % 60;
-    return hours == 0 ? ':${minutes.toString().padLeft(2, '0')}' : '$hours:${minutes.toString().padLeft(2, '0')}';
+    return hours == 0
+        ? ':${minutes.toString().padLeft(2, '0')}'
+        : '$hours:${minutes.toString().padLeft(2, '0')}';
   }
 
   String getStartTimeStringForActivity(SessionPlanActivity activity) {
@@ -1067,7 +1120,9 @@ class CourseDesignerState extends ChangeNotifier {
     int totalMinutes = 0;
     for (final a in blockActivities) {
       if (a.id == activity.id) break;
-      totalMinutes += a.overrideDuration ?? courseProfile?.defaultTeachableItemDurationInMinutes ?? 15;
+      totalMinutes += a.overrideDuration ??
+          courseProfile?.defaultTeachableItemDurationInMinutes ??
+          15;
     }
     final hours = totalMinutes ~/ 60;
     final minutes = totalMinutes % 60;
@@ -1087,7 +1142,9 @@ class CourseDesignerState extends ChangeNotifier {
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
     int totalMinutes = 0;
     for (final a in blockActivities) {
-      totalMinutes += a.overrideDuration ?? courseProfile?.defaultTeachableItemDurationInMinutes ?? 15;
+      totalMinutes += a.overrideDuration ??
+          courseProfile?.defaultTeachableItemDurationInMinutes ??
+          15;
     }
     final hours = totalMinutes ~/ 60;
     final minutes = totalMinutes % 60;
@@ -1114,4 +1171,17 @@ class CourseDesignerState extends ChangeNotifier {
     }
     return needed.toList();
   }
+
+  void saveCourseProfile(CourseProfile updatedProfile) async {
+    courseProfile =
+        await CourseProfileFunctions.saveCourseProfile(updatedProfile);
+  }
+}
+
+enum CourseDesignerStateStatus {
+  uninitialized,
+  initializing,
+  initialized,
+  noCourseSelected,
+  waitingOnAI,
 }

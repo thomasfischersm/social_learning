@@ -90,8 +90,7 @@ class _CourseDesignerLearningObjectivesPageState
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to the next page.
-          // NavigationEnum.courseDesignerProfile.navigateCleanDelayed(context);
+          NavigationEnum.courseDesignerSessionPlan.navigateCleanDelayed(context);
         },
         tooltip: 'Next Page',
         child: Icon(Icons.arrow_forward),

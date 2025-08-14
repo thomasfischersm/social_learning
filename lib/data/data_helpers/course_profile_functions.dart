@@ -12,6 +12,7 @@ class CourseProfileFunctions {
   static const String _collectionPath = 'courseProfiles';
 
   static Future<CourseProfile?> getCourseProfile(String courseId) async {
+    print('Fetching course profile for courseId: $courseId');
     try {
       final courseRef = docRef('courses', courseId);
       final querySnapshot = await _firestore

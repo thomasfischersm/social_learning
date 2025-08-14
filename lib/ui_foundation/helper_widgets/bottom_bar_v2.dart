@@ -11,13 +11,12 @@ import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart'
 class BottomBarV2 {
   static Widget build(BuildContext context) {
     return Consumer4<ApplicationState, LibraryState, StudentSessionState,
-        OrganizerSessionState>(
+            OrganizerSessionState>(
         builder: (context, applicationState, libraryState, studentSessionState,
             organizerSessionState, child) {
       bool isLessonsVisible =
           libraryState.isCourseSelected && applicationState.isLoggedIn;
-      bool isManageVisible =
-          _isCourseAdmin(applicationState, libraryState);
+      bool isManageVisible = _isCourseAdmin(applicationState, libraryState);
       bool isSessionsVisible = applicationState.isLoggedIn &&
           (libraryState.isCourseSelected ||
               studentSessionState.isInitialized ||
@@ -136,8 +135,11 @@ class BottomBarV2 {
       return -1;
     }
 
-    if ({NavigationEnum.home.route, NavigationEnum.courseHome.route}
-        .contains(currentRoute)) {
+    if ({
+      NavigationEnum.home.route,
+      NavigationEnum.courseHome.route,
+      NavigationEnum.instructorDashBoard.route,
+    }.contains(currentRoute)) {
       return 0;
     } else if (isLessonsVisible &&
         {
@@ -150,7 +152,6 @@ class BottomBarV2 {
         {
           NavigationEnum.cmsSyllabus.route,
           NavigationEnum.cmsLesson.route,
-          NavigationEnum.instructorDashBoard.route,
           NavigationEnum.instructorClipboard.route,
           NavigationEnum.courseGeneration.route,
           NavigationEnum.courseGenerationReview.route,

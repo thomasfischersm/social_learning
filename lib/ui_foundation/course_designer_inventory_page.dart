@@ -13,6 +13,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_item_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_inventory/add_new_category_entry.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CourseDesignerInventoryPage extends StatefulWidget {
   const CourseDesignerInventoryPage({super.key});
@@ -49,12 +50,19 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
               title: 'Learning Lab', scaffoldKey: scaffoldKey),
           drawer: CourseDesignerDrawer(),
           bottomNavigationBar: BottomBarV2.build(context),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              NavigationEnum.courseDesignerPrerequisites.navigateCleanDelayed(context);
+            }, // or Icons.navigate_next
+            tooltip: 'Next Page',
+            child: Icon(Icons.arrow_forward),
+          ),
           body: Align(
             alignment: Alignment.topCenter,
             child: CustomUiConstants.framePage(
               enableScrolling: false,
               enableCreatorGuard: true,
-              state.isLoading
+              state.status != CourseDesignerStateStatus.initialized
                   ? const Padding(
                       padding: EdgeInsets.all(32.0),
                       child: CircularProgressIndicator(),
