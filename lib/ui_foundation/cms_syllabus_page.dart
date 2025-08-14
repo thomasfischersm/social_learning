@@ -26,14 +26,13 @@ class CmsSyllabusPage extends StatefulWidget {
 class CmsSyllabusState extends State<CmsSyllabusPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: Consumer<LibraryState>(
-            builder: (context, libraryState, child) {
-          return LearningLabAppBar(
+    return Consumer<LibraryState>(
+        builder: (context, libraryState, child) {
+          return Scaffold(
+        appBar: LearningLabAppBar(
             title: '${libraryState.selectedCourse?.title} Curriculum',
             actions: InstructorNavActions.createActions(context),
-          );
-        }),
+          ),
         bottomNavigationBar: BottomBarV2.build(context),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -51,8 +50,8 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
           child: CustomUiConstants.framePage(
               enableCreatorGuard: true,
               enableCourseLoadingGuard: true,
-                Consumer2<LibraryState, StudentState>(
-                    builder: (context, libraryState, studentState, child) {
+                Consumer<StudentState>(
+                    builder: (context, studentState, child) {
                   return OneTimeBanner(
                       prefsKey: 'instructorDashboardHint',
                       message:
@@ -85,6 +84,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                       )));
                 })),
         ));
+  });
   }
 
   Widget generateLevelList(BuildContext context, LibraryState libraryState) {

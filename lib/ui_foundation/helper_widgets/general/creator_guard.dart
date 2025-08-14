@@ -4,6 +4,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/ui_constants/home_selector.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CreatorGuard extends StatefulWidget {
@@ -33,13 +34,7 @@ class CreatorGuardState extends State<CreatorGuard> {
         // schedule the one‐time redirect
         if (!_navigationScheduled) {
           _navigationScheduled = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (libraryState.isCourseSelected) {
-              NavigationEnum.courseHome.navigateCleanDelayed(context);
-            } else {
-              NavigationEnum.home.navigateCleanDelayed(context);
-            }
-          });
+          HomeSelector.navigateCleanDelayed(context);
         }
         return const SizedBox();  // render nothing while redirecting
       }

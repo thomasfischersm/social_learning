@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/ui_constants/home_selector.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 /// This is an invisible widget for the landing page. It checks if the user
@@ -53,20 +54,6 @@ class AutoSignInWidgetState extends State<AutoSignInWidget> {
     await libraryState.initialized;
 
     _isRedirecting = true;
-    if (libraryState.selectedCourse != null) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) {
-          print('Going from the landing page to the course home page.');
-          Navigator.of(context)
-              .pushReplacementNamed(NavigationEnum.courseHome.route);
-        }
-      });
-    } else {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) {
-          Navigator.of(context).pushReplacementNamed(NavigationEnum.home.route);
-        }
-      });
-    }
+    HomeSelector.navigateCleanDelayed(context);
   }
 }

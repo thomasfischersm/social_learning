@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/ui_constants/home_selector.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class SignInPage extends StatelessWidget {
@@ -44,20 +45,7 @@ class SignInPage extends StatelessWidget {
                 Provider.of<LibraryState>(context, listen: false);
             var currentUser = await applicationState.currentUserBlocking;
             await libraryState.initialize();
-            if (currentUser?.currentCourseId != null) {
-              if (libraryState.selectedCourse != null) {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    NavigationEnum.courseHome.route,
-                    (Route<dynamic> route) => false);
-              } else {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                    NavigationEnum.home.route,
-                    (Route<dynamic> route) => false);
-              }
-            } else {
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  NavigationEnum.home.route, (Route<dynamic> route) => false);
-            }
+            HomeSelector.navigateCleanDelayed(context);
           }
         })
       ],

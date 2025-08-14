@@ -23,56 +23,53 @@ class LevelListPage extends StatefulWidget {
 }
 
 class LevelListState extends State<LevelListPage> {
-
   @override
   Widget build(BuildContext context) {
     print('Landed on LevelListPage');
 
-    return Scaffold(
-        appBar: Consumer<LibraryState>(builder: (context, libraryState, child) {
-          return LearningLabAppBar(
-              title: '${libraryState.selectedCourse?.title} Curriculum');
-        }),
-        bottomNavigationBar: BottomBarV2.build(context),
-        body: Align(
-          alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(
-              enableCourseLoadingGuard: true,
-              Consumer2<LibraryState, StudentState>(
-                  builder: (context, libraryState, studentState, child) {
-                List<LevelCompletion> levelCompletions =
-                    studentState.getLevelCompletions(libraryState);
+    return Consumer<LibraryState>(builder: (context, libraryState, child) {
+      return Scaffold(
+          appBar: LearningLabAppBar(
+              title: '${libraryState.selectedCourse?.title} Curriculum'),
+          bottomNavigationBar: BottomBarV2.build(context),
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: CustomUiConstants.framePage(enableCourseLoadingGuard: true,
+                Consumer<StudentState>(builder: (context, studentState, child) {
+              List<LevelCompletion> levelCompletions =
+                  studentState.getLevelCompletions(libraryState);
 
-                return SingleChildScrollView(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomUiConstants.getTextPadding(Text(
-                      '${libraryState.selectedCourse?.title} Curriculum',
-                      style: CustomTextStyles.headline,
-                    )),
-                    generateLevelList(levelCompletions, libraryState),
-                    CustomUiConstants.getTextPadding(Text(
-                      '\nStats',
-                      style: CustomTextStyles.headline,
-                    )),
-                    Text(
-                      'Lessons practiced: ${studentState.getPracticeCount()}',
-                      style: CustomTextStyles.getBody(context),
-                    ),
-                    Text(
-                      'Lessons completed: ${studentState.getGraduationCount()}',
-                      style: CustomTextStyles.getBody(context),
-                    ),
-                    Text(
-                      'Lessons taught: ${studentState.getTeachCount()}',
-                      style: CustomTextStyles.getBody(context),
-                    ),
-                    CustomUiConstants.getGeneralFooter(context)
-                  ],
-                ));
-              })),
-        ));
+              return SingleChildScrollView(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomUiConstants.getTextPadding(Text(
+                    '${libraryState.selectedCourse?.title} Curriculum',
+                    style: CustomTextStyles.headline,
+                  )),
+                  generateLevelList(levelCompletions, libraryState),
+                  CustomUiConstants.getTextPadding(Text(
+                    '\nStats',
+                    style: CustomTextStyles.headline,
+                  )),
+                  Text(
+                    'Lessons practiced: ${studentState.getPracticeCount()}',
+                    style: CustomTextStyles.getBody(context),
+                  ),
+                  Text(
+                    'Lessons completed: ${studentState.getGraduationCount()}',
+                    style: CustomTextStyles.getBody(context),
+                  ),
+                  Text(
+                    'Lessons taught: ${studentState.getTeachCount()}',
+                    style: CustomTextStyles.getBody(context),
+                  ),
+                  CustomUiConstants.getGeneralFooter(context)
+                ],
+              ));
+            })),
+          ));
+    });
   }
 
   Widget generateLevelList(

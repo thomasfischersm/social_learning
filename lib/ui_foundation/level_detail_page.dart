@@ -34,49 +34,46 @@ class LevelDetailPage extends StatefulWidget {
 class LevelDetailState extends State<LevelDetailPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar:
-            Consumer<LibraryState>(builder: (context, libraryState, child) {
-          LevelDetailArgument? argument =
-              ModalRoute.of(context)!.settings.arguments as LevelDetailArgument?;
-          var levelId = argument?.levelId;
-          if (levelId != null) {
-            Level? level = libraryState.findLevel(levelId);
-            if (level != null) {
-              int levelPosition = libraryState.findLevelPosition(level);
-              return LearningLabAppBar(
-                  title: 'Level ${levelPosition + 1}: ${level.title}');
-            }
-          } else if (argument?.isFlexLessons == true) {
-            return const LearningLabAppBar(title: 'Flex Lessons');
-          }
-          return const LearningLabAppBar(title: 'Failed to load');
-        }),
-        bottomNavigationBar: BottomBarV2.build(context),
-        body: Align(
-          alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(
-              enableCourseLoadingGuard: true,
-              Consumer2<LibraryState, StudentState>(
-                  builder: (context, libraryState, studentState, child) {
-                LevelDetailArgument? argument = ModalRoute.of(context)!
-                    .settings
-                    .arguments as LevelDetailArgument?;
-                var levelId = argument?.levelId;
-                var isFlexLessons = argument?.isFlexLessons;
-                if ((levelId == null) && (isFlexLessons != true)) {
-                  return const Text('Failed to load (1).');
-                }
+    return Consumer<LibraryState>(builder: (context, libraryState, child) {
+      LevelDetailArgument? argument =
+          ModalRoute.of(context)!.settings.arguments as LevelDetailArgument?;
+      var levelId = argument?.levelId;
+      String appBarTitle = 'Failed to load';
+      if (levelId != null) {
+        Level? level = libraryState.findLevel(levelId);
+        if (level != null) {
+          int levelPosition = libraryState.findLevelPosition(level);
+          appBarTitle = 'Level ${levelPosition + 1}: ${level.title}';
+        } else if (argument?.isFlexLessons == true) {
+          appBarTitle = 'Flex Lessons';
+        }
+      }
+      return Scaffold(
+          appBar: LearningLabAppBar(title: appBarTitle),
+          bottomNavigationBar: BottomBarV2.build(context),
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: CustomUiConstants.framePage(enableCourseLoadingGuard: true,
+                Consumer<StudentState>(
+                    builder: (context, studentState, child) {
+              LevelDetailArgument? argument = ModalRoute.of(context)!
+                  .settings
+                  .arguments as LevelDetailArgument?;
+              var levelId = argument?.levelId;
+              var isFlexLessons = argument?.isFlexLessons;
+              if ((levelId == null) && (isFlexLessons != true)) {
+                return const Text('Failed to load (1).');
+              }
 
-                if (isFlexLessons == true) {
-                  return _generateFlexLessonView(
-                      libraryState, studentState);
-                } else {
-                  return _generateRegularLessonView(
-                      levelId!, libraryState, studentState);
-                }
-              })),
-        ));
+              if (isFlexLessons == true) {
+                return _generateFlexLessonView(libraryState, studentState);
+              } else {
+                return _generateRegularLessonView(
+                    levelId!, libraryState, studentState);
+              }
+            })),
+          ));
+    });
   }
 
   _generateRegularLessonView(
@@ -145,8 +142,8 @@ class LevelDetailState extends State<LevelDetailPage> {
     ));
   }
 
-  Widget generateLessonList(
-      Iterable<Lesson> lessons, LibraryState libraryState, StudentState studentState) {
+  Widget generateLessonList(Iterable<Lesson> lessons, LibraryState libraryState,
+      StudentState studentState) {
     List<Widget> children = [];
     for (Lesson lesson in lessons) {
       List<Widget> columnChildren = [];
