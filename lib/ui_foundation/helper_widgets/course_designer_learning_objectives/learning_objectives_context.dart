@@ -175,8 +175,24 @@ class LearningObjectivesContext {
       if (idx != -1) {
         learningObjectives[idx] = updated;
       }
-      refresh();
     }
+
+    // If the teachable item isn't already included, explicitly select it.
+    if (item.inclusionStatus !=
+            TeachableItemInclusionStatus.explicitlyIncluded &&
+        item.inclusionStatus !=
+            TeachableItemInclusionStatus.includedAsPrerequisite) {
+      item.inclusionStatus =
+          TeachableItemInclusionStatus.explicitlyIncluded;
+      await TeachableItemFunctions.updateInclusionStatus(item);
+
+      // Update local caches so UI reflects the change.
+      itemById[item.id!] = item;
+      final itemIdx = items.indexWhere((i) => i.id == item.id);
+      if (itemIdx != -1) items[itemIdx] = item;
+    }
+
+    refresh();
   }
 
   /// Replace [oldItem] with [newItem] on [objective], update cache, refresh UI.
