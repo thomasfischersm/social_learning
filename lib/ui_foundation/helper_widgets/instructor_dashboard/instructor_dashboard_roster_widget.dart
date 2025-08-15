@@ -81,19 +81,23 @@ class InstructorDashboardRosterWidgetState
         sort: _selectedSort,
         nameFilter: _nameFilter,
       );
-      setState(() {
-        if (clear) {
-          _students.clear();
-        }
+      if (mounted) {
+        setState(() {
+          if (clear) {
+            _students.clear();
+          }
 
-        _students.addAll(page.students);
-        _lastDoc = page.lastDoc;
-        _hasMore = page.hasMore;
-      });
+          _students.addAll(page.students);
+          _lastDoc = page.lastDoc;
+          _hasMore = page.hasMore;
+        });
+      }
     } catch (e, st) {
       debugPrint('Error loading students: $e\n$st');
     } finally {
-      setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
