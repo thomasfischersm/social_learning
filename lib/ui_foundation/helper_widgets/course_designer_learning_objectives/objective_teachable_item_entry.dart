@@ -50,10 +50,9 @@ class _ObjectiveTeachableItemEntryState
         child: Row(
           children: [
             // Item name
-            Text(
+            Flexible(child:Text(
                 widget.item.name ?? '(Untitled)',
-                // style: CustomTextStyles.getBody(context),
-              ),
+              softWrap: true)),
 
 
             // Tags
