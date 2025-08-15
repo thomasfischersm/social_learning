@@ -417,8 +417,22 @@ class CourseDesignerState extends ChangeNotifier {
         learningObjectives[idx] = updated;
       }
       objectiveById[objective.id!] = updated;
-      notifyListeners();
     }
+
+    // Ensure the teachable item is explicitly selected if not already included.
+    if (item.inclusionStatus !=
+            TeachableItemInclusionStatus.explicitlyIncluded &&
+        item.inclusionStatus !=
+            TeachableItemInclusionStatus.includedAsPrerequisite) {
+      item.inclusionStatus =
+          TeachableItemInclusionStatus.explicitlyIncluded;
+      await TeachableItemFunctions.updateInclusionStatus(item);
+      itemById[item.id!] = item;
+      final idx = items.indexWhere((i) => i.id == item.id);
+      if (idx != -1) items[idx] = item;
+    }
+
+    notifyListeners();
   }
 
   Future<void> replaceTeachableItemInObjective({
