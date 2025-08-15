@@ -89,7 +89,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
                         itemBuilder: (context, index) {
                           final entry = entries[index];
                           return ReorderableDelayedDragStartListener(
-                            key: ValueKey(entry),
+                            key: PageStorageKey(entry.pageKey),
                             index: index,
                             child: entry.buildWidget(
                               context,
