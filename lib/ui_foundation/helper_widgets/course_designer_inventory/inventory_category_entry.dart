@@ -22,6 +22,9 @@ class InventoryCategoryEntry extends InventoryEntry {
       });
 
   @override
+  String get pageKey => 'category-${category.id!}';
+
+  @override
   Widget buildWidget(BuildContext context, VoidCallback refresh, CourseDesignerState _) {
     return Container(
       margin: CourseDesignerTheme.cardMargin,

@@ -19,6 +19,9 @@ class InventoryItemEntry extends InventoryEntry {
   InventoryItemEntry(this.item, {this.onDelete});
 
   @override
+  String get pageKey => 'item-${item.id!}';
+
+  @override
   Widget buildWidget(
       BuildContext context, VoidCallback refresh, CourseDesignerState state) {
     final allTags = state.tags;

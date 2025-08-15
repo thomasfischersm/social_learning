@@ -21,6 +21,9 @@ class AddNewItemEntry extends InventoryEntry {
   });
 
   @override
+  String get pageKey => 'newItem-${category.id!}';
+
+  @override
   Widget buildWidget(BuildContext context, VoidCallback refresh, CourseDesignerState _) {
     return Container(
       decoration: BoxDecoration(
