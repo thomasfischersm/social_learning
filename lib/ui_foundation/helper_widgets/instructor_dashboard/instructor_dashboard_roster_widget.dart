@@ -232,6 +232,8 @@ class InstructorDashboardRosterWidgetState
   }
 
   Widget _buildStudentRow(User user, BuildContext context) {
+    ApplicationState applicationState = context.read<ApplicationState>();
+
     final prof = user.getCourseProficiency(widget.course!)?.proficiency ?? 0.0;
     final profText = '${(prof * 100).toStringAsFixed(0)}%';
 
@@ -288,8 +290,11 @@ class InstructorDashboardRosterWidgetState
               _iconButton(Icons.email,
                   onPressed: () => UserFunctions.openEmailClient(user)),
               const SizedBox(width: 4),
-              _iconButton(Icons.assignment,
-                  onPressed: () => _onClipboardButtonPressed(user)),
+              if (user.id != applicationState.currentUser?.id)
+                _iconButton(Icons.assignment,
+                    onPressed: () => _onClipboardButtonPressed(user))
+              else
+                const SizedBox(width: 32),
             ],
           ),
         ),
