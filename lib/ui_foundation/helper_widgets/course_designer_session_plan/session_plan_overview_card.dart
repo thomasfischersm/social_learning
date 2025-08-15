@@ -41,11 +41,14 @@ class SessionPlanOverviewCard extends StatelessWidget {
                     circularStrokeCap: CircularStrokeCap.round,
                   ),
                   const SizedBox(height: 6),
+                  ConstrainedBox(constraints: BoxConstraints(maxWidth: 92), child:
                   Text(
                     objective.name ?? "Untitled",
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 12),
-                  ),
+                    softWrap: true,
+
+                  )),
                 ],
               );
             }).toList(),

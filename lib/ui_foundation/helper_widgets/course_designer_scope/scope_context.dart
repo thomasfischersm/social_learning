@@ -35,6 +35,11 @@ class ScopeContext {
     itemById.addEntries(items.map((item) => MapEntry(item.id!, item)));
     categoryById.addEntries(categories.map((cat) => MapEntry(cat.id!, cat)));
     tagById.addEntries(tags.map((tag) => MapEntry(tag.id!, tag)));
+
+    // Do cascading updates.
+    _initRequireRecommendedItemIds();
+    _updateInclusionStatuses();
+
     isLoading = false;
   }
 
@@ -331,9 +336,9 @@ class ScopeContext {
 
     await TeachableItemFunctions.updateInclusionStatus(item);
 
-    // Do cascading updates.
-    _initRequireRecommendedItemIds();
-    _updateInclusionStatuses();
+      // Do cascading updates.
+      _initRequireRecommendedItemIds();
+      _updateInclusionStatuses();
 
     refresh();
   }
