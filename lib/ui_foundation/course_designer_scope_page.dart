@@ -81,7 +81,7 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
     return Scaffold(
       key: scaffoldKey,
       appBar: CourseDesignerAppBar(
-          title: 'Prerequisites', scaffoldKey: scaffoldKey),
+          title: 'Scoping', scaffoldKey: scaffoldKey),
       drawer: CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
