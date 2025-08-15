@@ -64,7 +64,7 @@ class AddNewItemEntry extends InventoryEntry {
             await onAdd(category, trimmed);
             Future.delayed(const Duration(milliseconds: 100), () {
               if (!currentFocus.hasFocus) {
-                FocusScope.of(context).requestFocus(currentFocus);
+                focusNode.requestFocus();
               }
             });
             refresh();

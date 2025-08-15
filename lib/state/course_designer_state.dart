@@ -178,6 +178,11 @@ class CourseDesignerState extends ChangeNotifier {
   Future<void> _onLibraryStateChanged() async{
     if (_activeCourse != _libraryState.selectedCourse) {
       if (_libraryState.selectedCourse != null) {
+        if (_status == CourseDesignerStateStatus.initializing) {
+          // Abort due to concurrent initialization
+          return;
+        }
+
          _status = CourseDesignerStateStatus.initializing;
          _initCompleter = Completer<void>();
          await _initialize();
