@@ -146,6 +146,7 @@ class _CourseDesignerPrerequisitesPageState
 PrerequisitesCard(
             context: _prerequisiteContext!,
             focusedItem: _focusedItem,
+  onSelectItem: _handleFocusItemSelected,
           ),
         );
 

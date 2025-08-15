@@ -8,11 +8,13 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_pre
 class PrerequisitesCard extends StatelessWidget {
   final PrerequisiteContext context;
   final TeachableItem? focusedItem;
+  final void Function(String? selectedItemId) onSelectItem;
 
   const PrerequisitesCard({
     super.key,
     required this.context,
     required this.focusedItem,
+    required this.onSelectItem,
   });
 
   List<PrerequisiteItemEntry> _buildWrappedEntries(
@@ -92,6 +94,7 @@ class PrerequisitesCard extends StatelessWidget {
           parentItem: root,
           parentDepth: 1,
           showAddButton: false,
+          onSelectItem: onSelectItem,
         ));
       }
     }

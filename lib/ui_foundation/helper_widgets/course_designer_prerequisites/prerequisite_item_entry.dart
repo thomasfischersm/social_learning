@@ -13,6 +13,7 @@ class PrerequisiteItemEntry extends StatelessWidget {
   final TeachableItem? parentItem;
   final int parentDepth;
   final bool showAddButton;
+  final void Function(String? selectedItemId)? onSelectItem;
 
   const PrerequisiteItemEntry({
     super.key,
@@ -20,6 +21,7 @@ class PrerequisiteItemEntry extends StatelessWidget {
     required this.item,
     required this.parentItem,
     required this.parentDepth,
+    this.onSelectItem,
     this.showAddButton = true,
   });
 
@@ -101,10 +103,11 @@ class PrerequisiteItemEntry extends StatelessWidget {
           else
             const SizedBox.shrink(),
           const SizedBox(width: 4),
+          InkWell(onTap: _onItemTapped, child:
           Text(
             item.name ?? '(Untitled)',
             style: isRoot ? const TextStyle(fontWeight: FontWeight.bold) : null,
-          ),
+          ),),
           ...tagWidgets,
           const SizedBox(width: 4),
           if (showAddButton)
@@ -134,5 +137,11 @@ class PrerequisiteItemEntry extends StatelessWidget {
         ],
       ),
     ));
+  }
+
+  void _onItemTapped() {
+    if (onSelectItem != null && item.id != null) {
+      onSelectItem!(item.id);
+    }
   }
 }
