@@ -61,6 +61,7 @@ class _StudentCheckOffState extends State<InstructorClipboardPage> {
     final id = _studentId, uid = _studentUid;
     if (id != null && uid != null) {
       UserFunctions.getUserById(id).then((user) {
+        print('Loaded student user: $user');
         setState(() => _student = user);
       });
       PracticeRecordFunctions.getLessonsLearnedCount(uid).then((count) {

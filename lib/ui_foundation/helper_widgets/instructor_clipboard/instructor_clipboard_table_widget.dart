@@ -44,7 +44,7 @@ class InstructorClipboardTableState
   @override
   void initState() {
     super.initState();
-    _expandedLevelId = widget.libraryState.levels?.first.id;
+    _expandedLevelId = widget.libraryState.levels?.firstOrNull?.id;
     _loadPracticeRecords();
   }
 
