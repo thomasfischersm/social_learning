@@ -25,26 +25,25 @@ class _CourseDesignerPrerequisitesPageState
   String? _courseId;
   TeachableItem? _focusedItem;
   PrerequisiteContext? _prerequisiteContext;
+  late LibraryState _libraryState;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final libraryState = Provider.of<LibraryState>(context, listen: false);
-      if (libraryState.selectedCourse?.id != null) {
-        _courseId = libraryState.selectedCourse!.id!;
+      _libraryState = Provider.of<LibraryState>(context, listen: false);
+      if (_libraryState.selectedCourse?.id != null) {
+        _courseId = _libraryState.selectedCourse!.id!;
         _loadContext();
       } else {
-        libraryState.addListener(_libraryStateListener);
+        _libraryState.addListener(_libraryStateListener);
       }
     });
   }
 
   @override
   void dispose() {
-    // TODO: There is a bug where the cotnext seems to have gone already.
-    final libraryState = Provider.of<LibraryState>(context, listen: false);
-    libraryState.removeListener(_libraryStateListener);
+    _libraryState.removeListener(_libraryStateListener);
     super.dispose();
   }
 
