@@ -84,13 +84,13 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
                             oldIndex: oldIndex,
                             newIndex: newIndex,
                           );
+                          await state.getItemsWithDependencies();
                           setState(() {});
                         },
                         itemBuilder: (context, index) {
                           final entry = entries[index];
-                          return ReorderableDelayedDragStartListener(
+                          return KeyedSubtree(
                             key: PageStorageKey(entry.pageKey),
-                            index: index,
                             child: entry.buildWidget(
                               context,
                               () {
@@ -100,6 +100,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
                                 setState(() {});
                               },
                               state,
+                              index,
                             ),
                           );
                         },

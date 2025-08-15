@@ -23,7 +23,7 @@ class InventoryItemEntry extends InventoryEntry {
 
   @override
   Widget buildWidget(
-      BuildContext context, VoidCallback refresh, CourseDesignerState state) {
+      BuildContext context, VoidCallback refresh, CourseDesignerState state, int index) {
     final allTags = state.tags;
     final assignedTagIds =
     (item.tagIds ?? []).map((ref) => ref.path).toSet();
@@ -45,13 +45,22 @@ class InventoryItemEntry extends InventoryEntry {
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 6,
-        runSpacing: 6,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(item.name ?? '(Unnamed)',
-              style: CustomTextStyles.getBody(context)),
+          ReorderableDragStartListener(
+            index: index,
+            child: const Icon(Icons.drag_handle, color: Colors.grey, size: 18),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                Text(item.name ?? '(Unnamed)',
+                    style: CustomTextStyles.getBody(context)),
 
           if (item.notes?.trim().isNotEmpty ?? false)
             _icon(context, Icons.notes, () {
@@ -91,7 +100,7 @@ class InventoryItemEntry extends InventoryEntry {
               );
             }),
 
-          ...assignedTags.map((tag) => InkWell(
+                ...assignedTags.map((tag) => InkWell(
             onTap: () {
               DialogUtils.showConfirmationDialog(
                 context,
@@ -124,8 +133,8 @@ class InventoryItemEntry extends InventoryEntry {
             ),
           )),
 
-          if (availableTags.isNotEmpty)
-            TagFanoutWidget(
+                if (availableTags.isNotEmpty)
+                  TagFanoutWidget(
               availableTags: availableTags,
               onTagSelected: (tag) async {
                 final tagRef = docRef('teachableItemTags', tag.id!);
@@ -148,7 +157,10 @@ class InventoryItemEntry extends InventoryEntry {
 
                 refresh();
               },
+                  ),
+              ],
             ),
+          ),
         ],
       ),
     );

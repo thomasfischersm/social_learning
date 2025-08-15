@@ -22,7 +22,8 @@ class AddNewCategoryEntry extends InventoryEntry {
   String get pageKey => 'newCategory';
 
   @override
-  Widget buildWidget(BuildContext context, VoidCallback refresh, CourseDesignerState _) {
+  Widget buildWidget(
+      BuildContext context, VoidCallback refresh, CourseDesignerState _, int _) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
