@@ -25,7 +25,8 @@ class InventoryCategoryEntry extends InventoryEntry {
   String get pageKey => 'category-${category.id!}';
 
   @override
-  Widget buildWidget(BuildContext context, VoidCallback refresh, CourseDesignerState _) {
+  Widget buildWidget(
+      BuildContext context, VoidCallback refresh, CourseDesignerState _, int index) {
     return Container(
       margin: CourseDesignerTheme.cardMargin,
       decoration: BoxDecoration(
@@ -38,6 +39,12 @@ class InventoryCategoryEntry extends InventoryEntry {
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
         child: Row(
           children: [
+            // Drag handle
+            ReorderableDragStartListener(
+              index: index,
+              child: const Icon(Icons.drag_handle, color: Colors.grey, size: 18),
+            ),
+            const SizedBox(width: 8),
             // Expand/collapse icon with ripple
             Padding(
               padding: const EdgeInsets.only(right: 8.0),

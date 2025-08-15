@@ -7,5 +7,9 @@ abstract class InventoryEntry {
   String get pageKey;
 
   Widget buildWidget(
-      BuildContext context, VoidCallback refresh, CourseDesignerState state);
+    BuildContext context,
+    VoidCallback refresh,
+    CourseDesignerState state,
+    int index,
+  );
 }

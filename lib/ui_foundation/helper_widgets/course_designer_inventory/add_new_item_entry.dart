@@ -34,7 +34,8 @@ class AddNewItemEntry extends InventoryEntry {
   String get pageKey => 'newItem-${category.id!}';
 
   @override
-  Widget buildWidget(BuildContext context, VoidCallback refresh, CourseDesignerState _) {
+  Widget buildWidget(
+      BuildContext context, VoidCallback refresh, CourseDesignerState _, int _) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_focusCategoryId == category.id) {
         focusNode.requestFocus();
