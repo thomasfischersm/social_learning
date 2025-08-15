@@ -70,8 +70,8 @@ class _InventoryTagEditorDialogState extends State<InventoryTagEditorDialog> {
             if (_newTagController.text.trim().isNotEmpty) {
               DialogUtils.showConfirmationDialog(
                 context,
-                'Discard New Tag?',
-                'You have a new tag that has not been added. Exit without creating it?',
+                'Are you done?',
+                'You\'ve started creating a new tag. However, you haven\'t hit the + button to create it.\n\nAre you sure you want to leave?',
                 () => Navigator.of(context).pop(),
               );
             } else {
