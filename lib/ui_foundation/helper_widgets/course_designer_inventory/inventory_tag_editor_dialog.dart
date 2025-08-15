@@ -66,7 +66,18 @@ class _InventoryTagEditorDialogState extends State<InventoryTagEditorDialog> {
       ),
       actions: [
         ElevatedButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            if (_newTagController.text.trim().isNotEmpty) {
+              DialogUtils.showConfirmationDialog(
+                context,
+                'Discard New Tag?',
+                'You have a new tag that has not been added. Exit without creating it?',
+                () => Navigator.of(context).pop(),
+              );
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
           child: const Text('Done'),
         ),
       ],
