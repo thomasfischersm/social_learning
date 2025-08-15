@@ -29,39 +29,37 @@ class CourseDesignerLearningObjectivesPage extends StatefulWidget {
 class _CourseDesignerLearningObjectivesPageState
     extends State<CourseDesignerLearningObjectivesPage> {
   LearningObjectivesContext? _objectivesContext;
+  late LibraryState _libraryState;
 
   @override
   void initState() {
     super.initState();
+    _libraryState = context.read<LibraryState>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final libraryState = Provider.of<LibraryState>(context, listen: false);
-      if (libraryState.selectedCourse?.id != null) {
+      if (_libraryState.selectedCourse?.id != null) {
         _loadContext();
       } else {
-        libraryState.addListener(_libraryStateListener);
+        _libraryState.addListener(_libraryStateListener);
       }
     });
   }
 
   @override
   void dispose() {
-    final libraryState = Provider.of<LibraryState>(context, listen: false);
-    libraryState.removeListener(_libraryStateListener);
+    _libraryState.removeListener(_libraryStateListener);
     super.dispose();
   }
 
   void _libraryStateListener() {
-    final libraryState = Provider.of<LibraryState>(context, listen: false);
-    if (libraryState.selectedCourse?.id != null) {
-      libraryState.removeListener(_libraryStateListener);
+    if (_libraryState.selectedCourse?.id != null) {
+      _libraryState.removeListener(_libraryStateListener);
       _loadContext();
     }
   }
 
   Future<void> _loadContext() async {
     if (mounted) {
-      final libraryState = Provider.of<LibraryState>(context, listen: false);
-      var courseId = libraryState.selectedCourse?.id;
+      var courseId = _libraryState.selectedCourse?.id;
       if (courseId == null) {
         return;
       }
