@@ -45,9 +45,10 @@ class ScopeItemEntry extends StatelessWidget {
           _buildMultiStateCheckbox(),
           const SizedBox(width: 4),
           ..._buildRequiredRecommendedMark(),
-          Text(
+          Flexible(child:Text(
             item.name ?? '(Untitled)',
-          ),
+            softWrap: true,
+          )),
           ...tagWidgets,
           ..._buildDurationOverride(context),
         ],
