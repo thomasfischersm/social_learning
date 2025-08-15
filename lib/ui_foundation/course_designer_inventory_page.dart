@@ -84,7 +84,7 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
                             oldIndex: oldIndex,
                             newIndex: newIndex,
                           );
-                          await state.getItemsWithDependencies();
+                          state.getItemsWithDependencies();
                           setState(() {});
                         },
                         itemBuilder: (context, index) {

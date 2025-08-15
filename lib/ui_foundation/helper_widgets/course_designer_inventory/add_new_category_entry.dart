@@ -23,7 +23,7 @@ class AddNewCategoryEntry extends InventoryEntry {
 
   @override
   Widget buildWidget(
-      BuildContext context, VoidCallback refresh, CourseDesignerState _, int _) {
+      BuildContext context, VoidCallback refresh, CourseDesignerState _, int __) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
