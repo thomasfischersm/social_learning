@@ -229,13 +229,7 @@ class ScopeContext {
       }
     }
 
-    // Update in Firebase.
-    TeachableItemFunctions.updateInclusionStatuses(
-      needToSelect,
-      needToDeselect,
-    );
-
-    // Update local context.
+    // Update local context first so the correct state is persisted.
     for (final item in needToSelect) {
       item.inclusionStatus =
           TeachableItemInclusionStatus.includedAsPrerequisite;
@@ -243,6 +237,12 @@ class ScopeContext {
     for (final item in needToDeselect) {
       item.inclusionStatus = TeachableItemInclusionStatus.excluded;
     }
+
+    // Update in Firebase.
+    TeachableItemFunctions.updateInclusionStatuses(
+      needToSelect,
+      needToDeselect,
+    );
   }
 
   List<TeachableItem> getItemsForCategory(String categoryId) {
