@@ -14,17 +14,33 @@ class AddNewItemEntry extends InventoryEntry {
   final TextEditingController controller = TextEditingController();
   final FocusNode focusNode = FocusNode();
 
+  static String? _focusCategoryId;
+
   AddNewItemEntry({
     required this.category,
     required this.onAdd,
     required this.state,
-  });
+  }) {
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        _focusCategoryId = category.id;
+      } else if (_focusCategoryId == category.id) {
+        _focusCategoryId = null;
+      }
+    });
+  }
 
   @override
   String get pageKey => 'newItem-${category.id!}';
 
   @override
   Widget buildWidget(BuildContext context, VoidCallback refresh, CourseDesignerState _) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_focusCategoryId == category.id) {
+        focusNode.requestFocus();
+      }
+    });
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -63,13 +79,7 @@ class AddNewItemEntry extends InventoryEntry {
             }
 
             controller.clear();
-            final currentFocus = focusNode;
             await onAdd(category, trimmed);
-            Future.delayed(const Duration(milliseconds: 100), () {
-              if (!currentFocus.hasFocus) {
-                focusNode.requestFocus();
-              }
-            });
             refresh();
           },
         ),
