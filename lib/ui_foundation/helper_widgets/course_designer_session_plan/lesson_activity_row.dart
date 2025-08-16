@@ -10,12 +10,14 @@ import '../course_designer/decomposed_course_designer_card.dart';
 class LessonActivityRow extends StatelessWidget {
   final SessionPlanActivity activity;
   final SessionPlanContext sessionPlanContext;
+  final int reorderIndex;
   final LayerLink _layerLink = LayerLink();
 
   LessonActivityRow({
     super.key,
     required this.activity,
     required this.sessionPlanContext,
+    required this.reorderIndex,
   });
 
   int _getDefaultDuration() {
@@ -100,6 +102,7 @@ class LessonActivityRow extends StatelessWidget {
     return DecomposedCourseDesignerCard.buildColorHighlightedBody(
       color: color,
       leadingText: time,
+      dragHandleIndex: reorderIndex,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
         child: Row(

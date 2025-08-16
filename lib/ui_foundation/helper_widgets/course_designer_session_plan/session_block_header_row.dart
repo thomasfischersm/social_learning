@@ -8,11 +8,13 @@ import '../value_input_dialog.dart';
 class SessionBlockHeaderRow extends StatelessWidget {
   final SessionPlanBlock block;
   final SessionPlanContext contextData;
+  final int reorderIndex;
 
   const SessionBlockHeaderRow({
     super.key,
     required this.block,
     required this.contextData,
+    required this.reorderIndex,
   });
 
   void _editBlockName(BuildContext context) {
@@ -73,9 +75,14 @@ class SessionBlockHeaderRow extends StatelessWidget {
       ),
     ];
 
-    return DecomposedCourseDesignerCard.buildHeaderWithIcons(
+    final header = DecomposedCourseDesignerCard.buildHeaderWithIcons(
       block.name ?? '(Untitled)',
       actions,
+    );
+
+    return ReorderableDragStartListener(
+      index: reorderIndex,
+      child: header,
     );
   }
 }

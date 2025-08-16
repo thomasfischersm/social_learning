@@ -17,62 +17,61 @@ class SessionBlocksListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final blocks = sessionPlanContext.blocks;
 
-    var children = [
-      for (final block in blocks) ...[
-        SessionBlockHeaderRow(
-          key: ValueKey('block_${block.id}'),
-          block: block,
-          contextData: sessionPlanContext,
-        ),
+    final List<Widget> children = [];
+    final List<String> keys = [];
+    int index = 0;
 
-        for (final activity in sessionPlanContext.getActivitiesForBlock(block.id!))
-          if (activity.activityType == SessionPlanActivityType.lesson)
-            LessonActivityRow(
-              key: ValueKey('activity_${activity.id}'),
-              activity: activity,
-              sessionPlanContext: sessionPlanContext,
-            )
-          else
-            NonLessonActivityRow(
-              key: ValueKey('activity_${activity.id}'),
-              activity: activity,
-              sessionPlanContext: sessionPlanContext,
-            ),
+    for (final block in blocks) {
+      children.add(SessionBlockHeaderRow(
+        key: ValueKey('block_${block.id}'),
+        block: block,
+        contextData: sessionPlanContext,
+        reorderIndex: index,
+      ));
+      keys.add('block_${block.id}');
+      index++;
 
-        AddActivityRow(
-          key: ValueKey('add_activity_${block.id}'),
-          sessionPlanBlockId: block.id!,
-          sessionPlanContext: sessionPlanContext,
-        )
-      ],
+      for (final activity in sessionPlanContext.getActivitiesForBlock(block.id!)) {
+        if (activity.activityType == SessionPlanActivityType.lesson) {
+          children.add(LessonActivityRow(
+            key: ValueKey('activity_${activity.id}'),
+            activity: activity,
+            sessionPlanContext: sessionPlanContext,
+            reorderIndex: index,
+          ));
+        } else {
+          children.add(NonLessonActivityRow(
+            key: ValueKey('activity_${activity.id}'),
+            activity: activity,
+            sessionPlanContext: sessionPlanContext,
+            reorderIndex: index,
+          ));
+        }
+        keys.add('activity_${activity.id}');
+        index++;
+      }
 
-      AddBlockRow(
-          key: ValueKey('add_block'),
-          sessionPlanContext: sessionPlanContext),
-    ];
+      children.add(AddActivityRow(
+        key: ValueKey('add_activity_${block.id}'),
+        sessionPlanBlockId: block.id!,
+        sessionPlanContext: sessionPlanContext,
+      ));
+      keys.add('add_activity_${block.id}');
+      index++;
+    }
 
-    final keys = children.map((e) => (e.key as ValueKey).value as String).toList();
-
-    // return ReorderableListView.builder(
-    //   buildDefaultDragHandles: false,
-    //   padding: EdgeInsets.zero,
-    //   onReorder: (fromIndex, toIndex) => _handleReorder(keys[fromIndex], keys[toIndex]),
-    //   children: children,
-    // );
+    children.add(AddBlockRow(
+      key: const ValueKey('add_block'),
+      sessionPlanContext: sessionPlanContext,
+    ));
+    keys.add('add_block');
 
     return ReorderableListView.builder(
-      buildDefaultDragHandles: false,        // <- turn off auto handle
+      buildDefaultDragHandles: false, // handles provided manually
       itemCount: children.length,
-      itemBuilder: (context, index) {
-        final child = children[index];
-
-        return ReorderableDragStartListener(
-          key: child.key,
-          index: index,                      // index of the item
-          child: child
-        );
-      },
-      onReorder: (fromIndex, toIndex) => _handleReorder(keys[fromIndex], keys[toIndex]),
+      itemBuilder: (context, index) => children[index],
+      onReorder: (fromIndex, toIndex) =>
+          _handleReorder(keys[fromIndex], keys[toIndex]),
     );
 
   }

@@ -67,6 +67,7 @@ class DecomposedCourseDesignerCard {
     required Widget child,
     required Color color,
     String? leadingText,
+    int? dragHandleIndex,
   }) {
     final Color backgroundColor = color.withAlpha((0.08 * 255).round());  // subtle tint
     final Color leadingBackgroundColor = color.withAlpha((0.18 * 255).round());  // stronger tint
@@ -82,23 +83,11 @@ class DecomposedCourseDesignerCard {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (leadingText != null)
-              Container(
-                width: 48,
-                decoration: BoxDecoration(
-                  color: leadingBackgroundColor,
-                  border: Border(
-                    right: BorderSide(color: color, width: 1.2),
-                  ),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  leadingText,
-                  style: const TextStyle(
-                    // fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                  ),
-                ),
+              _buildLeadingBox(
+                leadingText,
+                color,
+                leadingBackgroundColor,
+                dragHandleIndex,
               ),
             Expanded(
               child: Padding(
@@ -110,6 +99,37 @@ class DecomposedCourseDesignerCard {
         ),
       ),
     );
+  }
+
+  static Widget _buildLeadingBox(
+    String text,
+    Color color,
+    Color backgroundColor,
+    int? dragHandleIndex,
+  ) {
+    Widget box = Container(
+      width: 48,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        border: Border(
+          right: BorderSide(color: color, width: 1.2),
+        ),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+      ),
+    );
+
+    if (dragHandleIndex != null) {
+      box = ReorderableDragStartListener(index: dragHandleIndex, child: box);
+    }
+
+    return box;
   }
 
 
