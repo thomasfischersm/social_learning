@@ -7,11 +7,13 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer_ses
 class NonLessonActivityRow extends StatelessWidget {
   final SessionPlanActivity activity;
   final SessionPlanContext sessionPlanContext;
+  final int reorderIndex;
 
   const NonLessonActivityRow({
     super.key,
     required this.activity,
     required this.sessionPlanContext,
+    required this.reorderIndex,
   });
 
   @override
@@ -28,6 +30,7 @@ class NonLessonActivityRow extends StatelessWidget {
     return DecomposedCourseDesignerCard.buildColorHighlightedBody(
       color: color,
       leadingText: startTime,
+      dragHandleIndex: reorderIndex,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
         child: Row(
