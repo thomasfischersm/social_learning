@@ -258,6 +258,160 @@ class CourseDesignerState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateCategorySortOrder({
+    required TeachableItemCategory movedCategory,
+    required int newIndex,
+  }) async {
+    await _ensureInitialized();
+    await TeachableItemCategoryFunctions.updateCategorySortOrder(
+      movedCategory: movedCategory,
+      newIndex: newIndex,
+      allCategoriesForCourse: categories,
+    );
+
+    categories.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+    final currentIndex =
+        categories.indexWhere((c) => c.id == movedCategory.id);
+    if (currentIndex == -1) return;
+
+    final moved = categories.removeAt(currentIndex);
+    categories.insert(newIndex, moved);
+
+    for (int i = 0; i < categories.length; i++) {
+      final cat = categories[i];
+      if (cat.sortOrder != i) {
+        final updated = TeachableItemCategory(
+          id: cat.id,
+          courseId: cat.courseId,
+          name: cat.name,
+          sortOrder: i,
+          createdAt: cat.createdAt,
+          modifiedAt: cat.modifiedAt,
+        );
+        categories[i] = updated;
+        categoryById[cat.id!] = updated;
+      }
+    }
+    notifyListeners();
+  }
+
+  Future<void> updateItemSortOrder({
+    required TeachableItem movedItem,
+    required DocumentReference newCategoryRef,
+    required int newIndex,
+  }) async {
+    await _ensureInitialized();
+    await TeachableItemFunctions.updateItemSortOrder(
+      allItemsAcrossCategories: items,
+      movedItem: movedItem,
+      newCategoryRef: newCategoryRef,
+      newIndex: newIndex,
+    );
+
+    final sourceCategoryId = movedItem.categoryId.id;
+    final destinationCategoryId = newCategoryRef.id;
+    final sameCategory = sourceCategoryId == destinationCategoryId;
+
+    if (sameCategory) {
+      final categoryItems = items
+          .where((i) => i.categoryId.id == sourceCategoryId)
+          .toList()
+        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+      final currentIndex =
+          categoryItems.indexWhere((i) => i.id == movedItem.id);
+      if (currentIndex == -1) return;
+      final moved = categoryItems.removeAt(currentIndex);
+      categoryItems.insert(newIndex, moved);
+
+      for (int i = 0; i < categoryItems.length; i++) {
+        final item = categoryItems[i];
+        final updated = TeachableItem(
+          id: item.id,
+          courseId: item.courseId,
+          categoryId: item.categoryId,
+          name: item.name,
+          notes: item.notes,
+          sortOrder: i,
+          durationInMinutes: item.durationInMinutes,
+          tagIds: item.tagIds,
+          requiredPrerequisiteIds: item.requiredPrerequisiteIds,
+          recommendedPrerequisiteIds: item.recommendedPrerequisiteIds,
+          lessonRefs: item.lessonRefs,
+          inclusionStatus: item.inclusionStatus,
+          createdAt: item.createdAt,
+          modifiedAt: item.modifiedAt,
+        );
+        final globalIndex = items.indexWhere((it) => it.id == item.id);
+        if (globalIndex != -1) items[globalIndex] = updated;
+        itemById[item.id!] = updated;
+      }
+    } else {
+      final sourceItems = items
+          .where(
+              (i) => i.categoryId.id == sourceCategoryId && i.id != movedItem.id)
+          .toList()
+        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+      for (int i = 0; i < sourceItems.length; i++) {
+        final item = sourceItems[i];
+        if (item.sortOrder != i) {
+          final updated = TeachableItem(
+            id: item.id,
+            courseId: item.courseId,
+            categoryId: item.categoryId,
+            name: item.name,
+            notes: item.notes,
+            sortOrder: i,
+            durationInMinutes: item.durationInMinutes,
+            tagIds: item.tagIds,
+            requiredPrerequisiteIds: item.requiredPrerequisiteIds,
+            recommendedPrerequisiteIds: item.recommendedPrerequisiteIds,
+            lessonRefs: item.lessonRefs,
+            inclusionStatus: item.inclusionStatus,
+            createdAt: item.createdAt,
+            modifiedAt: item.modifiedAt,
+          );
+          final globalIndex = items.indexWhere((it) => it.id == item.id);
+          if (globalIndex != -1) items[globalIndex] = updated;
+          itemById[item.id!] = updated;
+        }
+      }
+
+      final destItems = items
+          .where((i) => i.categoryId.id == destinationCategoryId)
+          .toList()
+        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+      destItems.insert(newIndex, movedItem);
+      for (int i = 0; i < destItems.length; i++) {
+        final item = destItems[i];
+        final isMoved = item.id == movedItem.id;
+        final updated = TeachableItem(
+          id: item.id,
+          courseId: item.courseId,
+          categoryId: isMoved ? newCategoryRef : item.categoryId,
+          name: item.name,
+          notes: item.notes,
+          sortOrder: i,
+          durationInMinutes: item.durationInMinutes,
+          tagIds: item.tagIds,
+          requiredPrerequisiteIds: item.requiredPrerequisiteIds,
+          recommendedPrerequisiteIds: item.recommendedPrerequisiteIds,
+          lessonRefs: item.lessonRefs,
+          inclusionStatus: item.inclusionStatus,
+          createdAt: item.createdAt,
+          modifiedAt: item.modifiedAt,
+        );
+        final globalIndex = items.indexWhere((it) => it.id == item.id);
+        if (globalIndex != -1) {
+          items[globalIndex] = updated;
+        } else {
+          items.add(updated);
+        }
+        itemById[item.id!] = updated;
+      }
+    }
+    notifyListeners();
+  }
+
   Future<void> generateInventory() async {
     await _ensureInitialized();
     if (_activeCourse == null) return;
