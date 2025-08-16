@@ -15,18 +15,18 @@ class InventoryCategoryEntry extends InventoryEntry {
   final CourseDesignerState state;
 
   InventoryCategoryEntry(
-      this.category, {
-        this.isExpanded = true,
-        this.onDelete,
-        required this.state,
-      });
+    this.category, {
+    this.isExpanded = true,
+    this.onDelete,
+    required this.state,
+  });
 
   @override
   String get pageKey => 'category-${category.id!}';
 
   @override
-  Widget buildWidget(
-      BuildContext context, VoidCallback refresh, CourseDesignerState _, int index) {
+  Widget buildWidget(BuildContext context, VoidCallback refresh,
+      CourseDesignerState _, int index) {
     return Container(
       margin: CourseDesignerTheme.cardMargin,
       decoration: BoxDecoration(
@@ -36,15 +36,10 @@ class InventoryCategoryEntry extends InventoryEntry {
             top: Radius.circular(CourseDesignerTheme.cardBorderRadius)),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
         child: Row(
           children: [
-            // Drag handle
-            ReorderableDragStartListener(
-              index: index,
-              child: const Icon(Icons.drag_handle, color: Colors.grey, size: 18),
-            ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 4),
             // Expand/collapse icon with ripple
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
@@ -97,18 +92,25 @@ class InventoryCategoryEntry extends InventoryEntry {
                         context,
                         'Delete category?',
                         'Are you sure you want to delete the category "${category.name}" and all its items?',
-                            () async {
+                        () async {
                           await onDelete!(category);
                           refresh();
                         },
                       );
                     },
-                    child: const Icon(Icons.delete, size: 14, color: Colors.grey),
+                    child:
+                        const Icon(Icons.delete, size: 14, color: Colors.grey),
                   ),
                 ),
               ),
 
             const Spacer(),
+            // Drag handle
+            ReorderableDragStartListener(
+              index: index,
+              child:
+                  const Icon(Icons.drag_handle, color: Colors.grey, size: 18),
+            ),
           ],
         ),
       ),
@@ -123,14 +125,14 @@ class InventoryCategoryEntry extends InventoryEntry {
         category.name,
         'Enter new name',
         'Save',
-            (val) {
+        (val) {
           final trimmed = val?.trim().toLowerCase() ?? '';
           if (trimmed.isEmpty) {
             return 'Name cannot be empty';
           }
 
-          final isDuplicate = state.categories
-              .any((c) => c.id != category.id && c.name.toLowerCase().trim() == trimmed);
+          final isDuplicate = state.categories.any((c) =>
+              c.id != category.id && c.name.toLowerCase().trim() == trimmed);
 
           if (isDuplicate) {
             return 'Another category with this name already exists.';
@@ -138,7 +140,7 @@ class InventoryCategoryEntry extends InventoryEntry {
 
           return null;
         },
-            (newName) async {
+        (newName) async {
           await TeachableItemCategoryFunctions.updateCategory(
             categoryId: category.id!,
             name: newName,

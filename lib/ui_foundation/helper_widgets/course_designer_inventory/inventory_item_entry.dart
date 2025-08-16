@@ -48,10 +48,6 @@ class InventoryItemEntry extends InventoryEntry {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ReorderableDragStartListener(
-            index: index,
-            child: const Icon(Icons.drag_handle, color: Colors.grey, size: 18),
-          ),
           const SizedBox(width: 8),
           Expanded(
             child: Wrap(
@@ -161,6 +157,11 @@ class InventoryItemEntry extends InventoryEntry {
               ],
             ),
           ),
+          ReorderableDragStartListener(
+            index: index,
+            child: const Icon(Icons.drag_handle, color: Colors.grey, size: 18),
+          ),
+
         ],
       ),
     );
