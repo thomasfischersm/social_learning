@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_prerequisites/prerequisite_context.dart';
@@ -82,12 +83,17 @@ class _AddPrerequisiteFanoutWidgetState
     final Offset position = box.localToGlobal(Offset.zero);
     final Size size = box.size;
 
+    final overlayBox = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final screenWidth = overlayBox.size.width;
+
     final List<Widget> menuItems = [];
+
+    double maxItemWidth = 0;
 
     final reverseMap = _buildReverseDependencyMap();
     final disallowedIds =
-    _collectAllDependents(widget.targetItem.id!, reverseMap)
-      ..add(widget.targetItem.id!); // disallow self
+        _collectAllDependents(widget.targetItem.id!, reverseMap)
+          ..add(widget.targetItem.id!); // disallow self
 
     final sortedCategories = widget.context.categories.toList()
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
@@ -106,7 +112,7 @@ class _AddPrerequisiteFanoutWidgetState
           child: Text(
             category.name,
             style:
-            const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+                const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
           ),
         ),
       );
@@ -114,18 +120,28 @@ class _AddPrerequisiteFanoutWidgetState
       for (final item in visibleItems) {
         final isDisabled = disallowedIds.contains(item.id);
 
+        final name = item.name ?? '(Untitled)';
+        final tp = TextPainter(
+          text: TextSpan(text: name),
+          maxLines: 1,
+          textDirection: TextDirection.ltr,
+        )..layout();
+        maxItemWidth = math.max(maxItemWidth, tp.width);
+
         menuItems.add(
           InkWell(
             onTap: isDisabled
                 ? null
                 : () {
-              _removeOverlay();
-              widget.onDependencySelected(item);
-            },
+                    _removeOverlay();
+                    widget.onDependencySelected(item);
+                  },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: Text(
-                item.name ?? '(Untitled)',
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: isDisabled ? Colors.grey.shade400 : Colors.black,
                 ),
@@ -136,36 +152,43 @@ class _AddPrerequisiteFanoutWidgetState
       }
     }
 
+    const margin = 8.0;
+    double menuWidth = math.max(maxItemWidth + 24, 180);
+    double dx = 0;
+    if (position.dx + menuWidth > screenWidth - margin) {
+      dx = screenWidth - margin - menuWidth - position.dx;
+    }
+    if (position.dx + dx < margin) {
+      dx = margin - position.dx;
+      menuWidth = screenWidth - (margin * 2);
+    }
+
     return OverlayEntry(
       builder: (_) => GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: _removeOverlay,
         child: Stack(
           children: [
-            Positioned(
-              left: position.dx,
-              top: position.dy + size.height + 4,
-              child: CompositedTransformFollower(
-                link: _layerLink,
-                offset: Offset(0, size.height + 4),
-                showWhenUnlinked: false,
-                child: Material(
-                  elevation: 6,
-                  borderRadius:
-                      BorderRadius.circular(CourseDesignerTheme.cardBorderRadius),
-                  child: Container(
-                    constraints:
-                    const BoxConstraints(maxHeight: 300, minWidth: 180),
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(
-                          CourseDesignerTheme.cardBorderRadius),
-                    ),
-                    child: SingleChildScrollView(
-                      child:
-                      Column(mainAxisSize: MainAxisSize.min, children: menuItems),
-                    ),
+            CompositedTransformFollower(
+              link: _layerLink,
+              offset: Offset(dx, size.height + 4),
+              showWhenUnlinked: false,
+              child: Material(
+                elevation: 6,
+                borderRadius:
+                    BorderRadius.circular(CourseDesignerTheme.cardBorderRadius),
+                child: Container(
+                  width: menuWidth,
+                  constraints: const BoxConstraints(maxHeight: 300),
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(
+                        CourseDesignerTheme.cardBorderRadius),
+                  ),
+                  child: SingleChildScrollView(
+                    child:
+                        Column(mainAxisSize: MainAxisSize.min, children: menuItems),
                   ),
                 ),
               ),
