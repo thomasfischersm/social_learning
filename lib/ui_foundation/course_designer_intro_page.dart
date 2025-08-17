@@ -22,8 +22,10 @@ class _CourseDesignerIntroPageState extends State<CourseDesignerIntroPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:
-          CourseDesignerAppBar(title: 'Learning Lab', scaffoldKey: scaffoldKey),
+      appBar: CourseDesignerAppBar(
+          title: 'Learning Lab',
+          scaffoldKey: scaffoldKey,
+          currentNav: NavigationEnum.courseDesignerIntro),
       drawer: const CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
@@ -31,7 +33,7 @@ class _CourseDesignerIntroPageState extends State<CourseDesignerIntroPage> {
           NavigationEnum.courseDesignerProfile.navigateCleanDelayed(context);
         }, // or Icons.navigate_next
         tooltip: 'Next Page',
-        child: Icon(Icons.arrow_forward),
+        child: const Icon(Icons.arrow_forward),
       ),
       body: Align(
         alignment: Alignment.topCenter,

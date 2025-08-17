@@ -105,95 +105,100 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar:
-          CourseDesignerAppBar(title: 'Learning Lab', scaffoldKey: scaffoldKey),
+      appBar: CourseDesignerAppBar(
+          title: 'Learning Lab',
+          scaffoldKey: scaffoldKey,
+          currentNav: NavigationEnum.courseDesignerProfile),
       drawer: const CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
         onPressed: _save,
         child: const Icon(Icons.save),
       ),
-      body: Consumer<CourseDesignerState>(builder: (context, courseDesignerState, _) {
-
-        return courseDesignerState.status != CourseDesignerStateStatus.initialized
+      body: Consumer<CourseDesignerState>(
+          builder: (context, courseDesignerState, _) {
+        return courseDesignerState.status !=
+                CourseDesignerStateStatus.initialized
             ? const Center(child: CircularProgressIndicator())
             : Align(
-          alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(
-            enableScrolling: true,
-            enableCreatorGuard: true,
-            enableCourseLoadingGuard: true,
-            // Inside the build method:
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CourseDesignerCard(
-                    title: 'Step 1: Course Profile',
-                    body: Text(
-                      'Get clear on the course context and guide the AI to support you effectively.',
-                      style: CustomTextStyles.getBody(context),
-                    )),
-                _buildCard('Course Details', [
-                  _field(
-                    context,
-                    'Course topic & focus',
-                    'What is the course about? What key topics or skills will you focus on?',
-                    topicController,
+                alignment: Alignment.topCenter,
+                child: CustomUiConstants.framePage(
+                  enableScrolling: true,
+                  enableCreatorGuard: true,
+                  enableCourseLoadingGuard: true,
+                  // Inside the build method:
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      CourseDesignerCard(
+                          title: 'Step 1: Course Profile',
+                          body: Text(
+                            'Get clear on the course context and guide the AI to support you effectively.',
+                            style: CustomTextStyles.getBody(context),
+                          )),
+                      _buildCard('Course Details', [
+                        _field(
+                          context,
+                          'Course topic & focus',
+                          'What is the course about? What key topics or skills will you focus on?',
+                          topicController,
+                        ),
+                        _field(
+                          context,
+                          'Schedule & duration',
+                          'E.g. one-time 3-hour workshop or 6 weekly 90-minute classes.',
+                          scheduleController,
+                        ),
+                      ]),
+                      _buildCard('Audience & Format', [
+                        _field(
+                          context,
+                          'Who is it for?',
+                          'Describe who typically joins, even if you say it’s for “everyone.” What are their backgrounds, goals, or quirks?',
+                          audienceController,
+                        ),
+                        _field(
+                          context,
+                          'Group size & format',
+                          'E.g. 1–5 students, lots of new people each week. Lecture or hands-on?',
+                          groupFormatController,
+                        ),
+                      ]),
+                      _buildCard('Location & Joining', [
+                        _field(
+                          context,
+                          'Location',
+                          'E.g. Midtown NYC studio, classroom, park, Zoom…',
+                          locationController,
+                        ),
+                        _field(
+                          context,
+                          'How do students join?',
+                          'E.g. \$15 per class, first class free, bring yoga mat…',
+                          joinInfoController,
+                        ),
+                      ]),
+                      _buildCard('Tone & Notes', [
+                        _field(
+                          context,
+                          'Tone & teaching approach',
+                          'Describe your teaching style. What matters to you when teaching this course?',
+                          toneController,
+                        ),
+                        _field(
+                          context,
+                          'Anything unusual or worth noting?',
+                          'E.g. multilingual students, final recital, outdoor setting, no consistent group…',
+                          notesController,
+                        ),
+                      ]),
+                    ],
                   ),
-                  _field(
-                    context,
-                    'Schedule & duration',
-                    'E.g. one-time 3-hour workshop or 6 weekly 90-minute classes.',
-                    scheduleController,
-                  ),
-                ]),
-                _buildCard('Audience & Format', [
-                  _field(
-                    context,
-                    'Who is it for?',
-                    'Describe who typically joins, even if you say it’s for “everyone.” What are their backgrounds, goals, or quirks?',
-                    audienceController,
-                  ),
-                  _field(
-                    context,
-                    'Group size & format',
-                    'E.g. 1–5 students, lots of new people each week. Lecture or hands-on?',
-                    groupFormatController,
-                  ),
-                ]),
-                _buildCard('Location & Joining', [
-                  _field(
-                    context,
-                    'Location',
-                    'E.g. Midtown NYC studio, classroom, park, Zoom…',
-                    locationController,
-                  ),
-                  _field(
-                    context,
-                    'How do students join?',
-                    'E.g. \$15 per class, first class free, bring yoga mat…',
-                    joinInfoController,
-                  ),
-                ]),
-                _buildCard('Tone & Notes', [
-                  _field(
-                    context,
-                    'Tone & teaching approach',
-                    'Describe your teaching style. What matters to you when teaching this course?',
-                    toneController,
-                  ),
-                  _field(
-                    context,
-                    'Anything unusual or worth noting?',
-                    'E.g. multilingual students, final recital, outdoor setting, no consistent group…',
-                    notesController,
-                  ),
-                ]),
-              ],
-            ),
-          ),
-        );}));
-      }
+                ),
+              );
+      }),
+    );
+  }
 
   Widget _buildCard(String title, List<Widget> fields) {
     return CourseDesignerCard(

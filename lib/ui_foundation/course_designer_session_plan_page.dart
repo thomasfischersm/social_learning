@@ -79,8 +79,10 @@ class _CourseDesignerSessionPlanPageState
 
     return Scaffold(
       key: scaffoldKey,
-      appBar:
-          CourseDesignerAppBar(title: 'Session Plan', scaffoldKey: scaffoldKey),
+      appBar: CourseDesignerAppBar(
+          title: 'Session Plan',
+          scaffoldKey: scaffoldKey,
+          currentNav: NavigationEnum.courseDesignerSessionPlan),
       drawer: const CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
@@ -99,9 +101,9 @@ class _CourseDesignerSessionPlanPageState
           enableCourseLoadingGuard: true,
           _sessionPlanContext == null
               ? const Padding(
-            padding: EdgeInsets.all(32.0),
-            child: CircularProgressIndicator(),
-          )
+                  padding: EdgeInsets.all(32.0),
+                  child: CircularProgressIndicator(),
+                )
               : _buildMainContent(),
         ),
       ),

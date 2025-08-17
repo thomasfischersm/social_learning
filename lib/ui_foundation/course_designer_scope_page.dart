@@ -79,7 +79,9 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
     return Scaffold(
       key: scaffoldKey,
       appBar: CourseDesignerAppBar(
-          title: 'Scoping', scaffoldKey: scaffoldKey),
+          title: 'Scoping',
+          scaffoldKey: scaffoldKey,
+          currentNav: NavigationEnum.courseDesignerScope),
       drawer: CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
@@ -88,7 +90,7 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
               .navigateCleanDelayed(context);
         },
         tooltip: 'Next Page',
-        child: Icon(Icons.arrow_forward),
+        child: const Icon(Icons.arrow_forward),
       ),
       body: Align(
         alignment: Alignment.topCenter,
