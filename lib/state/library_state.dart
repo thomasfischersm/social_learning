@@ -467,7 +467,12 @@ class LibraryState extends ChangeNotifier {
     var course = Course.fromDocument(await docRef.get());
 
     // Automatically enroll the creator in their own course.
-    _applicationState.enrollInPrivateCourse(course);
+    await _applicationState.enrollInPrivateCourse(course);
+
+    // Reload courses and switch to the newly created course.
+    await _reloadEnrolledCourses();
+    selectedCourse =
+        _availableCourses.firstWhereOrNull((element) => element.id == course.id);
 
     return course;
   }
