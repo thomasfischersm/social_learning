@@ -94,8 +94,10 @@ class _CourseDesignerPrerequisitesPageState
 
     return Scaffold(
       key: scaffoldKey,
-      appBar:
-          CourseDesignerAppBar(title: 'Prerequisites', scaffoldKey: scaffoldKey),
+      appBar: CourseDesignerAppBar(
+          title: 'Prerequisites',
+          scaffoldKey: scaffoldKey,
+          currentNav: NavigationEnum.courseDesignerPrerequisites),
       drawer: CourseDesignerDrawer(),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
@@ -103,7 +105,7 @@ class _CourseDesignerPrerequisitesPageState
           NavigationEnum.courseDesignerScope.navigateCleanDelayed(context);
         }, // or Icons.navigate_next
         tooltip: 'Next Page',
-        child: Icon(Icons.arrow_forward),
+        child: const Icon(Icons.arrow_forward),
       ),
       body: Align(
         alignment: Alignment.topCenter,
@@ -122,7 +124,7 @@ class _CourseDesignerPrerequisitesPageState
     );
   }
 
-  Widget _buildMainContent() {
+    Widget _buildMainContent() {
       return NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -142,13 +144,12 @@ class _CourseDesignerPrerequisitesPageState
               ),
             ),
           ];
-        },body:
-PrerequisitesCard(
-            context: _prerequisiteContext!,
-            focusedItem: _focusedItem,
-  onSelectItem: _handleFocusItemSelected,
-          ),
-        );
-
-  }
+        },
+        body: PrerequisitesCard(
+          context: _prerequisiteContext!,
+          focusedItem: _focusedItem,
+          onSelectItem: _handleFocusItemSelected,
+        ),
+      );
+    }
 }

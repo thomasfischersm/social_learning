@@ -47,15 +47,18 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
         return Scaffold(
           key: scaffoldKey,
           appBar: CourseDesignerAppBar(
-              title: 'Learning Lab', scaffoldKey: scaffoldKey),
+              title: 'Learning Lab',
+              scaffoldKey: scaffoldKey,
+              currentNav: NavigationEnum.courseDesignerInventory),
           drawer: CourseDesignerDrawer(),
           bottomNavigationBar: BottomBarV2.build(context),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              NavigationEnum.courseDesignerPrerequisites.navigateCleanDelayed(context);
+              NavigationEnum.courseDesignerPrerequisites
+                  .navigateCleanDelayed(context);
             }, // or Icons.navigate_next
             tooltip: 'Next Page',
-            child: Icon(Icons.arrow_forward),
+            child: const Icon(Icons.arrow_forward),
           ),
           body: Align(
             alignment: Alignment.topCenter,
@@ -95,7 +98,8 @@ class CourseDesignerInventoryState extends State<CourseDesignerInventoryPage> {
                               context,
                               () {
                                 if (entry is InventoryCategoryEntry) {
-                                  _expanded[entry.category.id!] = entry.isExpanded;
+                                  _expanded[entry.category.id!] =
+                                      entry.isExpanded;
                                 }
                                 setState(() {});
                               },

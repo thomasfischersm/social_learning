@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_tab_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
@@ -8,11 +9,13 @@ import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart'
 class CourseDesignerAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final GlobalKey<ScaffoldState> scaffoldKey;
+  final NavigationEnum? currentNav;
 
   const CourseDesignerAppBar({
     super.key,
     required this.title,
     required this.scaffoldKey,
+    this.currentNav,
   });
 
   @override
@@ -27,9 +30,13 @@ class CourseDesignerAppBar extends StatelessWidget implements PreferredSizeWidge
         ),
         ...InstructorNavActions.createActions(context),
       ],
+      bottom: currentNav == null
+          ? null
+          : CourseDesignerTabBar(currentNav: currentNav!),
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(
+      kToolbarHeight + (currentNav == null ? 0 : kTextTabBarHeight));
 }
