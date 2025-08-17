@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/learning_objective.dart';
+import 'package:social_learning/data/teachable_item_inclusion_status.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer_learning_objectives/learning_objectives_context.dart';
 
 class AddTeachableItemFanoutWidget {
@@ -17,11 +15,16 @@ class AddTeachableItemFanoutWidget {
     required LearningObjectivesContext objectivesContext,
     TeachableItem? currentItem,
   }) {
-    // Build set of already-assigned teachableItem IDs, minus the one being replaced
-    final assignedIds = objective.teachableItemRefs
-        .map((ref) => ref.id!)
-        .toSet();
+    // Build set of already-assigned teachableItem IDs for this objective,
+    // minus the one being replaced if any.
+    final assignedIds =
+        objective.teachableItemRefs.map((ref) => ref.id!).toSet();
     if (currentItem != null) assignedIds.remove(currentItem.id);
+
+    // Track all teachable items that are already assigned to any objective.
+    final allAssignedIds = objectivesContext.learningObjectives
+        .expand((o) => o.teachableItemRefs.map((ref) => ref.id!))
+        .toSet();
 
     // Get sorted categories from the context
     final categories = objectivesContext.categories.toList()
@@ -55,8 +58,10 @@ class AddTeachableItemFanoutWidget {
       // Build the menu items
       final menuItems = <Widget>[];
       for (final category in categories) {
-        final items = objectivesContext.getTeachableItemsForCategory(category.id!);
-        final available = items.where((i) => !assignedIds.contains(i.id)).toList();
+        final items =
+            objectivesContext.getTeachableItemsForCategory(category.id!);
+        final available =
+            items.where((i) => !assignedIds.contains(i.id)).toList();
         if (available.isEmpty) continue;
 
         // Category header
@@ -75,12 +80,23 @@ class AddTeachableItemFanoutWidget {
 
         // Each available item
         for (final item in available) {
+          final needsObjective =
+              (item.inclusionStatus ==
+                          TeachableItemInclusionStatus.explicitlyIncluded ||
+                      item.inclusionStatus ==
+                          TeachableItemInclusionStatus
+                              .includedAsPrerequisite) &&
+                  !allAssignedIds.contains(item.id);
+
           menuItems.add(
             InkWell(
               onTap: () => _handleSelection(item),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: Text(item.name ?? '(Untitled)'),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                child: Text(
+                  '${needsObjective ? '• ' : ''}${item.name ?? '(Untitled)'}',
+                ),
               ),
             ),
           );
