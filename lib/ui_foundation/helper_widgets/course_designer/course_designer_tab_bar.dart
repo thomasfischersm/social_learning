@@ -35,7 +35,7 @@ class CourseDesignerTabBar extends StatefulWidget implements PreferredSizeWidget
         nav: NavigationEnum.courseDesignerLearningObjectives,
         label: 'Objectives'),
     _TabInfo(
-        icon: Icons.schedule_outlined,
+        icon: Icons.event,
         nav: NavigationEnum.courseDesignerSessionPlan,
         label: 'Session Plan'),
   ];
