@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/skill_assessment.dart';
 
 class User {
   String id;
@@ -15,6 +16,7 @@ class User {
   DocumentReference? currentCourseId;
   bool isProfilePrivate;
   List<CourseProficiency>? courseProficiencies;
+  List<CourseSkillAssessment>? courseSkillAssessments;
   bool isGeoLocationEnabled;
   GeoPoint? location;
   GeoPoint? roughUserLocation;
@@ -38,6 +40,7 @@ class User {
       this.currentCourseId,
       this.isProfilePrivate,
       this.courseProficiencies,
+      this.courseSkillAssessments,
       this.isGeoLocationEnabled,
       this.location,
       this.roughUserLocation,
@@ -69,6 +72,17 @@ class User {
                   CourseProficiency(doc['courseId'], doc['proficiency'])
               ]
             : [],
+        courseSkillAssessments = (e.data()?['courseSkillAssessments']) != null
+            ? [
+                for (var doc in e.data()?['courseSkillAssessments'])
+                  CourseSkillAssessment(
+                      doc['courseId'] as DocumentReference,
+                      (doc['dimensions'] as List<dynamic>? ?? [])
+                          .map((e) => SkillAssessmentDimension.fromMap(
+                              e as Map<String, dynamic>))
+                          .toList())
+              ]
+            : [],
         isGeoLocationEnabled = e.data()?['isGeoLocationEnabled'] ?? false,
         location = e.data()?['location'],
         roughUserLocation = e.data()?['roughUserLocation'],
@@ -79,6 +93,11 @@ class User {
 
   CourseProficiency? getCourseProficiency(Course course) {
     return courseProficiencies
+        ?.firstWhereOrNull((element) => element.courseId.id == course.id);
+  }
+
+  CourseSkillAssessment? getCourseSkillAssessment(Course course) {
+    return courseSkillAssessments
         ?.firstWhereOrNull((element) => element.courseId.id == course.id);
   }
 
@@ -96,4 +115,11 @@ class CourseProficiency {
   double proficiency;
 
   CourseProficiency(this.courseId, this.proficiency);
+}
+
+class CourseSkillAssessment {
+  DocumentReference courseId;
+  List<SkillAssessmentDimension> dimensions;
+
+  CourseSkillAssessment(this.courseId, this.dimensions);
 }
