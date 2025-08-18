@@ -23,6 +23,26 @@ class SkillRubricsFunctions {
     }
   }
 
+  static Future<SkillRubric?> ensureRubricForCourse(String courseId) async {
+    try {
+      final existing = await loadForCourse(courseId);
+      if (existing != null) return existing;
+
+      final courseRef = docRef('courses', courseId);
+      final docRefRubric = await _firestore.collection(_collectionPath).add({
+        'courseId': courseRef,
+        'dimensions': [],
+        'createdAt': FieldValue.serverTimestamp(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+      final snapshot = await docRefRubric.get();
+      return SkillRubric.fromSnapshot(snapshot);
+    } catch (e) {
+      print('Error ensuring skill rubric: $e');
+      return null;
+    }
+  }
+
   static Future<SkillRubric?> createDimension({
     required String courseId,
     required String name,
@@ -155,6 +175,175 @@ class SkillRubricsFunctions {
     }
   }
 
+  static Future<SkillRubric?> removeDimension({
+    required String courseId,
+    required String dimensionId,
+  }) async {
+    try {
+      final rubric = await loadForCourse(courseId);
+      if (rubric == null || rubric.id == null) return null;
+      final docRef = _firestore.collection(_collectionPath).doc(rubric.id);
+      final dims = List<SkillDimension>.from(rubric.dimensions);
+      dims.removeWhere((d) => d.id == dimensionId);
+      await docRef.update({
+        'dimensions': dims.map((e) => e.toMap()).toList(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+      final updated = await docRef.get();
+      return SkillRubric.fromSnapshot(updated);
+    } catch (e) {
+      print('Error removing dimension: $e');
+      return null;
+    }
+  }
+
+  static Future<SkillRubric?> updateDimension({
+    required String courseId,
+    required String dimensionId,
+    required String name,
+    String? description,
+  }) async {
+    try {
+      final rubric = await loadForCourse(courseId);
+      if (rubric == null || rubric.id == null) return null;
+      final docRef = _firestore.collection(_collectionPath).doc(rubric.id);
+      final dims = List<SkillDimension>.from(rubric.dimensions);
+      final index = dims.indexWhere((d) => d.id == dimensionId);
+      if (index < 0) return rubric;
+      final updatedDim = SkillDimension(
+        id: dims[index].id,
+        name: name,
+        description: description,
+        degrees: dims[index].degrees,
+      );
+      dims[index] = updatedDim;
+      await docRef.update({
+        'dimensions': dims.map((e) => e.toMap()).toList(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+      final updated = await docRef.get();
+      return SkillRubric.fromSnapshot(updated);
+    } catch (e) {
+      print('Error updating dimension: $e');
+      return null;
+    }
+  }
+
+  static Future<SkillRubric?> updateDegree({
+    required String courseId,
+    required String dimensionId,
+    required String degreeId,
+    required String name,
+    String? description,
+  }) async {
+    try {
+      final rubric = await loadForCourse(courseId);
+      if (rubric == null || rubric.id == null) return null;
+      final docRef = _firestore.collection(_collectionPath).doc(rubric.id);
+      final dims = List<SkillDimension>.from(rubric.dimensions);
+      final dimIndex = dims.indexWhere((d) => d.id == dimensionId);
+      if (dimIndex < 0) return rubric;
+      final degrees = List<SkillDegree>.from(dims[dimIndex].degrees);
+      final degIndex = degrees.indexWhere((d) => d.id == degreeId);
+      if (degIndex < 0) return rubric;
+      degrees[degIndex] = SkillDegree(
+        id: degrees[degIndex].id,
+        degree: degrees[degIndex].degree,
+        name: name,
+        description: description,
+        lessonRefs: degrees[degIndex].lessonRefs,
+      );
+      dims[dimIndex] = SkillDimension(
+        id: dims[dimIndex].id,
+        name: dims[dimIndex].name,
+        description: dims[dimIndex].description,
+        degrees: degrees,
+      );
+      await docRef.update({
+        'dimensions': dims.map((e) => e.toMap()).toList(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+      final updated = await docRef.get();
+      return SkillRubric.fromSnapshot(updated);
+    } catch (e) {
+      print('Error updating degree: $e');
+      return null;
+    }
+  }
+
+  static Future<SkillRubric?> moveDimension({
+    required String courseId,
+    required String dimensionId,
+    required int newIndex,
+  }) async {
+    try {
+      final rubric = await loadForCourse(courseId);
+      if (rubric == null || rubric.id == null) return null;
+      final docRef = _firestore.collection(_collectionPath).doc(rubric.id);
+      final dims = List<SkillDimension>.from(rubric.dimensions);
+      final currentIndex = dims.indexWhere((d) => d.id == dimensionId);
+      if (currentIndex < 0) return rubric;
+      if (newIndex < 0 || newIndex >= dims.length) return rubric;
+      final dim = dims.removeAt(currentIndex);
+      dims.insert(newIndex, dim);
+      await docRef.update({
+        'dimensions': dims.map((e) => e.toMap()).toList(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+      final updated = await docRef.get();
+      return SkillRubric.fromSnapshot(updated);
+    } catch (e) {
+      print('Error moving dimension: $e');
+      return null;
+    }
+  }
+
+  static Future<SkillRubric?> moveDegree({
+    required String courseId,
+    required String dimensionId,
+    required String degreeId,
+    required int newIndex,
+  }) async {
+    try {
+      final rubric = await loadForCourse(courseId);
+      if (rubric == null || rubric.id == null) return null;
+      final docRef = _firestore.collection(_collectionPath).doc(rubric.id);
+      final dims = List<SkillDimension>.from(rubric.dimensions);
+      final dimIndex = dims.indexWhere((d) => d.id == dimensionId);
+      if (dimIndex < 0) return rubric;
+      final degrees = List<SkillDegree>.from(dims[dimIndex].degrees);
+      final index = degrees.indexWhere((d) => d.id == degreeId);
+      if (index < 0) return rubric;
+      if (newIndex < 0 || newIndex >= degrees.length) return rubric;
+      final degree = degrees.removeAt(index);
+      degrees.insert(newIndex, degree);
+      for (var i = 0; i < degrees.length; i++) {
+        degrees[i] = SkillDegree(
+          id: degrees[i].id,
+          degree: i + 1,
+          name: degrees[i].name,
+          description: degrees[i].description,
+          lessonRefs: degrees[i].lessonRefs,
+        );
+      }
+      dims[dimIndex] = SkillDimension(
+        id: dims[dimIndex].id,
+        name: dims[dimIndex].name,
+        description: dims[dimIndex].description,
+        degrees: degrees,
+      );
+      await docRef.update({
+        'dimensions': dims.map((e) => e.toMap()).toList(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+      final updated = await docRef.get();
+      return SkillRubric.fromSnapshot(updated);
+    } catch (e) {
+      print('Error moving degree: $e');
+      return null;
+    }
+  }
+
   static Future<SkillRubric?> addLesson({
     required String courseId,
     required String dimensionId,
@@ -239,53 +428,6 @@ class SkillRubricsFunctions {
       return SkillRubric.fromSnapshot(updated);
     } catch (e) {
       print('Error removing lesson: $e');
-      return null;
-    }
-  }
-
-  static Future<SkillRubric?> moveDegree({
-    required String courseId,
-    required String dimensionId,
-    required String degreeId,
-    required bool moveUp,
-  }) async {
-    try {
-      final rubric = await loadForCourse(courseId);
-      if (rubric == null || rubric.id == null) return null;
-      final docRef = _firestore.collection(_collectionPath).doc(rubric.id);
-      final dims = rubric.dimensions;
-      final dimIndex = dims.indexWhere((d) => d.id == dimensionId);
-      if (dimIndex < 0) return rubric;
-      final degrees = List<SkillDegree>.from(dims[dimIndex].degrees);
-      final index = degrees.indexWhere((d) => d.id == degreeId);
-      if (index < 0) return rubric;
-      final newIndex = moveUp ? index - 1 : index + 1;
-      if (newIndex < 0 || newIndex >= degrees.length) return rubric;
-      final degree = degrees.removeAt(index);
-      degrees.insert(newIndex, degree);
-      for (var i = 0; i < degrees.length; i++) {
-        degrees[i] = SkillDegree(
-          id: degrees[i].id,
-          degree: i + 1,
-          name: degrees[i].name,
-          description: degrees[i].description,
-          lessonRefs: degrees[i].lessonRefs,
-        );
-      }
-      dims[dimIndex] = SkillDimension(
-        id: dims[dimIndex].id,
-        name: dims[dimIndex].name,
-        description: dims[dimIndex].description,
-        degrees: degrees,
-      );
-      await docRef.update({
-        'dimensions': dims.map((e) => e.toMap()).toList(),
-        'modifiedAt': FieldValue.serverTimestamp(),
-      });
-      final updated = await docRef.get();
-      return SkillRubric.fromSnapshot(updated);
-    } catch (e) {
-      print('Error moving degree: $e');
       return null;
     }
   }

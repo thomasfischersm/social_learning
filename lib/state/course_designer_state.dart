@@ -23,6 +23,8 @@ import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
 import 'package:social_learning/data/teachable_item_inclusion_status.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
+import 'package:social_learning/data/skill_rubric.dart';
+import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/state/library_state.dart';
 
@@ -41,6 +43,7 @@ class CourseDesignerState extends ChangeNotifier {
   SessionPlan? sessionPlan;
   List<SessionPlanBlock> blocks = [];
   List<SessionPlanActivity> activities = [];
+  SkillRubric? skillRubric;
 
   final Map<String, TeachableItem> itemById = {};
   final Map<String, LearningObjective> objectiveById = {};
@@ -98,6 +101,7 @@ class CourseDesignerState extends ChangeNotifier {
         TeachableItemCategoryFunctions.getCategoriesForCourse(courseId);
     final itemsFuture = TeachableItemFunctions.getItemsForCourse(courseId);
     final tagsFuture = TeachableItemTagFunctions.getTagsForCourse(courseId);
+    final rubricFuture = SkillRubricsFunctions.ensureRubricForCourse(courseId);
 
     SessionPlan plan;
     try {
@@ -119,6 +123,7 @@ class CourseDesignerState extends ChangeNotifier {
       categoriesFuture,
       itemsFuture,
       tagsFuture,
+      rubricFuture,
     ]);
 
     learningObjectives = results[0] as List<LearningObjective>;
@@ -126,6 +131,7 @@ class CourseDesignerState extends ChangeNotifier {
     categories = results[2] as List<TeachableItemCategory>;
     items = results[3] as List<TeachableItem>;
     tags = results[4] as List<TeachableItemTag>;
+    skillRubric = results[5] as SkillRubric?;
     sessionPlan = plan;
     blocks = List.from(blockAndActivityFutures[0] as List<SessionPlanBlock>);
     activities =
@@ -203,6 +209,7 @@ class CourseDesignerState extends ChangeNotifier {
     sessionPlan = null;
     blocks.clear();
     activities.clear();
+    skillRubric = null;
     itemById.clear();
     objectiveById.clear();
     categoryById.clear();
@@ -212,6 +219,136 @@ class CourseDesignerState extends ChangeNotifier {
     requiredItemIds.clear();
     recommendedItemIds.clear();
     notifyListeners();
+  }
+
+  // ----- Skill Rubrics -----
+  Future<void> addSkillDimension(String name, {String? description}) async {
+    await _ensureInitialized();
+    if (_activeCourse == null) return;
+    final updated = await SkillRubricsFunctions.createDimension(
+      courseId: _activeCourse!.id!,
+      name: name,
+      description: description,
+    );
+    if (updated != null) {
+      skillRubric = updated;
+      notifyListeners();
+    }
+  }
+
+  Future<void> addSkillDegree(String dimensionId, String name,
+      {String? description}) async {
+    await _ensureInitialized();
+    if (_activeCourse == null) return;
+    final updated = await SkillRubricsFunctions.addDegree(
+      courseId: _activeCourse!.id!,
+      dimensionId: dimensionId,
+      name: name,
+      description: description,
+    );
+    if (updated != null) {
+      skillRubric = updated;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateSkillDimension(
+      {required String dimensionId,
+      required String name,
+      String? description}) async {
+    await _ensureInitialized();
+    if (_activeCourse == null) return;
+    final updated = await SkillRubricsFunctions.updateDimension(
+      courseId: _activeCourse!.id!,
+      dimensionId: dimensionId,
+      name: name,
+      description: description,
+    );
+    if (updated != null) {
+      skillRubric = updated;
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateSkillDegree(
+      {required String dimensionId,
+      required String degreeId,
+      required String name,
+      String? description}) async {
+    await _ensureInitialized();
+    if (_activeCourse == null) return;
+    final updated = await SkillRubricsFunctions.updateDegree(
+      courseId: _activeCourse!.id!,
+      dimensionId: dimensionId,
+      degreeId: degreeId,
+      name: name,
+      description: description,
+    );
+    if (updated != null) {
+      skillRubric = updated;
+      notifyListeners();
+    }
+  }
+
+  Future<void> moveSkillDimension(
+      {required String dimensionId, required int newIndex}) async {
+    await _ensureInitialized();
+    if (_activeCourse == null) return;
+    final updated = await SkillRubricsFunctions.moveDimension(
+      courseId: _activeCourse!.id!,
+      dimensionId: dimensionId,
+      newIndex: newIndex,
+    );
+    if (updated != null) {
+      skillRubric = updated;
+      notifyListeners();
+    }
+  }
+
+  Future<void> moveSkillDegree(
+      {required String dimensionId,
+      required String degreeId,
+      required int newIndex}) async {
+    await _ensureInitialized();
+    if (_activeCourse == null) return;
+    final updated = await SkillRubricsFunctions.moveDegree(
+      courseId: _activeCourse!.id!,
+      dimensionId: dimensionId,
+      degreeId: degreeId,
+      newIndex: newIndex,
+    );
+    if (updated != null) {
+      skillRubric = updated;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteSkillDegree(
+      {required String dimensionId, required String degreeId}) async {
+    await _ensureInitialized();
+    if (_activeCourse == null) return;
+    final updated = await SkillRubricsFunctions.removeDegree(
+      courseId: _activeCourse!.id!,
+      dimensionId: dimensionId,
+      degreeId: degreeId,
+    );
+    if (updated != null) {
+      skillRubric = updated;
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteSkillDimension(String dimensionId) async {
+    await _ensureInitialized();
+    if (_activeCourse == null) return;
+    final updated = await SkillRubricsFunctions.removeDimension(
+      courseId: _activeCourse!.id!,
+      dimensionId: dimensionId,
+    );
+    if (updated != null) {
+      skillRubric = updated;
+      notifyListeners();
+    }
   }
 
   // ----- Inventory / Item management -----
