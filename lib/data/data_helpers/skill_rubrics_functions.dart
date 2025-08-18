@@ -3,6 +3,7 @@ import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 
+
 class SkillRubricsFunctions {
   static FirebaseFirestore get _firestore => FirestoreService.instance;
   static const String _collectionPath = 'skillRubrics';
@@ -353,7 +354,7 @@ class SkillRubricsFunctions {
     try {
       final rubric = await loadForCourse(courseId);
       if (rubric == null || rubric.id == null) return null;
-      final docRef = _firestore.collection(_collectionPath).doc(rubric.id);
+      final rubricRef = _firestore.collection(_collectionPath).doc(rubric.id);
       final dims = rubric.dimensions;
       final dimIndex = dims.indexWhere((d) => d.id == dimensionId);
       if (dimIndex < 0) return rubric;
@@ -376,11 +377,11 @@ class SkillRubricsFunctions {
         description: dims[dimIndex].description,
         degrees: degrees,
       );
-      await docRef.update({
+      await rubricRef.update({
         'dimensions': dims.map((e) => e.toMap()).toList(),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
-      final updated = await docRef.get();
+      final updated = await rubricRef.get();
       return SkillRubric.fromSnapshot(updated);
     } catch (e) {
       print('Error adding lesson: $e');
@@ -397,7 +398,7 @@ class SkillRubricsFunctions {
     try {
       final rubric = await loadForCourse(courseId);
       if (rubric == null || rubric.id == null) return null;
-      final docRef = _firestore.collection(_collectionPath).doc(rubric.id);
+      final rubricRef = _firestore.collection(_collectionPath).doc(rubric.id);
       final dims = rubric.dimensions;
       final dimIndex = dims.indexWhere((d) => d.id == dimensionId);
       if (dimIndex < 0) return rubric;
@@ -420,11 +421,11 @@ class SkillRubricsFunctions {
         description: dims[dimIndex].description,
         degrees: degrees,
       );
-      await docRef.update({
+      await rubricRef.update({
         'dimensions': dims.map((e) => e.toMap()).toList(),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
-      final updated = await docRef.get();
+      final updated = await rubricRef.get();
       return SkillRubric.fromSnapshot(updated);
     } catch (e) {
       print('Error removing lesson: $e');
@@ -442,7 +443,7 @@ class SkillRubricsFunctions {
     try {
       final rubric = await loadForCourse(courseId);
       if (rubric == null || rubric.id == null) return null;
-      final docRef = _firestore.collection(_collectionPath).doc(rubric.id);
+      final rubricRef = _firestore.collection(_collectionPath).doc(rubric.id);
       final dims = rubric.dimensions;
       final dimIndex = dims.indexWhere((d) => d.id == dimensionId);
       if (dimIndex < 0) return rubric;
@@ -470,11 +471,11 @@ class SkillRubricsFunctions {
         description: dims[dimIndex].description,
         degrees: degrees,
       );
-      await docRef.update({
+      await rubricRef.update({
         'dimensions': dims.map((e) => e.toMap()).toList(),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
-      final updated = await docRef.get();
+      final updated = await rubricRef.get();
       return SkillRubric.fromSnapshot(updated);
     } catch (e) {
       print('Error moving lesson: $e');
