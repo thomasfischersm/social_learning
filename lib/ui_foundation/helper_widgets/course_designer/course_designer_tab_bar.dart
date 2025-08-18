@@ -31,6 +31,10 @@ class CourseDesignerTabBar extends StatefulWidget implements PreferredSizeWidget
         nav: NavigationEnum.courseDesignerScope,
         label: 'Scoping'),
     _TabInfo(
+        icon: Icons.rule,
+        nav: NavigationEnum.courseDesignerSkillRubric,
+        label: 'Skill Rubric'),
+    _TabInfo(
         icon: Icons.flag_outlined,
         nav: NavigationEnum.courseDesignerLearningObjectives,
         label: 'Objectives'),

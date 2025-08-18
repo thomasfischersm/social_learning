@@ -35,6 +35,7 @@ enum NavigationEnum {
   courseDesignerInventory('/course_designer_inventory'),
   courseDesignerPrerequisites('/course_designer_prerequisites'),
   courseDesignerScope('/course_designer_scope'),
+  courseDesignerSkillRubric('/course_designer_skill_rubric'),
   courseDesignerLearningObjectives('/course_designer_learning_objectives'),
   courseDesignerSessionPlan('/course_designer_session_plan'),
   ;

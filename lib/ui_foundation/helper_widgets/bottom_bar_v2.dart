@@ -160,6 +160,7 @@ class BottomBarV2 {
           NavigationEnum.courseDesignerInventory.route,
           NavigationEnum.courseDesignerPrerequisites.route,
           NavigationEnum.courseDesignerScope.route,
+          NavigationEnum.courseDesignerSkillRubric.route,
           NavigationEnum.courseDesignerLearningObjectives.route,
           NavigationEnum.courseDesignerSessionPlan.route,
         }.contains(currentRoute)) {

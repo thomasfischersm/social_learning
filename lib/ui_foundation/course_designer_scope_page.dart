@@ -86,7 +86,7 @@ class _CourseDesignerScopePageState extends State<CourseDesignerScopePage> {
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          NavigationEnum.courseDesignerLearningObjectives
+          NavigationEnum.courseDesignerSkillRubric
               .navigateCleanDelayed(context);
         },
         tooltip: 'Next Page',
