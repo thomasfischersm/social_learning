@@ -21,6 +21,7 @@ import 'package:social_learning/ui_foundation/code_of_conduct_page.dart';
 import 'package:social_learning/ui_foundation/course_designer_intro_page.dart';
 import 'package:social_learning/ui_foundation/course_designer_inventory_page.dart';
 import 'package:social_learning/ui_foundation/course_designer_learning_objectives_page.dart';
+import 'package:social_learning/ui_foundation/course_designer_skill_rubric_page.dart';
 import 'package:social_learning/ui_foundation/course_designer_prerequisites_page.dart';
 import 'package:social_learning/ui_foundation/course_designer_profile_page.dart';
 import 'package:social_learning/ui_foundation/course_designer_scope_page.dart';
@@ -183,6 +184,8 @@ class SocialLearningApp extends StatelessWidget {
         '/course_designer_prerequisites': (context) =>
             const CourseDesignerPrerequisitesPage(),
         '/course_designer_scope': (context) => const CourseDesignerScopePage(),
+        '/course_designer_skill_rubric':
+            (context) => const CourseDesignerSkillRubricPage(),
         '/course_designer_learning_objectives': (context) =>
             const CourseDesignerLearningObjectivesPage(),
         '/course_designer_session_plan': (context) =>
