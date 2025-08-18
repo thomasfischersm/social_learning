@@ -8,6 +8,6 @@
 // const db = admin.firestore();
 
 
-
 export { updateMostAdvancedStudent } from './updateMostAdvancedStudent';
 export { updateUserLastLessonTimestamp } from './updateUserLastLessonTimestamp';
+export { updateUserSkillAssessment } from './updateUserSkillAssessment';
