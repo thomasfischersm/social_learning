@@ -71,7 +71,7 @@ void main() {
     final lesson = Lesson('l1', courseRef, null, 0, 't', null, '', null, null,
         null, null, null, null, '', null);
     final user = User('u1', 'uid1', '', '', null, '', false, null, null, null,
-        false, null, false, null, null, null, null, null,
+        false, null, null, false, null, null, null, null, null,
         Timestamp.fromMillisecondsSinceEpoch(0));
 
     await ProgressVideoFunctions.createProgressVideo(
