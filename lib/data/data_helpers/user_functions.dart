@@ -4,6 +4,7 @@ import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/foundation.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:social_learning/data/course.dart';
@@ -119,6 +120,25 @@ class UserFunctions {
         .doc(id)
         .get();
     return User.fromSnapshot(doc);
+  }
+
+  /// Returns a stream that listens to changes to the user document.
+  static Stream<User> listenToUser(String id) {
+    return FirestoreService.instance
+        .collection('users')
+        .doc(id)
+        .snapshots()
+        .map((doc) => User.fromSnapshot(doc));
+  }
+
+  /// Fetches the download URL for the user's profile photo if available.
+  static Future<String?> getProfilePhotoUrl(User user) async {
+    if (user.profileFireStoragePath == null) {
+      return null;
+    }
+    return FirebaseStorage.instance
+        .ref(user.profileFireStoragePath)
+        .getDownloadURL();
   }
 
   static bool get isFirebaseAuthLoggedOut =>
