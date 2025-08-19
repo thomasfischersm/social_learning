@@ -7,6 +7,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/belt_color_functions.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 
@@ -22,12 +23,15 @@ class ProfileImageV2 extends StatefulWidget {
   final double? maxRadius;
   final bool linkToOtherProfile;
   final bool listenForProfileUpdate;
+  final bool _useCurrentUser;
 
   const ProfileImageV2._(this._user, this._userRef,
       {super.key,
       this.maxRadius,
       this.linkToOtherProfile = false,
-      this.listenForProfileUpdate = false});
+      this.listenForProfileUpdate = false,
+      bool useCurrentUser = false})
+      : _useCurrentUser = useCurrentUser;
 
   /// Creates a [ProfileImageV2] from an existing [User] object.
   factory ProfileImageV2.fromUser(User user,
@@ -55,6 +59,20 @@ class ProfileImageV2 extends StatefulWidget {
         listenForProfileUpdate: listenForProfileUpdate);
   }
 
+  /// Creates a [ProfileImageV2] for the currently logged-in user.
+  factory ProfileImageV2.fromCurrentUser(
+      {Key? key,
+      double? maxRadius,
+      bool linkToOtherProfile = false,
+      bool listenForProfileUpdate = false}) {
+    return ProfileImageV2._(null, null,
+        key: key,
+        maxRadius: maxRadius,
+        linkToOtherProfile: linkToOtherProfile,
+        listenForProfileUpdate: listenForProfileUpdate,
+        useCurrentUser: true);
+  }
+
   @override
   State<ProfileImageV2> createState() => _ProfileImageV2State();
 }
@@ -77,7 +95,19 @@ class _ProfileImageV2State extends State<ProfileImageV2> {
   }
 
   Future<void> _init() async {
-    if (widget._user != null) {
+    if (widget._useCurrentUser) {
+      final applicationState =
+          Provider.of<ApplicationState>(context, listen: false);
+      User? currentUser = applicationState.currentUser;
+      currentUser ??= await applicationState.currentUserBlocking;
+      if (currentUser != null) {
+        _updateUser(currentUser);
+        if (widget.listenForProfileUpdate) {
+          _userSubscription =
+              UserFunctions.listenToUser(currentUser.id).listen(_updateUser);
+        }
+      }
+    } else if (widget._user != null) {
       _updateUser(widget._user!);
       if (widget.listenForProfileUpdate) {
         _userSubscription = UserFunctions.listenToUser(widget._user!.id)
