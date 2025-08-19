@@ -1,1 +1,40 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"social-learning-32741","appId":"1:518330283384:android:602df8be06096757fd048d","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"social-learning-32741","configurations":{"android":"1:518330283384:android:602df8be06096757fd048d","ios":"1:518330283384:ios:2bf27cb952c003a0fd048d","web":"1:518330283384:web:d3cd11f6daf0f29afd048d"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "social-learning-32741",
+          "appId": "1:518330283384:android:602df8be06096757fd048d",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "social-learning-32741",
+          "configurations": {
+            "android": "1:518330283384:android:602df8be06096757fd048d",
+            "ios": "1:518330283384:ios:2bf27cb952c003a0fd048d",
+            "web": "1:518330283384:web:d3cd11f6daf0f29afd048d"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ]
+}
