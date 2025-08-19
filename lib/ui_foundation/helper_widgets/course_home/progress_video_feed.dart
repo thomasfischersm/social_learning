@@ -7,7 +7,7 @@ import 'package:social_learning/data/data_helpers/progress_video_functions.dart'
 import 'package:social_learning/data/progress_video.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/profile_image_by_user_id_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_by_user_id_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/youtube_video_widget.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';

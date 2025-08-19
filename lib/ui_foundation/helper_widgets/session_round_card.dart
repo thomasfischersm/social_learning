@@ -6,7 +6,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/lesson_cover_image_widget.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
