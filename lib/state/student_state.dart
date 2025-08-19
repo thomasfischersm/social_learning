@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
@@ -150,7 +151,7 @@ class StudentState extends ChangeNotifier {
       var teachRecords = _teachRecords;
       if (teachRecords != null) {
         for (PracticeRecord record in teachRecords) {
-          if (record.lessonId == lesson.id) {
+          if (record.lessonId.id == lesson.id) {
             if (record.isGraduation) {
               hasTaught = true;
               break;
@@ -273,6 +274,12 @@ class StudentState extends ChangeNotifier {
     }
 
     return lessonCount;
+  }
+
+  @visibleForTesting
+  void setPracticeRecords({List<PracticeRecord>? learnRecords, List<PracticeRecord>? teachRecords}) {
+    _learnRecords = learnRecords;
+    _teachRecords = teachRecords;
   }
 
   void signOut() {
