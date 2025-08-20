@@ -7,7 +7,6 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/learning_objectives_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/add_teachable_item_fanout_widget.dart';
 
-import '../../ui_constants/custom_text_styles.dart';
 
 class ObjectiveTeachableItemEntry extends StatefulWidget {
   final LearningObjective objective;

@@ -4,8 +4,8 @@ import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/learning_objectives_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/add_lesson_fanout_widget.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
-import '../../ui_constants/navigation_enum.dart';
 
 /// Row that lets an instructor attach a new **Lesson** (the *how*)
 /// to the current **Teachable Item** (the *what*).

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_plan_activity.dart';
+import 'package:social_learning/data/session_play_activity_type.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/select_lesson_for_activity_fanout_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/session_plan_context.dart';
-import '../../../data/session_play_activity_type.dart';
-import '../course_designer/decomposed_course_designer_card.dart';
 
 class LessonActivityRow extends StatelessWidget {
   final SessionPlanActivity activity;

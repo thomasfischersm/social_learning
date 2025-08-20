@@ -5,12 +5,12 @@ import 'package:social_learning/data/data_helpers/teachable_item_category_functi
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.dart';
 import 'package:social_learning/data/learning_objective.dart';
+import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
 import 'package:social_learning/data/teachable_item_inclusion_status.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 
-import '../../../data/lesson.dart';
 
 class LearningObjectivesContext {
   final String courseId;

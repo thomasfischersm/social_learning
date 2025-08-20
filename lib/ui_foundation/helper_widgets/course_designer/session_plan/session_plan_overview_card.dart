@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/flutter_percent_indicator.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/session_plan_context.dart';
-
-import '../course_designer/course_designer_card.dart';
 
 class SessionPlanOverviewCard extends StatelessWidget {
   final SessionPlanContext context;

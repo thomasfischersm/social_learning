@@ -9,8 +9,6 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/lea
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/inventory/tag_pill.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/add_lesson_fanout_widget.dart';
 
-import '../../ui_constants/custom_text_styles.dart';
-
 class ObjectiveLessonEntry extends StatefulWidget {
   final TeachableItem item;
   final Lesson lesson;

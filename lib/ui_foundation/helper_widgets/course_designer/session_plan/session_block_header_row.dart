@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:social_learning/data/session_plan_block.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/session_plan_context.dart';
-import '../../../data/session_plan_block.dart';
-import '../course_designer/decomposed_course_designer_card.dart';
-import '../dialog_utils.dart';
-import '../value_input_dialog.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
 
 class SessionBlockHeaderRow extends StatelessWidget {
   final SessionPlanBlock block;

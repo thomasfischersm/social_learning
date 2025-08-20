@@ -1,11 +1,14 @@
 import 'package:social_learning/data/course_profile.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/learning_objective.dart';
 import 'package:social_learning/data/session_plan.dart';
 import 'package:social_learning/data/session_plan_activity.dart';
 import 'package:social_learning/data/session_plan_block.dart';
+import 'package:social_learning/data/session_play_activity_type.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_category.dart';
+import 'package:social_learning/data/teachable_item_inclusion_status.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 
 import 'package:social_learning/data/data_helpers/course_profile_functions.dart';
@@ -16,11 +19,8 @@ import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.d
 import 'package:social_learning/data/data_helpers/session_plan_functions.dart';
 import 'package:social_learning/data/data_helpers/session_plan_block_functions.dart';
 import 'package:social_learning/data/data_helpers/session_plan_activity_functions.dart';
+import 'package:social_learning/state/library_state.dart';
 
-import '../../../data/data_helpers/reference_helper.dart';
-import '../../../data/session_play_activity_type.dart';
-import '../../../data/teachable_item_inclusion_status.dart';
-import '../../../state/library_state.dart';
 
 class SessionPlanContext {
   final String courseId;
