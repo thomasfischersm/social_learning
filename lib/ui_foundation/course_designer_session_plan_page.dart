@@ -3,10 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_context.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/session_plan_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/course_designer_app_bar.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_plan_overview_card.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_session_plan/session_block_list_view.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/session_plan_overview_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/session_block_list_view.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
