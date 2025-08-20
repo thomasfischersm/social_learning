@@ -113,8 +113,8 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
     } else if (widget._user != null) {
       _updateUser(widget._user!);
       if (widget.listenForProfileUpdate) {
-        _userSubscription = UserFunctions.listenToUser(widget._user!.id)
-            .listen(_updateUser);
+        _userSubscription =
+            UserFunctions.listenToUser(widget._user!.id).listen(_updateUser);
       }
     } else if (widget._userRef != null) {
       if (widget.listenForProfileUpdate) {
@@ -161,8 +161,8 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
       if (_showRadar && _user != null) {
         avatar = _buildRadarAvatar(borderColor, maxDisplayRadius);
       } else if (_profilePhotoUrl != null) {
-        avatar = _buildAvatarWithImage(context, borderColor, maxDisplayRadius,
-            constraints.maxWidth);
+        avatar = _buildAvatarWithImage(
+            context, borderColor, maxDisplayRadius, constraints.maxWidth);
       } else {
         avatar = CircleAvatar(
           maxRadius: maxDisplayRadius,
@@ -192,7 +192,8 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
 
   Widget _buildAvatarWithImage(BuildContext context, Color? borderColor,
       double maxDisplayRadius, double availableWidth) {
-    Widget avatar = _createCircleAvatar(context, maxDisplayRadius, availableWidth);
+    Widget avatar =
+        _createCircleAvatar(context, maxDisplayRadius, availableWidth);
 
     if (borderColor != null) {
       avatar = Container(
@@ -233,8 +234,9 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
         MediaQuery.of(context).size.width * pixelRatio * 0.34;
     final displayDiameter = maxDisplayRadius * 2;
     final physicalWidth = displayDiameter * pixelRatio;
-    final resizeWidth =
-        physicalWidth < screenPhysicalWidth ? physicalWidth : screenPhysicalWidth;
+    final resizeWidth = physicalWidth < screenPhysicalWidth
+        ? physicalWidth
+        : screenPhysicalWidth;
 
     return CircleAvatar(
       backgroundImage: ResizeImage(NetworkImage(_profilePhotoUrl!),
@@ -262,4 +264,3 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
     }
   }
 }
-

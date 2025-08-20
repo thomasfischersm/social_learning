@@ -11,7 +11,7 @@ import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 
 /// Roster widget that loads students lazily, allows sorting & filtering.
 class InstructorDashboardRosterWidget extends StatefulWidget {
@@ -254,9 +254,8 @@ class InstructorDashboardRosterWidgetState
           dense: true,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          leading: ProfileImageWidget(
+          leading: ProfileImageWidgetV2.fromUser(
             user,
-            context,
             maxRadius: 20,
             linkToOtherProfile: true,
           ),

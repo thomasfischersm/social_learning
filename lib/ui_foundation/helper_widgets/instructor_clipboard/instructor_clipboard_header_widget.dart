@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
@@ -24,7 +24,8 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
   String _relativeSince(DateTime joined) {
     final diff = DateTime.now().difference(joined);
     if (diff.inDays == 0) return 'Today';
-    if (diff.inDays < 7) return '${diff.inDays} day${diff.inDays > 1 ? 's' : ''}';
+    if (diff.inDays < 7)
+      return '${diff.inDays} day${diff.inDays > 1 ? 's' : ''}';
     if (diff.inDays < 30) {
       final weeks = diff.inDays ~/ 7;
       return '$weeks week${weeks > 1 ? 's' : ''}';
@@ -61,9 +62,8 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  ProfileImageWidget(
+                  ProfileImageWidgetV2.fromUser(
                     student,
-                    context,
                     maxRadius: 32,
                     linkToOtherProfile: true,
                   ),
@@ -80,9 +80,15 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
               Row(
                 children: [
                   Expanded(child: _statColumn('Since', since, bodyStyle)),
-                  Expanded(child: _statColumn('Learned', '$lessonsLearned', bodyStyle)),
-                  Expanded(child: _statColumn('Taught', '$lessonsTaught', bodyStyle)),
-                  Expanded(child: _statColumn('Progress', '$progressPct%', bodyStyle)),
+                  Expanded(
+                      child:
+                          _statColumn('Learned', '$lessonsLearned', bodyStyle)),
+                  Expanded(
+                      child:
+                          _statColumn('Taught', '$lessonsTaught', bodyStyle)),
+                  Expanded(
+                      child:
+                          _statColumn('Progress', '$progressPct%', bodyStyle)),
                 ],
               ),
             ],

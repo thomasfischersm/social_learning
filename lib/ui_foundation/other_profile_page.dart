@@ -9,7 +9,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/expanding_text_box.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_progress_video_widget.dart';
 import 'package:social_learning/ui_foundation/profile_comparison_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -83,12 +83,12 @@ class OtherProfileState extends State<OtherProfilePage> {
               child: CustomUiConstants.framePage(
                   enableCourseLoadingGuard: true,
                   Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomUiConstants.getTextPadding(Text('Loading profile',
-                      style: CustomTextStyles.headline)),
-                ],
-              ))));
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomUiConstants.getTextPadding(Text('Loading profile',
+                          style: CustomTextStyles.headline)),
+                    ],
+                  ))));
     } else if (otherUser.isProfilePrivate) {
       // Private profile view
       return Scaffold(
@@ -101,15 +101,16 @@ class OtherProfileState extends State<OtherProfilePage> {
               child: CustomUiConstants.framePage(
                   enableCourseLoadingGuard: true,
                   Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomUiConstants.getTextPadding(Text(otherUser.displayName,
-                      style: CustomTextStyles.headline)),
-                  CustomUiConstants.getTextPadding(Text(
-                      'This profile is set to private.',
-                      style: CustomTextStyles.getBody(context))),
-                ],
-              ))));
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomUiConstants.getTextPadding(Text(
+                          otherUser.displayName,
+                          style: CustomTextStyles.headline)),
+                      CustomUiConstants.getTextPadding(Text(
+                          'This profile is set to private.',
+                          style: CustomTextStyles.getBody(context))),
+                    ],
+                  ))));
     } else {
       // Find the course proficiency.
       LibraryState libraryState =
@@ -135,82 +136,87 @@ class OtherProfileState extends State<OtherProfilePage> {
               child: CustomUiConstants.framePage(
                   enableCourseLoadingGuard: true,
                   Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        flex: 1,
-                        child: ProfileImageWidget(otherUser, context),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: ProfileImageWidgetV2.fromUser(otherUser),
+                          ),
+                          Expanded(
+                              flex: 2,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 8),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      CustomUiConstants.getTextPadding(Text(
+                                          'Profile: ${otherUser.displayName}',
+                                          style: CustomTextStyles.headline)),
+                                      if (courseProficiency != null)
+                                        CustomUiConstants.getTextPadding(Text(
+                                            'Course completion: ${(courseProficiency.proficiency * 100).toStringAsFixed(0)}%',
+                                            style: CustomTextStyles.getBody(
+                                                context))),
+                                      if (_otherUser?.instagramHandle != null)
+                                        Text.rich(
+                                          TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                  text: 'Insta: ',
+                                                  style:
+                                                      CustomTextStyles.getBody(
+                                                          context)),
+                                              TextSpan(
+                                                text:
+                                                    '@${_otherUser?.instagramHandle}',
+                                                style: CustomTextStyles.getLink(
+                                                    context),
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        // Call your method here
+                                                        _openInstaProfile();
+                                                      },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      if (_otherUser?.calendlyUrl != null)
+                                        Text.rich(
+                                          TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                  text: 'Calendly: ',
+                                                  style:
+                                                      CustomTextStyles.getBody(
+                                                          context)),
+                                              TextSpan(
+                                                text:
+                                                    '@${_otherUser?.calendlyHandle}',
+                                                style: CustomTextStyles.getLink(
+                                                    context),
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        // Call your method here
+                                                        _openCalendlyUrl();
+                                                      },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                    ]),
+                              ))
+                        ],
                       ),
-                      Expanded(
-                          flex: 2,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomUiConstants.getTextPadding(Text(
-                                      'Profile: ${otherUser.displayName}',
-                                      style: CustomTextStyles.headline)),
-                                  if (courseProficiency != null)
-                                    CustomUiConstants.getTextPadding(Text(
-                                        'Course completion: ${(courseProficiency.proficiency * 100).toStringAsFixed(0)}%',
-                                        style:
-                                            CustomTextStyles.getBody(context))),
-                                  if (_otherUser?.instagramHandle != null)
-                                    Text.rich(
-                                      TextSpan(
-                                        children: [
-                                          TextSpan(
-                                              text: 'Insta: ',
-                                              style: CustomTextStyles.getBody(
-                                                  context)),
-                                          TextSpan(
-                                            text:
-                                                '@${_otherUser?.instagramHandle}',
-                                            style: CustomTextStyles.getLink(
-                                                context),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
-                                                // Call your method here
-                                                _openInstaProfile();
-                                              },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  if (_otherUser?.calendlyUrl != null)
-                                    Text.rich(
-                                      TextSpan(
-                                        children: [
-                                          TextSpan(
-                                              text: 'Calendly: ',
-                                              style: CustomTextStyles.getBody(
-                                                  context)),
-                                          TextSpan(
-                                            text:
-                                                '@${_otherUser?.calendlyHandle}',
-                                            style: CustomTextStyles.getLink(
-                                                context),
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
-                                                // Call your method here
-                                                _openCalendlyUrl();
-                                              },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                ]),
-                          ))
+                      CustomUiConstants.getIndentationTextPadding(
+                          ExpandingTextBox(otherUser.profileText, 5)),
+                      ProfileProgressVideoWidget(otherUser),
                     ],
-                  ),
-                  CustomUiConstants.getIndentationTextPadding(
-                      ExpandingTextBox(otherUser.profileText, 5)),
-                  ProfileProgressVideoWidget(otherUser),
-                ],
-              ))));
+                  ))));
     }
   }
 

@@ -14,7 +14,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/profile_text_editor
 import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/data/user.dart';
 
 import '../state/application_state.dart';
@@ -68,7 +68,7 @@ class ProfilePageState extends State<ProfilePage> {
                             child: InkWell(
                               onTap: () => _pickProfileImage(context),
                               child: Stack(children: [
-                                ProfileImageWidget(currentUser, context),
+                                ProfileImageWidgetV2.fromUser(currentUser),
                                 Positioned(
                                     bottom: 0,
                                     right: 0,

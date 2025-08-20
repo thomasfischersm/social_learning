@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 // TODO: Implement, just copied from Gemini
@@ -143,9 +143,8 @@ class NearbyMentorsListWidget extends StatelessWidget {
                         child: SizedBox(
                             width: 50,
                             height: 50,
-                            child: ProfileImageWidget(
+                            child: ProfileImageWidgetV2.fromUser(
                               mentor.user,
-                              context,
                               maxRadius: screenWidth * 0.10 / 2,
                               linkToOtherProfile: true,
                             ))),

@@ -6,7 +6,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/lesson_cover_image_widget.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
@@ -71,21 +71,21 @@ class SessionRoundCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            // mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              _createRoundBand(context),
-              if (sessionPairing != null)
-                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Flexible(flex: 1, child: _createProfileColumn(context)),
-                  Flexible(flex: 2, child: _createLessonColumn(context))
-                ])
-              else
-                Text('No pairing this round.', textAlign: TextAlign.center)
-            ],
-          ),
-        );
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        // mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _createRoundBand(context),
+          if (sessionPairing != null)
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Flexible(flex: 1, child: _createProfileColumn(context)),
+              Flexible(flex: 2, child: _createLessonColumn(context))
+            ])
+          else
+            Text('No pairing this round.', textAlign: TextAlign.center)
+        ],
+      ),
+    );
   }
 
   Widget _createRoundBand(BuildContext context) {
@@ -128,9 +128,8 @@ class SessionRoundCard extends StatelessWidget {
             children: [
               AspectRatio(
                   aspectRatio: 1,
-                  child: ProfileImageWidget(
+                  child: ProfileImageWidgetV2.fromUser(
                     otherUser,
-                    context,
                     linkToOtherProfile: true,
                   )),
               Text(otherUser.displayName,

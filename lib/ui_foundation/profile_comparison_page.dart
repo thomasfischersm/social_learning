@@ -10,8 +10,7 @@ import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/profile_comparison_table.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_by_user_id_widget.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/data/user.dart';
@@ -73,10 +72,10 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(
-                enableCourseLoadingGuard: true,
+            child: CustomUiConstants.framePage(enableCourseLoadingGuard: true,
                 Consumer3<ApplicationState, LibraryState, StudentState>(
-              builder: (context, applicationState, libraryState, studentState, child) {
+              builder: (context, applicationState, libraryState, studentState,
+                  child) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -89,8 +88,10 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
             ))));
   }
 
-  Widget _createComparisonTable(BuildContext context,
-      ApplicationState applicationState, LibraryState libraryState,
+  Widget _createComparisonTable(
+      BuildContext context,
+      ApplicationState applicationState,
+      LibraryState libraryState,
       StudentState studentState) {
     if (_otherUser == null) {
       return const CircularProgressIndicator();
@@ -127,12 +128,15 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
               currentUserGraduatedLessonIds,
               context,
               libraryState);
-          otherUserGraduatedLessonIds = _handleAdminCase(
-                  _otherUser, otherUserGraduatedLessonIds, context, libraryState)
+          otherUserGraduatedLessonIds = _handleAdminCase(_otherUser,
+                  otherUserGraduatedLessonIds, context, libraryState)
               .toSet();
 
-          return ProfileComparisonTable(_otherUser, currentUserGraduatedLessonIds,
-              otherUserGraduatedLessonIds, libraryState);
+          return ProfileComparisonTable(
+              _otherUser,
+              currentUserGraduatedLessonIds,
+              otherUserGraduatedLessonIds,
+              libraryState);
         });
   }
 
@@ -155,9 +159,9 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
   }
 
   Widget _createHeaderWidget(
-      ApplicationState appState,
-      LibraryState libraryState,
-      ) {
+    ApplicationState appState,
+    LibraryState libraryState,
+  ) {
     final currentUser = appState.currentUser;
     final otherUser = _otherUser;
 
@@ -189,9 +193,8 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
                   Expanded(
                     child: Column(
                       children: [
-                        ProfileImageWidget(
+                        ProfileImageWidgetV2.fromUser(
                           currentUser,
-                          context,
                           maxRadius: avatarRadius,
                           linkToOtherProfile: false,
                         ),
@@ -212,9 +215,8 @@ class ProfileComparisonState extends State<ProfileComparisonPage> {
                   Expanded(
                     child: Column(
                       children: [
-                        ProfileImageWidget(
+                        ProfileImageWidgetV2.fromUser(
                           otherUser,
-                          context,
                           maxRadius: avatarRadius,
                           linkToOtherProfile: true,
                         ),
