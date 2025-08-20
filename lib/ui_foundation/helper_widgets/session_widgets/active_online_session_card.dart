@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/data/online_session.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/lesson_cover_image_widget.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -85,9 +85,8 @@ class ActiveOnlineSessionCard extends StatelessWidget {
         children: [
           AspectRatio(
             aspectRatio: 1,
-            child: ProfileImageWidget(
+            child: ProfileImageWidgetV2.fromUser(
               partner,
-              context,
               linkToOtherProfile: true,
             ),
           ),
@@ -100,7 +99,7 @@ class ActiveOnlineSessionCard extends StatelessWidget {
         ],
       ),
     );
-    }
+  }
 
   /// Builds the lesson column showing the proposed lesson.
   /// The lesson is tappable and navigates to the lesson detail page.
@@ -127,7 +126,7 @@ class ActiveOnlineSessionCard extends StatelessWidget {
         ],
       ),
     );
-    }
+  }
 
   /// Builds the main content of the card.
   /// It arranges the partner profile column and the lesson column side by side.

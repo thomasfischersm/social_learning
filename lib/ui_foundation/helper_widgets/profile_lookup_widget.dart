@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/data/user.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
@@ -157,9 +157,8 @@ class ProfileLookupWidgetState extends State<ProfileLookupWidget> {
 
           return ListTile(
             onTap: () => _goToProfile(otherUser),
-            leading: ProfileImageWidget(
+            leading: ProfileImageWidgetV2.fromUser(
               otherUser,
-              context,
               maxRadius: 20,
             ),
             title: Text(
@@ -179,6 +178,6 @@ class ProfileLookupWidgetState extends State<ProfileLookupWidget> {
   }
 
   _goToProfile(User otherUser) {
-    OtherProfileArgument.goToOtherProfile(context,otherUser.id, otherUser.uid);
+    OtherProfileArgument.goToOtherProfile(context, otherUser.id, otherUser.uid);
   }
 }

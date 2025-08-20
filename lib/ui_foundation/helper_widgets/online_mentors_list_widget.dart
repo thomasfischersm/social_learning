@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class OnlineMentorsListWidget extends StatelessWidget {
@@ -108,8 +108,7 @@ class OnlineMentorsListWidget extends StatelessWidget {
                   children: [
                     TableCell(
                         verticalAlignment: TableCellVerticalAlignment.middle,
-                        child: Text(
-                            'online',
+                        child: Text('online',
                             style: CustomTextStyles.getBody(context))),
                     // const SizedBox(width: 8),
                     Padding(
@@ -118,9 +117,8 @@ class OnlineMentorsListWidget extends StatelessWidget {
                         child: SizedBox(
                             width: 50,
                             height: 50,
-                            child: ProfileImageWidget(
+                            child: ProfileImageWidgetV2.fromUser(
                               mentor,
-                              context,
                               maxRadius: screenWidth * 0.10 / 2,
                               linkToOtherProfile: true,
                             ))),

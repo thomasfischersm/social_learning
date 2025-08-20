@@ -7,7 +7,7 @@ import 'package:social_learning/data/data_helpers/progress_video_functions.dart'
 import 'package:social_learning/data/progress_video.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_by_user_id_widget.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/youtube_video_widget.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -43,9 +43,9 @@ class _ProgressVideoFeedState extends State<ProgressVideoFeed> {
     if (courseId == null) {
       return;
     }
-    _subscription = ProgressVideoFunctions.streamCourseVideos(courseId,
-            limit: _pageSize)
-        .listen((snapshot) {
+    _subscription =
+        ProgressVideoFunctions.streamCourseVideos(courseId, limit: _pageSize)
+            .listen((snapshot) {
       setState(() {
         _streamVideos.clear();
         _streamVideos.addAll(
@@ -122,57 +122,63 @@ class _ProgressVideoFeedState extends State<ProgressVideoFeed> {
                         if (video.youtubeVideoId != null)
                           YouTubeVideoWidget(videoId: video.youtubeVideoId!),
                         const SizedBox(height: 8),
-                        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Expanded(
-                              child: FutureBuilder<User>(
-                                  future: UserFunctions.getUserById(
-                                      video.userId.id),
-                                  builder: (context, snapshot) {
-                                    String name =
-                                        snapshot.data?.displayName ?? 'Student';
-                                    return Row(children: [
-                                      ProfileImageByUserIdWidget(video.userId,
-                                          libraryState,
-                                          maxRadius: 20,
-                                          linkToOtherProfile: true),
-                                      const SizedBox(width: 8),
-                                      Expanded(
-                                          child: InkWell(
-                                        onTap: snapshot.hasData
-                                            ? () =>
-                                                OtherProfileArgument
+                        Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                  child: FutureBuilder<User>(
+                                      future: UserFunctions.getUserById(
+                                          video.userId.id),
+                                      builder: (context, snapshot) {
+                                        String name =
+                                            snapshot.data?.displayName ??
+                                                'Student';
+                                        return Row(children: [
+                                          ProfileImageWidgetV2.fromUserId(
+                                              video.userId,
+                                              maxRadius: 20,
+                                              linkToOtherProfile: true),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                              child: InkWell(
+                                            onTap: snapshot.hasData
+                                                ? () => OtherProfileArgument
                                                     .goToOtherProfile(
                                                         context,
                                                         snapshot.data!.id,
                                                         snapshot.data!.uid)
-                                            : null,
-                                        child: _SingleLineEllipsisText(name,
-                                            style:
-                                                CustomTextStyles.getBody(
+                                                : null,
+                                            child: _SingleLineEllipsisText(name,
+                                                style: CustomTextStyles.getBody(
                                                     context)),
-                                      ))
-                                    ]);
-                                  })),
-                          const SizedBox(width: 8),
-                          Expanded(
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                InkWell(
-                                  onTap: () =>
-                                      LessonDetailArgument.goToLessonDetailPage(
-                                          context, video.lessonId.id),
-                                  child: _SingleLineEllipsisText(lessonTitle,
-                                      style: CustomTextStyles.getBody(context)?.copyWith(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary)),
-                                ),
-                                if (video.timestamp != null)
-                                  Text(_timeAgo(video.timestamp!.toDate()),
-                                      style: CustomTextStyles.getBodySmall(context)),
-                              ]))
-                        ])
+                                          ))
+                                        ]);
+                                      })),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                  child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                    InkWell(
+                                      onTap: () => LessonDetailArgument
+                                          .goToLessonDetailPage(
+                                              context, video.lessonId.id),
+                                      child: _SingleLineEllipsisText(
+                                          lessonTitle,
+                                          style:
+                                              CustomTextStyles.getBody(context)
+                                                  ?.copyWith(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary)),
+                                    ),
+                                    if (video.timestamp != null)
+                                      Text(_timeAgo(video.timestamp!.toDate()),
+                                          style: CustomTextStyles.getBodySmall(
+                                              context)),
+                                  ]))
+                            ])
                       ])));
         });
   }
@@ -218,4 +224,3 @@ class _SingleLineEllipsisText extends StatelessWidget {
     );
   }
 }
-
