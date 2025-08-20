@@ -19,7 +19,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widget
 /// place of the profile image. The widget can be constructed either with a
 /// [User] object or a Firestore document reference to the user. All Firebase
 /// calls are delegated to [UserFunctions].
-class ProfileImageV2 extends StatefulWidget {
+class ProfileImageWidgetV2 extends StatefulWidget {
   final User? _user;
   final DocumentReference? _userRef;
   final double? maxRadius;
@@ -27,7 +27,7 @@ class ProfileImageV2 extends StatefulWidget {
   final bool listenForProfileUpdate;
   final bool _useCurrentUser;
 
-  const ProfileImageV2._(this._user, this._userRef,
+  const ProfileImageWidgetV2._(this._user, this._userRef,
       {super.key,
       this.maxRadius,
       this.linkToOtherProfile = false,
@@ -35,39 +35,39 @@ class ProfileImageV2 extends StatefulWidget {
       bool useCurrentUser = false})
       : _useCurrentUser = useCurrentUser;
 
-  /// Creates a [ProfileImageV2] from an existing [User] object.
-  factory ProfileImageV2.fromUser(User user,
+  /// Creates a [ProfileImageWidgetV2] from an existing [User] object.
+  factory ProfileImageWidgetV2.fromUser(User user,
       {Key? key,
       double? maxRadius,
       bool linkToOtherProfile = false,
       bool listenForProfileUpdate = false}) {
-    return ProfileImageV2._(user, null,
+    return ProfileImageWidgetV2._(user, null,
         key: key,
         maxRadius: maxRadius,
         linkToOtherProfile: linkToOtherProfile,
         listenForProfileUpdate: listenForProfileUpdate);
   }
 
-  /// Creates a [ProfileImageV2] from a user document reference.
-  factory ProfileImageV2.fromUserId(DocumentReference userRef,
+  /// Creates a [ProfileImageWidgetV2] from a user document reference.
+  factory ProfileImageWidgetV2.fromUserId(DocumentReference userRef,
       {Key? key,
       double? maxRadius,
       bool linkToOtherProfile = false,
       bool listenForProfileUpdate = false}) {
-    return ProfileImageV2._(null, userRef,
+    return ProfileImageWidgetV2._(null, userRef,
         key: key,
         maxRadius: maxRadius,
         linkToOtherProfile: linkToOtherProfile,
         listenForProfileUpdate: listenForProfileUpdate);
   }
 
-  /// Creates a [ProfileImageV2] for the currently logged-in user.
-  factory ProfileImageV2.fromCurrentUser(
+  /// Creates a [ProfileImageWidgetV2] for the currently logged-in user.
+  factory ProfileImageWidgetV2.fromCurrentUser(
       {Key? key,
       double? maxRadius,
       bool linkToOtherProfile = false,
       bool listenForProfileUpdate = false}) {
-    return ProfileImageV2._(null, null,
+    return ProfileImageWidgetV2._(null, null,
         key: key,
         maxRadius: maxRadius,
         linkToOtherProfile: linkToOtherProfile,
@@ -76,10 +76,10 @@ class ProfileImageV2 extends StatefulWidget {
   }
 
   @override
-  State<ProfileImageV2> createState() => _ProfileImageV2State();
+  State<ProfileImageWidgetV2> createState() => _ProfileImageWidgetV2State();
 }
 
-class _ProfileImageV2State extends State<ProfileImageV2> {
+class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
   User? _user;
   String? _profilePhotoUrl;
   StreamSubscription<User>? _userSubscription;
