@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/course_designer_app_bar.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_skill_rubric/skill_rubric_info_card.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer_skill_rubric/skill_rubric_list_view_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/skill_rubric/skill_rubric_info_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/skill_rubric/skill_rubric_list_view_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
