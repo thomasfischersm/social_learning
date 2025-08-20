@@ -10,11 +10,13 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/radar_widget.dart';
 
 /// Unified version of [ProfileImageWidget] and [ProfileImageByUserIdWidget].
 ///
 /// Displays a user's profile image with an optional belt-colored border and can
-/// link to the user's profile page. The widget can be constructed either with a
+/// link to the user's profile page. Double-tapping toggles a radar widget in
+/// place of the profile image. The widget can be constructed either with a
 /// [User] object or a Firestore document reference to the user. All Firebase
 /// calls are delegated to [UserFunctions].
 class ProfileImageV2 extends StatefulWidget {
@@ -81,6 +83,7 @@ class _ProfileImageV2State extends State<ProfileImageV2> {
   User? _user;
   String? _profilePhotoUrl;
   StreamSubscription<User>? _userSubscription;
+  bool _showRadar = false;
 
   @override
   void initState() {
@@ -139,6 +142,13 @@ class _ProfileImageV2State extends State<ProfileImageV2> {
     }
   }
 
+  void _toggleRadar() {
+    if (_user == null) return;
+    setState(() {
+      _showRadar = !_showRadar;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -148,7 +158,9 @@ class _ProfileImageV2State extends State<ProfileImageV2> {
       Widget avatar;
       final maxDisplayRadius = _calculateDisplayRadius(constraints);
 
-      if (_profilePhotoUrl != null) {
+      if (_showRadar && _user != null) {
+        avatar = _buildRadarAvatar(borderColor, maxDisplayRadius);
+      } else if (_profilePhotoUrl != null) {
         avatar = _buildAvatarWithImage(context, borderColor, maxDisplayRadius,
             constraints.maxWidth);
       } else {
@@ -158,10 +170,11 @@ class _ProfileImageV2State extends State<ProfileImageV2> {
         );
       }
 
-      if (widget.linkToOtherProfile) {
-        return InkWell(onTap: _goToOtherProfile, child: avatar);
-      }
-      return avatar;
+      return GestureDetector(
+        onDoubleTap: _toggleRadar,
+        onTap: widget.linkToOtherProfile ? _goToOtherProfile : null,
+        child: avatar,
+      );
     });
   }
 
@@ -189,6 +202,28 @@ class _ProfileImageV2State extends State<ProfileImageV2> {
           child: avatar);
     }
     return avatar;
+  }
+
+  Widget _buildRadarAvatar(Color? borderColor, double maxDisplayRadius) {
+    final diameter = maxDisplayRadius * 2;
+    Widget radar = SizedBox(
+      width: diameter,
+      height: diameter,
+      child: RadarWidget(
+        user: _user!,
+        size: diameter,
+        showLabels: false,
+      ),
+    );
+    radar = ClipOval(child: radar);
+    if (borderColor != null) {
+      radar = Container(
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: borderColor, width: 2.0)),
+          child: radar);
+    }
+    return radar;
   }
 
   CircleAvatar _createCircleAvatar(
