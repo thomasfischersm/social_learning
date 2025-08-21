@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/learning_objective.dart';
-import 'package:social_learning/data/data_helpers/learning_objective_functions.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/learning_objectives_context.dart';
 
 class EditLearningObjectiveDialog extends StatefulWidget {

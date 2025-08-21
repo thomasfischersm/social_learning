@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_inclusion_status.dart';
-import 'package:social_learning/data/teachable_item_tag.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/inventory/tag_pill.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer/prerequisites/add_prerequisite_fanout_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/scope/scope_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
-import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 
 class ScopeItemEntry extends StatelessWidget {
@@ -23,8 +20,7 @@ class ScopeItemEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     print('Building scope item entry for ${item.name}');
 
-    final tagWidgets = this
-        .scopeContext
+    final tagWidgets = scopeContext
         .getTagsForItem(item)
         .map(
           (tag) =>

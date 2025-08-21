@@ -8,7 +8,6 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_home/progres
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 import '../data/course.dart';
 

@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/skill_assessment.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/user.dart';

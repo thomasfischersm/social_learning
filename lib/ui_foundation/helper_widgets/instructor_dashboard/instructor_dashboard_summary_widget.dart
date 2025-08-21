@@ -119,12 +119,12 @@ class StatCard extends StatelessWidget {
   final VoidCallback? onTap; // ← new
 
   const StatCard({
-    Key? key,
+    super.key,
     required this.iconData,
     required this.label,
     required this.value,
     this.onTap, // ← new
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

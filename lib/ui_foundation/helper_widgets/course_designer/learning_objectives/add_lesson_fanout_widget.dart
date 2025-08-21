@@ -29,7 +29,7 @@ class AddLessonFanoutWidget {
     late OverlayEntry entry;
 
     // Common handler for selecting a lesson
-    void _handleSelection(Lesson lesson) {
+    void handleSelection(Lesson lesson) {
       entry.remove();
       if (currentLesson != null) {
         objectivesContext.replaceLessonForTeachableItem(
@@ -74,7 +74,7 @@ class AddLessonFanoutWidget {
         for (final lesson in lessons) {
           widgets.add(
             InkWell(
-              onTap: () => _handleSelection(lesson),
+              onTap: () => handleSelection(lesson),
               child: Padding(
                 padding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -106,7 +106,7 @@ class AddLessonFanoutWidget {
         for (final lesson in unattached) {
           widgets.add(
             InkWell(
-              onTap: () => _handleSelection(lesson),
+              onTap: () => handleSelection(lesson),
               child: Padding(
                 padding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -153,6 +153,6 @@ class AddLessonFanoutWidget {
       );
     });
 
-    Overlay.of(context)!.insert(entry);
+    Overlay.of(context).insert(entry);
   }
 }

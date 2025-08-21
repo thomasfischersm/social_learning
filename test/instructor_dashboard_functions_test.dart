@@ -24,7 +24,7 @@ Map<String, dynamic> buildUser(
     'created': created ?? Timestamp.fromDate(DateTime.now()),
     'enrolledCourseIds': [courseRef],
     if (lastLessonTimestamp != null) 'lastLessonTimestamp': lastLessonTimestamp,
-    if (proficiency != null) 'proficiency_${courseId}': proficiency,
+    if (proficiency != null) 'proficiency_$courseId': proficiency,
   };
 }
 

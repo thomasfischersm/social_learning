@@ -238,7 +238,7 @@ void main() {
       sortOrder: 0,
     );
 
-    act1!..sortOrder = 2;
+    act1!.sortOrder = 2;
     act2!
       ..sessionPlanBlockId = fake.collection('sessionPlanBlocks').doc('block2')
       ..sortOrder = 1;
@@ -247,7 +247,7 @@ void main() {
       ..sortOrder = 0;
 
     await SessionPlanActivityFunctions.updateSortOrdersAndBlockChanges(
-        [act1!, act2!, act3!]);
+        [act1, act2, act3]);
 
     final updated1 =
         await SessionPlanActivityFunctions.getById(act1.id!);

@@ -18,12 +18,12 @@ class AddTeachableItemFanoutWidget {
     // Build set of already-assigned teachableItem IDs for this objective,
     // minus the one being replaced if any.
     final assignedIds =
-        objective.teachableItemRefs.map((ref) => ref.id!).toSet();
+        objective.teachableItemRefs.map((ref) => ref.id).toSet();
     if (currentItem != null) assignedIds.remove(currentItem.id);
 
     // Track all teachable items that are already assigned to any objective.
     final allAssignedIds = objectivesContext.learningObjectives
-        .expand((o) => o.teachableItemRefs.map((ref) => ref.id!))
+        .expand((o) => o.teachableItemRefs.map((ref) => ref.id))
         .toSet();
 
     // Get sorted categories from the context
@@ -33,7 +33,7 @@ class AddTeachableItemFanoutWidget {
     late OverlayEntry entry;
 
     // Common selection handler
-    void _handleSelection(TeachableItem item) {
+    void handleSelection(TeachableItem item) {
       entry.remove();
       if (currentItem != null) {
         objectivesContext.replaceTeachableItemInObjective(
@@ -90,7 +90,7 @@ class AddTeachableItemFanoutWidget {
 
           menuItems.add(
             InkWell(
-              onTap: () => _handleSelection(item),
+              onTap: () => handleSelection(item),
               child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -139,6 +139,6 @@ class AddTeachableItemFanoutWidget {
       );
     });
 
-    Overlay.of(context)!.insert(entry);
+    Overlay.of(context).insert(entry);
   }
 }

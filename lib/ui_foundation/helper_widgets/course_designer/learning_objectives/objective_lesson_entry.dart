@@ -3,10 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/teachable_item.dart';
-import 'package:social_learning/data/learning_objective.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/learning_objectives_context.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer/inventory/tag_pill.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/add_lesson_fanout_widget.dart';
 
 class ObjectiveLessonEntry extends StatefulWidget {

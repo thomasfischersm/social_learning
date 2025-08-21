@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_plan_activity.dart';
 import 'package:social_learning/data/session_play_activity_type.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
@@ -31,7 +29,7 @@ class LessonActivityRow extends StatelessWidget {
     if (activity.overrideDuration != null) {
       return '${activity.overrideDuration} min';
     } else {
-      return '(${defaultMinutes} min)';
+      return '($defaultMinutes min)';
     }
   }
 

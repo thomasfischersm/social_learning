@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:social_learning/data/session_plan_activity.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/add_activity_row.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/add_block_row.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/lesson_activity_row.dart';
@@ -181,7 +180,7 @@ class SessionBlocksListView extends StatelessWidget {
     final activityId = fromKey.substring('activity_'.length);
     final activity = sessionPlanContext.activityById[activityId];
 
-    final fromBlockId = activity!.sessionPlanBlockId!.id;
+    final fromBlockId = activity!.sessionPlanBlockId.id;
     final lastBlockId = sessionPlanContext.blocks.last.id!;
 
     sessionPlanContext.moveActivity3(
@@ -197,7 +196,7 @@ class SessionBlocksListView extends StatelessWidget {
     final destBlockId = toKey.substring('add_activity_'.length);
 
     final source = sessionPlanContext.activityById[activityId];
-    final fromBlockId = source!.sessionPlanBlockId!.id;
+    final fromBlockId = source!.sessionPlanBlockId.id;
 
     sessionPlanContext.moveActivity3(
       activityId: activityId,

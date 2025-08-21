@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/learning_objective.dart';
-import 'package:social_learning/data/data_helpers/learning_objective_functions.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/learning_objectives_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/edit_learning_objective_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 

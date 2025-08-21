@@ -26,7 +26,7 @@ class TeachableItemTagFunctions {
       });
 
       final snapshot = await tagDocRef.get();
-      return TeachableItemTag.fromSnapshot(snapshot as DocumentSnapshot<Map<String, dynamic>>);
+      return TeachableItemTag.fromSnapshot(snapshot);
     } catch (e) {
       print('Error adding tag: $e');
       return null;

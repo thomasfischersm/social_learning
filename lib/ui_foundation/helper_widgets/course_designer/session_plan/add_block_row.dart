@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/session_plan/session_plan_context.dart';
 
 class AddBlockRow extends StatelessWidget {

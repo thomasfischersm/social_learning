@@ -20,7 +20,7 @@ class SelectLessonForActivityFanoutWidget {
 
     late OverlayEntry entry;
 
-    void _handleSelection(Lesson lesson) {
+    void handleSelection(Lesson lesson) {
       entry.remove();
       sessionPlanContext.setLessonForActivity(
         activityId: activity.id!,
@@ -60,7 +60,7 @@ class SelectLessonForActivityFanoutWidget {
           final needDot = neededLessonIds.contains(lesson.id);
           widgets.add(
             InkWell(
-              onTap: () => _handleSelection(lesson),
+              onTap: () => handleSelection(lesson),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Text(
@@ -97,7 +97,7 @@ class SelectLessonForActivityFanoutWidget {
           final needDot = neededLessonIds.contains(lesson.id);
           widgets.add(
             InkWell(
-              onTap: () => _handleSelection(lesson),
+              onTap: () => handleSelection(lesson),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 child: Text(
@@ -151,6 +151,6 @@ class SelectLessonForActivityFanoutWidget {
       );
     });
 
-    Overlay.of(context)!.insert(entry);
+    Overlay.of(context).insert(entry);
   }
 }

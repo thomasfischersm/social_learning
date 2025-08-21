@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer/prerequisites/focused_teachable_item_card.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer/prerequisites/prerequisite_card.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer/prerequisites/prerequisite_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/scope/scope_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/scope/scope_items_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/scope/scope_overview_card.dart';

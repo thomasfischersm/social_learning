@@ -47,7 +47,6 @@ import 'package:social_learning/ui_foundation/session_home_page.dart';
 import 'package:social_learning/ui_foundation/session_host_page.dart';
 import 'package:social_learning/ui_foundation/session_student_page.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
-import 'package:flutter/foundation.dart';
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 
 import 'firebase_options.dart';

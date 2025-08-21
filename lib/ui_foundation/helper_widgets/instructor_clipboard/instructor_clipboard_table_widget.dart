@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/practice_record_functions.dart';
-import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 /// Table of lessons with simple checkboxes (only graduation).
@@ -55,7 +52,7 @@ class InstructorClipboardTableState
     final Map<String, LessonState> states = {};
     final Map<String, PracticeRecord> grads = {};
     for (var practiceRecord in practiceRecords) {
-      final id = practiceRecord.lessonId.id!;
+      final id = practiceRecord.lessonId.id;
       if (practiceRecord.isGraduation) {
         states[id] = LessonState.graduated;
         grads[id] = practiceRecord;

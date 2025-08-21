@@ -6,7 +6,6 @@ import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/ui_constants/home_selector.dart';
-import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class SignInPage extends StatelessWidget {
   const SignInPage({super.key});

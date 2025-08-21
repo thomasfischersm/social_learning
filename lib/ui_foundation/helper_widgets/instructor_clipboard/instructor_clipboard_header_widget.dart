@@ -5,7 +5,6 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
 class InstructorClipboardHeaderWidget extends StatelessWidget {
   final User student;
@@ -24,8 +23,9 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
   String _relativeSince(DateTime joined) {
     final diff = DateTime.now().difference(joined);
     if (diff.inDays == 0) return 'Today';
-    if (diff.inDays < 7)
+    if (diff.inDays < 7) {
       return '${diff.inDays} day${diff.inDays > 1 ? 's' : ''}';
+    }
     if (diff.inDays < 30) {
       final weeks = diff.inDays ~/ 7;
       return '$weeks week${weeks > 1 ? 's' : ''}';

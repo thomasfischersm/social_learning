@@ -15,9 +15,9 @@ class LearningObjectivesListView extends StatelessWidget {
   final LearningObjectivesContext objectivesContext;
 
   const LearningObjectivesListView({
-    Key? key,
+    super.key,
     required this.objectivesContext,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

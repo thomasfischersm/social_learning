@@ -59,7 +59,7 @@ class _InventoryTagEditorDialogState extends State<InventoryTagEditorDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ...tags.map(_buildTagRow).toList(),
+          ...tags.map(_buildTagRow),
           const Divider(height: 24),
           _buildNewTagRow(),
         ],

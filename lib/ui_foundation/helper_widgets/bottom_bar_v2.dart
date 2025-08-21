@@ -185,7 +185,7 @@ class BottomBarV2 {
           (isManageVisible ? 1 : 0) +
           (isSessionsVisible ? 1 : 0);
     } else {
-      print('Unknown route: ${currentRoute}');
+      print('Unknown route: $currentRoute');
       return -1;
     }
   }
@@ -278,6 +278,6 @@ class BottomBarV2 {
       }
     }
 
-    print('Unknown index: ${originalIndex}');
+    print('Unknown index: $originalIndex');
   }
 }

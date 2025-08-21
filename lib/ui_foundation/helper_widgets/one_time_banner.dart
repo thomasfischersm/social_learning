@@ -14,12 +14,12 @@ class OneTimeBanner extends StatefulWidget {
   final Widget child;
 
   const OneTimeBanner({
-    Key? key,
+    super.key,
     required this.prefsKey,
     required this.message,
     this.leading,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   _OneTimeBannerState createState() => _OneTimeBannerState();

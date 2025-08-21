@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/teachable_item.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/prerequisites/prerequisite_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/prerequisites/prerequisite_item_entry.dart';

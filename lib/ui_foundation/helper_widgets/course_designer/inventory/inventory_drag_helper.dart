@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
-import 'package:social_learning/data/teachable_item.dart';
-import 'package:social_learning/data/teachable_item_category.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/inventory/add_new_category_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/inventory/add_new_item_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/inventory/inventory_category_entry.dart';
@@ -87,7 +85,7 @@ class InventoryDragHelper {
       newCategoryRef = target.item.categoryId;
 
       final itemsInCategory = context
-          .getItemsForCategory(newCategoryRef.id!)
+          .getItemsForCategory(newCategoryRef.id)
         ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
       newIndexInCategory = itemsInCategory.indexWhere((i) => i.id == target.item.id);

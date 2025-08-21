@@ -52,7 +52,7 @@ class FocusedTeachableItemCard extends StatelessWidget {
                       }
                     },
                     items: [
-                      for (final category in this.dataContext.categories) ...[
+                      for (final category in dataContext.categories) ...[
                         DropdownMenuItem<String>(
                           value: '__CATEGORY__${category.id}',
                           enabled: false,
@@ -64,8 +64,7 @@ class FocusedTeachableItemCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        for (final item in this
-                                .dataContext
+                        for (final item in dataContext
                                 .itemsGroupedByCategory[category.id] ??
                             [])
                           DropdownMenuItem<String>(

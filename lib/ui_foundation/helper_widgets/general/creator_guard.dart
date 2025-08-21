@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:social_learning/data/course.dart';
-import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/ui_constants/home_selector.dart';
-import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class CreatorGuard extends StatefulWidget {
   final Widget child;

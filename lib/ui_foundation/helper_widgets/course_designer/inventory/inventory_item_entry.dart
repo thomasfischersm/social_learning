@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_functions.dart';

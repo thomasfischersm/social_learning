@@ -64,6 +64,8 @@ dependencies:
   collection: any
   cloud_functions: ^5.5.0
   percent_indicator: ^4.2.5
+  http: any
+  flutter_svg: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
