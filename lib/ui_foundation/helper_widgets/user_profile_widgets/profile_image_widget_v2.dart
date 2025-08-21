@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/belt_color_functions.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
