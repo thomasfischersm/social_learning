@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/belt_color_functions.dart';
+import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
+import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
@@ -84,6 +86,8 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
   String? _profilePhotoUrl;
   StreamSubscription<User>? _userSubscription;
   bool _showRadar = false;
+  bool _hasSkillRubric = false;
+  String? _checkedCourseId;
 
   @override
   void initState() {
@@ -142,6 +146,32 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
     }
   }
 
+  Future<void> _checkSkillRubric(Course? course) async {
+    final courseId = course?.id;
+    if (courseId == null) {
+      if (_checkedCourseId != null || _hasSkillRubric) {
+        setState(() {
+          _checkedCourseId = null;
+          _hasSkillRubric = false;
+        });
+      }
+      return;
+    }
+    if (_checkedCourseId == courseId) {
+      return;
+    }
+    _checkedCourseId = courseId;
+    final SkillRubric? rubric =
+        await SkillRubricsFunctions.loadForCourse(courseId);
+    final hasRubric =
+        rubric != null && rubric.dimensions.any((d) => d.degrees.isNotEmpty);
+    if (mounted) {
+      setState(() {
+        _hasSkillRubric = hasRubric;
+      });
+    }
+  }
+
   void _toggleRadar() {
     if (_user == null) return;
     setState(() {
@@ -153,6 +183,7 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       final libraryState = Provider.of<LibraryState>(context);
+      unawaited(_checkSkillRubric(libraryState.selectedCourse));
       final borderColor = _computeBorderColor(libraryState);
 
       Widget avatar;
@@ -171,7 +202,11 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
       }
 
       return GestureDetector(
-        onDoubleTap: _toggleRadar,
+        onDoubleTap: () {
+          if (_hasSkillRubric) {
+            _toggleRadar();
+          }
+        },
         onTap: widget.linkToOtherProfile ? _goToOtherProfile : null,
         child: avatar,
       );
