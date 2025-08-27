@@ -1,0 +1,129 @@
+import 'package:flutter/material.dart';
+import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data/skill_rubric.dart';
+import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
+import 'package:social_learning/state/course_designer_state.dart';
+import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'skill_rubric_lesson_fanout_widget.dart';
+
+class SkillLessonRow extends StatefulWidget {
+  final SkillDimension dimension;
+  final SkillDegree degree;
+  final Lesson lesson;
+  final CourseDesignerState state;
+  final LibraryState library;
+
+  const SkillLessonRow({
+    super.key,
+    required this.dimension,
+    required this.degree,
+    required this.lesson,
+    required this.state,
+    required this.library,
+  });
+
+  @override
+  State<SkillLessonRow> createState() => _SkillLessonRowState();
+}
+
+class _SkillLessonRowState extends State<SkillLessonRow> {
+  final LayerLink _layerLink = LayerLink();
+
+  void _replace() {
+    final exclude = widget.degree.lessonRefs.map((e) => e.id).toSet()
+      ..remove(widget.lesson.id);
+    SkillRubricLessonFanoutWidget.show(
+      context: context,
+      link: _layerLink,
+      libraryState: widget.library,
+      excludeLessonIds: exclude,
+      onSelected: (selected) async {
+        final courseId = widget.state.course?.id;
+        if (courseId == null) return;
+        final removed = await SkillRubricsFunctions.removeLesson(
+          courseId: courseId,
+          dimensionId: widget.dimension.id,
+          degreeId: widget.degree.id,
+          lessonId: widget.lesson.id!,
+        );
+        if (removed != null) {
+          final updated = await SkillRubricsFunctions.addLesson(
+            courseId: courseId,
+            dimensionId: widget.dimension.id,
+            degreeId: widget.degree.id,
+            lessonId: selected.id!,
+          );
+          if (updated != null) {
+            widget.state.skillRubric = updated;
+            widget.state.notifyListeners();
+          }
+        }
+      },
+    );
+  }
+
+  void _delete() {
+    final courseId = widget.state.course?.id;
+    if (courseId == null) return;
+    DialogUtils.showConfirmationDialog(
+      context,
+      'Remove lesson?',
+      'Detach "${widget.lesson.title}" from this degree?',
+      () async {
+        final updated = await SkillRubricsFunctions.removeLesson(
+          courseId: courseId,
+          dimensionId: widget.dimension.id,
+          degreeId: widget.degree.id,
+          lessonId: widget.lesson.id!,
+        );
+        if (updated != null) {
+          widget.state.skillRubric = updated;
+          widget.state.notifyListeners();
+        }
+      },
+    );
+  }
+
+  void _openLesson() {
+    Navigator.pushNamed(
+      context,
+      NavigationEnum.cmsLesson.route,
+      arguments: CmsLessonDetailArgument.forEditExistingLesson(
+          null, widget.lesson.id),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DecomposedCourseDesignerCard.buildBody(
+      Padding(
+        padding: const EdgeInsets.fromLTRB(32, 8, 16, 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                onTap: _openLesson,
+                child: Text(widget.lesson.title),
+              ),
+            ),
+            CompositedTransformTarget(
+              link: _layerLink,
+              child: IconButton(
+                icon: const Icon(Icons.edit, size: 18),
+                onPressed: _replace,
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline, size: 18),
+              onPressed: _delete,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
