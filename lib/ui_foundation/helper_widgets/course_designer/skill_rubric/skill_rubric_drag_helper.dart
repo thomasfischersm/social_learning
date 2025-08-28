@@ -119,13 +119,13 @@ class SkillRubricDragHelper {
   ) async {
     final targetDimId = target.dimension.id;
     final targetDegreeId = target.degree.id;
-    final toDeg = state.skillRubric?.dimensions
+    final toDeg = state.skillRubric!.dimensions
         .firstWhere((d) => d.id == targetDimId)
         .degrees
         .firstWhere((d) => d.id == targetDegreeId);
     final toIndex =
         toDeg.lessonRefs.indexWhere((r) => r.id == target.lesson.id!);
-    final fromDeg = state.skillRubric?.dimensions
+    final fromDeg = state.skillRubric!.dimensions
         .firstWhere((d) => d.id == dragged.dimension.id)
         .degrees
         .firstWhere((d) => d.id == dragged.degree.id);
@@ -146,12 +146,12 @@ class SkillRubricDragHelper {
   ) async {
     final targetDimId = target.dimension.id;
     final targetDegreeId = target.degree.id;
-    final toDeg = state.skillRubric?.dimensions
+    final toDeg = state.skillRubric!.dimensions
         .firstWhere((d) => d.id == targetDimId)
         .degrees
         .firstWhere((d) => d.id == targetDegreeId);
     final toIndex = toDeg.lessonRefs.length;
-    final fromDeg = state.skillRubric?.dimensions
+    final fromDeg = state.skillRubric!.dimensions
         .firstWhere((d) => d.id == dragged.dimension.id)
         .degrees
         .firstWhere((d) => d.id == dragged.degree.id);
@@ -171,7 +171,7 @@ class SkillRubricDragHelper {
     SkillDegreeRow target,
   ) async {
     final targetDegreeId = target.degree.id;
-    final fromDeg = state.skillRubric?.dimensions
+    final fromDeg = state.skillRubric!.dimensions
         .firstWhere((d) => d.id == dragged.dimension.id)
         .degrees
         .firstWhere((d) => d.id == dragged.degree.id);
