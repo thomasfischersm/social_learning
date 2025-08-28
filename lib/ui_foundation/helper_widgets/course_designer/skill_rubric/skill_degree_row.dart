@@ -59,9 +59,22 @@ class SkillDegreeRow extends StatelessWidget {
                 child: Text('${degree.degree}. ${degree.name}'),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline, size: 18),
-              onPressed: () => _confirmDelete(context),
+            InkWell(
+              borderRadius: BorderRadius.circular(4),
+              onTap: () => _edit(context),
+              child: const Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Icon(Icons.edit, size: 18, color: Colors.grey),
+              ),
+            ),
+            const SizedBox(width: 6),
+            InkWell(
+              borderRadius: BorderRadius.circular(4),
+              onTap: () => _confirmDelete(context),
+              child: const Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Icon(Icons.delete_outline, size: 18, color: Colors.grey),
+              ),
             ),
           ],
         ),

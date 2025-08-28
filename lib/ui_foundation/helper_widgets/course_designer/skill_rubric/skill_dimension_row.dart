@@ -47,9 +47,21 @@ class SkillDimensionRow extends StatelessWidget {
     final header = DecomposedCourseDesignerCard.buildHeaderWithIcons(
       dimension.name,
       [
-        IconButton(
-          icon: const Icon(Icons.delete_outline, size: 20),
-          onPressed: () => _confirmDelete(context),
+        InkWell(
+          borderRadius: BorderRadius.circular(4),
+          onTap: () => _edit(context),
+          child: const Padding(
+            padding: EdgeInsets.all(4.0),
+            child: Icon(Icons.edit, size: 20, color: Colors.grey),
+          ),
+        ),
+        InkWell(
+          borderRadius: BorderRadius.circular(4),
+          onTap: () => _confirmDelete(context),
+          child: const Padding(
+            padding: EdgeInsets.all(4.0),
+            child: Icon(Icons.delete_outline, size: 20, color: Colors.grey),
+          ),
         ),
       ],
     );
