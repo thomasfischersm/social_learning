@@ -43,7 +43,6 @@ class SkillRubricsFunctions {
       return null;
     }
   }
-
   static Future<SkillRubric?> createDimension({
     required String courseId,
     required String name,
@@ -362,6 +361,57 @@ class SkillRubricsFunctions {
       final degIndex = degrees.indexWhere((d) => d.id == degreeId);
       if (degIndex < 0) return rubric;
       final lessonRef = docRef('lessons', lessonId);
+      final lessons = List<DocumentReference>.from(degrees[degIndex].lessonRefs);
+      lessons.add(lessonRef);
+      degrees[degIndex] = SkillDegree(
+        id: degrees[degIndex].id,
+        degree: degrees[degIndex].degree,
+        name: degrees[degIndex].name,
+        description: degrees[degIndex].description,
+        lessonRefs: lessons,
+      );
+      dims[dimIndex] = SkillDimension(
+        id: dims[dimIndex].id,
+        name: dims[dimIndex].name,
+        description: dims[dimIndex].description,
+        degrees: degrees,
+      );
+      await rubricRef.update({
+        'dimensions': dims.map((e) => e.toMap()).toList(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+      final updated = await rubricRef.get();
+      return SkillRubric.fromSnapshot(updated);
+    } catch (e) {
+      print('Error adding lesson: $e');
+      return null;
+    }
+  }
+
+  static Future<SkillRubric?> addLessonByDegreeId({
+    required String courseId,
+    required String degreeId,
+    required String lessonId,
+  }) async {
+    try {
+      final rubric = await loadForCourse(courseId);
+      if (rubric == null || rubric.id == null) return null;
+      final rubricRef = _firestore.collection(_collectionPath).doc(rubric.id);
+      final dims = rubric.dimensions;
+      int dimIndex = -1;
+      int degIndex = -1;
+      for (var i = 0; i < dims.length; i++) {
+        final d = dims[i];
+        final idx = d.degrees.indexWhere((deg) => deg.id == degreeId);
+        if (idx >= 0) {
+          dimIndex = i;
+          degIndex = idx;
+          break;
+        }
+      }
+      if (dimIndex < 0 || degIndex < 0) return rubric;
+      final lessonRef = docRef('lessons', lessonId);
+      final degrees = List<SkillDegree>.from(dims[dimIndex].degrees);
       final lessons = List<DocumentReference>.from(degrees[degIndex].lessonRefs);
       lessons.add(lessonRef);
       degrees[degIndex] = SkillDegree(
