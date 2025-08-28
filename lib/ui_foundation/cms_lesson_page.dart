@@ -14,7 +14,6 @@ import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart'
 import 'package:social_learning/ui_foundation/helper_widgets/upload_lesson_cover_widget.dart';
 
 import '../data/data_helpers/teachable_item_functions.dart';
-import '../data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/state/course_designer_state.dart';
 
 class CmsLessonDetailArgument {
@@ -446,16 +445,12 @@ class CmsLessonState extends State<CmsLessonPage> {
         TeachableItemFunctions.addLessonToTeachableItem(
             itemId: _attachToTeachableItemId!, lessonId: newLessonId);
       } else if (_attachToSkillDegreeId != null && newLessonId != null) {
-          final designerState =
-              Provider.of<CourseDesignerState>(context, listen: false);
-          final courseId = designerState.course?.id;
-          if (courseId != null) {
-            await SkillRubricsFunctions.addLessonByDegreeId(
-              courseId: courseId,
-              degreeId: _attachToSkillDegreeId!,
-              lessonId: newLessonId,
-            );
-          }
+        final designerState =
+            Provider.of<CourseDesignerState>(context, listen: false);
+        await designerState.addLessonToSkillDegree(
+          degreeId: _attachToSkillDegreeId!,
+          lessonId: newLessonId,
+        );
       }
     } else {
       var lesson = _lesson;

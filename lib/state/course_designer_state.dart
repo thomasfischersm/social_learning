@@ -351,6 +351,21 @@ class CourseDesignerState extends ChangeNotifier {
     }
   }
 
+  Future<void> addLessonToSkillDegree(
+      {required String degreeId, required String lessonId}) async {
+    await _ensureInitialized();
+    if (_activeCourse == null) return;
+    final updated = await SkillRubricsFunctions.addLessonByDegreeId(
+      courseId: _activeCourse!.id!,
+      degreeId: degreeId,
+      lessonId: lessonId,
+    );
+    if (updated != null) {
+      skillRubric = updated;
+      notifyListeners();
+    }
+  }
+
   // ----- Inventory / Item management -----
   Future<void> addNewItem(TeachableItemCategory category, String name) async {
     await _ensureInitialized();
