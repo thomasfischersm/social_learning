@@ -16,7 +16,7 @@ public final class DefaultsBuilder {
     public DefaultsBuilder() {
         // seed the two main defaults immediately:
         cfg = ChatConfig.builder()
-                .model(ChatModel.CHATGPT_4O_LATEST)
+                .model(ChatModel.GPT_5_CHAT_LATEST)
                 .maxTokens(5000);
         // The rest (temperature, topP, penalties, etc.) stay at ChatConfig.Builder's defaults
     }
