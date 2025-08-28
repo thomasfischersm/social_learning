@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/skill_rubric/skill_description_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
 
 class SkillDegreeRow extends StatelessWidget {
   final SkillDimension dimension;
@@ -17,20 +17,19 @@ class SkillDegreeRow extends StatelessWidget {
     required this.state,
   });
 
-  Future<void> _edit(BuildContext context) async {
+  Future<void> _openDialog(BuildContext context, bool editMode) async {
     await showDialog(
       context: context,
-      builder: (_) => ValueInputDialog(
-        'Edit degree',
-        degree.name,
-        'Name',
-        'Save',
-        (value) =>
-            (value == null || value.trim().isEmpty) ? 'Name cannot be empty' : null,
-        (newName) => state.updateSkillDegree(
+      builder: (_) => SkillDescriptionDialog(
+        itemType: 'Degree',
+        initialName: degree.name,
+        initialDescription: degree.description,
+        startInEditMode: editMode,
+        onSave: (name, description) => state.updateSkillDegree(
           dimensionId: dimension.id,
           degreeId: degree.id,
-          name: newName.trim(),
+          name: name,
+          description: description,
         ),
       ),
     );
@@ -54,13 +53,24 @@ class SkillDegreeRow extends StatelessWidget {
         child: Row(
           children: [
             InkWell(
-              onTap: () => _edit(context),
-              child: Text('${degree.degree}. ${degree.name}'),
-            ),
-            const SizedBox(width: 8),
+                onTap: () => _openDialog(context, true),
+                child: Text('${degree.degree}. ${degree.name}'),
+              ),
+
+            if (degree.description?.trim().isNotEmpty ?? false) ...[
+              InkWell(
+                borderRadius: BorderRadius.circular(4),
+                onTap: () => _openDialog(context, false),
+                child: const Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Icon(Icons.notes, size: 18, color: Colors.grey),
+                ),
+              ),
+              const SizedBox(width: 6),
+            ],
             InkWell(
               borderRadius: BorderRadius.circular(4),
-              onTap: () => _edit(context),
+              onTap: () => _openDialog(context, true),
               child: const Padding(
                 padding: EdgeInsets.all(4.0),
                 child: Icon(Icons.edit, size: 18, color: Colors.grey),
