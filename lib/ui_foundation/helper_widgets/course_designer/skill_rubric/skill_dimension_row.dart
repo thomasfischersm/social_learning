@@ -75,8 +75,11 @@ class SkillDimensionRow extends StatelessWidget {
       ),
     ]);
 
-    final header =
-        DecomposedCourseDesignerCard.buildHeaderWithIcons(dimension.name, icons);
+    final header = DecomposedCourseDesignerCard.buildHeaderWithIcons(
+      dimension.name,
+      icons,
+      iconsRight: false,
+    );
 
     return InkWell(onTap: () => _openDialog(context, true), child: header);
   }
