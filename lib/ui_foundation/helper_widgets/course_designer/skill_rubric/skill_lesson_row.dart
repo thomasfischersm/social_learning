@@ -104,22 +104,30 @@ class _SkillLessonRowState extends State<SkillLessonRow> {
         padding: const EdgeInsets.fromLTRB(32, 8, 16, 8),
         child: Row(
           children: [
-            Expanded(
-              child: InkWell(
-                onTap: _openLesson,
-                child: Text(widget.lesson.title),
-              ),
+            InkWell(
+              onTap: _openLesson,
+              child: Text(widget.lesson.title),
             ),
+            const SizedBox(width: 8),
             CompositedTransformTarget(
               link: _layerLink,
-              child: IconButton(
-                icon: const Icon(Icons.edit, size: 18),
-                onPressed: _replace,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(4),
+                onTap: _replace,
+                child: const Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Icon(Icons.edit, size: 18, color: Colors.grey),
+                ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline, size: 18),
-              onPressed: _delete,
+            const SizedBox(width: 6),
+            InkWell(
+              borderRadius: BorderRadius.circular(4),
+              onTap: _delete,
+              child: const Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Icon(Icons.close, size: 18, color: Colors.grey),
+              ),
             ),
           ],
         ),
