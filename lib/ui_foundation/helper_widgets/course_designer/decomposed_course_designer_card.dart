@@ -20,7 +20,45 @@ class DecomposedCourseDesignerCard {
     );
   }
 
-  static Widget buildHeaderWithIcons(String title, List<Widget> icons) {
+  static Widget buildHeaderWithIcons(
+    String title,
+    List<Widget> icons, {
+    bool iconsRight = true,
+  }) {
+    final children = <Widget>[];
+
+    if (iconsRight) {
+      children.add(
+        Expanded(
+          child: Text(
+            title,
+            style: CourseDesignerTheme.cardHeaderTextStyle,
+          ),
+        ),
+      );
+
+      children.addAll(
+        icons.map(
+          (icon) => Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: icon,
+          ),
+        ),
+      );
+    } else {
+      children.add(
+        Text(
+          title,
+          style: CourseDesignerTheme.cardHeaderTextStyle,
+        ),
+      );
+
+      for (var icon in icons) {
+        children.add(const SizedBox(width: 6));
+        children.add(icon);
+      }
+    }
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -32,18 +70,7 @@ class DecomposedCourseDesignerCard {
       padding: CourseDesignerTheme.cardHeaderPadding,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Text(
-              title,
-              style: CourseDesignerTheme.cardHeaderTextStyle,
-              ),
-          ),
-          ...icons.map((icon) => Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: icon,
-              )),
-        ],
+        children: children,
       ),
     );
   }
