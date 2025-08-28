@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class SkillRubric {
   final String? id;
   final DocumentReference courseId;
-  final List<SkillDimension> dimensions;
+  List<SkillDimension> dimensions;
   final Timestamp createdAt;
-  final Timestamp modifiedAt;
+  Timestamp modifiedAt;
 
   SkillRubric({
     this.id,
@@ -39,9 +39,9 @@ class SkillRubric {
 
 class SkillDimension {
   final String id;
-  final String name;
-  final String? description;
-  final List<SkillDegree> degrees;
+  String name;
+  String? description;
+  List<SkillDegree> degrees;
 
   SkillDimension({
     required this.id,
@@ -69,10 +69,10 @@ class SkillDimension {
 
 class SkillDegree {
   final String id;
-  final int degree;
-  final String name;
-  final String? description;
-  final List<DocumentReference> lessonRefs;
+  int degree;
+  String name;
+  String? description;
+  List<DocumentReference> lessonRefs;
 
   SkillDegree({
     required this.id,
