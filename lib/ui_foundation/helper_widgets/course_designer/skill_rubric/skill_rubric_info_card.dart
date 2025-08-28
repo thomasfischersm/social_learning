@@ -34,10 +34,16 @@ class SkillRubricInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return CourseDesignerCard(
       title: 'Step 5: Skill Rubric',
-      titleIcon: IconButton(
-        icon: const Icon(Icons.auto_fix_high),
-        tooltip: 'Generate with AI',
-        onPressed: () => _onAIPressed(context),
+      titleIcon: Tooltip(
+        message: 'Generate with AI',
+        child: InkWell(
+          borderRadius: BorderRadius.circular(4),
+          onTap: () => _onAIPressed(context),
+          child: const Padding(
+            padding: EdgeInsets.all(4.0),
+            child: Icon(Icons.auto_fix_high, size: 16, color: Colors.grey),
+          ),
+        ),
       ),
       body: const Text(
         'Acquiring knowledge and developing skills are key to mastering '
