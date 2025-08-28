@@ -71,7 +71,7 @@ class _NewSkillLessonRowState extends State<NewSkillLessonRow> {
   Widget build(BuildContext context) {
     return DecomposedCourseDesignerCard.buildBody(
       Padding(
-        padding: const EdgeInsets.fromLTRB(32, 8, 16, 8),
+        padding: const EdgeInsets.fromLTRB(16, 8, 0, 8),
         child: Row(
           children: [
             CompositedTransformTarget(

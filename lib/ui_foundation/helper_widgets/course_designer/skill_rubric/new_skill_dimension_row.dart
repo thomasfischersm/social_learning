@@ -35,7 +35,7 @@ class _NewSkillDimensionRowState extends State<NewSkillDimensionRow> {
         DecomposedCourseDesignerCard.buildHeader('Add new dimension'),
         DecomposedCourseDesignerCard.buildBody(
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
             child: Row(
               children: [
                 Expanded(
