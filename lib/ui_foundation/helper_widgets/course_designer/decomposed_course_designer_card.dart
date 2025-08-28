@@ -24,6 +24,7 @@ class DecomposedCourseDesignerCard {
     String title,
     List<Widget> icons, {
     bool iconsRight = true,
+    List<Widget> trailingIcons = const [],
   }) {
     final children = <Widget>[];
 
@@ -57,6 +58,19 @@ class DecomposedCourseDesignerCard {
         children.add(const SizedBox(width: 6));
         children.add(icon);
       }
+
+      children.add(const Spacer());
+    }
+
+    if (trailingIcons.isNotEmpty) {
+      children.addAll(
+        trailingIcons.map(
+          (icon) => Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: icon,
+          ),
+        ),
+      );
     }
 
     return Container(

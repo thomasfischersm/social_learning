@@ -78,17 +78,16 @@ class SkillDimensionRow extends StatelessWidget implements SkillRubricRow {
       ),
     ]);
 
-    icons.add(
-      ReorderableDragStartListener(
-        index: dragHandleIndex,
-        child: const Icon(Icons.drag_handle, color: Colors.grey, size: 20),
-      ),
-    );
-
     final header = DecomposedCourseDesignerCard.buildHeaderWithIcons(
       dimension.name,
       icons,
       iconsRight: false,
+      trailingIcons: [
+        ReorderableDragStartListener(
+          index: dragHandleIndex,
+          child: const Icon(Icons.drag_handle, color: Colors.grey, size: 20),
+        ),
+      ],
     );
 
     return InkWell(onTap: () => _openDialog(context, true), child: header);
