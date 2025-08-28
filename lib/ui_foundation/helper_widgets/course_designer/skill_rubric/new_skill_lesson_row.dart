@@ -57,7 +57,9 @@ class _NewSkillLessonRowState extends State<NewSkillLessonRow> {
     Navigator.pushNamed(
       context,
       NavigationEnum.cmsLesson.route,
-      arguments: CmsLessonDetailArgument.forEditExistingLesson(null, null),
+      arguments: CmsLessonDetailArgument.forNewLessonToAttachToSkillDegree(
+        degreeId: widget.degree.id,
+      ),
     );
   }
 
