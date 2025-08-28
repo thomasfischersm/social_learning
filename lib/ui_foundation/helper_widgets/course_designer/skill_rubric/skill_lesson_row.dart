@@ -4,10 +4,9 @@ import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
+import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
-import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'skill_rubric_lesson_fanout_widget.dart';
 
 class SkillLessonRow extends StatefulWidget {
@@ -89,12 +88,10 @@ class _SkillLessonRowState extends State<SkillLessonRow> {
   }
 
   void _openLesson() {
-    Navigator.pushNamed(
-      context,
-      NavigationEnum.cmsLesson.route,
-      arguments: CmsLessonDetailArgument.forEditExistingLesson(
-          null, widget.lesson.id),
-    );
+    final lessonId = widget.lesson.id;
+    if (lessonId != null) {
+      LessonDetailArgument.goToLessonDetailPage(context, lessonId);
+    }
   }
 
   @override
