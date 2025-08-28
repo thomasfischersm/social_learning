@@ -52,12 +52,11 @@ class SkillDegreeRow extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: Row(
           children: [
-            Expanded(
-              child: InkWell(
+            InkWell(
                 onTap: () => _openDialog(context, true),
                 child: Text('${degree.degree}. ${degree.name}'),
               ),
-            ),
+
             if (degree.description?.trim().isNotEmpty ?? false) ...[
               InkWell(
                 borderRadius: BorderRadius.circular(4),
