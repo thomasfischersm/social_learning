@@ -3,7 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'skill_rubric_drag_helper.dart';
-import 'skill_rubric_entry.dart';
+import 'skill_rubric_row.dart';
+import 'skill_dimension_row.dart';
+import 'skill_degree_row.dart';
+import 'skill_lesson_row.dart';
+import 'new_skill_lesson_row.dart';
+import 'new_skill_degree_row.dart';
+import 'new_skill_dimension_row.dart';
+import 'dimension_footer_row.dart';
 
 class SkillRubricListViewCard extends StatelessWidget {
   const SkillRubricListViewCard({super.key});
@@ -12,54 +19,77 @@ class SkillRubricListViewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer2<CourseDesignerState, LibraryState>(
       builder: (context, state, library, child) {
-        final entries = _buildEntries(state, library);
-        return ReorderableListView.builder(
+        final rows = _buildRows(state, library);
+        return ReorderableListView(
           buildDefaultDragHandles: false,
-          itemCount: entries.length,
           onReorder: (oldIndex, newIndex) async {
             await SkillRubricDragHelper.handleReorder(
               state: state,
-              entries: entries,
+              rows: rows,
               oldIndex: oldIndex,
               newIndex: newIndex,
             );
           },
-          itemBuilder: (context, index) {
-            final entry = entries[index];
-            return KeyedSubtree(
-              key: PageStorageKey(entry.pageKey),
-              child: entry.buildWidget(context, state, library, index),
-            );
-          },
+          children: [
+            for (final row in rows)
+              KeyedSubtree(
+                key: PageStorageKey(row.pageKey),
+                child: row as Widget,
+              ),
+          ],
         );
       },
     );
   }
 
-  List<SkillRubricEntry> _buildEntries(
+  List<SkillRubricRow> _buildRows(
       CourseDesignerState state, LibraryState library) {
-    final entries = <SkillRubricEntry>[];
+    final rows = <SkillRubricRow>[];
     final rubric = state.skillRubric;
 
     if (rubric != null) {
       for (final dim in rubric.dimensions) {
-        entries.add(SkillDimensionEntry(dim));
+        rows.add(SkillDimensionRow(
+          dimension: dim,
+          state: state,
+          dragHandleIndex: rows.length,
+        ));
         for (final degree in dim.degrees) {
-          entries.add(SkillDegreeEntry(dim, degree));
+          rows.add(SkillDegreeRow(
+            dimension: dim,
+            degree: degree,
+            state: state,
+            dragHandleIndex: rows.length,
+          ));
           for (final ref in degree.lessonRefs) {
             final lesson = library.findLesson(ref.id);
             if (lesson != null) {
-              entries.add(SkillLessonEntry(dim, degree, lesson));
+              rows.add(SkillLessonRow(
+                dimension: dim,
+                degree: degree,
+                lesson: lesson,
+                state: state,
+                library: library,
+                dragHandleIndex: rows.length,
+              ));
             }
           }
-          entries.add(NewSkillLessonEntry(dim, degree));
+          rows.add(NewSkillLessonRow(
+            dimension: dim,
+            degree: degree,
+            state: state,
+            library: library,
+          ));
         }
-        entries.add(NewSkillDegreeEntry(dim));
-        entries.add(DimensionFooterEntry(dim.id));
+        rows.add(NewSkillDegreeRow(
+          dimension: dim,
+          state: state,
+        ));
+        rows.add(DimensionFooterRow(dimensionId: dim.id));
       }
     }
 
-    entries.add(NewSkillDimensionEntry());
-    return entries;
+    rows.add(NewSkillDimensionRow(state: state));
+    return rows;
   }
 }

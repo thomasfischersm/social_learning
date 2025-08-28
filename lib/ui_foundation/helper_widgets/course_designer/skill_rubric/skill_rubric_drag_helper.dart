@@ -1,41 +1,47 @@
 import 'package:social_learning/state/course_designer_state.dart';
-import 'skill_rubric_entry.dart';
+import 'skill_rubric_row.dart';
+import 'skill_dimension_row.dart';
+import 'skill_degree_row.dart';
+import 'skill_lesson_row.dart';
+import 'new_skill_dimension_row.dart';
+import 'new_skill_degree_row.dart';
+import 'new_skill_lesson_row.dart';
 
 class SkillRubricDragHelper {
   static Future<void> handleReorder({
     required CourseDesignerState state,
-    required List<SkillRubricEntry> entries,
+    required List<SkillRubricRow> rows,
     required int oldIndex,
     required int newIndex,
   }) async {
     if (newIndex > oldIndex) newIndex -= 1;
-    final dragged = entries[oldIndex];
-    final target = entries[newIndex];
+    final dragged = rows[oldIndex];
+    final target = rows[newIndex];
 
-    if (dragged is SkillDimensionEntry && target is SkillDimensionEntry) {
+    if (dragged is SkillDimensionRow && target is SkillDimensionRow) {
       await _handleDimensionToDimension(state, dragged, target);
-    } else if (dragged is SkillDimensionEntry &&
-        target is NewSkillDimensionEntry) {
+    } else if (dragged is SkillDimensionRow &&
+        target is NewSkillDimensionRow) {
       await _handleDimensionToNewDimension(state, dragged);
-    } else if (dragged is SkillDegreeEntry && target is SkillDegreeEntry) {
+    } else if (dragged is SkillDegreeRow && target is SkillDegreeRow) {
       await _handleDegreeToDegree(state, dragged, target);
-    } else if (dragged is SkillDegreeEntry && target is SkillLessonEntry) {
+    } else if (dragged is SkillDegreeRow && target is SkillLessonRow) {
       await _handleDegreeToLesson(state, dragged, target);
-    } else if (dragged is SkillDegreeEntry && target is NewSkillDegreeEntry) {
+    } else if (dragged is SkillDegreeRow && target is NewSkillDegreeRow) {
       await _handleDegreeToNewDegree(state, dragged);
-    } else if (dragged is SkillLessonEntry && target is SkillLessonEntry) {
+    } else if (dragged is SkillLessonRow && target is SkillLessonRow) {
       await _handleLessonToLesson(state, dragged, target);
-    } else if (dragged is SkillLessonEntry && target is NewSkillLessonEntry) {
+    } else if (dragged is SkillLessonRow && target is NewSkillLessonRow) {
       await _handleLessonToNewLesson(state, dragged, target);
-    } else if (dragged is SkillLessonEntry && target is SkillDegreeEntry) {
+    } else if (dragged is SkillLessonRow && target is SkillDegreeRow) {
       await _handleLessonToDegree(state, dragged, target);
     }
   }
 
   static Future<void> _handleDimensionToDimension(
     CourseDesignerState state,
-    SkillDimensionEntry dragged,
-    SkillDimensionEntry target,
+    SkillDimensionRow dragged,
+    SkillDimensionRow target,
   ) async {
     final newIndex = state.skillRubric?.dimensions
             .indexWhere((d) => d.id == target.dimension.id) ??
@@ -48,7 +54,7 @@ class SkillRubricDragHelper {
 
   static Future<void> _handleDimensionToNewDimension(
     CourseDesignerState state,
-    SkillDimensionEntry dragged,
+    SkillDimensionRow dragged,
   ) async {
     final newIndex =
         (state.skillRubric?.dimensions.length ?? 1) - 1;
@@ -60,8 +66,8 @@ class SkillRubricDragHelper {
 
   static Future<void> _handleDegreeToDegree(
     CourseDesignerState state,
-    SkillDegreeEntry dragged,
-    SkillDegreeEntry target,
+    SkillDegreeRow dragged,
+    SkillDegreeRow target,
   ) async {
     if (target.dimension.id != dragged.dimension.id) return;
     final dim = state.skillRubric?.dimensions
@@ -77,8 +83,8 @@ class SkillRubricDragHelper {
 
   static Future<void> _handleDegreeToLesson(
     CourseDesignerState state,
-    SkillDegreeEntry dragged,
-    SkillLessonEntry target,
+    SkillDegreeRow dragged,
+    SkillLessonRow target,
   ) async {
     if (target.dimension.id != dragged.dimension.id) return;
     final dim = state.skillRubric?.dimensions
@@ -94,7 +100,7 @@ class SkillRubricDragHelper {
 
   static Future<void> _handleDegreeToNewDegree(
     CourseDesignerState state,
-    SkillDegreeEntry dragged,
+    SkillDegreeRow dragged,
   ) async {
     final dim = state.skillRubric?.dimensions
         .firstWhere((d) => d.id == dragged.dimension.id);
@@ -108,8 +114,8 @@ class SkillRubricDragHelper {
 
   static Future<void> _handleLessonToLesson(
     CourseDesignerState state,
-    SkillLessonEntry dragged,
-    SkillLessonEntry target,
+    SkillLessonRow dragged,
+    SkillLessonRow target,
   ) async {
     final targetDimId = target.dimension.id;
     final targetDegreeId = target.degree.id;
@@ -135,8 +141,8 @@ class SkillRubricDragHelper {
 
   static Future<void> _handleLessonToNewLesson(
     CourseDesignerState state,
-    SkillLessonEntry dragged,
-    NewSkillLessonEntry target,
+    SkillLessonRow dragged,
+    NewSkillLessonRow target,
   ) async {
     final targetDimId = target.dimension.id;
     final targetDegreeId = target.degree.id;
@@ -161,8 +167,8 @@ class SkillRubricDragHelper {
 
   static Future<void> _handleLessonToDegree(
     CourseDesignerState state,
-    SkillLessonEntry dragged,
-    SkillDegreeEntry target,
+    SkillLessonRow dragged,
+    SkillDegreeRow target,
   ) async {
     final targetDegreeId = target.degree.id;
     final fromDeg = state.skillRubric?.dimensions

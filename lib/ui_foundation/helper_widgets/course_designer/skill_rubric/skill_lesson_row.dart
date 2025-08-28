@@ -8,8 +8,9 @@ import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'skill_rubric_lesson_fanout_widget.dart';
+import 'skill_rubric_row.dart';
 
-class SkillLessonRow extends StatefulWidget {
+class SkillLessonRow extends StatefulWidget implements SkillRubricRow {
   final SkillDimension dimension;
   final SkillDegree degree;
   final Lesson lesson;
@@ -29,6 +30,9 @@ class SkillLessonRow extends StatefulWidget {
 
   @override
   State<SkillLessonRow> createState() => _SkillLessonRowState();
+
+  @override
+  String get pageKey => 'lesson-${lesson.id}';
 }
 
 class _SkillLessonRowState extends State<SkillLessonRow> {

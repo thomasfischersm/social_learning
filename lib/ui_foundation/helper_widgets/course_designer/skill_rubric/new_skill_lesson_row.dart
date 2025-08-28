@@ -7,8 +7,9 @@ import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'skill_rubric_lesson_fanout_widget.dart';
+import 'skill_rubric_row.dart';
 
-class NewSkillLessonRow extends StatefulWidget {
+class NewSkillLessonRow extends StatefulWidget implements SkillRubricRow {
   final SkillDimension dimension;
   final SkillDegree degree;
   final CourseDesignerState state;
@@ -21,6 +22,9 @@ class NewSkillLessonRow extends StatefulWidget {
     required this.state,
     required this.library,
   });
+
+  @override
+  String get pageKey => 'new-lesson-${degree.id}';
 
   @override
   State<NewSkillLessonRow> createState() => _NewSkillLessonRowState();

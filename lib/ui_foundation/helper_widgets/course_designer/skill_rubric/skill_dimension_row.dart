@@ -4,8 +4,9 @@ import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/skill_rubric/skill_description_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
+import 'skill_rubric_row.dart';
 
-class SkillDimensionRow extends StatelessWidget {
+class SkillDimensionRow extends StatelessWidget implements SkillRubricRow {
   final SkillDimension dimension;
   final CourseDesignerState state;
   final int dragHandleIndex;
@@ -92,4 +93,7 @@ class SkillDimensionRow extends StatelessWidget {
 
     return InkWell(onTap: () => _openDialog(context, true), child: header);
   }
+
+  @override
+  String get pageKey => 'dimension-${dimension.id}';
 }
