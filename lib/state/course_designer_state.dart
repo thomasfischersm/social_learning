@@ -366,6 +366,12 @@ class CourseDesignerState extends ChangeNotifier {
     }
   }
 
+  Future<void> generateSkillRubric() async {
+    await _ensureInitialized();
+    if (_activeCourse == null) return;
+    // TODO: Implement backend call to generate skill rubric.
+  }
+
   // ----- Inventory / Item management -----
   Future<void> addNewItem(TeachableItemCategory category, String name) async {
     await _ensureInitialized();

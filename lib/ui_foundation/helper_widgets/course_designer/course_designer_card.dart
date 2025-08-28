@@ -7,6 +7,7 @@ class CourseDesignerCard extends StatefulWidget {
   final Widget body;
   final bool dismissible;
   final String? prefsKey;
+  final Widget? titleIcon;
 
   const CourseDesignerCard({
     super.key,
@@ -14,6 +15,7 @@ class CourseDesignerCard extends StatefulWidget {
     required this.body,
     this.dismissible = false,
     this.prefsKey,
+    this.titleIcon,
   });
 
   @override
@@ -67,6 +69,11 @@ class _CourseDesignerCardState extends State<CourseDesignerCard> {
   }
 
   Widget _buildHeader() {
+    final titleText = Text(
+      widget.title,
+      style: CourseDesignerTheme.cardHeaderTextStyle,
+    );
+
     return Container(
       width: double.infinity,
       padding: CourseDesignerTheme.cardHeaderPadding,
@@ -75,10 +82,16 @@ class _CourseDesignerCardState extends State<CourseDesignerCard> {
         borderRadius: const BorderRadius.vertical(
             top: Radius.circular(CourseDesignerTheme.cardBorderRadius)),
       ),
-      child: Text(
-        widget.title,
-        style: CourseDesignerTheme.cardHeaderTextStyle,
-      ),
+      child: widget.titleIcon == null
+          ? titleText
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(child: titleText),
+                const SizedBox(width: 8),
+                widget.titleIcon!,
+              ],
+            ),
     );
   }
 
