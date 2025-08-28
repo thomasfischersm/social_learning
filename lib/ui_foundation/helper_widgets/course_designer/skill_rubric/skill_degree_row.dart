@@ -4,17 +4,20 @@ import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/skill_rubric/skill_description_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
+import 'skill_rubric_row.dart';
 
-class SkillDegreeRow extends StatelessWidget {
+class SkillDegreeRow extends StatelessWidget implements SkillRubricRow {
   final SkillDimension dimension;
   final SkillDegree degree;
   final CourseDesignerState state;
+  final int dragHandleIndex;
 
   const SkillDegreeRow({
     super.key,
     required this.dimension,
     required this.degree,
     required this.state,
+    required this.dragHandleIndex,
   });
 
   Future<void> _openDialog(BuildContext context, bool editMode) async {
@@ -85,9 +88,17 @@ class SkillDegreeRow extends StatelessWidget {
                 child: Icon(Icons.delete_outline, size: 18, color: Colors.grey),
               ),
             ),
+            const Spacer(),
+            ReorderableDragStartListener(
+              index: dragHandleIndex,
+              child: const Icon(Icons.drag_handle, color: Colors.grey, size: 18),
+            ),
           ],
         ),
       ),
     );
   }
+
+  @override
+  String get pageKey => 'degree-${degree.id}';
 }

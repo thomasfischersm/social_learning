@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'skill_rubric_row.dart';
 
-class NewSkillDimensionRow extends StatefulWidget {
+class NewSkillDimensionRow extends StatefulWidget
+    implements SkillRubricRow {
   final CourseDesignerState state;
 
   const NewSkillDimensionRow({super.key, required this.state});
+
+  @override
+  String get pageKey => 'new-dimension';
 
   @override
   State<NewSkillDimensionRow> createState() => _NewSkillDimensionRowState();

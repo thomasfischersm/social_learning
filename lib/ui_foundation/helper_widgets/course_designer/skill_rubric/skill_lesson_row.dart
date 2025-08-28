@@ -8,13 +8,15 @@ import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'skill_rubric_lesson_fanout_widget.dart';
+import 'skill_rubric_row.dart';
 
-class SkillLessonRow extends StatefulWidget {
+class SkillLessonRow extends StatefulWidget implements SkillRubricRow {
   final SkillDimension dimension;
   final SkillDegree degree;
   final Lesson lesson;
   final CourseDesignerState state;
   final LibraryState library;
+  final int dragHandleIndex;
 
   const SkillLessonRow({
     super.key,
@@ -23,10 +25,14 @@ class SkillLessonRow extends StatefulWidget {
     required this.lesson,
     required this.state,
     required this.library,
+    required this.dragHandleIndex,
   });
 
   @override
   State<SkillLessonRow> createState() => _SkillLessonRowState();
+
+  @override
+  String get pageKey => 'lesson-${lesson.id}';
 }
 
 class _SkillLessonRowState extends State<SkillLessonRow> {
@@ -125,6 +131,11 @@ class _SkillLessonRowState extends State<SkillLessonRow> {
                 padding: EdgeInsets.all(4.0),
                 child: Icon(Icons.close, size: 18, color: Colors.grey),
               ),
+            ),
+            const Spacer(),
+            ReorderableDragStartListener(
+              index: widget.dragHandleIndex,
+              child: const Icon(Icons.drag_handle, color: Colors.grey, size: 18),
             ),
           ],
         ),
