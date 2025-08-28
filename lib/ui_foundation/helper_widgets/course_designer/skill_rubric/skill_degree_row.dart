@@ -9,12 +9,14 @@ class SkillDegreeRow extends StatelessWidget {
   final SkillDimension dimension;
   final SkillDegree degree;
   final CourseDesignerState state;
+  final int dragHandleIndex;
 
   const SkillDegreeRow({
     super.key,
     required this.dimension,
     required this.degree,
     required this.state,
+    required this.dragHandleIndex,
   });
 
   Future<void> _openDialog(BuildContext context, bool editMode) async {
@@ -84,6 +86,11 @@ class SkillDegreeRow extends StatelessWidget {
                 padding: EdgeInsets.all(4.0),
                 child: Icon(Icons.delete_outline, size: 18, color: Colors.grey),
               ),
+            ),
+            const Spacer(),
+            ReorderableDragStartListener(
+              index: dragHandleIndex,
+              child: const Icon(Icons.drag_handle, color: Colors.grey, size: 18),
             ),
           ],
         ),

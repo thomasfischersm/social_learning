@@ -15,6 +15,7 @@ class SkillLessonRow extends StatefulWidget {
   final Lesson lesson;
   final CourseDesignerState state;
   final LibraryState library;
+  final int dragHandleIndex;
 
   const SkillLessonRow({
     super.key,
@@ -23,6 +24,7 @@ class SkillLessonRow extends StatefulWidget {
     required this.lesson,
     required this.state,
     required this.library,
+    required this.dragHandleIndex,
   });
 
   @override
@@ -125,6 +127,11 @@ class _SkillLessonRowState extends State<SkillLessonRow> {
                 padding: EdgeInsets.all(4.0),
                 child: Icon(Icons.close, size: 18, color: Colors.grey),
               ),
+            ),
+            const Spacer(),
+            ReorderableDragStartListener(
+              index: widget.dragHandleIndex,
+              child: const Icon(Icons.drag_handle, color: Colors.grey, size: 18),
             ),
           ],
         ),

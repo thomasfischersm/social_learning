@@ -323,6 +323,27 @@ class CourseDesignerState extends ChangeNotifier {
     }
   }
 
+  Future<void> moveSkillLesson({
+    required String fromDegreeId,
+    required int fromLessonIndex,
+    required String toDegreeId,
+    required int toLessonIndex,
+  }) async {
+    await _ensureInitialized();
+    if (_activeCourse == null || skillRubric == null) return;
+    final updated = await SkillRubricsFunctions.moveLessonByDegree(
+      rubric: skillRubric!,
+      fromDegreeId: fromDegreeId,
+      fromLessonIndex: fromLessonIndex,
+      toDegreeId: toDegreeId,
+      toLessonIndex: toLessonIndex,
+    );
+    if (updated != null) {
+      skillRubric = updated;
+      notifyListeners();
+    }
+  }
+
   Future<void> deleteSkillDegree(
       {required String dimensionId, required String degreeId}) async {
     await _ensureInitialized();

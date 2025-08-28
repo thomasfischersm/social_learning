@@ -8,11 +8,13 @@ import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 class SkillDimensionRow extends StatelessWidget {
   final SkillDimension dimension;
   final CourseDesignerState state;
+  final int dragHandleIndex;
 
   const SkillDimensionRow({
     super.key,
     required this.dimension,
     required this.state,
+    required this.dragHandleIndex,
   });
 
   Future<void> _openDialog(BuildContext context, bool editMode) async {
@@ -74,6 +76,13 @@ class SkillDimensionRow extends StatelessWidget {
         ),
       ),
     ]);
+
+    icons.add(
+      ReorderableDragStartListener(
+        index: dragHandleIndex,
+        child: const Icon(Icons.drag_handle, color: Colors.grey, size: 20),
+      ),
+    );
 
     final header = DecomposedCourseDesignerCard.buildHeaderWithIcons(
       dimension.name,
