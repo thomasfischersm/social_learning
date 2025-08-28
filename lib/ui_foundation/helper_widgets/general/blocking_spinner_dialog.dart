@@ -21,8 +21,12 @@ class _BlockingSpinner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const WillPopScope(
-      onWillPop: () async => false,
+    // `PopScope` is used instead of the deprecated `WillPopScope` so that the
+    // user cannot dismiss the dialog via the system back button. Setting
+    // `canPop` to false ensures the route cannot be popped until the caller
+    // explicitly dismisses the dialog.
+    return const PopScope(
+      canPop: false,
       child: Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
