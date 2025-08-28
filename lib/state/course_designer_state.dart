@@ -25,6 +25,7 @@ import 'package:social_learning/data/teachable_item_inclusion_status.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
+import 'package:social_learning/cloud_functions/skill_rubric_generation_response.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/state/library_state.dart';
 
@@ -82,7 +83,6 @@ class CourseDesignerState extends ChangeNotifier {
     _activeCourse = _libraryState.selectedCourse;
     var selectedCourseId = _activeCourse?.id;
     if (selectedCourseId != null) {
-
       await _loadDataForCourse(selectedCourseId);
       _status = CourseDesignerStateStatus.initialized;
       _initCompleter.complete();
@@ -181,7 +181,7 @@ class CourseDesignerState extends ChangeNotifier {
     _updateInclusionStatuses();
   }
 
-  Future<void> _onLibraryStateChanged() async{
+  Future<void> _onLibraryStateChanged() async {
     if (_activeCourse != _libraryState.selectedCourse) {
       if (_libraryState.selectedCourse != null) {
         if (_status == CourseDesignerStateStatus.initializing) {
@@ -189,9 +189,9 @@ class CourseDesignerState extends ChangeNotifier {
           return;
         }
 
-         _status = CourseDesignerStateStatus.initializing;
-         _initCompleter = Completer<void>();
-         await _initialize();
+        _status = CourseDesignerStateStatus.initializing;
+        _initCompleter = Completer<void>();
+        await _initialize();
       } else {
         _status = CourseDesignerStateStatus.noCourseSelected;
         clear();
@@ -390,7 +390,26 @@ class CourseDesignerState extends ChangeNotifier {
   Future<void> generateSkillRubric() async {
     await _ensureInitialized();
     if (_activeCourse == null) return;
-    // TODO: Implement backend call to generate skill rubric.
+    var originalStatus = _status;
+    _status = CourseDesignerStateStatus.waitingOnAI;
+    notifyListeners();
+    try {
+      final response = await CloudFunctions.generateSkillRubric(
+        _activeCourse!,
+        courseProfile,
+      );
+      final updated = await SkillRubricsFunctions.replaceRubricForCourse(
+        courseId: _activeCourse!.id!,
+        generated: response.dimensions,
+      );
+      if (updated != null) {
+        skillRubric = updated;
+      }
+    } catch (e) {
+      // ignore
+    }
+    _status = originalStatus;
+    notifyListeners();
   }
 
   // ----- Inventory / Item management -----
@@ -449,8 +468,7 @@ class CourseDesignerState extends ChangeNotifier {
     );
 
     categories.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-    final currentIndex =
-        categories.indexWhere((c) => c.id == movedCategory.id);
+    final currentIndex = categories.indexWhere((c) => c.id == movedCategory.id);
     if (currentIndex == -1) return;
 
     final moved = categories.removeAt(currentIndex);
@@ -526,8 +544,8 @@ class CourseDesignerState extends ChangeNotifier {
       }
     } else {
       final sourceItems = items
-          .where(
-              (i) => i.categoryId.id == sourceCategoryId && i.id != movedItem.id)
+          .where((i) =>
+              i.categoryId.id == sourceCategoryId && i.id != movedItem.id)
           .toList()
         ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
       for (int i = 0; i < sourceItems.length; i++) {
@@ -757,8 +775,7 @@ class CourseDesignerState extends ChangeNotifier {
             TeachableItemInclusionStatus.explicitlyIncluded &&
         item.inclusionStatus !=
             TeachableItemInclusionStatus.includedAsPrerequisite) {
-      item.inclusionStatus =
-          TeachableItemInclusionStatus.explicitlyIncluded;
+      item.inclusionStatus = TeachableItemInclusionStatus.explicitlyIncluded;
       await TeachableItemFunctions.updateInclusionStatus(item);
       itemById[item.id!] = item;
       final idx = items.indexWhere((i) => i.id == item.id);

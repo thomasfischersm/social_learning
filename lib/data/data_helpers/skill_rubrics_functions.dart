@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/skill_rubric.dart';
-
+import 'package:social_learning/cloud_functions/skill_rubric_generation_response.dart';
 
 class SkillRubricsFunctions {
   static FirebaseFirestore get _firestore => FirestoreService.instance;
@@ -43,6 +43,50 @@ class SkillRubricsFunctions {
       return null;
     }
   }
+
+  static Future<SkillRubric?> replaceRubricForCourse({
+    required String courseId,
+    required List<GeneratedSkillDimension> generated,
+  }) async {
+    try {
+      final existing = await ensureRubricForCourse(courseId);
+      if (existing == null || existing.id == null) return null;
+
+      final dims = <SkillDimension>[];
+      for (final dim in generated) {
+        final dimId = _firestore.collection(_collectionPath).doc().id;
+        final degrees = <SkillDegree>[];
+        for (int i = 0; i < dim.degrees.length; i++) {
+          final deg = dim.degrees[i];
+          degrees.add(SkillDegree(
+            id: _firestore.collection(_collectionPath).doc().id,
+            degree: i + 1,
+            name: deg.name,
+            description: deg.criteria,
+            lessonRefs: [],
+          ));
+        }
+        dims.add(SkillDimension(
+          id: dimId,
+          name: dim.name,
+          description: dim.description.isEmpty ? null : dim.description,
+          degrees: degrees,
+        ));
+      }
+
+      final docRef = _firestore.collection(_collectionPath).doc(existing.id);
+      await docRef.update({
+        'dimensions': dims.map((e) => e.toMap()).toList(),
+        'modifiedAt': FieldValue.serverTimestamp(),
+      });
+      final snapshot = await docRef.get();
+      return SkillRubric.fromSnapshot(snapshot);
+    } catch (e) {
+      print('Error replacing skill rubric: $e');
+      return null;
+    }
+  }
+
   static Future<SkillRubric?> createDimension({
     required String courseId,
     required String name,
@@ -361,7 +405,8 @@ class SkillRubricsFunctions {
       final degIndex = degrees.indexWhere((d) => d.id == degreeId);
       if (degIndex < 0) return rubric;
       final lessonRef = docRef('lessons', lessonId);
-      final lessons = List<DocumentReference>.from(degrees[degIndex].lessonRefs);
+      final lessons =
+          List<DocumentReference>.from(degrees[degIndex].lessonRefs);
       lessons.add(lessonRef);
       degrees[degIndex] = SkillDegree(
         id: degrees[degIndex].id,
@@ -412,7 +457,8 @@ class SkillRubricsFunctions {
       if (dimIndex < 0 || degIndex < 0) return rubric;
       final lessonRef = docRef('lessons', lessonId);
       final degrees = List<SkillDegree>.from(dims[dimIndex].degrees);
-      final lessons = List<DocumentReference>.from(degrees[degIndex].lessonRefs);
+      final lessons =
+          List<DocumentReference>.from(degrees[degIndex].lessonRefs);
       lessons.add(lessonRef);
       degrees[degIndex] = SkillDegree(
         id: degrees[degIndex].id,
@@ -456,7 +502,8 @@ class SkillRubricsFunctions {
       final degIndex = degrees.indexWhere((d) => d.id == degreeId);
       if (degIndex < 0) return rubric;
       final lessonRef = docRef('lessons', lessonId);
-      final lessons = List<DocumentReference>.from(degrees[degIndex].lessonRefs);
+      final lessons =
+          List<DocumentReference>.from(degrees[degIndex].lessonRefs);
       lessons.removeWhere((ref) => ref.path == lessonRef.path);
       degrees[degIndex] = SkillDegree(
         id: degrees[degIndex].id,
@@ -517,8 +564,7 @@ class SkillRubricsFunctions {
           lessonToIndex,
         );
       }
-      final rubricRef =
-          _firestore.collection(_collectionPath).doc(rubric.id);
+      final rubricRef = _firestore.collection(_collectionPath).doc(rubric.id);
       await rubricRef.update({
         'dimensions': dims.map((e) => e.toMap()).toList(),
         'modifiedAt': FieldValue.serverTimestamp(),
@@ -552,8 +598,7 @@ class SkillRubricsFunctions {
     );
   }
 
-  static String? _dimensionIdForDegree(
-      SkillRubric rubric, String degreeId) {
+  static String? _dimensionIdForDegree(SkillRubric rubric, String degreeId) {
     for (final dim in rubric.dimensions) {
       if (dim.degrees.any((d) => d.id == degreeId)) {
         return dim.id;
@@ -576,8 +621,7 @@ class SkillRubricsFunctions {
     if (fromIndex < 0 || fromIndex >= lessons.length) return;
     final lesson = lessons.removeAt(fromIndex);
     final insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
-    final boundedIndex =
-        insertIndex.clamp(0, lessons.length) as int;
+    final boundedIndex = insertIndex.clamp(0, lessons.length) as int;
     lessons.insert(boundedIndex, lesson);
     degrees[degIndex] = SkillDegree(
       id: degrees[degIndex].id,
@@ -604,8 +648,7 @@ class SkillRubricsFunctions {
     int toIndex,
   ) {
     final fromDegrees = List<SkillDegree>.from(dims[fromDimIndex].degrees);
-    final fromDegIndex =
-        fromDegrees.indexWhere((d) => d.id == fromDegreeId);
+    final fromDegIndex = fromDegrees.indexWhere((d) => d.id == fromDegreeId);
     if (fromDegIndex < 0) return;
     final fromLessons =
         List<DocumentReference>.from(fromDegrees[fromDegIndex].lessonRefs);
@@ -626,13 +669,11 @@ class SkillRubricsFunctions {
     );
 
     final toDegrees = List<SkillDegree>.from(dims[toDimIndex].degrees);
-    final toDegIndex =
-        toDegrees.indexWhere((d) => d.id == toDegreeId);
+    final toDegIndex = toDegrees.indexWhere((d) => d.id == toDegreeId);
     if (toDegIndex < 0) return;
     final toLessons =
         List<DocumentReference>.from(toDegrees[toDegIndex].lessonRefs);
-    final boundedIndex =
-        toIndex.clamp(0, toLessons.length) as int;
+    final boundedIndex = toIndex.clamp(0, toLessons.length) as int;
     toLessons.insert(boundedIndex, lesson);
     toDegrees[toDegIndex] = SkillDegree(
       id: toDegrees[toDegIndex].id,
@@ -649,4 +690,3 @@ class SkillRubricsFunctions {
     );
   }
 }
-
