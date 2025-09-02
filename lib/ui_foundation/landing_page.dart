@@ -40,7 +40,7 @@ class LandingPage extends StatelessWidget {
                   '• Deepen your mastery by teaching.',
                   // '\n'
                   // 'Available for in-person and online!',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const Spacer(),
                 Text(
@@ -50,7 +50,7 @@ class LandingPage extends StatelessWidget {
                 Text(
                   // 'You learn everything from a mentor. Your mentor answers your questions and gets you unstuck. Your mentor doesn''t have to know everything. They only have to have mastered the lesson at hand. The intelligence of the curriculum guides you through learning the whole subject one piece at a time.',
                   'Learn each lesson with a mentor who’s there to answer your questions and help you get unstuck. Your mentor only needs to master the specific lesson—not the entire subject—so you get clear, focused guidance. An expert-designed curriculum then connects these bite-sized lessons into a complete, effective learning journey.',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const Spacer(),
                 Text(
