@@ -35,7 +35,7 @@ public class SkillRubricService {
 
         this.openAiClient = new OpenAiClientImpl(apiKey);
         this.defaults = new DefaultsBuilder()
-                .temperature(0.7)
+                .temperature(1) // Deprecated by OpenAI.
                 .maxTokens(3000)
                 .build();
     }
