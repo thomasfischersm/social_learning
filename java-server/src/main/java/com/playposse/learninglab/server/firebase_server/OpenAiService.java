@@ -57,7 +57,7 @@ public class OpenAiService {
         ChatCompletionCreateParams.Builder b = ChatCompletionCreateParams.builder()
                 .model(chatModel)
                 .temperature(temperature)
-                .maxTokens(maxTokens);
+                .maxCompletionTokens(maxTokens);
 
         for (Map<String, String> msg : messagesInput) {
             String role    = msg.get("role");
