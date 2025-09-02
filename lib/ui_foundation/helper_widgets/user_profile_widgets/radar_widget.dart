@@ -9,80 +9,98 @@ import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/state/library_state.dart';
 
 class RadarWidget extends StatelessWidget {
-  final User user;
+  final User? user;
+  final SkillAssessment? assessment;
+  final List<SkillAssessmentDimension>? dimensions;
   final double size;
   final Color mainColor;
   final double mainLineWidth;
   final Color supportColor;
   final double supportLineWidth;
   final bool showLabels;
+  final bool drawPolygon;
   final Color fillColor;
 
   const RadarWidget({
     super.key,
-    required this.user,
+    this.user,
+    this.assessment,
+    this.dimensions,
     this.size = 200,
     this.mainColor = Colors.blue,
     this.mainLineWidth = 2,
     this.supportColor = Colors.grey,
     this.supportLineWidth = 1,
     this.showLabels = true,
+    this.drawPolygon = true,
     this.fillColor = Colors.transparent,
-  });
+  }) : assert(user != null || assessment != null || dimensions != null,
+            'Provide user, assessment, or dimensions');
 
   @override
   Widget build(BuildContext context) {
-    final course = context.watch<LibraryState>().selectedCourse;
-    if (course == null) {
-      return SizedBox(width: size, height: size);
+    List<SkillAssessmentDimension>? dims = dimensions;
+    bool polygon = drawPolygon;
+
+    if (dims == null) {
+      if (assessment != null) {
+        dims = assessment!.dimensions;
+      } else if (user != null) {
+        final course = context.watch<LibraryState>().selectedCourse;
+        if (course == null) {
+          return SizedBox(width: size, height: size);
+        }
+        final userAssessment = user!.getCourseSkillAssessment(course);
+        if (userAssessment != null) {
+          dims = userAssessment.dimensions;
+        } else {
+          return FutureBuilder<SkillRubric?>(
+            future: SkillRubricsFunctions.loadForCourse(course.id!),
+            builder: (context, snapshot) {
+              final rubric = snapshot.data;
+              final empty = rubric?.dimensions
+                      .map(
+                        (d) => SkillAssessmentDimension(
+                          id: d.id,
+                          name: d.name,
+                          degree: 0,
+                          maxDegrees: d.degrees.length,
+                        ),
+                      )
+                      .toList() ??
+                  [];
+              return CustomPaint(
+                size: Size.square(size),
+                painter: _RadarPainter(
+                  dimensions: empty,
+                  mainColor: mainColor,
+                  mainLineWidth: mainLineWidth,
+                  supportColor: supportColor,
+                  supportLineWidth: supportLineWidth,
+                  showLabels: showLabels,
+                  drawPolygon: false,
+                  fillColor: fillColor,
+                ),
+              );
+            },
+          );
+        }
+      }
     }
 
-    final assessment = user.getCourseSkillAssessment(course);
-    if (assessment != null) {
-      return CustomPaint(
-        size: Size.square(size),
-        painter: _RadarPainter(
-          dimensions: assessment.dimensions,
-          mainColor: mainColor,
-          mainLineWidth: mainLineWidth,
-          supportColor: supportColor,
-          supportLineWidth: supportLineWidth,
-          showLabels: showLabels,
-          drawPolygon: true,
-          fillColor: fillColor,
-        ),
-      );
-    }
-
-    return FutureBuilder<SkillRubric?>(
-      future: SkillRubricsFunctions.loadForCourse(course.id!),
-      builder: (context, snapshot) {
-        final rubric = snapshot.data;
-        final dimensions = rubric?.dimensions
-                .map(
-                  (d) => SkillAssessmentDimension(
-                    id: d.id,
-                    name: d.name,
-                    degree: 0,
-                    maxDegrees: d.degrees.length,
-                  ),
-                )
-                .toList() ??
-            [];
-        return CustomPaint(
-          size: Size.square(size),
-          painter: _RadarPainter(
-            dimensions: dimensions,
-            mainColor: mainColor,
-            mainLineWidth: mainLineWidth,
-            supportColor: supportColor,
-            supportLineWidth: supportLineWidth,
-            showLabels: showLabels,
-            drawPolygon: false,
-            fillColor: fillColor,
-          ),
-        );
-      },
+    dims ??= [];
+    return CustomPaint(
+      size: Size.square(size),
+      painter: _RadarPainter(
+        dimensions: dims!,
+        mainColor: mainColor,
+        mainLineWidth: mainLineWidth,
+        supportColor: supportColor,
+        supportLineWidth: supportLineWidth,
+        showLabels: showLabels,
+        drawPolygon: polygon,
+        fillColor: fillColor,
+      ),
     );
   }
 }

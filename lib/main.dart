@@ -48,6 +48,7 @@ import 'package:social_learning/ui_foundation/session_host_page.dart';
 import 'package:social_learning/ui_foundation/session_student_page.dart';
 import 'package:social_learning/ui_foundation/sign_in_page.dart';
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
+import 'package:social_learning/ui_foundation/create_skill_assessment_page.dart';
 
 import 'firebase_options.dart';
 import 'ui_foundation/profile_page.dart';
@@ -173,6 +174,7 @@ class SocialLearningApp extends StatelessWidget {
         '/code_of_conduct': (context) => const CodeOfConductPage(),
         '/instructor_dashboard': (context) => const InstructorDashboardPage(),
         '/instructor_clipboard': (context) => const InstructorClipboardPage(),
+        '/create_skill_assessment': (context) => const CreateSkillAssessmentPage(),
         '/course_generation': (context) => const CourseGenerationPage(),
         '/course_generation_review': (context) =>
             const CourseGenerationReviewPage(),

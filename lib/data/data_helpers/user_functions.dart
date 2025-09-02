@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:collection/collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
@@ -9,6 +10,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/practice_record.dart';
+import 'package:social_learning/data/skill_assessment.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
@@ -538,6 +540,31 @@ class UserFunctions {
       await launchUrl(url);
     } else {
       throw 'Could not launch $url';
+    }
+  }
+
+  static Future<void> updateCourseSkillAssessment({required User user, required String courseId, required List<SkillAssessmentDimension> dimensions,}) async {
+    final existing = user.courseSkillAssessments?.firstWhereOrNull((c) => c.courseId.id == courseId);
+    if (existing != null) {
+      await docRef('users', user.id).update({
+        'courseSkillAssessments': FieldValue.arrayRemove([{
+          'courseId': existing.courseId,
+          'dimensions': existing.dimensions.map((e) => e.toMap()).toList(),
+        }]),
+      });
+    }
+    final courseRef = docRef('courses', courseId);
+    await docRef('users', user.id).update({
+      'courseSkillAssessments': FieldValue.arrayUnion([{
+        'courseId': courseRef,
+        'dimensions': dimensions.map((e) => e.toMap()).toList(),
+      }]),
+    });
+    if (existing != null) {
+      existing.dimensions..clear()..addAll(dimensions);
+    } else {
+      user.courseSkillAssessments ??= [];
+      user.courseSkillAssessments!.add(CourseSkillAssessment(courseRef, dimensions));
     }
   }
 
