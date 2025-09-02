@@ -36,7 +36,7 @@ public class OpenAiClientImpl implements OpenAiClient {
         // 1) Start the builder with model & sampling params :contentReference[oaicite:1]{index=1}
         var builder = ChatCompletionCreateParams.builder()
                 .model(config.model())
-                .maxTokens(config.maxTokens())
+                .maxCompletionTokens(config.maxTokens())
                 .temperature(config.temperature())
                 .topP(config.topP())
                 .presencePenalty(config.presencePenalty())
