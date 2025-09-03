@@ -50,10 +50,9 @@ class SessionHostState extends State<SessionHostPage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(
-                enableCourseLoadingGuard: true,
-                Consumer2<OrganizerSessionState, LibraryState>(
-                    builder: (context, organizerSessionState, libraryState, child) {
+            child: CustomUiConstants.framePage(enableCourseLoadingGuard: true,
+                Consumer2<OrganizerSessionState, LibraryState>(builder:
+                    (context, organizerSessionState, libraryState, child) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -63,15 +62,15 @@ class SessionHostState extends State<SessionHostPage> {
                   CustomUiConstants.getTextPadding(Text(
                       '${organizerSessionState.currentSession?.participantCount} Participants',
                       style: CustomTextStyles.subHeadline)),
-                  _createParticipantTable(
-                      organizerSessionState, libraryState),
+                  _createParticipantTable(organizerSessionState, libraryState),
                   // Align(
                   //     alignment: Alignment.centerRight,
                   //     child: TextButton(
                   //         onPressed: () =>
                   //             SessionPairingAlgorithmTest().testAll(),
                   //         child: const Text('Test'))),
-                  _createPairingTable(organizerSessionState, libraryState),
+                  _createPairingTable(
+                      context, organizerSessionState, libraryState),
                 ],
               );
             }))));
@@ -200,12 +199,28 @@ class SessionHostState extends State<SessionHostPage> {
     }, children: tableRows);
   }
 
-  Table _createPairingTable(
+  Widget _createPairingTable(BuildContext context,
       OrganizerSessionState organizerSessionState, LibraryState libraryState) {
-    List<TableRow> tableRows = <TableRow>[];
-
     var roundNumberToSessionPairing =
         organizerSessionState.roundNumberToSessionPairing;
+
+    if (roundNumberToSessionPairing.isEmpty) {
+      int studentCount = organizerSessionState.sessionParticipants
+          .where((p) => !p.isInstructor && p.isActive)
+          .length;
+      String message;
+      if (studentCount == 0) {
+        message = 'Waiting for students to sign in.';
+      } else {
+        message =
+            'Students have started to sign in. You can start the session by tapping the default action button in the bottom right to create the first round of pairings. Wait until all students have signed in before doing so.';
+      }
+      return CustomUiConstants.getTextPadding(
+          Text(message, style: CustomTextStyles.getBody(context)));
+    }
+
+    List<TableRow> tableRows = <TableRow>[];
+
     List<int> sortedRounds = roundNumberToSessionPairing.keys.toList()..sort();
     sortedRounds = sortedRounds.reversed.toList();
 
