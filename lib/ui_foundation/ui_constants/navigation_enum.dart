@@ -29,6 +29,7 @@ enum NavigationEnum {
   instructorDashBoard('/instructor_dashboard'),
   instructorClipboard('/instructor_clipboard'),
   createSkillAssessment('/create_skill_assessment'),
+  viewSkillAssessment('/view_skill_assessment'),
   courseGeneration('/course_generation'),
   courseGenerationReview('/course_generation_review'),
   courseDesignerIntro('/course_designer_intro'),
