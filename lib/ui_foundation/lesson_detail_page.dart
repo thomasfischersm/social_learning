@@ -412,6 +412,7 @@ class LessonDetailState extends State<LessonDetailPage> {
         builder: (context) {
           return AlertDialog(
             title: const Text("Record Lesson"),
+            scrollable: true,
             actions: [
               TextButton(
                 onPressed: () {
