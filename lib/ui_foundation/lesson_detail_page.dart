@@ -901,10 +901,9 @@ class RecordDialogContent extends StatefulWidget {
 
 class RecordDialogState extends State<RecordDialogContent> {
   Lesson lesson;
-  List<User>? _students;
+  User? _selectedStudent;
   bool _isReadyToGraduate = false;
   List<bool> _graduationRequirements = [];
-  TextEditingController textFieldController = TextEditingController();
 
   RecordDialogState(this.lesson) {
     if (lesson.graduationRequirements != null) {
@@ -915,9 +914,10 @@ class RecordDialogState extends State<RecordDialogContent> {
 
   @override
   Widget build(BuildContext context) {
-    if (_students?.length == 1) {
+    if (_selectedStudent != null) {
       widget.onUserSelected(
-          _students![0], _isReadyToGraduate && _checkGraduationRequirements());
+          _selectedStudent!,
+          _isReadyToGraduate && _checkGraduationRequirements());
     } else {
       widget.onUserSelected(
           null, _isReadyToGraduate && _checkGraduationRequirements());
@@ -947,66 +947,7 @@ class RecordDialogState extends State<RecordDialogContent> {
                     Text('Learner:', style: CustomTextStyles.getBody(context))),
             Padding(
                 padding: const EdgeInsets.all(4),
-                child: Column(children: [
-                  TextField(
-                    style: CustomTextStyles.getBody(context),
-                    onChanged: (value) async {
-                      var students =
-                          await UserFunctions.findUsersByPartialDisplayName(
-                              value, 10);
-                      setState(() {
-                        _students = students;
-                      });
-                    },
-                    controller: textFieldController,
-                    decoration: const InputDecoration(
-                        hintText: 'Start typing the name.'),
-                  ),
-                  SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: ListView.builder(
-                        itemCount: _students?.length ?? 0,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          var profileFireStoragePath =
-                              _students![index].profileFireStoragePath;
-                          return InkWell(
-                              onTap: () {
-                                setState(() {
-                                  _students = [_students![index]];
-                                });
-                              },
-                              child: Container(
-                                  color: _students?.length == 1
-                                      ? Colors.blue.withOpacity(0.3)
-                                      : Colors.transparent,
-                                  padding:
-                                      const EdgeInsets.only(bottom: 2, top: 2),
-                                  child: Row(
-                                    children: [
-                                      if (profileFireStoragePath != null)
-                                        Expanded(
-                                            flex: 1,
-                                            child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 4),
-                                                child: AspectRatio(
-                                                    aspectRatio: 1,
-                                                    child: ProfileImageWidgetV2
-                                                        .fromUser(_students![
-                                                            index])))),
-                                      Expanded(
-                                          flex: 3,
-                                          child: Text(
-                                              _students![index].displayName,
-                                              style: CustomTextStyles.getBody(
-                                                  context))),
-                                    ],
-                                  )));
-                        },
-                      ))
-                ])),
+                child: SizedBox(width: 200, child: _buildLearnerAutocomplete())),
           ]),
         ]),
         Column(
@@ -1028,6 +969,98 @@ class RecordDialogState extends State<RecordDialogContent> {
           ],
         )
       ],
+    );
+  }
+
+  Widget _buildLearnerAutocomplete() {
+    return Autocomplete<User>(
+      displayStringForOption: (user) => user.displayName,
+      optionsBuilder: (TextEditingValue textEditingValue) async {
+        if (textEditingValue.text.isEmpty) {
+          return const Iterable<User>.empty();
+        }
+        return await UserFunctions.findUsersByPartialDisplayName(
+            textEditingValue.text, 10);
+      },
+      fieldViewBuilder: (context, textController, focusNode, onFieldSubmitted) {
+        if (_selectedStudent != null) {
+          return InkWell(
+              onTap: () {
+                setState(() {
+                  _selectedStudent = null;
+                  textController.clear();
+                });
+                focusNode.requestFocus();
+              },
+              child: Row(
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: AspectRatio(
+                              aspectRatio: 1,
+                              child: ProfileImageWidgetV2.fromUser(
+                                  _selectedStudent!)))),
+                  Expanded(
+                      flex: 3,
+                      child: Text(_selectedStudent!.displayName,
+                          style: CustomTextStyles.getBody(context))),
+                ],
+              ));
+        }
+        return TextField(
+          controller: textController,
+          focusNode: focusNode,
+          style: CustomTextStyles.getBody(context),
+          decoration:
+              const InputDecoration(hintText: 'Start typing the name.'),
+        );
+      },
+      optionsViewBuilder: (context, onSelected, options) {
+        return Align(
+            alignment: Alignment.topLeft,
+            child: Material(
+                elevation: 4,
+                child: SizedBox(
+                    width: 200,
+                    height: 200,
+                    child: ListView.builder(
+                        itemCount: options.length,
+                        itemBuilder: (context, index) {
+                          final user = options.elementAt(index);
+                          var profileFireStoragePath =
+                              user.profileFireStoragePath;
+                          return InkWell(
+                              onTap: () => onSelected(user),
+                              child: Container(
+                                  color: Colors.transparent,
+                                  padding:
+                                      const EdgeInsets.only(bottom: 2, top: 2),
+                                  child: Row(children: [
+                                    if (profileFireStoragePath != null)
+                                      Expanded(
+                                          flex: 1,
+                                          child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 4),
+                                              child: AspectRatio(
+                                                  aspectRatio: 1,
+                                                  child: ProfileImageWidgetV2
+                                                      .fromUser(user)))),
+                                    Expanded(
+                                        flex: 3,
+                                        child: Text(user.displayName,
+                                            style: CustomTextStyles.getBody(
+                                                context))),
+                                  ])));
+                        }))));
+      },
+      onSelected: (User selection) {
+        setState(() {
+          _selectedStudent = selection;
+        });
+      },
     );
   }
 
