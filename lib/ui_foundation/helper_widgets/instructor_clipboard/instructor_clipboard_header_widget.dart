@@ -86,30 +86,32 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
                       return Padding(
                         padding: const EdgeInsets.only(right: 12),
                         child: GestureDetector(
-                          onTap: () {
-                            ViewSkillAssessmentPageArgument.navigateTo(
-                                context, student.uid);
-                          },
-                          child: SizedBox(width: 70, child:Stack(
-                            clipBehavior: Clip.none,
-                            children: [
-                              RadarWidget(
-                                user: student,
-                                size: 64,
-                                showLabels: false,
+                            onTap: () {
+                              ViewSkillAssessmentPageArgument.navigateTo(
+                                  context, student.uid);
+                            },
+                            child: SizedBox(
+                              width: 70,
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  RadarWidget(
+                                      user: student,
+                                      size: 64,
+                                      showLabels: false,
+                                      fillColor: Colors.blue.withOpacity(0.3)),
+                                  const Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Icon(
+                                      Icons.edit,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Icon(
-                                  Icons.edit,
-                                  size: 16,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),)
-                        ),
+                            )),
                       );
                     },
                   ),
