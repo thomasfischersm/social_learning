@@ -10,6 +10,7 @@ import 'package:social_learning/state/firestore_subscription/session_participant
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
 
 class StudentSessionState extends ChangeNotifier {
   get isInitialized => _sessionSubscription.isInitialized;
@@ -91,16 +92,9 @@ class StudentSessionState extends ChangeNotifier {
     }
 
     print('Checking active session for user ${currentUser.id}');
-    var userIdRef = FirebaseFirestore.instance.doc('/users/${currentUser.id}');
-    FirebaseFirestore.instance
-        .collection('sessionParticipants')
-        .where('participantId', isEqualTo: userIdRef)
-        .where('isActive', isEqualTo: true)
-        .get()
-        .then((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        var sessionParticipant =
-            SessionParticipant.fromSnapshot(snapshot.docs.first);
+    SessionParticipantFunctions.findActiveForUser(currentUser.id)
+        .then((sessionParticipant) {
+      if (sessionParticipant != null) {
         print(
             'Trying to automatically log into session ${sessionParticipant.sessionId.id}');
         if (sessionParticipant.courseId.id == currentCourse?.id) {
@@ -109,9 +103,8 @@ class StudentSessionState extends ChangeNotifier {
           _resetSession();
         }
       }
-    }).onError((error, stackTrace) {
-      print(
-          'Error getting active participants for the current session: $error');
+    }).catchError((error) {
+      print('Error getting active participants for the current session: $error');
       _resetSession();
     });
   }
@@ -120,8 +113,8 @@ class StudentSessionState extends ChangeNotifier {
     _sessionSubscription.resubscribe(() => '/sessions/$sessionId');
 
     _sessionParticipantsSubscription.resubscribe((collectionReference) =>
-        collectionReference.where('sessionId',
-            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
+        SessionParticipantFunctions.queryBySessionId(
+            collectionReference, sessionId));
 
     _sessionPairingSubscription.resubscribe((collectionReference) =>
         collectionReference.where('sessionId',
