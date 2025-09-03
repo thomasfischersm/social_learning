@@ -213,10 +213,16 @@ class SessionHostState extends State<SessionHostPage> {
         message = 'Waiting for students to sign in.';
       } else {
         message =
-            'Students have started to sign in. You can start the session by tapping the default action button in the bottom right to create the first round of pairings. Wait until all students have signed in before doing so.';
+            'Wait for all students to sign in.\n\nThen, click the button at the bottom right to pair the first round.';
       }
-      return CustomUiConstants.getTextPadding(
-          Text(message, style: CustomTextStyles.getBody(context)));
+      return Padding(
+          padding: EdgeInsets.only(top: 32),
+          child: Center(
+              child: CustomUiConstants.getTextPadding(Text(
+            message,
+            style: CustomTextStyles.getBody(context),
+            textAlign: TextAlign.center,
+          ))));
     }
 
     List<TableRow> tableRows = <TableRow>[];
