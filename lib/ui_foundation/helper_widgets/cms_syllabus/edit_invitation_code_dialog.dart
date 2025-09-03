@@ -21,16 +21,16 @@ class EditInvitationCodeDialog extends StatelessWidget {
         if (value == null || value.trim().length < 3) {
           return 'Code must be at least 3 characters';
         }
+        if (libraryState.availableCourses.any((course) =>
+            (course.invitationCode ?? '').toLowerCase() ==
+                value.trim().toLowerCase() &&
+            course.id != libraryState.selectedCourse?.id)) {
+          return 'Invitation code already exists';
+        }
         return null;
       },
-      (newCode) async {
-        if (await libraryState.doesInvitationCodeExist(newCode)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invitation code already exists')),
-          );
-          return;
-        }
-        libraryState.updateInvitationCode(newCode);
+      (newCode) {
+        libraryState.updateInvitationCode(newCode.trim());
       },
     );
   }

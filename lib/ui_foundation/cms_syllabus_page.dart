@@ -13,7 +13,8 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/edit_invitation_code_dialog.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/cms_syllabus/edit_invitation_code_dialog.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/cms_syllabus/edit_course_title_dialog.dart';
 
 class CmsSyllabusPage extends StatefulWidget {
   const CmsSyllabusPage({super.key});
@@ -62,9 +63,31 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                           child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CustomUiConstants.getTextPadding(Text(
-                            '${libraryState.selectedCourse?.title} Curriculum',
-                            style: CustomTextStyles.headline,
+                          CustomUiConstants.getTextPadding(Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  '${libraryState.selectedCourse?.title} Curriculum',
+                                  style: CustomTextStyles.headline,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.edit, size: 20, color: Colors.grey),
+                                tooltip: 'Edit course title',
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (_) => EditCourseTitleDialog(
+                                            currentTitle: libraryState
+                                                    .selectedCourse?.title ??
+                                                '',
+                                          ));
+                                },
+                              )
+                            ],
                           )),
                           if (libraryState.selectedCourse?.invitationCode !=
                               null)
@@ -76,7 +99,8 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                                   style: CustomTextStyles.getBody(context),
                                 ),
                                 IconButton(
-                                    icon: const Icon(Icons.edit, size: 20),
+                                    icon: const Icon(Icons.edit,
+                                        size: 20, color: Colors.grey),
                                     tooltip: 'Edit invitation code',
                                     onPressed: () {
                                       showDialog(
