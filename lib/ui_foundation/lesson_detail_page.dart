@@ -905,11 +905,23 @@ class RecordDialogState extends State<RecordDialogContent> {
   bool _isReadyToGraduate = false;
   List<bool> _graduationRequirements = [];
   final GlobalKey _learnerFieldKey = GlobalKey();
+  double? _learnerFieldWidth;
 
   RecordDialogState(this.lesson) {
     if (lesson.graduationRequirements != null) {
       _graduationRequirements =
           List.filled(lesson.graduationRequirements!.length, false);
+    }
+  }
+
+  void _updateLearnerFieldWidth() {
+    final context = _learnerFieldKey.currentContext;
+    if (context == null) return;
+    final newWidth = context.size?.width;
+    if (newWidth != null && newWidth != _learnerFieldWidth) {
+      setState(() {
+        _learnerFieldWidth = newWidth;
+      });
     }
   }
 
@@ -993,6 +1005,9 @@ class RecordDialogState extends State<RecordDialogContent> {
   }
 
   Widget _buildLearnerAutocomplete() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateLearnerFieldWidth();
+    });
     return Autocomplete<User>(
       displayStringForOption: (user) => user.displayName,
       optionsBuilder: (TextEditingValue textEditingValue) async {
@@ -1039,16 +1054,16 @@ class RecordDialogState extends State<RecordDialogContent> {
                 const InputDecoration(hintText: 'Start typing the name.'),
           );
         }
-        return SizedBox(key: _learnerFieldKey, width: double.infinity, child: child);
+        return SizedBox(
+            key: _learnerFieldKey, width: double.infinity, child: child);
       },
       optionsViewBuilder: (context, onSelected, options) {
-        final width = _learnerFieldKey.currentContext?.size?.width ?? 200;
         return Align(
             alignment: Alignment.topLeft,
             child: Material(
                 elevation: 4,
                 child: SizedBox(
-                    width: width,
+                    width: _learnerFieldWidth,
                     height: 200,
                     child: ListView.builder(
                         itemCount: options.length,
@@ -1073,7 +1088,7 @@ class RecordDialogState extends State<RecordDialogContent> {
                                         child: Text(user.displayName,
                                             style: CustomTextStyles.getBody(
                                                 context))),
-                                  ])));
+                                  ]))));
                         }))));
       },
       onSelected: (User selection) {
