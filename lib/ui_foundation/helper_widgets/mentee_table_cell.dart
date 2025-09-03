@@ -18,8 +18,18 @@ class MenteeTableCell extends UserTableCell {
 
   @override
   List<DropdownMenuEntry<User>> getSelectableUsers() {
+    // Derive the set of inactive user UIDs.
+    Set<String> inactiveUserUids =
+        organizerSessionState.sessionParticipants
+            .where((participant) => !participant.isActive)
+            .map((participant) => participant.participantUid)
+            .toSet();
+
     // Get all users.
     List<User> users = List.of(organizerSessionState.participantUsers);
+
+    // Remove inactive users.
+    users.removeWhere((user) => inactiveUserUids.contains(user.uid));
 
     // Remove users that are already in pairings.
     List<SessionPairing>? currentRound = organizerSessionState.lastRound;
