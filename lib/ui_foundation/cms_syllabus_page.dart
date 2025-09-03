@@ -28,8 +28,9 @@ class CmsSyllabusPage extends StatefulWidget {
 class CmsSyllabusState extends State<CmsSyllabusPage> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<LibraryState>(builder: (context, libraryState, child) {
-      return Scaffold(
+    return Consumer<LibraryState>(
+      builder: (context, libraryState, child) {
+        return Scaffold(
           appBar: LearningLabAppBar(
             title: '${libraryState.selectedCourse?.title} Curriculum',
             actions: InstructorNavActions.createActions(context),
@@ -46,24 +47,25 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
               textAlign: TextAlign.center,
             ),
           ),
-        ),
-        body: Align(
-          alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: CustomUiConstants.framePage(
               enableCreatorGuard: true,
               enableCourseLoadingGuard: true,
-                Consumer<StudentState>(
-                    builder: (context, studentState, child) {
+              Consumer<StudentState>(
+                builder: (context, studentState, child) {
                   return OneTimeBanner(
-                      prefsKey: 'instructorDashboardHint',
-                      message:
-                          'Tap the chart icon above to open your Instructor Dashboard.',
-                      leading: Icon(Icons.bar_chart, color: Colors.blue),
-                      child: SingleChildScrollView(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomUiConstants.getTextPadding(Row(
+                    prefsKey: 'instructorDashboardHint',
+                    message:
+                        'Tap the chart icon above to open your Instructor Dashboard.',
+                    leading:
+                        const Icon(Icons.bar_chart, color: Colors.blue),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Flexible(
@@ -74,24 +76,28 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                                 ),
                               ),
                               IconButton(
-                                icon:
-                                    const Icon(Icons.edit, size: 20, color: Colors.grey),
+                                icon: const Icon(Icons.edit,
+                                    size: 20, color: Colors.grey),
                                 tooltip: 'Edit course title',
                                 onPressed: () {
                                   showDialog(
                                       context: context,
                                       builder: (_) => EditCourseTitleDialog(
-                                            currentTitle: libraryState
-                                                    .selectedCourse?.title ??
-                                                '',
+                                            currentTitle:
+                                                libraryState.selectedCourse
+                                                        ?.title ??
+                                                    '',
                                           ));
                                 },
                               )
                             ],
-                          )),
-                          if (libraryState.selectedCourse?.invitationCode !=
-                              null)
-                            CustomUiConstants.getTextPadding(Row(
+                          ),
+                        ),
+                        if (libraryState.selectedCourse?.invitationCode !=
+                            null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
@@ -105,7 +111,8 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                                     onPressed: () {
                                       showDialog(
                                           context: context,
-                                          builder: (_) => EditInvitationCodeDialog(
+                                          builder: (_) =>
+                                              EditInvitationCodeDialog(
                                                 currentCode: libraryState
                                                         .selectedCourse
                                                         ?.invitationCode ??
@@ -113,22 +120,29 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                                               ));
                                     })
                               ],
-                            )),
-                          generateLevelList(context, libraryState),
-                          InkWell(
-                              onTap: () {
-                                _addLevel(context, libraryState);
-                              },
-                              child: Text('Add level',
-                                  style: CustomTextStyles.getLinkNoUnderline(
-                                      context))),
-                          _generateUnattachedLessons(context, libraryState),
-                          CustomUiConstants.getGeneralFooter(context)
-                        ],
-                      )));
-                })),
-        ));
-  });
+                            ),
+                          ),
+                        generateLevelList(context, libraryState),
+                        InkWell(
+                            onTap: () {
+                              _addLevel(context, libraryState);
+                            },
+                            child: Text('Add level',
+                                style:
+                                    CustomTextStyles.getLinkNoUnderline(
+                                        context))),
+                        _generateUnattachedLessons(context, libraryState),
+                        CustomUiConstants.getGeneralFooter(context)
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget generateLevelList(BuildContext context, LibraryState libraryState) {
