@@ -90,12 +90,12 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
                             ViewSkillAssessmentPageArgument.navigateTo(
                                 context, student.uid);
                           },
-                          child: Stack(
+                          child: SizedBox(width: 70, child:Stack(
                             clipBehavior: Clip.none,
                             children: [
                               RadarWidget(
                                 user: student,
-                                size: 48,
+                                size: 64,
                                 showLabels: false,
                               ),
                               const Positioned(
@@ -108,7 +108,7 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
                                 ),
                               ),
                             ],
-                          ),
+                          ),)
                         ),
                       );
                     },
