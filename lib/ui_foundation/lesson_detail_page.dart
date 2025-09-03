@@ -979,7 +979,8 @@ class RecordDialogState extends State<RecordDialogContent> {
   }
 
   Widget _buildLearnerAutocomplete() {
-    return Autocomplete<User>(
+    return LayoutBuilder(builder: (context, constraints) {
+      return Autocomplete<User>(
       displayStringForOption: (user) => user.displayName,
       optionsBuilder: (TextEditingValue textEditingValue) async {
         if (textEditingValue.text.isEmpty) {
@@ -1028,7 +1029,7 @@ class RecordDialogState extends State<RecordDialogContent> {
             child: Material(
                 elevation: 4,
                 child: SizedBox(
-                    width: 200,
+                    width: constraints.maxWidth,
                     height: 200,
                     child: ListView.builder(
                         itemCount: options.length,
@@ -1038,23 +1039,18 @@ class RecordDialogState extends State<RecordDialogContent> {
                               user.profileFireStoragePath;
                           return InkWell(
                               onTap: () => onSelected(user),
-                              child: Container(
-                                  color: Colors.transparent,
-                                  padding:
-                                      const EdgeInsets.only(bottom: 2, top: 2),
+                              child: Padding(
+                                  padding: const EdgeInsets.all(8),
                                   child: Row(children: [
                                     if (profileFireStoragePath != null)
-                                      Expanded(
-                                          flex: 1,
-                                          child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 4),
-                                              child: AspectRatio(
-                                                  aspectRatio: 1,
-                                                  child: ProfileImageWidgetV2
-                                                      .fromUser(user)))),
+                                      Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 8),
+                                          child: SizedBox.square(
+                                              dimension: 32,
+                                              child: ProfileImageWidgetV2
+                                                  .fromUser(user))),
                                     Expanded(
-                                        flex: 3,
                                         child: Text(user.displayName,
                                             style: CustomTextStyles.getBody(
                                                 context))),
@@ -1067,6 +1063,7 @@ class RecordDialogState extends State<RecordDialogContent> {
         });
       },
     );
+    });
   }
 
   List<Row> _generateGraduationRequirementsChecks() {
