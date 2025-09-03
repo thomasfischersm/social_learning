@@ -28,12 +28,14 @@ class ProfileImageWidgetV2 extends StatefulWidget {
   final bool linkToOtherProfile;
   final bool listenForProfileUpdate;
   final bool _useCurrentUser;
+  final bool enableDoubleTapSwitch;
 
   const ProfileImageWidgetV2._(this._user, this._userRef,
       {super.key,
       this.maxRadius,
       this.linkToOtherProfile = false,
       this.listenForProfileUpdate = false,
+      this.enableDoubleTapSwitch = true,
       bool useCurrentUser = false})
       : _useCurrentUser = useCurrentUser;
 
@@ -42,12 +44,14 @@ class ProfileImageWidgetV2 extends StatefulWidget {
       {Key? key,
       double? maxRadius,
       bool linkToOtherProfile = false,
-      bool listenForProfileUpdate = false}) {
+      bool listenForProfileUpdate = false,
+      bool enableDoubleTapSwitch = true}) {
     return ProfileImageWidgetV2._(user, null,
         key: key,
         maxRadius: maxRadius,
         linkToOtherProfile: linkToOtherProfile,
-        listenForProfileUpdate: listenForProfileUpdate);
+        listenForProfileUpdate: listenForProfileUpdate,
+        enableDoubleTapSwitch: enableDoubleTapSwitch);
   }
 
   /// Creates a [ProfileImageWidgetV2] from a user document reference.
@@ -55,12 +59,14 @@ class ProfileImageWidgetV2 extends StatefulWidget {
       {Key? key,
       double? maxRadius,
       bool linkToOtherProfile = false,
-      bool listenForProfileUpdate = false}) {
+      bool listenForProfileUpdate = false,
+      bool enableDoubleTapSwitch = true}) {
     return ProfileImageWidgetV2._(null, userRef,
         key: key,
         maxRadius: maxRadius,
         linkToOtherProfile: linkToOtherProfile,
-        listenForProfileUpdate: listenForProfileUpdate);
+        listenForProfileUpdate: listenForProfileUpdate,
+        enableDoubleTapSwitch: enableDoubleTapSwitch);
   }
 
   /// Creates a [ProfileImageWidgetV2] for the currently logged-in user.
@@ -68,12 +74,14 @@ class ProfileImageWidgetV2 extends StatefulWidget {
       {Key? key,
       double? maxRadius,
       bool linkToOtherProfile = false,
-      bool listenForProfileUpdate = false}) {
+      bool listenForProfileUpdate = false,
+      bool enableDoubleTapSwitch = true}) {
     return ProfileImageWidgetV2._(null, null,
         key: key,
         maxRadius: maxRadius,
         linkToOtherProfile: linkToOtherProfile,
         listenForProfileUpdate: listenForProfileUpdate,
+        enableDoubleTapSwitch: enableDoubleTapSwitch,
         useCurrentUser: true);
   }
 
@@ -202,11 +210,8 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
       }
 
       return GestureDetector(
-        onDoubleTap: () {
-          if (_hasSkillRubric) {
-            _toggleRadar();
-          }
-        },
+        onDoubleTap:
+            widget.enableDoubleTapSwitch && _hasSkillRubric ? _toggleRadar : null,
         onTap: widget.linkToOtherProfile ? _goToOtherProfile : null,
         child: avatar,
       );

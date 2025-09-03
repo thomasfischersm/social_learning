@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +18,11 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
+import 'package:social_learning/data/skill_rubric.dart';
+import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/radar_widget.dart';
 
 import '../state/application_state.dart';
 import 'ui_constants/navigation_enum.dart';
@@ -31,6 +38,34 @@ class ProfilePage extends StatefulWidget {
 
 class ProfilePageState extends State<ProfilePage> {
   String? _newDisplayName;
+  bool _hasSkillRubric = false;
+  String? _checkedCourseId;
+
+  Future<void> _checkSkillRubric(Course? course) async {
+    final courseId = course?.id;
+    if (courseId == null) {
+      if (_checkedCourseId != null || _hasSkillRubric) {
+        setState(() {
+          _checkedCourseId = null;
+          _hasSkillRubric = false;
+        });
+      }
+      return;
+    }
+    if (_checkedCourseId == courseId) {
+      return;
+    }
+    _checkedCourseId = courseId;
+    final SkillRubric? rubric =
+        await SkillRubricsFunctions.loadForCourse(courseId);
+    final hasRubric =
+        rubric != null && rubric.dimensions.any((d) => d.degrees.isNotEmpty);
+    if (mounted) {
+      setState(() {
+        _hasSkillRubric = hasRubric;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +87,8 @@ class ProfilePageState extends State<ProfilePage> {
               return const Center(child: CircularProgressIndicator());
             }
 
+            final libraryState = Provider.of<LibraryState>(context);
+            unawaited(_checkSkillRubric(libraryState.selectedCourse));
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -68,35 +105,65 @@ class ProfilePageState extends State<ProfilePage> {
                             child: InkWell(
                               onTap: () => _pickProfileImage(context),
                               child: Stack(children: [
-                                ProfileImageWidgetV2.fromUser(currentUser),
-                                Positioned(
+                                ProfileImageWidgetV2.fromUser(currentUser,
+                                    enableDoubleTapSwitch: false),
+                                const Positioned(
                                     bottom: 0,
                                     right: 0,
                                     child: Icon(Icons.edit, color: Colors.grey))
                               ]),
                             ))),
-                    const SizedBox(width: 4),
-                    Expanded(
-                        flex: 1,
-                        child: Column(
-                          children: [
-                            InkWell(
-                                onTap: () => showDisplayNameDialog(
-                                    context, applicationState),
-                                child: Row(children: [
-                                  Text(
-                                    applicationState.userDisplayName ??
-                                        '<pick a display name>',
-                                    style: CustomTextStyles.subHeadline,
+                    if (_hasSkillRubric) ...[
+                      const SizedBox(width: 4),
+                      Expanded(
+                          flex: 1,
+                          child: GestureDetector(
+                            onTap: () {
+                              // TODO: Navigate to skill assessments page.
+                            },
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final size =
+                                    constraints.biggest.shortestSide;
+                                return Stack(children: [
+                                  Center(
+                                    child: SizedBox(
+                                        width: size,
+                                        height: size,
+                                        child: RadarWidget(
+                                          user: currentUser,
+                                          size: size,
+                                          showLabels: false,
+                                        )),
                                   ),
-                                  const SizedBox(width: 4),
-                                  Icon(Icons.edit, color: Colors.grey),
-                                ])),
-                            ProfileTextEditor(applicationState)
-                          ],
-                        )),
+                                  const Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: Icon(Icons.remove_red_eye))
+                                ]);
+                              },
+                            ),
+                          ))
+                    ]
                   ],
                 ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: InkWell(
+                      onTap: () =>
+                          showDisplayNameDialog(context, applicationState),
+                      child: Row(children: [
+                        Text(
+                          applicationState.userDisplayName ??
+                              '<pick a display name>',
+                          style: CustomTextStyles.subHeadline,
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.edit, color: Colors.grey),
+                      ])),
+                ),
+                ProfileTextEditor(applicationState),
                 const SizedBox(height: 8),
                 Text(
                   'Settings',
