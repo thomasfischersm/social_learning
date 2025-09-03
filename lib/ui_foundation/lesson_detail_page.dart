@@ -904,6 +904,7 @@ class RecordDialogState extends State<RecordDialogContent> {
   User? _selectedStudent;
   bool _isReadyToGraduate = false;
   List<bool> _graduationRequirements = [];
+  final GlobalKey _learnerFieldKey = GlobalKey();
 
   RecordDialogState(this.lesson) {
     if (lesson.graduationRequirements != null) {
@@ -947,7 +948,7 @@ class RecordDialogState extends State<RecordDialogContent> {
                     Text('Learner:', style: CustomTextStyles.getBody(context))),
             Padding(
                 padding: const EdgeInsets.all(4),
-                child: SizedBox(width: 200, child: _buildLearnerAutocomplete())),
+                child: _buildLearnerAutocomplete()),
           ]),
         ]),
         Column(
@@ -982,9 +983,11 @@ class RecordDialogState extends State<RecordDialogContent> {
         return await UserFunctions.findUsersByPartialDisplayName(
             textEditingValue.text, 10);
       },
-      fieldViewBuilder: (context, textController, focusNode, onFieldSubmitted) {
+      fieldViewBuilder:
+          (context, textController, focusNode, onFieldSubmitted) {
+        Widget child;
         if (_selectedStudent != null) {
-          return InkWell(
+          child = InkWell(
               onTap: () {
                 setState(() {
                   _selectedStudent = null;
@@ -1008,22 +1011,25 @@ class RecordDialogState extends State<RecordDialogContent> {
                           style: CustomTextStyles.getBody(context))),
                 ],
               ));
+        } else {
+          child = TextField(
+            controller: textController,
+            focusNode: focusNode,
+            style: CustomTextStyles.getBody(context),
+            decoration:
+                const InputDecoration(hintText: 'Start typing the name.'),
+          );
         }
-        return TextField(
-          controller: textController,
-          focusNode: focusNode,
-          style: CustomTextStyles.getBody(context),
-          decoration:
-              const InputDecoration(hintText: 'Start typing the name.'),
-        );
+        return SizedBox(key: _learnerFieldKey, width: double.infinity, child: child);
       },
       optionsViewBuilder: (context, onSelected, options) {
+        final width = _learnerFieldKey.currentContext?.size?.width ?? 0;
         return Align(
             alignment: Alignment.topLeft,
             child: Material(
                 elevation: 4,
                 child: SizedBox(
-                    width: 200,
+                    width: width,
                     height: 200,
                     child: ListView.builder(
                         itemCount: options.length,
@@ -1033,28 +1039,23 @@ class RecordDialogState extends State<RecordDialogContent> {
                               user.profileFireStoragePath;
                           return InkWell(
                               onTap: () => onSelected(user),
-                              child: Container(
-                                  color: Colors.transparent,
-                                  padding:
-                                      const EdgeInsets.only(bottom: 2, top: 2),
+                              child: Padding(
+                                  padding: const EdgeInsets.all(8),
                                   child: Row(children: [
                                     if (profileFireStoragePath != null)
-                                      Expanded(
-                                          flex: 1,
-                                          child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 4),
-                                              child: AspectRatio(
-                                                  aspectRatio: 1,
-                                                  child: ProfileImageWidgetV2
-                                                      .fromUser(user)))),
+                                      Padding(
+                                          padding:
+                                              const EdgeInsets.only(right: 8),
+                                          child: SizedBox.square(
+                                              dimension: 32,
+                                              child: ProfileImageWidgetV2
+                                                  .fromUser(user))),
                                     Expanded(
-                                        flex: 3,
                                         child: Text(user.displayName,
                                             style: CustomTextStyles.getBody(
                                                 context))),
-                                  ])));
-                        }))));
+                                  ]))));
+                        })))));
       },
       onSelected: (User selection) {
         setState(() {
