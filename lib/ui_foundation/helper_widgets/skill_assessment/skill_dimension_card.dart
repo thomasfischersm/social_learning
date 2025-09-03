@@ -48,10 +48,15 @@ class SkillDimensionCard extends StatelessWidget {
                     style: OutlinedButton.styleFrom(
                       backgroundColor: color,
                       foregroundColor: isSelected ? Colors.white : null,
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
                     onPressed: () => onDegreeSelected(degree.degree),
                     child: Text(
                       degree.name,
+                      style: Theme.of(context).textTheme.bodySmall,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
