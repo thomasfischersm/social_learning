@@ -163,16 +163,28 @@ public class SkillRubricService {
     }
 
     private String buildInfo(GenerateSkillRubricRequest d) {
-        return "Course title: " + safe(d.title) + "\n" +
-                "Course description: " + safe(d.description) + "\n" +
-                "Topic and focus: " + safe(d.topicAndFocus) + "\n" +
-                "Schedule and duration: " + safe(d.scheduleAndDuration) + "\n" +
-                "Target audience: " + safe(d.targetAudience) + "\n" +
-                "Group size and format: " + safe(d.groupSizeAndFormat) + "\n" +
-                "Location: " + safe(d.location) + "\n" +
-                "How students join: " + safe(d.howStudentsJoin) + "\n" +
-                "Tone and approach: " + safe(d.toneAndApproach) + "\n" +
-                "Anything unusual: " + safe(d.anythingUnusual);
+        StringBuilder sb = new StringBuilder();
+        append(sb, "Course title", d.title);
+        append(sb, "Course description", d.description);
+        append(sb, "Topic and focus", d.topicAndFocus);
+        append(sb, "Schedule and duration", d.scheduleAndDuration);
+        append(sb, "Target audience", d.targetAudience);
+        append(sb, "Group size and format", d.groupSizeAndFormat);
+        append(sb, "Location", d.location);
+        append(sb, "How students join", d.howStudentsJoin);
+        append(sb, "Tone and approach", d.toneAndApproach);
+        append(sb, "Anything unusual", d.anythingUnusual);
+        return sb.toString();
+    }
+
+    private static void append(StringBuilder sb, String label, String value) {
+        String s = safe(value);
+        if (!s.isBlank()) {
+            if (sb.length() > 0) {
+                sb.append("\n");
+            }
+            sb.append(label).append(": ").append(s);
+        }
     }
 
     private static String safe(String s) {
