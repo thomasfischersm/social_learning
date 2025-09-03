@@ -51,14 +51,15 @@ class SessionParticipantsSubscription
 
   void _updateParticipantCount(
       session, List<SessionParticipant> sessionParticipants) {
-    if ((session != null) &&
-        (sessionParticipants.length != session?.participantCount)) {
+    final activeCount =
+        sessionParticipants.where((p) => p.isActive).length;
+    if ((session != null) && (activeCount != session?.participantCount)) {
       // Update the session participant count.
       FirebaseFirestore.instance
           .collection('sessions')
           .doc(session.id)
-          .update({'participantCount': sessionParticipants.length});
-      print('_updateParticipantCount(${sessionParticipants.length}');
+          .update({'participantCount': activeCount});
+      print('_updateParticipantCount($activeCount)');
     }
   }
 
