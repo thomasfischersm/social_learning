@@ -13,6 +13,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/edit_invitation_code_dialog.dart';
 
 class CmsSyllabusPage extends StatefulWidget {
   const CmsSyllabusPage({super.key});
@@ -67,9 +68,28 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                           )),
                           if (libraryState.selectedCourse?.invitationCode !=
                               null)
-                            CustomUiConstants.getTextPadding(Text(
-                                'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
-                                style: CustomTextStyles.getBody(context))),
+                            CustomUiConstants.getTextPadding(Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
+                                  style: CustomTextStyles.getBody(context),
+                                ),
+                                IconButton(
+                                    icon: const Icon(Icons.edit, size: 20),
+                                    tooltip: 'Edit invitation code',
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (_) => EditInvitationCodeDialog(
+                                                currentCode: libraryState
+                                                        .selectedCourse
+                                                        ?.invitationCode ??
+                                                    '',
+                                              ));
+                                    })
+                              ],
+                            )),
                           generateLevelList(context, libraryState),
                           InkWell(
                               onTap: () {

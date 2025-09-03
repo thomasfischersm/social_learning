@@ -488,6 +488,16 @@ class LibraryState extends ChangeNotifier {
     return course;
   }
 
+  Future<void> updateInvitationCode(String newCode) async {
+    var course = selectedCourse;
+    if (course == null) {
+      return;
+    }
+    course.invitationCode = newCode;
+    await CourseFunctions.updateCourse(course.id!, {'invitationCode': newCode});
+    notifyListeners();
+  }
+
   void deleteLevel(Level level) {
     int sortOrder = level.sortOrder;
     var levels = _levels;
