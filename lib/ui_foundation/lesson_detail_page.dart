@@ -1073,8 +1073,8 @@ class RecordDialogState extends State<RecordDialogContent> {
                                         child: Text(user.displayName,
                                             style: CustomTextStyles.getBody(
                                                 context))),
-                                  ]))));
-                        })))));
+                                  ])));
+                        }))));
       },
       onSelected: (User selection) {
         setState(() {

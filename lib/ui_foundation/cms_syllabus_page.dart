@@ -27,84 +27,81 @@ class CmsSyllabusPage extends StatefulWidget {
 class CmsSyllabusState extends State<CmsSyllabusPage> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<LibraryState>(
-        builder: (context, libraryState, child) {
-          return Scaffold(
-        appBar: LearningLabAppBar(
+    return Consumer<LibraryState>(builder: (context, libraryState, child) {
+      return Scaffold(
+          appBar: LearningLabAppBar(
             title: '${libraryState.selectedCourse?.title} Curriculum',
             actions: InstructorNavActions.createActions(context),
           ),
-        bottomNavigationBar: BottomBarV2.build(context),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              Navigator.pushNamed(context, NavigationEnum.cmsLesson.route);
-            });
-          },
-          child: const Text(
-            'Add lesson',
-            textAlign: TextAlign.center,
+          bottomNavigationBar: BottomBarV2.build(context),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                Navigator.pushNamed(context, NavigationEnum.cmsLesson.route);
+              });
+            },
+            child: const Text(
+              'Add lesson',
+              textAlign: TextAlign.center,
+            ),
           ),
-        ),
-        body: Align(
-          alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(
-              enableCreatorGuard: true,
-              enableCourseLoadingGuard: true,
-                Consumer<StudentState>(
-                    builder: (context, studentState, child) {
-                  return OneTimeBanner(
-                      prefsKey: 'instructorDashboardHint',
-                      message:
-                          'Tap the chart icon above to open your Instructor Dashboard.',
-                      leading: Icon(Icons.bar_chart, color: Colors.blue),
-                      child: SingleChildScrollView(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomUiConstants.getTextPadding(Text(
-                            '${libraryState.selectedCourse?.title} Curriculum',
-                            style: CustomTextStyles.headline,
-                          )),
-                          if (libraryState.selectedCourse?.invitationCode !=
-                              null)
-                            CustomUiConstants.getTextPadding(Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
-                                  style: CustomTextStyles.getBody(context),
-                                ),
-                                IconButton(
-                                    icon: const Icon(Icons.edit, size: 20),
-                                    tooltip: 'Edit invitation code',
-                                    onPressed: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (_) => EditInvitationCodeDialog(
-                                                currentCode: libraryState
-                                                        .selectedCourse
-                                                        ?.invitationCode ??
-                                                    '',
-                                              ));
-                                    })
-                              ],
-                            )),
-                          generateLevelList(context, libraryState),
-                          InkWell(
-                              onTap: () {
-                                _addLevel(context, libraryState);
-                              },
-                              child: Text('Add level',
-                                  style: CustomTextStyles.getLinkNoUnderline(
-                                      context))),
-                          _generateUnattachedLessons(context, libraryState),
-                          CustomUiConstants.getGeneralFooter(context)
-                        ],
-                      )));
-                })),
-        ));
-  });
+          body: Align(
+            alignment: Alignment.topCenter,
+            child: CustomUiConstants.framePage(
+                enableCreatorGuard: true, enableCourseLoadingGuard: true,
+                Consumer<StudentState>(builder: (context, studentState, child) {
+              return OneTimeBanner(
+                  prefsKey: 'instructorDashboardHint',
+                  message:
+                      'Tap the chart icon above to open your Instructor Dashboard.',
+                  leading: Icon(Icons.bar_chart, color: Colors.blue),
+                  child: SingleChildScrollView(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomUiConstants.getTextPadding(Text(
+                        '${libraryState.selectedCourse?.title} Curriculum',
+                        style: CustomTextStyles.headline,
+                      )),
+                      if (libraryState.selectedCourse?.invitationCode != null)
+                        CustomUiConstants.getIndentationTextPadding(Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
+                              style: CustomTextStyles.getBody(context),
+                            ),
+                            IconButton(
+                                icon: const Icon(Icons.edit,
+                                    size: 20, color: Colors.grey),
+                                tooltip: 'Edit invitation code',
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (_) => EditInvitationCodeDialog(
+                                            currentCode: libraryState
+                                                    .selectedCourse
+                                                    ?.invitationCode ??
+                                                '',
+                                          ));
+                                })
+                          ],
+                        )),
+                      generateLevelList(context, libraryState),
+                      InkWell(
+                          onTap: () {
+                            _addLevel(context, libraryState);
+                          },
+                          child: Text('Add level',
+                              style: CustomTextStyles.getLinkNoUnderline(
+                                  context))),
+                      _generateUnattachedLessons(context, libraryState),
+                      CustomUiConstants.getGeneralFooter(context)
+                    ],
+                  )));
+            })),
+          ));
+    });
   }
 
   Widget generateLevelList(BuildContext context, LibraryState libraryState) {
@@ -180,7 +177,8 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             child: InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
-                      arguments: CmsLessonDetailArgument.forEditExistingLesson(levelId, lesson.id));
+                      arguments: CmsLessonDetailArgument.forEditExistingLesson(
+                          levelId, lesson.id));
                 },
                 child: CustomUiConstants.getIndentationTextPadding(Text(
                   overflow: TextOverflow.ellipsis,
@@ -235,7 +233,8 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             child: InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
-                      arguments: CmsLessonDetailArgument.forEditExistingLesson(null, lesson.id));
+                      arguments: CmsLessonDetailArgument.forEditExistingLesson(
+                          null, lesson.id));
                 },
                 child: CustomUiConstants.getIndentationTextPadding(Text(
                   lesson.title,
