@@ -110,7 +110,8 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
     final course = libraryState.selectedCourse;
     final currentUser = appState.currentUser;
     final showFab =
-        course != null && currentUser != null && course.creatorId == currentUser.id;
+        course != null && currentUser != null && course.creatorId == currentUser.uid;
+    print('showFab: $showFab course=$course course.creatorId=${course?.creatorId} currentUser.id=${currentUser?.uid}');
 
     return Scaffold(
       appBar: const LearningLabAppBar(title: 'Skill Assessment'),
