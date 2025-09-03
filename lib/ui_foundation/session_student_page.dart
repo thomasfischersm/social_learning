@@ -89,6 +89,7 @@ class SessionStudentState extends State<SessionStudentPage> {
         CustomUiConstants.getTextPadding(Text(
           'Waiting for the instructor to create the first pairing.',
           style: CustomTextStyles.getBody(context),
+          textAlign: TextAlign.center,
         )),
       ]);
     }
