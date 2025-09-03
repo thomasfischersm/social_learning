@@ -112,7 +112,7 @@ class _InventoryTagEditorDialogState extends State<InventoryTagEditorDialog> {
 
           // Edit icon
           IconButton(
-            icon: const Icon(Icons.edit, size: 18),
+            icon: const Icon(Icons.edit, size: 18, color: Colors.grey),
             tooltip: 'Edit name',
             onPressed: () {
               showDialog(

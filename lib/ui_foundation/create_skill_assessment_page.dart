@@ -193,7 +193,7 @@ class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
             onPressed: () {
               NavigationEnum.courseDesignerSkillRubric.navigate(context);
             },
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.edit, color: Colors.grey),
             label: const Text('Create Skill Rubric'),
           ),
         ],

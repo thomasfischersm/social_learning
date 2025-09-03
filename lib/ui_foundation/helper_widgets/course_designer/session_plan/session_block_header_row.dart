@@ -64,7 +64,7 @@ class SessionBlockHeaderRow extends StatelessWidget {
           ),
         ),
       IconButton(
-        icon: const Icon(Icons.edit, size: 20),
+        icon: const Icon(Icons.edit, size: 20, color: Colors.grey),
         tooltip: 'Edit block name',
         onPressed: () => _editBlockName(context),
       ),
