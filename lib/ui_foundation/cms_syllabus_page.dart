@@ -28,23 +28,23 @@ class CmsSyllabusPage extends StatefulWidget {
 class CmsSyllabusState extends State<CmsSyllabusPage> {
   @override
   Widget build(BuildContext context) {
-    return Consumer<LibraryState>(
-        builder: (context, libraryState, child) {
-          return Scaffold(
-        appBar: LearningLabAppBar(
+    return Consumer<LibraryState>(builder: (context, libraryState, child) {
+      return Scaffold(
+          appBar: LearningLabAppBar(
             title: '${libraryState.selectedCourse?.title} Curriculum',
             actions: InstructorNavActions.createActions(context),
           ),
-        bottomNavigationBar: BottomBarV2.build(context),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              Navigator.pushNamed(context, NavigationEnum.cmsLesson.route);
-            });
-          },
-          child: const Text(
-            'Add lesson',
-            textAlign: TextAlign.center,
+          bottomNavigationBar: BottomBarV2.build(context),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                Navigator.pushNamed(context, NavigationEnum.cmsLesson.route);
+              });
+            },
+            child: const Text(
+              'Add lesson',
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
         body: Align(
@@ -204,7 +204,8 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             child: InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
-                      arguments: CmsLessonDetailArgument.forEditExistingLesson(levelId, lesson.id));
+                      arguments: CmsLessonDetailArgument.forEditExistingLesson(
+                          levelId, lesson.id));
                 },
                 child: CustomUiConstants.getIndentationTextPadding(Text(
                   overflow: TextOverflow.ellipsis,
@@ -259,7 +260,8 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
             child: InkWell(
                 onTap: () {
                   Navigator.pushNamed(context, NavigationEnum.cmsLesson.route,
-                      arguments: CmsLessonDetailArgument.forEditExistingLesson(null, lesson.id));
+                      arguments: CmsLessonDetailArgument.forEditExistingLesson(
+                          null, lesson.id));
                 },
                 child: CustomUiConstants.getIndentationTextPadding(Text(
                   lesson.title,
