@@ -916,8 +916,7 @@ class RecordDialogState extends State<RecordDialogContent> {
   @override
   Widget build(BuildContext context) {
     if (_selectedStudent != null) {
-      widget.onUserSelected(
-          _selectedStudent!,
+      widget.onUserSelected(_selectedStudent!,
           _isReadyToGraduate && _checkGraduationRequirements());
     } else {
       widget.onUserSelected(
@@ -930,27 +929,47 @@ class RecordDialogState extends State<RecordDialogContent> {
         CustomUiConstants.getTextPadding(Text(
             'Records that you taught a lesson.',
             style: CustomTextStyles.getBody(context))),
-        Table(columnWidths: const {
-          0: IntrinsicColumnWidth(),
-          1: FlexColumnWidth()
-        }, children: [
-          TableRow(children: [
-            Padding(
-                padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
-                child:
-                    Text('Mentor:', style: CustomTextStyles.getBody(context))),
-            const Padding(padding: EdgeInsets.all(4), child: Text('You')),
-          ]),
-          TableRow(children: [
-            Padding(
-                padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
-                child:
-                    Text('Learner:', style: CustomTextStyles.getBody(context))),
-            Padding(
-                padding: const EdgeInsets.all(4),
-                child: _buildLearnerAutocomplete()),
-          ]),
-        ]),
+        Table(
+            columnWidths: const {
+              0: IntrinsicColumnWidth(),
+              1: FlexColumnWidth()
+            },
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              TableRow(children: [
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
+                    child: Text('Mentor:',
+                        style: CustomTextStyles.getBody(context))),
+                Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Padding(
+                                padding: const EdgeInsets.only(right: 4),
+                                child: AspectRatio(
+                                    aspectRatio: 1,
+                                    child: ProfileImageWidgetV2
+                                        .fromCurrentUser()))),
+                        Expanded(
+                            flex: 3,
+                            child: Text('You',
+                                style: CustomTextStyles.getBody(context))),
+                      ],
+                    )),
+              ]),
+              TableRow(children: [
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
+                    child: Text('Learner:',
+                        style: CustomTextStyles.getBody(context))),
+                Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: _buildLearnerAutocomplete()),
+              ]),
+            ]),
         Column(
           children: _generateGraduationRequirementsChecks(),
         ),
@@ -974,7 +993,8 @@ class RecordDialogState extends State<RecordDialogContent> {
   }
 
   Widget _buildLearnerAutocomplete() {
-    return Autocomplete<User>(
+    return LayoutBuilder(builder: (context, constraints) {
+      return Autocomplete<User>(
       displayStringForOption: (user) => user.displayName,
       optionsBuilder: (TextEditingValue textEditingValue) async {
         if (textEditingValue.text.isEmpty) {
@@ -1029,7 +1049,7 @@ class RecordDialogState extends State<RecordDialogContent> {
             child: Material(
                 elevation: 4,
                 child: SizedBox(
-                    width: width,
+                    width: constraints.maxWidth,
                     height: 200,
                     child: ListView.builder(
                         itemCount: options.length,
@@ -1063,6 +1083,7 @@ class RecordDialogState extends State<RecordDialogContent> {
         });
       },
     );
+    });
   }
 
   List<Row> _generateGraduationRequirementsChecks() {
