@@ -993,8 +993,7 @@ class RecordDialogState extends State<RecordDialogContent> {
   }
 
   Widget _buildLearnerAutocomplete() {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Autocomplete<User>(
+    return Autocomplete<User>(
       displayStringForOption: (user) => user.displayName,
       optionsBuilder: (TextEditingValue textEditingValue) async {
         if (textEditingValue.text.isEmpty) {
@@ -1043,13 +1042,13 @@ class RecordDialogState extends State<RecordDialogContent> {
         return SizedBox(key: _learnerFieldKey, width: double.infinity, child: child);
       },
       optionsViewBuilder: (context, onSelected, options) {
-        final width = _learnerFieldKey.currentContext?.size?.width ?? 0;
+        final width = _learnerFieldKey.currentContext?.size?.width ?? 200;
         return Align(
             alignment: Alignment.topLeft,
             child: Material(
                 elevation: 4,
                 child: SizedBox(
-                    width: constraints.maxWidth,
+                    width: width,
                     height: 200,
                     child: ListView.builder(
                         itemCount: options.length,
@@ -1083,7 +1082,6 @@ class RecordDialogState extends State<RecordDialogContent> {
         });
       },
     );
-    });
   }
 
   List<Row> _generateGraduationRequirementsChecks() {
