@@ -23,7 +23,8 @@ class CreateSkillAssessmentPageArgument {
 
   CreateSkillAssessmentPageArgument(this.studentId, this.studentUid);
 
-  static void navigateTo(BuildContext context, String studentId, String studentUid) {
+  static void navigateTo(
+      BuildContext context, String studentId, String studentUid) {
     Navigator.pushNamed(
       context,
       NavigationEnum.createSkillAssessment.route,
@@ -36,7 +37,8 @@ class CreateSkillAssessmentPage extends StatefulWidget {
   const CreateSkillAssessmentPage({super.key});
 
   @override
-  State<CreateSkillAssessmentPage> createState() => _CreateSkillAssessmentPageState();
+  State<CreateSkillAssessmentPage> createState() =>
+      _CreateSkillAssessmentPageState();
 }
 
 class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
@@ -46,10 +48,12 @@ class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
   final Map<String, int?> _selectedDegrees = {};
   final Map<String, int> _previousDegrees = {};
 
-  String? get _studentId =>
-      (ModalRoute.of(context)?.settings.arguments as CreateSkillAssessmentPageArgument?)?.studentId;
-  String? get _studentUid =>
-      (ModalRoute.of(context)?.settings.arguments as CreateSkillAssessmentPageArgument?)?.studentUid;
+  String? get _studentId => (ModalRoute.of(context)?.settings.arguments
+          as CreateSkillAssessmentPageArgument?)
+      ?.studentId;
+  String? get _studentUid => (ModalRoute.of(context)?.settings.arguments
+          as CreateSkillAssessmentPageArgument?)
+      ?.studentUid;
 
   @override
   void didChangeDependencies() {
@@ -88,7 +92,10 @@ class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
         builder: (context, designerState, libraryState, _) {
           final rubric = designerState.skillRubric;
           final course = libraryState.selectedCourse;
-          if (rubric == null || _student == null || course == null) {
+          if (rubric == null ||
+              _student == null ||
+              course == null ||
+              !_hasValidRubric(rubric)) {
             return const SizedBox.shrink();
           }
           return FloatingActionButton(
@@ -113,6 +120,10 @@ class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
                   padding: EdgeInsets.all(32),
                   child: Center(child: CircularProgressIndicator()),
                 );
+              }
+
+              if (!_hasValidRubric(rubric)) {
+                return _buildNoRubricMessage(context);
               }
 
               final currentDimensions = rubric.dimensions
@@ -159,9 +170,39 @@ class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
     return rubric.dimensions.every((d) => _selectedDegrees[d.id] != null);
   }
 
+  bool _hasValidRubric(SkillRubric? rubric) {
+    return rubric != null &&
+        rubric.dimensions.isNotEmpty &&
+        rubric.dimensions.any((d) => d.degrees.isNotEmpty);
+  }
+
+  Widget _buildNoRubricMessage(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.info_outline, size: 48),
+          const SizedBox(height: 16),
+          const Text(
+            'You have to define a skill rubric first.',
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () {
+              NavigationEnum.courseDesignerSkillRubric.navigate(context);
+            },
+            icon: const Icon(Icons.edit),
+            label: const Text('Create Skill Rubric'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _saveAssessment(SkillRubric rubric, String courseId) async {
-    final instructorUid =
-        context.read<ApplicationState>().currentUser?.uid;
+    final instructorUid = context.read<ApplicationState>().currentUser?.uid;
     if (instructorUid == null || _student == null) return;
 
     final dimensions = rubric.dimensions
@@ -191,8 +232,7 @@ class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
         Navigator.pushReplacementNamed(
           context,
           NavigationEnum.instructorClipboard.route,
-          arguments:
-              InstructorClipboardArgument(_student!.id, _student!.uid),
+          arguments: InstructorClipboardArgument(_student!.id, _student!.uid),
         );
       }
     }
