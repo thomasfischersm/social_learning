@@ -223,11 +223,12 @@ class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
     );
 
     if (assessment != null) {
-      await UserFunctions.updateCourseSkillAssessment(
-        user: _student!,
-        courseId: courseId,
-        dimensions: dimensions,
-      );
+      // This should be done by a Firebase cloud function.
+      // await UserFunctions.updateCourseSkillAssessment(
+      //   user: _student!,
+      //   courseId: courseId,
+      //   dimensions: dimensions,
+      // );
       if (mounted) {
         Navigator.pushReplacementNamed(
           context,

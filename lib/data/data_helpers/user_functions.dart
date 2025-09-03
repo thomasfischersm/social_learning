@@ -543,30 +543,33 @@ class UserFunctions {
     }
   }
 
-  static Future<void> updateCourseSkillAssessment({required User user, required String courseId, required List<SkillAssessmentDimension> dimensions,}) async {
-    final existing = user.courseSkillAssessments?.firstWhereOrNull((c) => c.courseId.id == courseId);
-    if (existing != null) {
-      await docRef('users', user.id).update({
-        'courseSkillAssessments': FieldValue.arrayRemove([{
-          'courseId': existing.courseId,
-          'dimensions': existing.dimensions.map((e) => e.toMap()).toList(),
-        }]),
-      });
-    }
-    final courseRef = docRef('courses', courseId);
-    await docRef('users', user.id).update({
-      'courseSkillAssessments': FieldValue.arrayUnion([{
-        'courseId': courseRef,
-        'dimensions': dimensions.map((e) => e.toMap()).toList(),
-      }]),
-    });
-    if (existing != null) {
-      existing.dimensions..clear()..addAll(dimensions);
-    } else {
-      user.courseSkillAssessments ??= [];
-      user.courseSkillAssessments!.add(CourseSkillAssessment(courseRef, dimensions));
-    }
-  }
+  // This should be done by a Firebase cloud function. The instructor user
+  // doesn't have access to the student user document.
+
+  // static Future<void> updateCourseSkillAssessment({required User user, required String courseId, required List<SkillAssessmentDimension> dimensions,}) async {
+  //   final existing = user.courseSkillAssessments?.firstWhereOrNull((c) => c.courseId.id == courseId);
+  //   if (existing != null) {
+  //     await docRef('users', user.id).update({
+  //       'courseSkillAssessments': FieldValue.arrayRemove([{
+  //         'courseId': existing.courseId,
+  //         'dimensions': existing.dimensions.map((e) => e.toMap()).toList(),
+  //       }]),
+  //     });
+  //   }
+  //   final courseRef = docRef('courses', courseId);
+  //   await docRef('users', user.id).update({
+  //     'courseSkillAssessments': FieldValue.arrayUnion([{
+  //       'courseId': courseRef,
+  //       'dimensions': dimensions.map((e) => e.toMap()).toList(),
+  //     }]),
+  //   });
+  //   if (existing != null) {
+  //     existing.dimensions..clear()..addAll(dimensions);
+  //   } else {
+  //     user.courseSkillAssessments ??= [];
+  //     user.courseSkillAssessments!.add(CourseSkillAssessment(courseRef, dimensions));
+  //   }
+  // }
 
   static Future<void> openEmailClient(User? user) async {
       if (user == null || user.email == null) {
