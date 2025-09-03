@@ -915,8 +915,7 @@ class RecordDialogState extends State<RecordDialogContent> {
   @override
   Widget build(BuildContext context) {
     if (_selectedStudent != null) {
-      widget.onUserSelected(
-          _selectedStudent!,
+      widget.onUserSelected(_selectedStudent!,
           _isReadyToGraduate && _checkGraduationRequirements());
     } else {
       widget.onUserSelected(
@@ -929,27 +928,34 @@ class RecordDialogState extends State<RecordDialogContent> {
         CustomUiConstants.getTextPadding(Text(
             'Records that you taught a lesson.',
             style: CustomTextStyles.getBody(context))),
-        Table(columnWidths: const {
-          0: IntrinsicColumnWidth(),
-          1: FlexColumnWidth()
-        }, children: [
-          TableRow(children: [
-            Padding(
-                padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
-                child:
-                    Text('Mentor:', style: CustomTextStyles.getBody(context))),
-            const Padding(padding: EdgeInsets.all(4), child: Text('You')),
-          ]),
-          TableRow(children: [
-            Padding(
-                padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
-                child:
-                    Text('Learner:', style: CustomTextStyles.getBody(context))),
-            Padding(
-                padding: const EdgeInsets.all(4),
-                child: SizedBox(width: 200, child: _buildLearnerAutocomplete())),
-          ]),
-        ]),
+        Table(
+            columnWidths: const {
+              0: IntrinsicColumnWidth(),
+              1: FlexColumnWidth()
+            },
+            defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+            children: [
+              TableRow(children: [
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
+                    child: Text('Mentor:',
+                        style: CustomTextStyles.getBody(context))),
+                Padding(
+                    padding: EdgeInsets.all(4),
+                    child:
+                        Text('You', style: CustomTextStyles.getBody(context))),
+              ]),
+              TableRow(children: [
+                Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 4, 4),
+                    child: Text('Learner:',
+                        style: CustomTextStyles.getBody(context))),
+                Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: SizedBox(
+                        width: 200, child: _buildLearnerAutocomplete())),
+              ]),
+            ]),
         Column(
           children: _generateGraduationRequirementsChecks(),
         ),
@@ -1013,8 +1019,7 @@ class RecordDialogState extends State<RecordDialogContent> {
           controller: textController,
           focusNode: focusNode,
           style: CustomTextStyles.getBody(context),
-          decoration:
-              const InputDecoration(hintText: 'Start typing the name.'),
+          decoration: const InputDecoration(hintText: 'Start typing the name.'),
         );
       },
       optionsViewBuilder: (context, onSelected, options) {
