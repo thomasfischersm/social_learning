@@ -30,8 +30,8 @@ class CmsLessonDetailArgument {
   });
 
   factory CmsLessonDetailArgument.forEditExistingLesson(
-      String? lessonId, String? levelId) {
-    return CmsLessonDetailArgument._(lessonId: lessonId, levelId: levelId);
+      String? levelId, String? lessonId) {
+    return CmsLessonDetailArgument._(levelId: levelId, lessonId: lessonId);
   }
 
   factory CmsLessonDetailArgument.forNewLessonToAttachToTeachableItem(
@@ -141,7 +141,8 @@ class CmsLessonState extends State<CmsLessonPage> {
                     CustomUiConstants.getTextPadding(Text('Create Lesson',
                         style: CustomTextStyles.headline)),
                     Consumer2<LibraryState, ApplicationState>(
-                      builder: (context, libraryState, applicationState, child) {
+                      builder:
+                          (context, libraryState, applicationState, child) {
                         return Column(
                           children: [
                             _createCoreCard(context),
@@ -476,8 +477,7 @@ class CmsLessonState extends State<CmsLessonPage> {
         NavigationEnum.courseDesignerLearningObjectives
             .navigateCleanDelayed(context);
       } else if (_attachToSkillDegreeId != null) {
-        NavigationEnum.courseDesignerSkillRubric
-            .navigateCleanDelayed(context);
+        NavigationEnum.courseDesignerSkillRubric.navigateCleanDelayed(context);
       } else {
         NavigationEnum.cmsSyllabus.navigateCleanDelayed(context);
       }
