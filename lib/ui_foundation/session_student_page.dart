@@ -84,6 +84,14 @@ class SessionStudentState extends State<SessionStudentPage> {
 
     var roundNumberToSessionPairing =
         studentSessionState.roundNumberToSessionPairing;
+    if (roundNumberToSessionPairing.isEmpty) {
+      return Column(children: [
+        CustomUiConstants.getTextPadding(Text(
+          'Waiting for the instructor to create the first pairing.',
+          style: CustomTextStyles.getBody(context),
+        )),
+      ]);
+    }
     List<int> sortedRounds = roundNumberToSessionPairing.keys.toList()..sort();
     sortedRounds = sortedRounds.reversed.toList();
 
