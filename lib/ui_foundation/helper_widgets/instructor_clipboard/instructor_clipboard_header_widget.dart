@@ -104,6 +104,7 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
                                 child: Icon(
                                   Icons.edit,
                                   size: 16,
+                                  color: Colors.grey,
                                 ),
                               ),
                             ],
