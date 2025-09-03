@@ -141,8 +141,30 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
               final student = data.student;
               final assessments = data.assessments;
               final rubric = data.rubric;
-              if (student == null || rubric == null || assessments.isEmpty) {
+              if (student == null || rubric == null) {
                 return const Text('No skill assessments found.');
+              }
+              if (assessments.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('No skill assessments found.'),
+                      const SizedBox(height: 16),
+                      TextButton.icon(
+                        onPressed: () {
+                          CreateSkillAssessmentPageArgument.navigateTo(
+                            context,
+                            student.id,
+                            student.uid,
+                          );
+                        },
+                        icon: const Icon(Icons.add),
+                        label: const Text('Create a skill assessment'),
+                      ),
+                    ],
+                  ),
+                );
               }
               if (!_initializedIndex) {
                 _index = assessments.length - 1;
