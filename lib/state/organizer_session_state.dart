@@ -16,6 +16,7 @@ import 'package:social_learning/state/firestore_subscription/session_pairings_su
 import 'package:social_learning/state/firestore_subscription/session_participants_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
 
 class OrganizerSessionState extends ChangeNotifier {
   final LibraryState _libraryState;
@@ -154,19 +155,13 @@ class OrganizerSessionState extends ChangeNotifier {
 
     // Create organizer participant.
     print('before creating participant');
-    DocumentReference<Map<String, dynamic>> participantDoc =
-        await FirebaseFirestore.instance
-            .collection('sessionParticipants')
-            .add(<String, dynamic>{
-      'sessionId': FirebaseFirestore.instance.doc('/sessions/$sessionId'),
-      'participantId': FirebaseFirestore.instance.doc('/users/${organizer.id}'),
-      'participantUid': organizer.uid,
-      'courseId': FirebaseFirestore.instance.doc('/courses/${course.id}'),
-      'isInstructor': organizer.isAdmin,
-      'isActive': true,
-      'teachCount': 0,
-      'learnCount': 0,
-    });
+    await SessionParticipantFunctions.createParticipant(
+      sessionId: sessionId,
+      userId: organizer.id,
+      userUid: organizer.uid,
+      courseId: course.id,
+      isInstructor: organizer.isAdmin,
+    );
     print('after creating participant');
 
     // Listen to session changes.
@@ -183,8 +178,8 @@ class OrganizerSessionState extends ChangeNotifier {
     _sessionSubscription.resubscribe(() => '/sessions/$sessionId');
 
     _sessionParticipantsSubscription.resubscribe((collectionReference) =>
-        collectionReference.where('sessionId',
-            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
+        SessionParticipantFunctions.queryBySessionId(
+            collectionReference, sessionId));
 
     _sessionPairingSubscription.resubscribe((collectionReference) =>
         collectionReference.where('sessionId',
