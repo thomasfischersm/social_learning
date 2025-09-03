@@ -941,9 +941,23 @@ class RecordDialogState extends State<RecordDialogContent> {
                     child: Text('Mentor:',
                         style: CustomTextStyles.getBody(context))),
                 Padding(
-                    padding: EdgeInsets.all(4),
-                    child:
-                        Text('You', style: CustomTextStyles.getBody(context))),
+                    padding: const EdgeInsets.all(4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: Padding(
+                                padding: const EdgeInsets.only(right: 4),
+                                child: AspectRatio(
+                                    aspectRatio: 1,
+                                    child: ProfileImageWidgetV2
+                                        .fromCurrentUser()))),
+                        Expanded(
+                            flex: 3,
+                            child: Text('You',
+                                style: CustomTextStyles.getBody(context))),
+                      ],
+                    )),
               ]),
               TableRow(children: [
                 Padding(
@@ -952,8 +966,7 @@ class RecordDialogState extends State<RecordDialogContent> {
                         style: CustomTextStyles.getBody(context))),
                 Padding(
                     padding: const EdgeInsets.all(4),
-                    child: SizedBox(
-                        width: 200, child: _buildLearnerAutocomplete())),
+                    child: _buildLearnerAutocomplete()),
               ]),
             ]),
         Column(
