@@ -8,6 +8,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widget
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
+import 'package:social_learning/ui_foundation/view_skill_assessment_page.dart';
 
 class InstructorClipboardHeaderWidget extends StatelessWidget {
   final User student;
@@ -78,8 +79,7 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
                     builder: (context, snapshot) {
                       final rubric = snapshot.data;
                       final hasRubric = rubric != null &&
-                          rubric.dimensions
-                              .any((d) => d.degrees.isNotEmpty);
+                          rubric.dimensions.any((d) => d.degrees.isNotEmpty);
                       if (!hasRubric) {
                         return const SizedBox.shrink();
                       }
@@ -87,7 +87,8 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 12),
                         child: GestureDetector(
                           onTap: () {
-                            // TODO: Navigate to view_skill_assessment page.
+                            ViewSkillAssessmentPageArgument.navigateTo(
+                                context, student.uid);
                           },
                           child: Stack(
                             clipBehavior: Clip.none,
