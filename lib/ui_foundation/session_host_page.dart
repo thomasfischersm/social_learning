@@ -144,7 +144,15 @@ class SessionHostState extends State<SessionHostPage> {
                       ?.copyWith(fontWeight: FontWeight.bold))))),
     ]));
 
-    for (SessionParticipant sessionParticipant in sessionParticipants) {
+    // Separate active and inactive participants while preserving sort order.
+    List<SessionParticipant> activeParticipants =
+        sessionParticipants.where((p) => p.isActive).toList();
+    List<SessionParticipant> inactiveParticipants =
+        sessionParticipants.where((p) => !p.isActive).toList();
+
+    // Helper to create a table row for a participant.
+    TableRow buildParticipantRow(SessionParticipant sessionParticipant,
+        {required bool isInactive}) {
       User? participantUser = organizerSessionState.getUser(sessionParticipant);
 
       var userId = sessionParticipant.participantId.id;
@@ -158,38 +166,58 @@ class SessionHostState extends State<SessionHostPage> {
       double? proficiency = (course == null)
           ? null
           : participantUser?.getCourseProficiency(course)?.proficiency;
-      // Color? proficiencyColor = (proficiency == null)
-      //     ? null
-      //     : BeltColorFunctions.getBeltColor(proficiency);
-      // Color? proficiencyTextColor = (proficiencyColor == null)
-      //     ? null
-      //     : ((proficiencyColor.computeLuminance() > 0.5)
-      //         ? Colors.black
-      //         : Colors.white);
 
       String displayName = participantUser?.displayName ?? '';
       if (participantUser?.isAdmin ?? false) {
         displayName += ' (Instructor)';
       }
 
-      tableRows.add(TableRow(children: <Widget>[
-        CustomUiConstants.getIndentationTextPadding(Text(displayName)),
-        // CustomUiConstants.getIndentationTextPadding(
-        //     Text(sessionParticipant.isInstructor ? 'Instructor' : 'Student')),
+      TextStyle? inactiveStyle = CustomTextStyles.getBody(context)
+          ?.copyWith(color: Colors.grey, fontStyle: FontStyle.italic);
+
+      return TableRow(children: <Widget>[
+        CustomUiConstants.getIndentationTextPadding(Text(displayName,
+            style: isInactive ? inactiveStyle : null)),
         CustomUiConstants.getIndentationTextPadding(Align(
             alignment: Alignment.centerRight,
             child: Text('$teachDeficit',
-                style: CustomTextStyles.getBody(context)
-                    ?.copyWith(color: teachDeficitColor)))),
+                style: (CustomTextStyles.getBody(context)?.copyWith(
+                        color: isInactive ? Colors.grey : teachDeficitColor,
+                        fontStyle:
+                            isInactive ? FontStyle.italic : FontStyle.normal))))),
         if (proficiency != null)
           CustomUiConstants.getIndentationTextPadding(Align(
               alignment: Alignment.centerRight,
               child: Text('${(proficiency * 100).round()}%',
-                  style: CustomTextStyles.getBody(
-                      context) /*?.copyWith(color: proficiencyTextColor)*/)))
+                  style: (CustomTextStyles.getBody(context)?.copyWith(
+                      color: isInactive ? Colors.grey : null,
+                      fontStyle: isInactive
+                          ? FontStyle.italic
+                          : FontStyle.normal)))))
         else
           SizedBox.shrink()
+      ]);
+    }
+
+    // Add active participant rows.
+    for (SessionParticipant sessionParticipant in activeParticipants) {
+      tableRows.add(buildParticipantRow(sessionParticipant, isInactive: false));
+    }
+
+    // Insert heading and inactive participant rows if any inactive participants.
+    if (inactiveParticipants.isNotEmpty) {
+      tableRows.add(TableRow(children: <Widget>[
+        CustomUiConstants.getIndentationTextPadding(
+            CustomUiConstants.getTextPadding(Text('Inactive Students',
+                style: CustomTextStyles.getBody(context)
+                    ?.copyWith(fontWeight: FontWeight.bold)))),
+        SizedBox.shrink(),
+        SizedBox.shrink(),
       ]));
+
+      for (SessionParticipant sessionParticipant in inactiveParticipants) {
+        tableRows.add(buildParticipantRow(sessionParticipant, isInactive: true));
+      }
     }
 
     return Table(columnWidths: const {
