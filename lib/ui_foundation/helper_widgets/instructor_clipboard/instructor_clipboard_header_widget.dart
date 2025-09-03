@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/radar_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/data/skill_rubric.dart';
+import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 
 class InstructorClipboardHeaderWidget extends StatelessWidget {
   final User student;
@@ -68,6 +71,46 @@ class InstructorClipboardHeaderWidget extends StatelessWidget {
                     linkToOtherProfile: true,
                   ),
                   const SizedBox(width: 12),
+                  FutureBuilder<SkillRubric?>(
+                    future: course != null
+                        ? SkillRubricsFunctions.loadForCourse(course.id!)
+                        : Future<SkillRubric?>.value(null),
+                    builder: (context, snapshot) {
+                      final rubric = snapshot.data;
+                      final hasRubric = rubric != null &&
+                          rubric.dimensions
+                              .any((d) => d.degrees.isNotEmpty);
+                      if (!hasRubric) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: GestureDetector(
+                          onTap: () {
+                            // TODO: Navigate to view_skill_assessment page.
+                          },
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              RadarWidget(
+                                user: student,
+                                size: 48,
+                                showLabels: false,
+                              ),
+                              const Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Icon(
+                                  Icons.edit,
+                                  size: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   Expanded(
                     child: Text(
                       student.displayName,
