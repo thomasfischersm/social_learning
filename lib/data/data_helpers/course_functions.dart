@@ -61,6 +61,13 @@ class CourseFunctions {
     });
   }
 
+  static Future<void> updateCourse(
+      String courseId, Map<String, dynamic> data) {
+    return FirestoreService.instance
+        .doc('/courses/$courseId')
+        .set(data, SetOptions(merge: true));
+  }
+
   static Future<Course?> findCourseByInvitationCode(String code) async {
     final snapshot = await FirestoreService.instance
         .collection('courses')
