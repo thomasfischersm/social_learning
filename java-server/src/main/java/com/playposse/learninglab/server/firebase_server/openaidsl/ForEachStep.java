@@ -61,6 +61,9 @@ public final class ForEachStep<T, R> implements Step {
             logs.add(new CallLog(joinLabel, List.of(), null, null, null, err, 0));
         }
 
+        // Remember which labels existed before running the loop.
+        Set<Label<?>> baseLabels = new HashSet<>(ctx.vars().keySet());
+
         // 2) Fan out each item
         List<CompletableFuture<ChainContext>> futures = new ArrayList<>();
         for (T item : items) {
@@ -83,19 +86,16 @@ public final class ForEachStep<T, R> implements Step {
                     List<R> collected = new ArrayList<>(futures.size());
                     for (var f : futures) {
                         ChainContext brCtx = f.join();
-                        // find the one label in branch context that is neither
-                        // the sourceLabel nor the aliasLabel
-                        Label<?> outputLabel = brCtx.vars().keySet().stream()
-                                .filter(lbl -> !lbl.equals(sourceLabel))
-                                .filter(lbl -> !lbl.name().equals(alias))
-                                .reduce((a, b) -> {
-                                    throw new IllegalStateException(
-                                            "Expected exactly one output label, but found: "
-                                                    + brCtx.vars().keySet());
-                                })
-                                .orElseThrow(() -> new IllegalStateException(
-                                        "No output label found in branch for " + sourceLabel.name()
-                                ));
+                        Set<Label<?>> newLabels = new HashSet<>(brCtx.vars().keySet());
+                        newLabels.removeAll(baseLabels);
+                        newLabels.remove(sourceLabel);
+                        newLabels.removeIf(lbl -> lbl.name().equals(alias));
+
+                        if (newLabels.size() != 1) {
+                            throw new IllegalStateException(
+                                    "Expected exactly one output label, but found: " + newLabels);
+                        }
+                        Label<?> outputLabel = newLabels.iterator().next();
 
                         @SuppressWarnings("unchecked")
                         R out = (R) brCtx.get((Label<R>) outputLabel);

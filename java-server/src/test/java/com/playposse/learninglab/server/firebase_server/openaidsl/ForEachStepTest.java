@@ -21,6 +21,8 @@ class ForEachStepTest {
             Label.of("detail", String.class);
     private static final Label<List<String>> DETAILS =
             Label.of("details", new TypeReference<List<String>>() {});
+    private static final Label<String> OTHER =
+            Label.of("other", String.class);
 
     @BeforeEach
     void setUp() {
@@ -28,6 +30,7 @@ class ForEachStepTest {
         fake     = new FakeOpenAiClient();
         // stub detail branch replies to echo prefix + item
         fake.whenContains("detail", "detail-of-");
+        fake.whenContains("other", "other-value");
     }
 
     @Test
@@ -41,6 +44,12 @@ class ForEachStepTest {
                 .user("outline")
                 .parse(Parsers.stringList())
                 .label(ITEMS)
+                .endStep()
+                // unrelated label before the loop
+                .step("other")
+                .user("other")
+                .parse(Parsers.string())
+                .label(OTHER)
                 .endStep()
                 // forEach over ITEMS
                 .forEach(ITEMS)
@@ -64,8 +73,8 @@ class ForEachStepTest {
         List<String> details = result.get(DETAILS);
         assertEquals(List.of("detail-of-X", "detail-of-Y", "detail-of-Z"), details);
 
-        // callLogs: 1 outline + 3 detail calls => 4
-        assertEquals(4, result.callLogs().size());
+        // callLogs: 1 outline + 1 other + 3 detail calls => 5
+        assertEquals(5, result.callLogs().size());
 
         // no errors
         assertTrue(result.errors().isEmpty());
@@ -81,6 +90,11 @@ class ForEachStepTest {
                 .user("outline")
                 .parse(Parsers.stringList())
                 .label(ITEMS)
+                .endStep()
+                .step("other")
+                .user("other")
+                .parse(Parsers.string())
+                .label(OTHER)
                 .endStep()
                 .forEach(ITEMS)
                 .alias("item")
@@ -104,8 +118,8 @@ class ForEachStepTest {
         List<String> details = result.get(DETAILS);
         assertEquals(List.of("detail-of-A", "detail-of-B"), details);
 
-        // callLogs: 1 outline + 1 truncation error + 2 detail calls = 4
-        assertEquals(4, result.callLogs().size());
+        // callLogs: 1 outline + 1 other + 1 truncation error + 2 detail calls = 5
+        assertEquals(5, result.callLogs().size());
 
         // error recorded under DETAILS label
         assertTrue(result.hasError(DETAILS));
