@@ -45,8 +45,8 @@ class FirestoreListSubscription<T> {
     });
   }
 
-  cancel() {
-    _streamSubscription?.cancel();
+  cancel() async {
+    await _streamSubscription?.cancel();
     _streamSubscription = null;
     _items = [];
     _notifyChange();

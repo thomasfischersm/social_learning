@@ -28,16 +28,23 @@ class SessionStudentPage extends StatefulWidget {
 
 class SessionStudentState extends State<SessionStudentPage> {
   @override
-  Widget build(BuildContext context) {
-    SessionStudentArgument? argument =
-        ModalRoute.of(context)!.settings.arguments as SessionStudentArgument?;
-    if (argument != null) {
-      String sessionId = argument.sessionId;
-      var studentSessionState =
-          Provider.of<StudentSessionState>(context, listen: false);
-      studentSessionState.attemptToJoin(sessionId);
-    }
+  void initState() {
+    super.initState();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SessionStudentArgument? argument =
+          ModalRoute.of(context)!.settings.arguments as SessionStudentArgument?;
+      if (argument != null) {
+        String sessionId = argument.sessionId;
+        var studentSessionState =
+            Provider.of<StudentSessionState>(context, listen: false);
+        studentSessionState.attemptToJoin(sessionId);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: const LearningLabAppBar(title: 'Learning Lab'),
       bottomNavigationBar: BottomBarV2.build(context),

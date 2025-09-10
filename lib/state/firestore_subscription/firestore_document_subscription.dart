@@ -41,8 +41,8 @@ class FirestoreDocumentSubscription<T> {
     });
   }
 
-  cancel() {
-    _streamSubscription?.cancel();
+  cancel() async {
+    await _streamSubscription?.cancel();
     _streamSubscription = null;
     _item = null;
     _notifyChange();

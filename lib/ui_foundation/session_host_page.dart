@@ -83,6 +83,7 @@ class SessionHostState extends State<SessionHostPage> {
     // Sort participants by admin, proficiency, and name.
     List<SessionParticipant> sessionParticipants =
         List.from(organizerSessionState.sessionParticipants);
+    print('Number of participants: ${sessionParticipants.length}');
     sessionParticipants.sort((a, b) {
       // Put instructors on top.
       if (a.isInstructor) {

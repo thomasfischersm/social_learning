@@ -34,9 +34,9 @@ class ParticipantUsersSubscription extends FirestoreListSubscription<User> {
   }
 
   @override
-  cancel() {
-    super.cancel();
-    _practiceRecordSubscription?.cancel();
+  cancel() async {
+    await super.cancel();
+    await _practiceRecordSubscription?.cancel();
   }
 
   List<String> getUserUids() =>

@@ -139,6 +139,7 @@ class StudentSessionState extends ChangeNotifier {
           participant = null;
         }
         if (participant != null && participant.id != null) {
+          await _resetSession();
           await SessionParticipantFunctions.updateIsActive(
               participant.id!, false);
         }
@@ -149,20 +150,17 @@ class StudentSessionState extends ChangeNotifier {
     _resetSession();
   }
 
-  _resetSession() {
-    _sessionSubscription.cancel();
-    _sessionParticipantsSubscription.cancel();
-    _participantUsersSubscription.cancel();
-    _sessionPairingSubscription.cancel();
+  _resetSession() async {
+    await signOut();
 
     print('StudentSessionState.notifyListeners because the session was reset');
     notifyListeners();
   }
 
-  void signOut() {
-    _sessionSubscription.cancel();
-    _sessionParticipantsSubscription.cancel();
-    _participantUsersSubscription.cancel();
-    _sessionPairingSubscription.cancel();
+  signOut() async {
+    await _sessionSubscription.cancel();
+    await _sessionParticipantsSubscription.cancel();
+    await _participantUsersSubscription.cancel();
+    await _sessionPairingSubscription.cancel();
   }
 }
