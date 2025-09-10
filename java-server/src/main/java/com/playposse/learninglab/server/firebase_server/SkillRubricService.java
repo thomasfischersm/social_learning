@@ -103,7 +103,7 @@ public class SkillRubricService {
                 .addStep(
                         StepBuilder.start("degreeDescriptions", defaults)
                                 .system(systemMessage)
-                                .user(info + "\n\nDimension: ${dimension}\nDegree labels: ${degreeLabels}\nFor each degree, describe what a student must demonstrate at that degree for this dimension. Return one paragraph per degree, separated by a blank line, and follow the order of the degree labels.")
+                                .user(info + "\n\nDimension: ${dimension}\nDegree labels: ${degreeLabels}\nFor each degree, describe what a student must demonstrate at that degree for this dimension. The description should be 2-3 sentences, which are concise and easy to evaluate. Return one paragraph per degree, separated by a blank line, and follow the order of the degree labels.")
                                 .parse(Parsers.string())
                                 .label(DETAIL)
 //                                .maxTokens(800)
