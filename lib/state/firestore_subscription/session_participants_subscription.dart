@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
+import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/firestore_subscription/firestore_list_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';
@@ -76,29 +77,52 @@ class SessionParticipantsSubscription
 
   void _addUserToSession(
       session, List<SessionParticipant> sessionParticipants) {
-    // Check if self needs to be added.
     User? currentUser = _applicationState!.currentUser;
-    var containsSelf = sessionParticipants.any((element) {
-      print(
-          'Checking if ${element.participantUid} == ${currentUser?.uid} => ${element.participantUid == currentUser?.uid}');
-      return element.participantUid == currentUser?.uid;
-    });
-    print('containsSelf: $containsSelf; this.uid: ${currentUser?.uid}');
-    if (!containsSelf) {
-      // TODO: This seems to create entries too aggressively.
+    if (currentUser == null) {
+      return;
+    }
+
+    // Find existing participant documents for the current user.
+    var matchingParticipants = sessionParticipants
+        .where((p) => p.participantUid == currentUser.uid)
+        .toList();
+    print(
+        'containsSelf: ${matchingParticipants.isNotEmpty}; this.uid: ${currentUser.uid}');
+
+    if (matchingParticipants.isEmpty) {
+      // No existing participant document; create one.
       print('Student added itself as a participant');
-      FirebaseFirestore.instance.collection('sessionParticipants').add({
-        'sessionId': FirebaseFirestore.instance.doc('/sessions/${session.id}'),
-        'participantId':
-            FirebaseFirestore.instance.doc('/users/${currentUser?.id}'),
-        'participantUid': currentUser?.uid,
-        'courseId':
-            FirebaseFirestore.instance.doc('/courses/${session.courseId.id}'),
-        'isInstructor': currentUser?.isAdmin,
-        'isActive': true,
-        'teachCount': 0,
-        'learnCount': 0,
-      });
+      SessionParticipantFunctions.createSessionParticipant(
+        sessionId: session.id,
+        userId: currentUser.id,
+        participantUid: currentUser.uid,
+        courseId: session.courseId.id,
+        isInstructor: currentUser.isAdmin,
+      );
+      return;
+    }
+
+    // If an inactive document exists, reactivate the most recent one.
+    var activeDocs =
+        matchingParticipants.where((p) => p.isActive).toList();
+    if (activeDocs.isNotEmpty) {
+      return;
+    }
+
+    matchingParticipants.sort((a, b) => a.id!.compareTo(b.id!));
+    var docToActivate = matchingParticipants.last;
+    print(
+        'Reactivating existing session participant for ${currentUser.uid} (${docToActivate.id})');
+
+    SessionParticipantFunctions.updateSessionParticipant(
+        docToActivate.id!, {'isActive': true});
+
+    // Ensure any other matching documents remain inactive.
+    for (var participant in matchingParticipants) {
+      if (participant.id != docToActivate.id && participant.isActive) {
+        SessionParticipantFunctions.updateSessionParticipant(
+            participant.id!, {'isActive': false});
+      }
     }
   }
 }
