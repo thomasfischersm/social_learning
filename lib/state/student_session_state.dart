@@ -104,7 +104,8 @@ class StudentSessionState extends ChangeNotifier {
         }
       }
     }).catchError((error) {
-      print('Error getting active participants for the current session: $error');
+      print(
+          'Error getting active participants for the current session: $error');
       _resetSession();
     });
   }
@@ -124,6 +125,28 @@ class StudentSessionState extends ChangeNotifier {
     // TODO: Add self as participant if needed.
     // TODO: Subscribe to participants.
     // TODO: Figure out the bug why sessions aren't visible on the first try.
+  }
+
+  Future<void> leaveSession() async {
+    final currentUser = _applicationState.currentUser;
+    if (currentUser != null) {
+      try {
+        SessionParticipant? participant;
+        try {
+          participant = sessionParticipants
+              .firstWhere((p) => p.participantId.id == currentUser.id);
+        } catch (_) {
+          participant = null;
+        }
+        if (participant != null && participant.id != null) {
+          await SessionParticipantFunctions.updateIsActive(
+              participant.id!, false);
+        }
+      } catch (e) {
+        debugPrint('Error leaving session: $e');
+      }
+    }
+    _resetSession();
   }
 
   _resetSession() {
