@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_pairing.dart';
@@ -81,12 +82,14 @@ class OrganizerSessionState extends ChangeNotifier {
 
   _connectToActiveSession(ApplicationState applicationState) {
     var uid = applicationState.currentUser?.uid;
+    var courseId = _libraryState.selectedCourse?.id;
 
-    if (uid != null) {
+    if (uid != null && courseId != null) {
       FirebaseFirestore.instance
           .collection('sessions')
           .where('organizerUid', isEqualTo: uid)
           .where('isActive', isEqualTo: true)
+          .where('courseId', isEqualTo: docRef('courses', courseId))
           .get()
           .then((snapshot) {
         print(
@@ -227,6 +230,7 @@ class OrganizerSessionState extends ChangeNotifier {
   void signOut() {
     _disconnectFromSession();
   }
+
   void _disconnectFromSession() {
     _sessionSubscription.cancel();
     _sessionParticipantsSubscription.cancel();
