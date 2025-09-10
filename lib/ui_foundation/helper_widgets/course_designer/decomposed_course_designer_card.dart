@@ -48,9 +48,12 @@ class DecomposedCourseDesignerCard {
       );
     } else {
       children.add(
-        Text(
-          title,
-          style: CourseDesignerTheme.cardHeaderTextStyle,
+        Expanded(
+          child: Text(
+            title,
+            style: CourseDesignerTheme.cardHeaderTextStyle,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       );
 
