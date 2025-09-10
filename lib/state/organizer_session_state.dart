@@ -84,7 +84,7 @@ class OrganizerSessionState extends ChangeNotifier {
       FirebaseFirestore.instance
           .collection('sessions')
           .where('organizerUid', isEqualTo: uid)
-          .where('isActive', isEqualTo: true)
+          // .where('isActive', isEqualTo: true)
           .get()
           .then((snapshot) {
         print(
