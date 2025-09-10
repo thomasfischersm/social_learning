@@ -12,6 +12,7 @@ class SessionPairingAlgorithmTest {
     testBasic2Students();
     testBasic4Students();
     test4students1lesson();
+    testIgnoresInactiveParticipants();
   }
 
   void testBasicTeacherStudent() {
@@ -134,5 +135,30 @@ class SessionPairingAlgorithmTest {
         .assertPair('A', 'B', 'Lesson 1000')
         .assertUnpaired(['C', 'D'])
         .go('4 students 1 lesson');
+  }
+
+  void testIgnoresInactiveParticipants() {
+    ApplicationStateMock applicationState = ApplicationStateMock();
+    LibraryStateMock libraryState = LibraryStateMock(10);
+    OrganizerSessionStateMock organizerSessionState =
+        OrganizerSessionStateMock(applicationState, libraryState);
+
+    organizerSessionState.addTestUser('A', false, []);
+    organizerSessionState.addTestUser('B', false, [libraryState.lessons![0]],
+        isActive: false);
+    organizerSessionState.addTestUser('C', false,
+        [libraryState.lessons![0], libraryState.lessons![1]]);
+
+    SessionPairingAlgorithm algorithm = SessionPairingAlgorithm();
+    PairedSession pairedSession = algorithm.generateNextSessionPairing(
+        organizerSessionState, libraryState);
+
+    print('***** Test Result ****');
+    pairedSession.debugPrint();
+    print('********************');
+
+    PairedSessionTester(pairedSession, organizerSessionState)
+        .assertPair('C', 'A', 'Lesson 1000')
+        .go('inactive participants are ignored');
   }
 }
