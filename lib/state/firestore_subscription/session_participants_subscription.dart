@@ -16,6 +16,8 @@ class SessionParticipantsSubscription
   final ParticipantUsersSubscription _participantUsersSubscription;
   final ApplicationState? _applicationState;
 
+  bool _isJoinPending = false;
+
   SessionParticipantsSubscription(
       this._shouldUpdateParticipantCount,
       this._shouldAddUserToSession,
@@ -89,14 +91,18 @@ class SessionParticipantsSubscription
     print('Found ${matching.length} matching participants for ${currentUser.uid}');
 
     if (matching.isEmpty) {
-      print('Student added itself as a participant');
-      SessionParticipantFunctions.createParticipant(
-        sessionId: session.id!,
-        userId: currentUser.id,
-        userUid: currentUser.uid,
-        courseId: session.courseId.id,
-        isInstructor: currentUser.isAdmin,
-      );
+      if (!_isJoinPending) {
+        _isJoinPending = true;
+        print('Student added itself as a participant');
+        SessionParticipantFunctions.createParticipant(
+          sessionId: session.id!,
+          userId: currentUser.id,
+          userUid: currentUser.uid,
+          courseId: session.courseId.id,
+          isInstructor: currentUser.isAdmin,
+        );
+        _isJoinPending = false;
+      }
       return;
     }
 
