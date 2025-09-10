@@ -50,7 +50,8 @@ class SessionHostState extends State<SessionHostPage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(enableCourseLoadingGuard: true,
+            child: CustomUiConstants.framePage(
+                enableCourseLoadingGuard: true, enableAuthGuard: true,
                 Consumer2<OrganizerSessionState, LibraryState>(builder:
                     (context, organizerSessionState, libraryState, child) {
               return Column(
@@ -173,28 +174,27 @@ class SessionHostState extends State<SessionHostPage> {
         displayName += ' (Instructor)';
       }
 
-      TextStyle? inactiveStyle = CustomTextStyles.getBody(context)
+      TextStyle? inactiveStyle = CustomTextStyles.getBodyNote(context)
           ?.copyWith(color: Colors.grey, fontStyle: FontStyle.italic);
 
       return TableRow(children: <Widget>[
-        CustomUiConstants.getIndentationTextPadding(Text(displayName,
-            style: isInactive ? inactiveStyle : null)),
+        CustomUiConstants.getIndentationTextPadding(
+            Text(displayName, style: isInactive ? inactiveStyle : null)),
         CustomUiConstants.getIndentationTextPadding(Align(
             alignment: Alignment.centerRight,
             child: Text('$teachDeficit',
-                style: (CustomTextStyles.getBody(context)?.copyWith(
-                        color: isInactive ? Colors.grey : teachDeficitColor,
-                        fontStyle:
-                            isInactive ? FontStyle.italic : FontStyle.normal))))),
+                style: (CustomTextStyles.getBodyNote(context)?.copyWith(
+                    color: isInactive ? Colors.grey : teachDeficitColor,
+                    fontStyle:
+                        isInactive ? FontStyle.italic : FontStyle.normal))))),
         if (proficiency != null)
           CustomUiConstants.getIndentationTextPadding(Align(
               alignment: Alignment.centerRight,
               child: Text('${(proficiency * 100).round()}%',
-                  style: (CustomTextStyles.getBody(context)?.copyWith(
+                  style: (CustomTextStyles.getBodyNote(context)?.copyWith(
                       color: isInactive ? Colors.grey : null,
-                      fontStyle: isInactive
-                          ? FontStyle.italic
-                          : FontStyle.normal)))))
+                      fontStyle:
+                          isInactive ? FontStyle.italic : FontStyle.normal)))))
         else
           SizedBox.shrink()
       ]);
@@ -209,15 +209,16 @@ class SessionHostState extends State<SessionHostPage> {
     if (inactiveParticipants.isNotEmpty) {
       tableRows.add(TableRow(children: <Widget>[
         CustomUiConstants.getIndentationTextPadding(
-            CustomUiConstants.getTextPadding(Text('Inactive Students',
-                style: CustomTextStyles.getBody(context)
+            Padding(padding: const EdgeInsets.only(top: 8), child: Text('Inactive Students',
+                style: CustomTextStyles.getBodyNote(context)
                     ?.copyWith(fontWeight: FontWeight.bold)))),
         SizedBox.shrink(),
         SizedBox.shrink(),
       ]));
 
       for (SessionParticipant sessionParticipant in inactiveParticipants) {
-        tableRows.add(buildParticipantRow(sessionParticipant, isInactive: true));
+        tableRows
+            .add(buildParticipantRow(sessionParticipant, isInactive: true));
       }
     }
 
