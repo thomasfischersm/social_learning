@@ -78,16 +78,17 @@ class SessionParticipantsSubscription
 
   void _addUserToSession(
       session, List<SessionParticipant> sessionParticipants) {
-    // Check if self needs to be added.
     User? currentUser = _applicationState!.currentUser;
-    var containsSelf = sessionParticipants.any((element) {
-      print(
-          'Checking if ${element.participantUid} == ${currentUser?.uid} => ${element.participantUid == currentUser?.uid}');
-      return element.participantUid == currentUser?.uid;
-    });
-    print('containsSelf: $containsSelf; this.uid: ${currentUser?.uid}');
-    if (!containsSelf && currentUser != null) {
-      // TODO: This seems to create entries too aggressively.
+    if (currentUser == null) {
+      return;
+    }
+
+    final matching = sessionParticipants
+        .where((p) => p.participantUid == currentUser.uid)
+        .toList();
+    print('Found ${matching.length} matching participants for ${currentUser.uid}');
+
+    if (matching.isEmpty) {
       print('Student added itself as a participant');
       SessionParticipantFunctions.createParticipant(
         sessionId: session.id!,
@@ -96,6 +97,20 @@ class SessionParticipantsSubscription
         courseId: session.courseId.id,
         isInstructor: currentUser.isAdmin,
       );
+      return;
     }
+
+    if (matching.length > 1) {
+      print(
+          'Warning: multiple participant records found for user ${currentUser.uid}');
+    }
+
+    if (matching.any((p) => p.isActive)) {
+      return;
+    }
+
+    final existing = matching.first;
+    print('Reactivating existing participant document: ${existing.id}');
+    SessionParticipantFunctions.updateIsActive(existing.id!, true);
   }
 }
