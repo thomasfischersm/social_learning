@@ -58,11 +58,14 @@ class SkillRubricsFunctions {
         final degrees = <SkillDegree>[];
         for (int i = 0; i < dim.degrees.length; i++) {
           final deg = dim.degrees[i];
+          final exerciseText = deg.lessons.map((e) => "- $e").join("\n");
+          final fullDescription =
+              [deg.criteria, exerciseText].where((s) => s.trim().isNotEmpty).join("\n\n");
           degrees.add(SkillDegree(
             id: _firestore.collection(_collectionPath).doc().id,
             degree: i + 1,
             name: deg.name,
-            description: deg.criteria,
+            description: fullDescription,
             lessonRefs: [],
           ));
         }
