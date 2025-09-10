@@ -21,6 +21,9 @@ Students can find other students to learn from, teach to, and track their progre
 - Make icons grey by default unless there is a special reason.
 - Do not use absolute width or height. Use dynamic layouts based on the available width (e.g. all available width or split the width among two children as 1:3). Exceptions are things like profile image icons, which can have a max radius. Basically, some things should appear a certain size like icons or avatars. However, for actually laying out things, use responsive/adaptable dimensions, no absolute width/height
 
+## Coding Style
+- When structuring methods, break them into units that do one logical thing. Prefer to make a sub-method for each logical unit. For example, instead of one giant method that does everything, break it down. Concrete example: To join a session has these steps: (1) load the session info. (2) If the user is already an inactive participant, reactivate the user. (3) Otherwise, add the user to the session. If all of this is three lines of code, leave it as a single method. However, if each step requires doing work, create sub-methods for each. That way the high level idea is clearly captured in the top level method.
+
 ## Build & Test Commands
 ```bash
 flutter pub get
