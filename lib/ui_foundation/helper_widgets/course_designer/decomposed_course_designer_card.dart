@@ -62,7 +62,7 @@ class DecomposedCourseDesignerCard {
         children.add(icon);
       }
 
-      children.add(const Spacer());
+      // children.add(const Spacer());
     }
 
     if (trailingIcons.isNotEmpty) {
