@@ -5,10 +5,12 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/session_round_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class SessionStudentArgument {
   String sessionId;
@@ -39,6 +41,23 @@ class SessionStudentState extends State<SessionStudentPage> {
 
     return Scaffold(
       appBar: const LearningLabAppBar(title: 'Learning Lab'),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await DialogUtils.showConfirmationDialog(
+            context,
+            'Leave Session',
+            'Are you sure you want to leave the session?',
+            () async {
+              await Provider.of<StudentSessionState>(context, listen: false)
+                  .leaveSession();
+              if (context.mounted) {
+                NavigationEnum.sessionHome.navigateClean(context);
+              }
+            },
+          );
+        },
+        child: const Icon(Icons.exit_to_app, color: Colors.grey),
+      ),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(
         alignment: Alignment.topCenter,

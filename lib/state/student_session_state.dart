@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';
@@ -52,15 +55,15 @@ class StudentSessionState extends ChangeNotifier {
       notifyListeners();
     });
 
-    _applicationState.addListener(() {
-      _checkForOngoingSession();
+    _applicationState.addListener(() async {
+      await _checkForOngoingSession();
     });
 
-    _libraryState.addListener(() {
-      _checkForOngoingSession();
+    _libraryState.addListener(() async {
+      await _checkForOngoingSession();
     });
 
-    _checkForOngoingSession();
+    unawaited(_checkForOngoingSession());
   }
 
   get roundNumberToSessionPairing =>
@@ -69,7 +72,7 @@ class StudentSessionState extends ChangeNotifier {
   User? getUserById(String? id) =>
       (id == null) ? null : _participantUsersSubscription.getUserById(id);
 
-  void _checkForOngoingSession() {
+  Future<void> _checkForOngoingSession() async {
     print(
         'StudentSessionState._checkForOngoingSession() for user ${_applicationState.currentUser?.id}');
 
@@ -91,16 +94,10 @@ class StudentSessionState extends ChangeNotifier {
     }
 
     print('Checking active session for user ${currentUser.id}');
-    var userIdRef = FirebaseFirestore.instance.doc('/users/${currentUser.id}');
-    FirebaseFirestore.instance
-        .collection('sessionParticipants')
-        .where('participantId', isEqualTo: userIdRef)
-        .where('isActive', isEqualTo: true)
-        .get()
-        .then((snapshot) {
-      if (snapshot.docs.isNotEmpty) {
-        var sessionParticipant =
-            SessionParticipant.fromSnapshot(snapshot.docs.first);
+    try {
+      var sessionParticipant =
+          await SessionParticipantFunctions.getActiveParticipant(currentUser.id);
+      if (sessionParticipant != null) {
         print(
             'Trying to automatically log into session ${sessionParticipant.sessionId.id}');
         if (sessionParticipant.courseId.id == currentCourse?.id) {
@@ -109,11 +106,11 @@ class StudentSessionState extends ChangeNotifier {
           _resetSession();
         }
       }
-    }).onError((error, stackTrace) {
+    } catch (error) {
       print(
           'Error getting active participants for the current session: $error');
       _resetSession();
-    });
+    }
   }
 
   void attemptToJoin(String sessionId) {
@@ -131,6 +128,33 @@ class StudentSessionState extends ChangeNotifier {
     // TODO: Add self as participant if needed.
     // TODO: Subscribe to participants.
     // TODO: Figure out the bug why sessions aren't visible on the first try.
+  }
+
+  Future<void> leaveSession() async {
+    var currentUser = _applicationState.currentUser;
+    var currentSession = _sessionSubscription.item;
+    if (currentUser == null || currentSession == null) {
+      _resetSession();
+      return;
+    }
+
+    SessionParticipant? participant;
+    for (var p in _sessionParticipantsSubscription.items) {
+      if (p.participantId.id == currentUser.id) {
+        participant = p;
+        break;
+      }
+    }
+
+    if (participant != null) {
+      try {
+        await SessionParticipantFunctions.deactivate(participant.id!);
+      } catch (e) {
+        print('Failed to update session participant: $e');
+      }
+    }
+
+    _resetSession();
   }
 
   _resetSession() {
