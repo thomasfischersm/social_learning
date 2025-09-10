@@ -67,7 +67,7 @@ public class SkillRubricService {
                 // Step 1: get global degree labels
                 .step("degreeLabels")
                 .system(systemMessage)
-                .user(info + "\n\nList the five skill degree labels from novice to expert. Return one per line.")
+                .user(info + "\n\nList the five skill degree labels from novice to expert. Return one per line.\n\nConsider what makes sense for the particular course. If a course is for first time dancers, it wouldn't make sense to have Olympic-level expectations for the highest degree. You might want the lowest degree to be for what students walk into the first session with. And the highest degree is perhaps aspirational for what an A+ student may achieve. You also want to include the vibe of the course. For example, when teaching a course for kids, calling the first degree 'grasshopper' might make sense. For a very beginning course, degrees may be labeled: novice, early beginner, beginer, advanced beginner, and so on.")
                 .parse(Parsers.stringList())
                 .label(DEGREE_LABELS)
                 .maxTokens(50)
