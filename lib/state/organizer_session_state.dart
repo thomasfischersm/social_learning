@@ -159,7 +159,7 @@ class OrganizerSessionState extends ChangeNotifier {
       sessionId: sessionId,
       userId: organizer.id,
       userUid: organizer.uid,
-      courseId: course.id,
+      courseId: course.id!,
       isInstructor: organizer.isAdmin,
     );
     print('after creating participant');
