@@ -45,5 +45,11 @@ class SessionParticipantFunctions {
     }
     return SessionParticipant.fromSnapshot(snapshot.docs.first);
   }
+
+  static Future<void> updateIsActive(String participantId, bool isActive) {
+    return FirestoreService.instance
+        .doc('/sessionParticipants/$participantId')
+        .update({'isActive': isActive});
+  }
 }
 
