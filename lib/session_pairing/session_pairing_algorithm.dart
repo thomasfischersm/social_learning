@@ -66,8 +66,9 @@ class SessionPairingAlgorithm {
 
   List<PairedSession> _generatePossiblePairings(
       OrganizerSessionState organizerSessionState, LibraryState libraryState) {
-    List<SessionParticipant> allParticipants =
-        List.from(organizerSessionState.sessionParticipants);
+    List<SessionParticipant> allParticipants = List.from(
+        organizerSessionState.sessionParticipants
+            .where((participant) => participant.isActive));
 
     return _generatePairings(
         allParticipants, [], organizerSessionState, libraryState);
