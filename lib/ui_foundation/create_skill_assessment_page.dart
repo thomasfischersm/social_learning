@@ -86,7 +86,7 @@ class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const LearningLabAppBar(title: 'Skill Assessment'),
+      appBar: const LearningLabAppBar(),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: Consumer2<CourseDesignerState, LibraryState>(
         builder: (context, designerState, libraryState, _) {

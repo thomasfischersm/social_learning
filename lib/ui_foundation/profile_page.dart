@@ -70,7 +70,7 @@ class ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const LearningLabAppBar(title: 'Social Learning'),
+      appBar: const LearningLabAppBar(),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(
           alignment: Alignment.topCenter,

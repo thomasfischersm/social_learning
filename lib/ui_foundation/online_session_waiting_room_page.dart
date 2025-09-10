@@ -36,7 +36,7 @@ class OnlineSessionWaitingRoomState
           }
         },
         child: Scaffold(
-            appBar: const LearningLabAppBar(title: 'Social Learning'),
+            appBar: const LearningLabAppBar(),
             bottomNavigationBar: BottomBarV2.build(context),
             body: Align(
               alignment: Alignment.topCenter,

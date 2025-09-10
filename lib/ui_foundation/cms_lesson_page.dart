@@ -124,7 +124,7 @@ class CmsLessonState extends State<CmsLessonPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const LearningLabAppBar(title: 'Learning Lab'),
+        appBar: const LearningLabAppBar(),
         bottomNavigationBar: BottomBarV2.build(context),
         floatingActionButton: FloatingActionButton(
             onPressed: () {

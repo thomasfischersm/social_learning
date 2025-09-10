@@ -33,7 +33,7 @@ class SessionHostState extends State<SessionHostPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const LearningLabAppBar(title: 'Learning Lab'),
+        appBar: const LearningLabAppBar(),
         floatingActionButton: SpeedDial(
             icon: Icons.more_vert,
             activeIcon: Icons.close,
@@ -51,7 +51,7 @@ class SessionHostState extends State<SessionHostPage> {
         body: Align(
             alignment: Alignment.topCenter,
             child: CustomUiConstants.framePage(
-                enableCourseLoadingGuard: true, enableAuthGuard: true,
+                enableCourseLoadingGuard: true,
                 Consumer2<OrganizerSessionState, LibraryState>(builder:
                     (context, organizerSessionState, libraryState, child) {
               return Column(

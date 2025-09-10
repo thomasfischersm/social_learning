@@ -32,7 +32,6 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
       builder: (context, libraryState, child) {
         return Scaffold(
           appBar: LearningLabAppBar(
-            title: '${libraryState.selectedCourse?.title} Curriculum',
             actions: InstructorNavActions.createActions(context),
           ),
           bottomNavigationBar: BottomBarV2.build(context),

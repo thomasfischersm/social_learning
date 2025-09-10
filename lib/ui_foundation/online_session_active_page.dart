@@ -26,7 +26,7 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const LearningLabAppBar(title: 'Social Learning'),
+      appBar: const LearningLabAppBar(),
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _endSession(context),

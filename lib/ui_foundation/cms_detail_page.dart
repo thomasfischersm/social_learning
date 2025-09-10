@@ -52,7 +52,7 @@ class CmsDetailPageState extends State<CmsDetailPage> {
     }
 
     return Scaffold(
-        appBar: const LearningLabAppBar(title: 'Social Learning'),
+        appBar: const LearningLabAppBar(),
         bottomNavigationBar: BottomBarV2.build(context),
         body: Center(
             child: Container(

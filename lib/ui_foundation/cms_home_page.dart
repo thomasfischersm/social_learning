@@ -26,7 +26,7 @@ class CmsHomePageState extends State<CmsHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const LearningLabAppBar(title: 'Social Learning'),
+      appBar: const LearningLabAppBar(),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Center(
           child: Container(

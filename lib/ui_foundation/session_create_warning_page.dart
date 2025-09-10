@@ -18,7 +18,7 @@ class SessionCreateWarningState extends State<SessionCreateWarningPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const LearningLabAppBar(title: 'Learning Lab'),
+        appBar: const LearningLabAppBar(),
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
