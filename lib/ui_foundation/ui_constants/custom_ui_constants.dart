@@ -86,16 +86,20 @@ class CustomUiConstants {
       bool enableAuthGuard = true,
       bool enableCreatorGuard = false,
       bool enableCourseLoadingGuard = false}) {
-    if (enableAuthGuard) {
-      child = AuthGuard(child: child);
+
+    // Add guards in reverse order. The guard added last will be executed first.
+    // This is important because when the user isn't logged in, exceptions
+    // could be thrown if the user isn't redirected to sign-in right away.
+    if (enableCourseLoadingGuard) {
+      child = CourseLoadingGuard(child: child);
     }
 
     if (enableCreatorGuard) {
       child = CreatorGuard(child: child);
     }
 
-    if (enableCourseLoadingGuard) {
-      child = CourseLoadingGuard(child: child);
+    if (enableAuthGuard) {
+      child = AuthGuard(child: child);
     }
 
     if (enableScrolling) {
