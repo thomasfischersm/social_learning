@@ -10,13 +10,13 @@ class SkillRubricInfoCard extends StatelessWidget {
 
   Future<void> _onAIPressed(BuildContext context) async {
     final state = context.read<CourseDesignerState>();
-    final hasDegrees =
-        state.skillRubric?.dimensions.any((d) => d.degrees.isNotEmpty) ?? false;
-    if (hasDegrees) {
+    final hasDimensions =
+        state.skillRubric?.dimensions.isNotEmpty ?? false;
+    if (hasDimensions) {
       await DialogUtils.showInfoDialog(
         context,
         'AI skill rubric generation',
-        'This AI function can only be used for an empty skill rubric.\n\nDelete your existing skill degrees to proceed.',
+        'AI generation is only available for an empty skill rubric.\n\nIt will overwrite all existing dimensions and degrees.',
         () {},
       );
     } else {
