@@ -75,6 +75,8 @@ class OrganizerSessionState extends ChangeNotifier {
     applicationState.addListener(() {
       _connectToActiveSession(applicationState);
     });
+
+    _libraryState.addListener(() => _handleCourseChange(applicationState));
   }
 
   _connectToActiveSession(ApplicationState applicationState) {
@@ -223,6 +225,9 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void signOut() {
+    _disconnectFromSession();
+  }
+  void _disconnectFromSession() {
     _sessionSubscription.cancel();
     _sessionParticipantsSubscription.cancel();
     _participantUsersSubscription.cancel();
@@ -359,6 +364,14 @@ class OrganizerSessionState extends ChangeNotifier {
     }).catchError((error) {
       print('Failed to add lesson to session pairing: $error');
     });
+  }
+
+  void _handleCourseChange(ApplicationState applicationState) {
+    if (currentSession?.courseId.id != _libraryState.selectedCourse?.id) {
+      _disconnectFromSession();
+      notifyListeners();
+      _connectToActiveSession(applicationState);
+    }
   }
 }
 
