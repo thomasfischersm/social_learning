@@ -58,9 +58,15 @@ class SkillRubricsFunctions {
         final degrees = <SkillDegree>[];
         for (int i = 0; i < dim.degrees.length; i++) {
           final deg = dim.degrees[i];
-          final exerciseText = deg.lessons.map((e) => "- $e").join("\n");
-          final fullDescription =
-              [deg.criteria, exerciseText].where((s) => s.trim().isNotEmpty).join("\n\n");
+          final exerciseText =
+              "Suggested exercises to reach the next degree:\n" +
+                  deg.lessons
+                      .map((e) => "- " + _removePrefix(e, "- "))
+                      .join("\n");
+          final fullDescription = [
+            _removePrefix(deg.criteria, "${deg.name}: "),
+            exerciseText
+          ].where((s) => s.trim().isNotEmpty).join("\n\n");
           degrees.add(SkillDegree(
             id: _firestore.collection(_collectionPath).doc().id,
             degree: i + 1,
@@ -92,6 +98,13 @@ class SkillRubricsFunctions {
       print('Error replacing skill rubric: $e');
       return null;
     }
+  }
+
+  static String _removePrefix(String text, String prefix) {
+    if (text.startsWith(prefix)) {
+      return text.substring(prefix.length);
+    }
+    return text;
   }
 
   static Future<SkillRubric?> createDimension({
@@ -431,7 +444,8 @@ class SkillRubricsFunctions {
       final degIndex = degrees.indexWhere((d) => d.id == degreeId);
       if (degIndex < 0) return rubric;
       final lessonRef = docRef('lessons', lessonId);
-      degrees[degIndex].lessonRefs
+      degrees[degIndex]
+          .lessonRefs
           .removeWhere((ref) => ref.path == lessonRef.path);
       await rubricRef.update({
         'dimensions': dims.map((e) => e.toMap()).toList(),
