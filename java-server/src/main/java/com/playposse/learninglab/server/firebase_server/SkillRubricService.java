@@ -53,6 +53,7 @@ public class SkillRubricService {
         Label<List<String>> DEGREE_LABELS = Label.of("degreeLabels", new com.fasterxml.jackson.core.type.TypeReference<>() {});
         Label<List<String>> DIMENSIONS = Label.of("dimensions", new com.fasterxml.jackson.core.type.TypeReference<>() {});
         Label<String> DETAIL = Label.of("detail", String.class); // reused for interim strings
+        Label<List<String>> DIMENSION_DESCRIPTIONS = Label.of("dimensionDescriptions", new com.fasterxml.jackson.core.type.TypeReference<>() {});
         Label<List<String>> DEGREE_DESCRIPTIONS = Label.of("degreeDescriptions", new com.fasterxml.jackson.core.type.TypeReference<>() {});
         Label<List<String>> DEGREE_EXERCISES = Label.of("degreeExercises", new com.fasterxml.jackson.core.type.TypeReference<>() {});
 
@@ -67,21 +68,36 @@ public class SkillRubricService {
                 // Step 1: get global degree labels
                 .step("degreeLabels")
                 .system(systemMessage)
-                .user(info + "\n\nList the five skill degree labels from novice to expert. Return one per line.\n\nConsider what makes sense for the particular course. If a course is for first time dancers, it wouldn't make sense to have Olympic-level expectations for the highest degree. You might want the lowest degree to be for what students walk into the first session with. And the highest degree is perhaps aspirational for what an A+ student may achieve. You also want to include the vibe of the course. For example, when teaching a course for kids, calling the first degree 'grasshopper' might make sense. For a very beginning course, degrees may be labeled: novice, early beginner, beginer, advanced beginner, and so on.")
+                .user(info + "\n\nList the five skill degree labels from novice to expert. Return one per line.\n\nConsider what makes sense for the particular course. If a course is for first time dancers, it wouldn't make sense to have Olympic-level expectations for the highest degree. You might want the lowest degree to be for what students walk into the first session with. And the highest degree is perhaps aspirational for what an A+ student may achieve. You also want to include the vibe of the course. For example, when teaching a course for kids, calling the first degree 'grasshopper' might make sense. For a very beginning course, degrees may be labeled: novice, early beginner, beginner, advanced beginner, and so on.\n\nThe degrees should be short and clear because they will be used as labels. A single word is ideal.")
                 .parse(Parsers.stringList())
                 .label(DEGREE_LABELS)
-                .maxTokens(50)
+//                .maxTokens(50)
                 .endStep()
 
                 // Step 2: brainstorm dimensions
                 .step("dimensions")
                 .system(systemMessage)
-                .user(info + "\n\nList 5-7 key skill dimensions for this course. Return one per line.")
+                .user(info + "\n\nList 5-7 key skill dimensions for this course. Return one per line.\n\nThe dimensions should be short (1-3 words) because they will be used as labels.")
                 .parse(Parsers.stringList())
                 .label(DIMENSIONS)
                 .endStep()
 
-                // Step 3: for each dimension get degree criteria
+                // Step 3: for each dimension get description
+                .forEach(DIMENSIONS)
+                .alias("dimension")
+                .addStep(
+                        StepBuilder.start("dimensionDescriptions", defaults)
+                                .system(systemMessage)
+                                .user(info + "\n\nCreate a description for the dimension '${dimension}.' It should be 1-2 sentences long.")
+                                .parse(Parsers.string())
+                                .label(DETAIL)
+//                                .maxTokens(800)
+                                .build()
+                )
+                .joinInto(DIMENSION_DESCRIPTIONS)
+                .endForEach()
+
+                // Step 4: for each dimension get degree criteria
                 .forEach(DIMENSIONS)
                 .alias("dimension")
                 .addStep(
@@ -90,13 +106,13 @@ public class SkillRubricService {
                                 .user(info + "\n\nDimension: ${dimension}\nDegree labels: ${degreeLabels}\nFor each degree, describe what a student must demonstrate at that degree for this dimension. Return one paragraph per degree, separated by a blank line, and follow the order of the degree labels.")
                                 .parse(Parsers.string())
                                 .label(DETAIL)
-                                .maxTokens(800)
+//                                .maxTokens(800)
                                 .build()
                 )
                 .joinInto(DEGREE_DESCRIPTIONS)
                 .endForEach()
 
-                // Step 4: for each dimension get exercises
+                // Step 5: for each dimension get exercises
                 .forEach(DIMENSIONS)
                 .alias("dimension")
                 .addStep(
@@ -105,7 +121,7 @@ public class SkillRubricService {
                                 .user(info + "\n\nDimension: ${dimension}\nDegree labels: ${degreeLabels}\nFor each degree, list three exercises a student can do to progress to the next degree. Provide one exercise per line and separate each group of exercises by a blank line. Follow the order of the degree labels.")
                                 .parse(Parsers.string())
                                 .label(DETAIL)
-                                .maxTokens(800)
+//                                .maxTokens(800)
                                 .build()
                 )
                 .joinInto(DEGREE_EXERCISES)
@@ -115,6 +131,7 @@ public class SkillRubricService {
                 .run(openAiClient);
 
         List<String> dims = result.get(DIMENSIONS);
+        List<String> dimensionDescriptions = result.get(DIMENSION_DESCRIPTIONS);
         List<String> degreeLabels = result.get(DEGREE_LABELS);
         List<String> degreeDescStrings = result.get(DEGREE_DESCRIPTIONS);
         List<String> degreeExerciseStrings = result.get(DEGREE_EXERCISES);
@@ -122,6 +139,8 @@ public class SkillRubricService {
         ObjectMapper mapper = new ObjectMapper();
         List<JsonNode> detailNodes = new ArrayList<>();
         for (int i = 0; i < dims.size(); i++) {
+            String dimensionDescription = i < dimensionDescriptions.size() ? dimensionDescriptions.get(i) : "";
+
             String descBlock = i < degreeDescStrings.size() ? degreeDescStrings.get(i) : "";
             List<String> criteriaList = Arrays.stream(descBlock.split("\n\n"))
                     .map(String::trim)
@@ -154,7 +173,7 @@ public class SkillRubricService {
             }
 
             ObjectNode dimNode = mapper.createObjectNode();
-            dimNode.put("description", "");
+            dimNode.put("description", dimensionDescription);
             dimNode.set("degrees", degreesArr);
             detailNodes.add(dimNode);
         }
