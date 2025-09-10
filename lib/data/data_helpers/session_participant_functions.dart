@@ -46,4 +46,3 @@ class SessionParticipantFunctions {
     return SessionParticipant.fromSnapshot(snapshot.docs.first);
   }
 }
-

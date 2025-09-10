@@ -15,6 +15,7 @@ class SessionParticipantsSubscription
   final SessionSubscription _sessionSubscription;
   final ParticipantUsersSubscription _participantUsersSubscription;
   final ApplicationState? _applicationState;
+  bool _isJoinPending = false;
 
   SessionParticipantsSubscription(
       this._shouldUpdateParticipantCount,
@@ -38,6 +39,14 @@ class SessionParticipantsSubscription
     }
 
     if (_shouldAddUserToSession) {
+      var currentUid = _applicationState?.currentUser?.uid;
+      if (_isJoinPending &&
+          currentUid != null &&
+          sessionParticipants.any(
+              (participant) => participant.participantUid == currentUid)) {
+        _isJoinPending = false;
+      }
+
       _addUserToSession(session, sessionParticipants);
     }
 
@@ -85,17 +94,23 @@ class SessionParticipantsSubscription
           'Checking if ${element.participantUid} == ${currentUser?.uid} => ${element.participantUid == currentUser?.uid}');
       return element.participantUid == currentUser?.uid;
     });
-    print('containsSelf: $containsSelf; this.uid: ${currentUser?.uid}');
-    if (!containsSelf && currentUser != null) {
-      // TODO: This seems to create entries too aggressively.
-      print('Student added itself as a participant');
-      SessionParticipantFunctions.createParticipant(
-        sessionId: session.id!,
-        userId: currentUser.id,
-        userUid: currentUser.uid,
-        courseId: session.courseId.id,
-        isInstructor: currentUser.isAdmin,
-      );
+    print(
+        'containsSelf: $containsSelf; this.uid: ${currentUser?.uid}; isJoinPending: $_isJoinPending');
+    if (_isJoinPending || containsSelf || currentUser == null) {
+      return;
     }
+
+    _isJoinPending = true;
+    print('Student added itself as a participant');
+    SessionParticipantFunctions.createParticipant(
+      sessionId: session.id!,
+      userId: currentUser.id,
+      userUid: currentUser.uid,
+      courseId: session.courseId.id,
+      isInstructor: currentUser.isAdmin,
+    ).catchError((error) {
+      _isJoinPending = false;
+      print('Error adding participant: $error');
+    });
   }
 }
