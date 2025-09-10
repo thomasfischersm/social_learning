@@ -19,7 +19,7 @@ class MentorTableCell extends UserTableCell {
   @override
   List<DropdownMenuEntry<User>> getSelectableUsers() {
     // Derive the set of inactive user UIDs.
-    Set<String> inactiveUserUids =
+    var inactiveUserUids =
         organizerSessionState.sessionParticipants
             .where((participant) => !participant.isActive)
             .map((participant) => participant.participantUid)

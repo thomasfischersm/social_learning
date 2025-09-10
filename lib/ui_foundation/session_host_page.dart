@@ -63,7 +63,10 @@ class SessionHostState extends State<SessionHostPage> {
                   CustomUiConstants.getTextPadding(Text(
                       '${organizerSessionState.currentSession?.participantCount} Participants',
                       style: CustomTextStyles.subHeadline)),
-                  _createParticipantTable(organizerSessionState, libraryState),
+                  Padding(
+                      padding: EdgeInsets.only(bottom: 8),
+                      child: _createParticipantTable(
+                          organizerSessionState, libraryState)),
                   // Align(
                   //     alignment: Alignment.centerRight,
                   //     child: TextButton(
@@ -208,8 +211,9 @@ class SessionHostState extends State<SessionHostPage> {
     // Insert heading and inactive participant rows if any inactive participants.
     if (inactiveParticipants.isNotEmpty) {
       tableRows.add(TableRow(children: <Widget>[
-        CustomUiConstants.getIndentationTextPadding(
-            Padding(padding: const EdgeInsets.only(top: 8), child: Text('Inactive Students',
+        CustomUiConstants.getIndentationTextPadding(Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
+            child: Text('Inactive Students',
                 style: CustomTextStyles.getBodyNote(context)
                     ?.copyWith(fontWeight: FontWeight.bold)))),
         SizedBox.shrink(),
