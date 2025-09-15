@@ -6,7 +6,9 @@ import 'package:social_learning/data/skill_assessment.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
+import 'package:social_learning/data/data_helpers/belt_color_functions.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_styles.dart';
 
 class RadarWidget extends StatelessWidget {
   final User? user;
@@ -89,6 +91,17 @@ class RadarWidget extends StatelessWidget {
     }
 
     dims ??= [];
+    Color? outerColor;
+    if (user != null) {
+      final course = context.watch<LibraryState>().selectedCourse;
+      if (course != null) {
+        final prof = user!.getCourseProficiency(course);
+        if (prof != null) {
+          outerColor = BeltColorFunctions.getBeltColor(prof.proficiency);
+        }
+      }
+    }
+
     return CustomPaint(
       size: Size.square(size),
       painter: _RadarPainter(
@@ -97,6 +110,9 @@ class RadarWidget extends StatelessWidget {
         mainLineWidth: mainLineWidth,
         supportColor: supportColor,
         supportLineWidth: supportLineWidth,
+        outerColor: outerColor,
+        outerLineWidth:
+            outerColor != null ? CustomUiStyles.profileBorderWidth : supportLineWidth,
         showLabels: showLabels,
         drawPolygon: polygon,
         fillColor: fillColor,
@@ -111,6 +127,8 @@ class _RadarPainter extends CustomPainter {
   final double mainLineWidth;
   final Color supportColor;
   final double supportLineWidth;
+  final Color? outerColor;
+  final double? outerLineWidth;
   final bool showLabels;
   final bool drawPolygon;
   final Color fillColor;
@@ -121,6 +139,8 @@ class _RadarPainter extends CustomPainter {
     required this.mainLineWidth,
     required this.supportColor,
     required this.supportLineWidth,
+    this.outerColor,
+    this.outerLineWidth,
     required this.showLabels,
     required this.drawPolygon,
     required this.fillColor,
@@ -134,12 +154,16 @@ class _RadarPainter extends CustomPainter {
       ..color = supportColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = supportLineWidth;
+    final outerPaint = Paint()
+      ..color = outerColor ?? supportColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = outerLineWidth ?? supportLineWidth;
     final mainPaint = Paint()
       ..color = mainColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = mainLineWidth;
 
-    canvas.drawCircle(center, radius, supportPaint);
+    canvas.drawCircle(center, radius, outerPaint);
 
     final count = dimensions.length;
     if (count == 0) {
@@ -216,6 +240,8 @@ class _RadarPainter extends CustomPainter {
         old.mainLineWidth != mainLineWidth ||
         old.supportColor != supportColor ||
         old.supportLineWidth != supportLineWidth ||
+        old.outerColor != outerColor ||
+        old.outerLineWidth != outerLineWidth ||
         old.showLabels != showLabels ||
         old.drawPolygon != drawPolygon ||
         old.fillColor != fillColor;
