@@ -35,11 +35,19 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
       orElse: () => widget.dimension.degrees.first,
     );
 
+    final dimensionDescription = widget.dimension.description;
+    final hasDimensionDescription =
+        dimensionDescription != null && dimensionDescription.trim().isNotEmpty;
+
     return CustomCard(
       title: widget.dimension.name,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (hasDimensionDescription) ...[
+            _buildDescriptionBox(dimensionDescription),
+            const SizedBox(height: 8),
+          ],
           Row(
             children: widget.dimension.degrees.map((degree) {
               final isAssessment = degree.degree == widget.selectedDegree;
@@ -80,17 +88,21 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
             }).toList(),
           ),
           const SizedBox(height: 8),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black54),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(selected.description ?? ''),
-          ),
+          _buildDescriptionBox(selected.description),
         ],
       ),
+    );
+  }
+
+  Widget _buildDescriptionBox(String? text) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black54),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(text ?? ''),
     );
   }
 }
