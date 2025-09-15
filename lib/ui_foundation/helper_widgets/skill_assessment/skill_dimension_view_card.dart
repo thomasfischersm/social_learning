@@ -45,6 +45,7 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (hasDimensionDescription) ...[
+            const SizedBox(height: 2),
             _buildDescriptionBox(
               dimensionDescription,
               label: 'Dimension description',
@@ -57,11 +58,13 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
               final isViewing = degree.degree == _viewedDegree;
               Color? background;
               Color? foreground;
+              TextStyle textStyle = Theme.of(context).textTheme.bodySmall!;
               if (isAssessment) {
                 background = Theme.of(context).colorScheme.primary;
                 foreground = Colors.white;
+                textStyle = textStyle.copyWith(color:foreground);
               } else if (isViewing) {
-                background = Theme.of(context).colorScheme.primary.withOpacity(0.1);
+                background = Theme.of(context).colorScheme.primary.withOpacity(0.2);
               }
               return Expanded(
                 child: Padding(
@@ -82,7 +85,7 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
                     },
                     child: Text(
                       degree.name,
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: textStyle,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -90,7 +93,7 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
               );
             }).toList(),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           _buildDescriptionBox(
             selected.description,
             label: 'Degree description',
