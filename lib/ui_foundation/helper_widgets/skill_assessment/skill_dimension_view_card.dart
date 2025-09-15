@@ -45,7 +45,10 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (hasDimensionDescription) ...[
-            _buildDescriptionBox(dimensionDescription),
+            _buildDescriptionBox(
+              dimensionDescription,
+              label: 'Dimension description',
+            ),
             const SizedBox(height: 8),
           ],
           Row(
@@ -88,21 +91,30 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
             }).toList(),
           ),
           const SizedBox(height: 8),
-          _buildDescriptionBox(selected.description),
+          _buildDescriptionBox(
+            selected.description,
+            label: 'Degree description',
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildDescriptionBox(String? text) {
-    return Container(
+  Widget _buildDescriptionBox(
+    String? text, {
+    required String label,
+  }) {
+    final value = text ?? '';
+    return SizedBox(
       width: double.infinity,
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black54),
-        borderRadius: BorderRadius.circular(4),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        isEmpty: value.trim().isEmpty,
+        child: Text(value),
       ),
-      child: Text(text ?? ''),
     );
   }
 }
