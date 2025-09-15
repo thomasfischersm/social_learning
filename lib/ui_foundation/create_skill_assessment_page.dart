@@ -111,6 +111,7 @@ class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
           enableCreatorGuard: true,
+          enableScrolling: false,
           Consumer2<CourseDesignerState, LibraryState>(
             builder: (context, designerState, libraryState, _) {
               final rubric = designerState.skillRubric;
@@ -145,18 +146,22 @@ class _CreateSkillAssessmentPageState extends State<CreateSkillAssessmentPage> {
                     notesController: _notesController,
                   ),
                   const SizedBox(height: 8),
-                  ...rubric.dimensions.map((dim) {
-                    return SkillDimensionCard(
-                      dimension: dim,
-                      selectedDegree: _selectedDegrees[dim.id],
-                      previousDegree: _previousDegrees[dim.id],
-                      onDegreeSelected: (degree) {
-                        setState(() {
-                          _selectedDegrees[dim.id] = degree;
-                        });
-                      },
-                    );
-                  }).toList(),
+                  Expanded(
+                    child: ListView(
+                      children: rubric.dimensions.map((dim) {
+                        return SkillDimensionCard(
+                          dimension: dim,
+                          selectedDegree: _selectedDegrees[dim.id],
+                          previousDegree: _previousDegrees[dim.id],
+                          onDegreeSelected: (degree) {
+                            setState(() {
+                              _selectedDegrees[dim.id] = degree;
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
                 ],
               );
             },
