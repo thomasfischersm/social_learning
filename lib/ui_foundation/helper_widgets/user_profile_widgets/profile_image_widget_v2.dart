@@ -12,6 +12,7 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_styles.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/radar_widget.dart';
 
 /// Unified version of [ProfileImageWidget] and [ProfileImageByUserIdWidget].
@@ -236,32 +237,33 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
         _createCircleAvatar(context, maxDisplayRadius, availableWidth);
 
     if (borderColor != null) {
+      final borderWidth = CustomUiStyles.profileBorderWidth;
       avatar = Container(
           decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: borderColor, width: 2.0)),
+              border: Border.all(color: borderColor, width: borderWidth)),
           child: avatar);
     }
     return avatar;
   }
 
   Widget _buildRadarAvatar(Color? borderColor, double maxDisplayRadius) {
+    final borderWidth = CustomUiStyles.profileBorderWidth;
     final diameter = maxDisplayRadius * 2;
     Widget radar = SizedBox(
       width: diameter,
       height: diameter,
       child: RadarWidget(
-        user: _user!,
-        size: diameter,
-        showLabels: false,
-      ),
+          user: _user!,
+          size: diameter,
+          showLabels: false),
     );
     radar = ClipOval(child: radar);
     if (borderColor != null) {
       radar = Container(
           decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: borderColor, width: 2.0)),
+              border: Border.all(color: borderColor, width: borderWidth)),
           child: radar);
     }
     return radar;
