@@ -30,6 +30,8 @@ class CustomUiConstants {
   static const EdgeInsets standardInputPadding =
       EdgeInsets.symmetric(horizontal: 12, vertical: 10);
 
+  static const double profileBorderWidth = 2.0;
+
   /// Returns an [OutlineInputBorder] with consistent radius and color.
   static OutlineInputBorder getInputBorder(
       {Color color = const Color(0xFFBDBDBD), double width = 1, double radius = 8}) {

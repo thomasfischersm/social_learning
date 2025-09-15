@@ -8,7 +8,7 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/data/data_helpers/belt_color_functions.dart';
 import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/ui_foundation/ui_constants/custom_ui_styles.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
 class RadarWidget extends StatelessWidget {
   final User? user;
@@ -112,7 +112,7 @@ class RadarWidget extends StatelessWidget {
         supportLineWidth: supportLineWidth,
         outerColor: outerColor,
         outerLineWidth:
-            outerColor != null ? CustomUiStyles.profileBorderWidth : supportLineWidth,
+            outerColor != null ? CustomUiConstants.profileBorderWidth : supportLineWidth,
         showLabels: showLabels,
         drawPolygon: polygon,
         fillColor: fillColor,
