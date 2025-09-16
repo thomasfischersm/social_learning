@@ -6,6 +6,7 @@ import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/ui_constants/home_selector.dart';
+import 'package:social_learning/ui_foundation/ui_constants/manage_selector.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class BottomBarV2 {
@@ -249,7 +250,7 @@ class BottomBarV2 {
     // CMS
     if (isManageVisible) {
       if (index == 0) {
-        NavigationEnum.cmsSyllabus.navigateClean(context);
+        ManageSelector.navigateCleanDelayed(context);
         return;
       } else {
         index--;
