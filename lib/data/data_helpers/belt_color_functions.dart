@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:social_learning/data/user.dart';
+import 'package:social_learning/state/library_state.dart';
 
 class BeltColorFunctions {
   static const List<Color> colors = [
@@ -53,5 +55,26 @@ class BeltColorFunctions {
     final Color lowerColor = colors[lowerIndex];
     final Color upperColor = colors[upperIndex];
     return Color.lerp(lowerColor, upperColor, interpolationFactor)!;
+  }
+
+  static Color? getSelectedCourseBeltColor({
+    required LibraryState libraryState,
+    User? user,
+  }) {
+    if (user == null) {
+      return null;
+    }
+
+    final course = libraryState.selectedCourse;
+    if (course == null) {
+      return null;
+    }
+
+    final proficiency = user.getCourseProficiency(course);
+    if (proficiency == null) {
+      return null;
+    }
+
+    return getBeltColor(proficiency.proficiency);
   }
 }

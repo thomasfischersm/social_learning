@@ -19,6 +19,7 @@ class RadarWidget extends StatelessWidget {
   final double mainLineWidth;
   final Color supportColor;
   final double supportLineWidth;
+  final Color? outerColor;
   final bool showLabels;
   final bool drawPolygon;
   final Color fillColor;
@@ -33,6 +34,7 @@ class RadarWidget extends StatelessWidget {
     this.mainLineWidth = 2,
     this.supportColor = Colors.grey,
     this.supportLineWidth = 1,
+    this.outerColor,
     this.showLabels = true,
     this.drawPolygon = true,
     this.fillColor = Colors.transparent,
@@ -43,12 +45,13 @@ class RadarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     List<SkillAssessmentDimension>? dims = dimensions;
     bool polygon = drawPolygon;
+    final libraryState = context.watch<LibraryState>();
 
     if (dims == null) {
       if (assessment != null) {
         dims = assessment!.dimensions;
       } else if (user != null) {
-        final course = context.watch<LibraryState>().selectedCourse;
+        final course = libraryState.selectedCourse;
         if (course == null) {
           return SizedBox(width: size, height: size);
         }
@@ -71,6 +74,14 @@ class RadarWidget extends StatelessWidget {
                       )
                       .toList() ??
                   [];
+              var outerColor = this.outerColor;
+              outerColor ??= BeltColorFunctions.getSelectedCourseBeltColor(
+                libraryState: libraryState,
+                user: user,
+              );
+              final double outerLineWidth = outerColor != null
+                  ? CustomUiConstants.profileBorderWidth
+                  : supportLineWidth;
               return CustomPaint(
                 size: Size.square(size),
                 painter: _RadarPainter(
@@ -79,6 +90,8 @@ class RadarWidget extends StatelessWidget {
                   mainLineWidth: mainLineWidth,
                   supportColor: supportColor,
                   supportLineWidth: supportLineWidth,
+                  outerColor: outerColor,
+                  outerLineWidth: outerLineWidth,
                   showLabels: showLabels,
                   drawPolygon: false,
                   fillColor: fillColor,
@@ -91,16 +104,14 @@ class RadarWidget extends StatelessWidget {
     }
 
     dims ??= [];
-    Color? outerColor;
-    if (user != null) {
-      final course = context.watch<LibraryState>().selectedCourse;
-      if (course != null) {
-        final prof = user!.getCourseProficiency(course);
-        if (prof != null) {
-          outerColor = BeltColorFunctions.getBeltColor(prof.proficiency);
-        }
-      }
-    }
+    var outerColor = this.outerColor;
+    outerColor ??= BeltColorFunctions.getSelectedCourseBeltColor(
+      libraryState: libraryState,
+      user: user,
+    );
+    final double outerLineWidth = outerColor != null
+        ? CustomUiConstants.profileBorderWidth
+        : supportLineWidth;
 
     return CustomPaint(
       size: Size.square(size),
@@ -111,8 +122,7 @@ class RadarWidget extends StatelessWidget {
         supportColor: supportColor,
         supportLineWidth: supportLineWidth,
         outerColor: outerColor,
-        outerLineWidth:
-            outerColor != null ? CustomUiConstants.profileBorderWidth : supportLineWidth,
+        outerLineWidth: outerLineWidth,
         showLabels: showLabels,
         drawPolygon: polygon,
         fillColor: fillColor,
@@ -128,10 +138,15 @@ class _RadarPainter extends CustomPainter {
   final Color supportColor;
   final double supportLineWidth;
   final Color? outerColor;
-  final double? outerLineWidth;
+  final double outerLineWidth;
   final bool showLabels;
   final bool drawPolygon;
   final Color fillColor;
+
+  // Apply tighter label spacing when the radar matches the typical avatar
+  // diameter (roughly 64px) or is smaller. This keeps labels from piling up at
+  // the center in compact layouts.
+  static const double _compactLayoutDiameterThreshold = 128.0;
 
   _RadarPainter({
     required this.dimensions,
@@ -140,7 +155,7 @@ class _RadarPainter extends CustomPainter {
     required this.supportColor,
     required this.supportLineWidth,
     this.outerColor,
-    this.outerLineWidth,
+    required this.outerLineWidth,
     required this.showLabels,
     required this.drawPolygon,
     required this.fillColor,
@@ -157,7 +172,7 @@ class _RadarPainter extends CustomPainter {
     final outerPaint = Paint()
       ..color = outerColor ?? supportColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = outerLineWidth ?? supportLineWidth;
+      ..strokeWidth = outerLineWidth;
     final mainPaint = Paint()
       ..color = mainColor
       ..style = PaintingStyle.stroke
@@ -173,10 +188,23 @@ class _RadarPainter extends CustomPainter {
     final angleStep = 2 * pi / count;
     final path = Path();
     final labelStyle = TextStyle(color: supportColor, fontSize: 12);
+    final double labelRadius = radius - 4;
+    final double baseMaxLabelWidth = labelRadius;
+    final bool applyCompactSizing =
+        min(size.width, size.height) <= _compactLayoutDiameterThreshold;
+    final double labelGap = applyCompactSizing && baseMaxLabelWidth > 0
+        ? min(_measureCharacterWidth('M', labelStyle), baseMaxLabelWidth)
+        : 0;
 
     for (var i = 0; i < count; i++) {
       final angle = -pi / 2 + angleStep * i;
       final dir = Offset(cos(angle), sin(angle));
+      final angleDeg = angle * 180 / pi;
+      final bool flip = angleDeg >= 90 && angleDeg <= 270;
+      var rotation = angle;
+      if (flip) {
+        rotation += pi;
+      }
 
       final end = center + dir * radius;
       canvas.drawLine(center, end, supportPaint);
@@ -195,7 +223,19 @@ class _RadarPainter extends CustomPainter {
       }
 
       if (showLabels) {
-        final maxLabelWidth = radius - 4;
+        final bool startsFromCenter = !flip;
+        final double maxLabelWidth = startsFromCenter
+            ? baseMaxLabelWidth
+            : max(0.0, baseMaxLabelWidth - labelGap);
+
+        // Compact radars shorten labels that push toward the center while
+        // nudging labels that originate at the center outward by the gap
+        // amount to avoid crowding.
+
+        if (maxLabelWidth <= 0) {
+          continue;
+        }
+
         final tp = TextPainter(
           text: TextSpan(text: dim.name, style: labelStyle),
           textDirection: TextDirection.ltr,
@@ -203,14 +243,12 @@ class _RadarPainter extends CustomPainter {
           ellipsis: '…',
         )..layout(maxWidth: maxLabelWidth);
 
-        final labelRadius = radius - 4;
-        final labelPos = center + dir * labelRadius;
-        final angleDeg = angle * 180 / pi;
-        var rotation = angle;
-        final flip = angleDeg >= 90 && angleDeg <= 270;
-        if (flip) {
-          rotation += pi;
-        }
+        final double effectiveLabelRadius = startsFromCenter
+            ? labelRadius + labelGap
+            : labelRadius;
+        // When the label text starts at the center, push the anchor outward by
+        // the measured gap so the drawn text begins farther from the center.
+        final labelPos = center + dir * effectiveLabelRadius;
 
         canvas.save();
         canvas.translate(labelPos.dx, labelPos.dy);
@@ -231,6 +269,15 @@ class _RadarPainter extends CustomPainter {
       }
       canvas.drawPath(path, mainPaint);
     }
+  }
+
+  double _measureCharacterWidth(String character, TextStyle style) {
+    final painter = TextPainter(
+      text: TextSpan(text: character, style: style),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout();
+    return painter.width;
   }
 
   @override

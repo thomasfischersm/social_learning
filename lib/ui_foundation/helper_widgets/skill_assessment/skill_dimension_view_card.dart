@@ -65,23 +65,36 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
       }
     }
 
+    final dimensionDescription = widget.dimension.description;
+    final hasDimensionDescription =
+        dimensionDescription != null && dimensionDescription.trim().isNotEmpty;
+
     return CustomCard(
       title: widget.dimension.name,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (hasDimensionDescription) ...[
+            const SizedBox(height: 2),
+            _buildDescriptionBox(
+              dimensionDescription,
+              label: 'Dimension description',
+            ),
+            const SizedBox(height: 8),
+          ],
           Row(
             children: widget.dimension.degrees.map((degree) {
               final isAssessment = degree.degree == widget.selectedDegree;
               final isViewing = degree.degree == _viewedDegree;
               Color? background;
               Color? foreground;
+              TextStyle textStyle = Theme.of(context).textTheme.bodySmall!;
               if (isAssessment) {
                 background = Theme.of(context).colorScheme.primary;
                 foreground = Colors.white;
+                textStyle = textStyle.copyWith(color:foreground);
               } else if (isViewing) {
-                background =
-                    Theme.of(context).colorScheme.primary.withOpacity(0.1);
+                background = Theme.of(context).colorScheme.primary.withOpacity(0.2);
               }
               return Expanded(
                 child: Padding(
@@ -102,7 +115,7 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
                     },
                     child: Text(
                       degree.name,
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: textStyle,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -110,15 +123,10 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
               );
             }).toList(),
           ),
-          const SizedBox(height: 8),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black54),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(selected.description ?? ''),
+          const SizedBox(height: 12),
+          _buildDescriptionBox(
+            selected.description,
+            label: 'Degree description',
           ),
           if (lessons.isNotEmpty) ...[
             const SizedBox(height: 12),
@@ -197,6 +205,24 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
       context,
       NavigationEnum.lessonDetail.route,
       arguments: LessonDetailArgument(lessonId),
+    );
+  }
+
+  Widget _buildDescriptionBox(
+    String? text, {
+    required String label,
+  }) {
+    final value = text ?? '';
+    return SizedBox(
+      width: double.infinity,
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        isEmpty: value.trim().isEmpty,
+        child: Text(value),
+      ),
     );
   }
 }
