@@ -87,10 +87,9 @@ class _CourseDesignerSessionPlanPageState
       bottomNavigationBar: BottomBarV2.build(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // TODO: Navigate to the next page.
-          // NavigationEnum.courseDesignerSomething.navigateCleanDelayed(context);
+          NavigationEnum.cmsSyllabus.navigateCleanDelayed(context);
         },
-        tooltip: 'Next Page',
+        tooltip: 'Syllabus',
         child: const Icon(Icons.arrow_forward),
       ),
       body: Align(

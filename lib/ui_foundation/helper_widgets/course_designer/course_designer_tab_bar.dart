@@ -42,6 +42,10 @@ class CourseDesignerTabBar extends StatefulWidget implements PreferredSizeWidget
         icon: Icons.event,
         nav: NavigationEnum.courseDesignerSessionPlan,
         label: 'Session Plan'),
+    _TabInfo(
+        icon: Icons.library_books_outlined,
+        nav: NavigationEnum.cmsSyllabus,
+        label: 'Syllabus'),
   ];
 
   /// Returns the tab index for a [NavigationEnum].
