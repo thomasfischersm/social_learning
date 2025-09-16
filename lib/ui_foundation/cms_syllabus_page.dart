@@ -6,12 +6,12 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
-import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/edit_level_title_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/one_time_banner.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
-import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/course_designer_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/cms_syllabus/edit_invitation_code_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/cms_syllabus/edit_course_title_dialog.dart';
@@ -28,12 +28,17 @@ class CmsSyllabusPage extends StatefulWidget {
 class CmsSyllabusState extends State<CmsSyllabusPage> {
   @override
   Widget build(BuildContext context) {
+    final scaffoldKey = GlobalKey<ScaffoldState>();
     return Consumer<LibraryState>(
       builder: (context, libraryState, child) {
         return Scaffold(
-          appBar: LearningLabAppBar(
-            actions: InstructorNavActions.createActions(context),
+          key: scaffoldKey,
+          appBar: CourseDesignerAppBar(
+            title: 'Syllabus',
+            scaffoldKey: scaffoldKey,
+            currentNav: NavigationEnum.cmsSyllabus,
           ),
+          drawer: const CourseDesignerDrawer(),
           bottomNavigationBar: BottomBarV2.build(context),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
