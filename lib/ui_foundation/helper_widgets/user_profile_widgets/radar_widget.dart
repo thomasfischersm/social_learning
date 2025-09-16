@@ -146,7 +146,7 @@ class _RadarPainter extends CustomPainter {
   // Apply tighter label spacing when the radar matches the typical avatar
   // diameter (roughly 64px) or is smaller. This keeps labels from piling up at
   // the center in compact layouts.
-  static const double _compactLayoutDiameterThreshold = 64.0;
+  static const double _compactLayoutDiameterThreshold = 128.0;
 
   _RadarPainter({
     required this.dimensions,
