@@ -224,9 +224,7 @@ class _RadarPainter extends CustomPainter {
 
       if (showLabels) {
         final bool startsFromCenter = !flip;
-        final double maxLabelWidth = startsFromCenter
-            ? baseMaxLabelWidth
-            : max(0.0, baseMaxLabelWidth - labelGap);
+        final double maxLabelWidth = max(0.0, baseMaxLabelWidth - labelGap);
 
         // Compact radars shorten labels that push toward the center while
         // nudging labels that originate at the center outward by the gap
@@ -243,12 +241,9 @@ class _RadarPainter extends CustomPainter {
           ellipsis: '…',
         )..layout(maxWidth: maxLabelWidth);
 
-        final double effectiveLabelRadius = startsFromCenter
-            ? labelRadius + labelGap
-            : labelRadius;
         // When the label text starts at the center, push the anchor outward by
         // the measured gap so the drawn text begins farther from the center.
-        final labelPos = center + dir * effectiveLabelRadius;
+        final labelPos = center + dir * labelRadius;
 
         canvas.save();
         canvas.translate(labelPos.dx, labelPos.dy);
