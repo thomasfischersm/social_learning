@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/custom_card.dart';
 
+import 'collapsible_description.dart';
+
 /// Card representing a single skill dimension with degree selectors and description.
 class SkillDimensionCard extends StatelessWidget {
   final SkillDimension dimension;
@@ -19,14 +21,19 @@ class SkillDimensionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedDegree = this.selectedDegree;
+    final previousDegree = this.previousDegree;
     final isDowngrade = selectedDegree != null &&
         previousDegree != null &&
-        selectedDegree! < previousDegree!;
+        selectedDegree < previousDegree;
     SkillDegree? selected;
     if (selectedDegree != null) {
-      selected =
-          dimension.degrees.firstWhere((d) => d.degree == selectedDegree);
+      selected = dimension.degrees
+          .firstWhere((d) => d.degree == selectedDegree);
     }
+
+    final description = selected?.description ?? '';
+    final hasDescription = description.trim().isNotEmpty;
 
     return CustomCard(
       title: dimension.name,
@@ -72,16 +79,12 @@ class SkillDimensionCard extends StatelessWidget {
                 style: TextStyle(color: Colors.red),
               ),
             ),
-          const SizedBox(height: 8),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black54),
-              borderRadius: BorderRadius.circular(4),
+          if (hasDescription) ...[
+            const SizedBox(height: 8),
+            CollapsibleDescription(
+              text: description,
             ),
-            child: Text(selected?.description ?? ''),
-          ),
+          ],
         ],
       ),
     );
