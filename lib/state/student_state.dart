@@ -124,6 +124,56 @@ class StudentState extends ChangeNotifier {
 
   int getTeachCount() => _teachRecords?.length ?? 0;
 
+  Map<String, int> getSelectedCourseLessonStatuses() {
+    _init();
+
+    final selectedCourse = _libraryState.selectedCourse;
+    final courseId = selectedCourse?.id;
+    if (selectedCourse == null || courseId == null) {
+      return const {};
+    }
+
+    final lessonStatuses = <String, int>{};
+
+    void updateStatus(String lessonId, int newStatus) {
+      final current = lessonStatuses[lessonId];
+      if (current == null || newStatus > current) {
+        lessonStatuses[lessonId] = newStatus;
+      }
+    }
+
+    final learnRecords = _learnRecords;
+    if (learnRecords != null) {
+      for (final record in learnRecords) {
+        if (record.courseId.id != courseId) {
+          continue;
+        }
+
+        final lessonId = record.lessonId.id;
+        updateStatus(lessonId, record.isGraduation ? 2 : 1);
+      }
+    }
+
+    final teachRecords = _teachRecords;
+    if (teachRecords != null) {
+      for (final record in teachRecords) {
+        if (!record.isGraduation) {
+          continue;
+        }
+        if (record.courseId.id != courseId) {
+          continue;
+        }
+
+        final lessonId = record.lessonId.id;
+        if ((lessonStatuses[lessonId] ?? 0) >= 2) {
+          updateStatus(lessonId, 3);
+        }
+      }
+    }
+
+    return Map.unmodifiable(lessonStatuses);
+  }
+
   /// Returns 0 for never practice, 1 for practiced, 2 for graduated, and 3 for
   /// taught.
   int getLessonStatus(Lesson lesson) {

@@ -5,9 +5,12 @@ import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/user.dart' as model;
 import 'package:social_learning/data/data_helpers/skill_assessment_functions.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
+import 'package:social_learning/data/data_helpers/practice_record_functions.dart';
+import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/create_skill_assessment_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
@@ -38,7 +41,8 @@ class ViewSkillAssessmentPage extends StatefulWidget {
   const ViewSkillAssessmentPage({super.key});
 
   @override
-  State<ViewSkillAssessmentPage> createState() => _ViewSkillAssessmentPageState();
+  State<ViewSkillAssessmentPage> createState() =>
+      _ViewSkillAssessmentPageState();
 }
 
 class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
@@ -46,10 +50,9 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
   int _index = 0;
   bool _initializedIndex = false;
 
-  String? get _studentUidArg =>
-      (ModalRoute.of(context)?.settings.arguments
-              as ViewSkillAssessmentPageArgument?)
-          ?.studentUid;
+  String? get _studentUidArg => (ModalRoute.of(context)?.settings.arguments
+          as ViewSkillAssessmentPageArgument?)
+      ?.studentUid;
 
   @override
   void didChangeDependencies() {
@@ -60,32 +63,53 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
   Future<_PageData> _loadData() async {
     final appState = context.read<ApplicationState>();
     final libraryState = context.read<LibraryState>();
+    final studentState = context.read<StudentState>();
     final courseId = libraryState.selectedCourse?.id;
     final currentUser =
         appState.currentUser ?? await appState.currentUserBlocking;
     final studentUid = _studentUidArg ?? currentUser?.uid;
     if (courseId == null || studentUid == null) {
-      return _PageData(null, [], {}, null);
+      return _PageData(
+        null,
+        const [],
+        <String, model.User>{},
+        null,
+        const <String, int>{},
+      );
     }
 
     final studentFuture = _loadStudent(studentUid, currentUser);
     final assessmentsFuture = _loadAssessments(courseId, studentUid);
     final rubricFuture = _loadRubric(courseId);
-
-    final results = await Future.wait([
+    final isViewingSelf =
+        _studentUidArg == null || studentUid == currentUser?.uid;
+    final futures = <Future<dynamic>>[
       studentFuture,
       assessmentsFuture,
       rubricFuture,
-    ]);
+      if (!isViewingSelf)
+        PracticeRecordFunctions.fetchPracticeRecordsForMentee(studentUid),
+    ];
+    final results = await Future.wait(futures);
 
-    final student = results[0] as model.User?;
-    final assessments = results[1] as List<SkillAssessment>;
+    var resultIndex = 0;
+    final student = results[resultIndex++] as model.User?;
+    final assessments = results[resultIndex++] as List<SkillAssessment>;
     assessments.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-    final rubric = results[2] as SkillRubric?;
+    final rubric = results[resultIndex++] as SkillRubric?;
+
+    Map<String, int> lessonStatuses;
+    if (isViewingSelf) {
+      lessonStatuses = studentState.getSelectedCourseLessonStatuses();
+    } else {
+      final fetchedRecords = (results[resultIndex++] as List<PracticeRecord>)
+          .where((record) => record.courseId.id == courseId);
+      lessonStatuses = _buildLessonStatusMap(fetchedRecords);
+    }
 
     final instructors = await _loadInstructors(assessments);
 
-    return _PageData(student, assessments, instructors, rubric);
+    return _PageData(student, assessments, instructors, rubric, lessonStatuses);
   }
 
   bool get _isInstructorView => _studentUidArg != null;
@@ -109,9 +133,11 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
     final libraryState = context.watch<LibraryState>();
     final course = libraryState.selectedCourse;
     final currentUser = appState.currentUser;
-    final showFab =
-        course != null && currentUser != null && course.creatorId == currentUser.uid;
-    print('showFab: $showFab course=$course course.creatorId=${course?.creatorId} currentUser.id=${currentUser?.uid}');
+    final showFab = course != null &&
+        currentUser != null &&
+        course.creatorId == currentUser.uid;
+    print(
+        'showFab: $showFab course=$course course.creatorId=${course?.creatorId} currentUser.id=${currentUser?.uid}');
 
     return Scaffold(
       appBar: const LearningLabAppBar(title: 'Skill Assessment'),
@@ -187,7 +213,8 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
                       },
                     ),
                     const SizedBox(height: 8),
-                    ..._buildDimensionWidgets(rubric, assessment),
+                    ..._buildDimensionWidgets(
+                        rubric, assessment, data.lessonStatuses),
                   ],
                 ),
               );
@@ -199,7 +226,9 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
   }
 
   List<Widget> _buildDimensionWidgets(
-      SkillRubric rubric, SkillAssessment assessment) {
+      SkillRubric rubric,
+      SkillAssessment assessment,
+      Map<String, int> lessonStatuses) {
     final widgets = <Widget>[];
     final rubricMap = {for (var d in rubric.dimensions) d.id: d};
     final assessedIds = <String>{};
@@ -212,6 +241,7 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
           SkillDimensionViewCard(
             dimension: rubricDim,
             selectedDegree: assessDim.degree,
+            lessonStatuses: lessonStatuses,
           ),
         );
       } else {
@@ -244,6 +274,20 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
     }
 
     return widgets;
+  }
+
+  Map<String, int> _buildLessonStatusMap(
+      Iterable<PracticeRecord> practiceRecords) {
+    final lessonStatuses = <String, int>{};
+    for (final record in practiceRecords) {
+      final lessonId = record.lessonId.id;
+      if (record.isGraduation) {
+        lessonStatuses[lessonId] = 2;
+      } else {
+        lessonStatuses[lessonId] = lessonStatuses[lessonId] == 2 ? 2 : 1;
+      }
+    }
+    return Map.unmodifiable(lessonStatuses);
   }
 
   Future<model.User?> _loadStudent(
@@ -282,6 +326,8 @@ class _PageData {
   final List<SkillAssessment> assessments;
   final Map<String, model.User> instructors;
   final SkillRubric? rubric;
+  final Map<String, int> lessonStatuses;
 
-  _PageData(this.student, this.assessments, this.instructors, this.rubric);
+  _PageData(this.student, this.assessments, this.instructors, this.rubric,
+      this.lessonStatuses);
 }
