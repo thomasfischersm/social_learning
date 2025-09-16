@@ -4,6 +4,7 @@ import 'package:social_learning/data/user.dart' as model;
 import 'package:social_learning/ui_foundation/helper_widgets/custom_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/radar_widget.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 /// Top card for the skill assessment page containing profile photo,
 /// prior assessment radar, current assessment radar, and notes field.
@@ -30,19 +31,26 @@ class SkillAssessmentHeaderCard extends StatelessWidget {
         children: [
           LayoutBuilder(
             builder: (context, constraints) {
-              final itemSize = constraints.maxWidth / 3;
+              final itemSize = (constraints.maxWidth - 8) / 2.5;
               return Row(
                 children: [
                   SizedBox(
-                    width: itemSize,
+                    width: itemSize / 2,
                     height: itemSize,
                     child: Center(
-                      child: ProfileImageWidgetV2.fromUser(
-                        student,
-                        maxRadius: itemSize / 2,
-                      ),
-                    ),
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ProfileImageWidgetV2.fromUser(
+                          student,
+                          maxRadius: itemSize / 2 / 2,
+                        ),
+                        Text(student.displayName,
+                            overflow: TextOverflow.ellipsis)
+                      ],
+                    )),
                   ),
+                  SizedBox(width: 4),
                   SizedBox(
                     width: itemSize,
                     height: itemSize,
@@ -61,6 +69,7 @@ class SkillAssessmentHeaderCard extends StatelessWidget {
                             ),
                     ),
                   ),
+                  SizedBox(width: 4),
                   SizedBox(
                     width: itemSize,
                     height: itemSize,
@@ -80,8 +89,9 @@ class SkillAssessmentHeaderCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           TextField(
+            style: CustomTextStyles.getBodyNote(context),
             controller: notesController,
-            minLines: 3,
+            minLines: 2,
             maxLines: 5,
             decoration: const InputDecoration(
               labelText: 'Notes',
