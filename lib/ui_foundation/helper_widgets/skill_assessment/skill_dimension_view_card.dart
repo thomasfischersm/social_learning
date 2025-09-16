@@ -92,9 +92,10 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
               if (isAssessment) {
                 background = Theme.of(context).colorScheme.primary;
                 foreground = Colors.white;
-                textStyle = textStyle.copyWith(color:foreground);
+                textStyle = textStyle.copyWith(color: foreground);
               } else if (isViewing) {
-                background = Theme.of(context).colorScheme.primary.withOpacity(0.2);
+                background =
+                    Theme.of(context).colorScheme.primary.withOpacity(0.2);
               }
               return Expanded(
                 child: Padding(
@@ -153,12 +154,14 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
           Text('•', style: style),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
-              lesson.title,
-              style: style,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+            child: InkWell(
+                onTap: () => _openLesson(lesson),
+                child: Text(
+                  lesson.title,
+                  style: style,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                )),
           ),
           const SizedBox(width: 8),
           IconButton(
@@ -183,7 +186,7 @@ class _SkillDimensionViewCardState extends State<SkillDimensionViewCard> {
   }
 
   TextStyle _textStyleForStatus(BuildContext context, int status) {
-    final base = CustomTextStyles.getBody(context) ??
+    final base = CustomTextStyles.getBodyNote(context) ??
         Theme.of(context).textTheme.bodyMedium ??
         const TextStyle();
     if (status >= 2) {
