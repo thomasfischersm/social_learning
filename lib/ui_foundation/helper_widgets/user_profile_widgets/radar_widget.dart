@@ -19,6 +19,7 @@ class RadarWidget extends StatelessWidget {
   final double mainLineWidth;
   final Color supportColor;
   final double supportLineWidth;
+  final Color? outerColor;
   final bool showLabels;
   final bool drawPolygon;
   final Color fillColor;
@@ -33,6 +34,7 @@ class RadarWidget extends StatelessWidget {
     this.mainLineWidth = 2,
     this.supportColor = Colors.grey,
     this.supportLineWidth = 1,
+    this.outerColor,
     this.showLabels = true,
     this.drawPolygon = true,
     this.fillColor = Colors.transparent,
@@ -43,12 +45,13 @@ class RadarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     List<SkillAssessmentDimension>? dims = dimensions;
     bool polygon = drawPolygon;
+    final libraryState = context.watch<LibraryState>();
 
     if (dims == null) {
       if (assessment != null) {
         dims = assessment!.dimensions;
       } else if (user != null) {
-        final course = context.watch<LibraryState>().selectedCourse;
+        final course = libraryState.selectedCourse;
         if (course == null) {
           return SizedBox(width: size, height: size);
         }
@@ -71,6 +74,14 @@ class RadarWidget extends StatelessWidget {
                       )
                       .toList() ??
                   [];
+              var outerColor = this.outerColor;
+              outerColor ??= BeltColorFunctions.getSelectedCourseBeltColor(
+                libraryState: libraryState,
+                user: user,
+              );
+              final double outerLineWidth = outerColor != null
+                  ? CustomUiConstants.profileBorderWidth
+                  : supportLineWidth;
               return CustomPaint(
                 size: Size.square(size),
                 painter: _RadarPainter(
@@ -79,6 +90,8 @@ class RadarWidget extends StatelessWidget {
                   mainLineWidth: mainLineWidth,
                   supportColor: supportColor,
                   supportLineWidth: supportLineWidth,
+                  outerColor: outerColor,
+                  outerLineWidth: outerLineWidth,
                   showLabels: showLabels,
                   drawPolygon: false,
                   fillColor: fillColor,
@@ -91,16 +104,14 @@ class RadarWidget extends StatelessWidget {
     }
 
     dims ??= [];
-    Color? outerColor;
-    if (user != null) {
-      final course = context.watch<LibraryState>().selectedCourse;
-      if (course != null) {
-        final prof = user!.getCourseProficiency(course);
-        if (prof != null) {
-          outerColor = BeltColorFunctions.getBeltColor(prof.proficiency);
-        }
-      }
-    }
+    var outerColor = this.outerColor;
+    outerColor ??= BeltColorFunctions.getSelectedCourseBeltColor(
+      libraryState: libraryState,
+      user: user,
+    );
+    final double outerLineWidth = outerColor != null
+        ? CustomUiConstants.profileBorderWidth
+        : supportLineWidth;
 
     return CustomPaint(
       size: Size.square(size),
@@ -111,8 +122,7 @@ class RadarWidget extends StatelessWidget {
         supportColor: supportColor,
         supportLineWidth: supportLineWidth,
         outerColor: outerColor,
-        outerLineWidth:
-            outerColor != null ? CustomUiConstants.profileBorderWidth : supportLineWidth,
+        outerLineWidth: outerLineWidth,
         showLabels: showLabels,
         drawPolygon: polygon,
         fillColor: fillColor,
@@ -128,7 +138,7 @@ class _RadarPainter extends CustomPainter {
   final Color supportColor;
   final double supportLineWidth;
   final Color? outerColor;
-  final double? outerLineWidth;
+  final double outerLineWidth;
   final bool showLabels;
   final bool drawPolygon;
   final Color fillColor;
@@ -140,7 +150,7 @@ class _RadarPainter extends CustomPainter {
     required this.supportColor,
     required this.supportLineWidth,
     this.outerColor,
-    this.outerLineWidth,
+    required this.outerLineWidth,
     required this.showLabels,
     required this.drawPolygon,
     required this.fillColor,
@@ -157,7 +167,7 @@ class _RadarPainter extends CustomPainter {
     final outerPaint = Paint()
       ..color = outerColor ?? supportColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = outerLineWidth ?? supportLineWidth;
+      ..strokeWidth = outerLineWidth;
     final mainPaint = Paint()
       ..color = mainColor
       ..style = PaintingStyle.stroke

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:social_learning/data/data_helpers/belt_color_functions.dart';
 import 'package:social_learning/data/skill_assessment.dart';
 import 'package:social_learning/data/user.dart' as model;
 import 'package:social_learning/ui_foundation/helper_widgets/custom_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/radar_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/state/library_state.dart';
 
 /// Card displaying a user's skill assessment with history controls.
 class SkillAssessmentViewHeaderCard extends StatelessWidget {
@@ -29,6 +31,11 @@ class SkillAssessmentViewHeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final assessment = assessments[currentIndex];
     final instructor = instructors[assessment.instructorUid];
+    final libraryState = context.watch<LibraryState>();
+    final beltColor = BeltColorFunctions.getSelectedCourseBeltColor(
+      libraryState: libraryState,
+      user: student,
+    );
     return CustomCard(
       title: 'Skill Assessment for ${student.displayName}',
       child: Column(
@@ -58,6 +65,7 @@ class SkillAssessmentViewHeaderCard extends StatelessWidget {
                       showLabels: true,
                       drawPolygon: true,
                       fillColor: Colors.blue.withOpacity(0.3),
+                      outerColor: beltColor,
                     );
                   },
                 ),
