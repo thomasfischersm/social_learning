@@ -115,6 +115,18 @@ class StudentState extends ChangeNotifier {
 
   int getPracticeCount() => _learnRecords?.length ?? 0;
 
+  int getPracticeCountForSelectedCourse() {
+    _init();
+
+    final selectedCourse = _libraryState.selectedCourse;
+    final courseId = selectedCourse?.id;
+    if (selectedCourse == null || courseId == null) {
+      return 0;
+    }
+
+    return _learnRecords?.where((record) => record.courseId.id == courseId).length ?? 0;
+  }
+
   int getGraduationCount() =>
       _learnRecords?.fold(
           0,
@@ -122,7 +134,31 @@ class StudentState extends ChangeNotifier {
               previousValue! + (element.isGraduation ? 1 : 0)) ??
       0;
 
+  int getGraduationCountForSelectedCourse() {
+    _init();
+
+    final selectedCourse = _libraryState.selectedCourse;
+    final courseId = selectedCourse?.id;
+    if (selectedCourse == null || courseId == null) {
+      return 0;
+    }
+
+    return _learnRecords?.where((record) => record.courseId.id == courseId && record.isGraduation).length ?? 0;
+  }
+
   int getTeachCount() => _teachRecords?.length ?? 0;
+
+  int getTeachCountForSelectedCourse() {
+    _init();
+
+    final selectedCourse = _libraryState.selectedCourse;
+    final courseId = selectedCourse?.id;
+    if (selectedCourse == null || courseId == null) {
+      return 0;
+    }
+
+    return _teachRecords?.where((record) => record.courseId.id == courseId).length ?? 0;
+  }
 
   Map<String, int> getSelectedCourseLessonStatuses() {
     _init();

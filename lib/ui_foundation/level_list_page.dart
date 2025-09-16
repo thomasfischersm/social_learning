@@ -53,15 +53,15 @@ class LevelListState extends State<LevelListPage> {
                     style: CustomTextStyles.headline,
                   )),
                   Text(
-                    'Lessons practiced: ${studentState.getPracticeCount()}',
+                    'Lessons practiced: ${studentState.getPracticeCountForSelectedCourse()}',
                     style: CustomTextStyles.getBody(context),
                   ),
                   Text(
-                    'Lessons completed: ${studentState.getGraduationCount()}',
+                    'Lessons completed: ${studentState.getGraduationCountForSelectedCourse()}',
                     style: CustomTextStyles.getBody(context),
                   ),
                   Text(
-                    'Lessons taught: ${studentState.getTeachCount()}',
+                    'Lessons taught: ${studentState.getTeachCountForSelectedCourse()}',
                     style: CustomTextStyles.getBody(context),
                   ),
                   CustomUiConstants.getGeneralFooter(context)
