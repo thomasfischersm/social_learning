@@ -143,6 +143,11 @@ class _RadarPainter extends CustomPainter {
   final bool drawPolygon;
   final Color fillColor;
 
+  // Apply tighter label spacing when the radar matches the typical avatar
+  // diameter (roughly 64px) or is smaller. This keeps labels from piling up at
+  // the center in compact layouts.
+  static const double _compactLayoutDiameterThreshold = 64.0;
+
   _RadarPainter({
     required this.dimensions,
     required this.mainColor,
@@ -183,10 +188,23 @@ class _RadarPainter extends CustomPainter {
     final angleStep = 2 * pi / count;
     final path = Path();
     final labelStyle = TextStyle(color: supportColor, fontSize: 12);
+    final double labelRadius = radius - 4;
+    final double baseMaxLabelWidth = labelRadius;
+    final bool applyCompactSizing =
+        min(size.width, size.height) <= _compactLayoutDiameterThreshold;
+    final double labelGap = applyCompactSizing && baseMaxLabelWidth > 0
+        ? min(_measureCharacterWidth('M', labelStyle), baseMaxLabelWidth)
+        : 0;
 
     for (var i = 0; i < count; i++) {
       final angle = -pi / 2 + angleStep * i;
       final dir = Offset(cos(angle), sin(angle));
+      final angleDeg = angle * 180 / pi;
+      final bool flip = angleDeg >= 90 && angleDeg <= 270;
+      var rotation = angle;
+      if (flip) {
+        rotation += pi;
+      }
 
       final end = center + dir * radius;
       canvas.drawLine(center, end, supportPaint);
@@ -205,7 +223,19 @@ class _RadarPainter extends CustomPainter {
       }
 
       if (showLabels) {
-        final maxLabelWidth = radius - 4;
+        final bool startsFromCenter = !flip;
+        final double maxLabelWidth = startsFromCenter
+            ? baseMaxLabelWidth
+            : max(0.0, baseMaxLabelWidth - labelGap);
+
+        // Compact radars shorten labels that push toward the center while
+        // nudging labels that originate at the center outward by the gap
+        // amount to avoid crowding.
+
+        if (maxLabelWidth <= 0) {
+          continue;
+        }
+
         final tp = TextPainter(
           text: TextSpan(text: dim.name, style: labelStyle),
           textDirection: TextDirection.ltr,
@@ -213,14 +243,12 @@ class _RadarPainter extends CustomPainter {
           ellipsis: '…',
         )..layout(maxWidth: maxLabelWidth);
 
-        final labelRadius = radius - 4;
-        final labelPos = center + dir * labelRadius;
-        final angleDeg = angle * 180 / pi;
-        var rotation = angle;
-        final flip = angleDeg >= 90 && angleDeg <= 270;
-        if (flip) {
-          rotation += pi;
-        }
+        final double effectiveLabelRadius = startsFromCenter
+            ? labelRadius + labelGap
+            : labelRadius;
+        // When the label text starts at the center, push the anchor outward by
+        // the measured gap so the drawn text begins farther from the center.
+        final labelPos = center + dir * effectiveLabelRadius;
 
         canvas.save();
         canvas.translate(labelPos.dx, labelPos.dy);
@@ -241,6 +269,15 @@ class _RadarPainter extends CustomPainter {
       }
       canvas.drawPath(path, mainPaint);
     }
+  }
+
+  double _measureCharacterWidth(String character, TextStyle style) {
+    final painter = TextPainter(
+      text: TextSpan(text: character, style: style),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout();
+    return painter.width;
   }
 
   @override
