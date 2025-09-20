@@ -24,6 +24,9 @@ class StudentState extends ChangeNotifier {
   StreamSubscription? _menteeSubscription;
   StreamSubscription? _mentorSubscription;
 
+  // Cache the progress state for each lesson.
+  Map<String, LessonCount> _lessonIdToLessonCountMap = {};
+
   StudentState(this._applicationState, this._libraryState);
 
   void _init() {
@@ -42,6 +45,8 @@ class StudentState extends ChangeNotifier {
         UserFunctions.updateCourseProficiency(
             _applicationState, _libraryState, this);
 
+        _recomputeLessonCountCache();
+
         notifyListeners();
       });
 
@@ -53,11 +58,13 @@ class StudentState extends ChangeNotifier {
           .listen((snapshot) {
         _teachRecords =
             snapshot.docs.map((e) => PracticeRecord.fromSnapshot(e)).toList();
+        _recomputeLessonCountCache();
         notifyListeners();
       });
 
       _libraryState.addListener(
         () {
+          _recomputeLessonCountCache();
           UserFunctions.updateCourseProficiency(
               _applicationState, _libraryState, this);
 
@@ -67,15 +74,50 @@ class StudentState extends ChangeNotifier {
     }
   }
 
+  void _recomputeLessonCountCache() {
+    _lessonIdToLessonCountMap.clear();
+
+    Course? course = _libraryState.selectedCourse;
+    if (course == null) {
+      return;
+    }
+
+    var learnRecords = _learnRecords;
+    if (learnRecords != null) {
+      for (PracticeRecord record in learnRecords) {
+        if (record.courseId.id != course.id) {
+          continue;
+        }
+
+        var lessonCount = _lessonIdToLessonCountMap.putIfAbsent(
+            record.lessonId.id, () => LessonCount());
+        lessonCount.practiceCount++;
+        lessonCount.isGraduated =
+            lessonCount.isGraduated || record.isGraduation;
+      }
+    }
+
+    var teachRecords = _teachRecords;
+    if (teachRecords != null) {
+      for (PracticeRecord record in teachRecords) {
+        if (record.courseId.id != course.id) {
+          continue;
+        }
+
+        var lessonCount = _lessonIdToLessonCountMap.putIfAbsent(
+            record.lessonId.id, () => LessonCount());
+        lessonCount.teachCount++;
+      }
+    }
+  }
+
   bool hasGraduated(Lesson? lesson) {
     if (lesson == null) {
       return false;
     }
 
     _init();
-    return _learnRecords?.any((element) =>
-            (element.lessonId.id == lesson.id) && (element.isGraduation)) ??
-        false;
+    return _lessonIdToLessonCountMap[lesson.id]?.isGraduated ?? false;
   }
 
   void recordTeachingWithCheck(
@@ -124,7 +166,10 @@ class StudentState extends ChangeNotifier {
       return 0;
     }
 
-    return _learnRecords?.where((record) => record.courseId.id == courseId).length ?? 0;
+    return _learnRecords
+            ?.where((record) => record.courseId.id == courseId)
+            .length ??
+        0;
   }
 
   int getGraduationCount() =>
@@ -143,7 +188,11 @@ class StudentState extends ChangeNotifier {
       return 0;
     }
 
-    return _learnRecords?.where((record) => record.courseId.id == courseId && record.isGraduation).length ?? 0;
+    return _learnRecords
+            ?.where((record) =>
+                record.courseId.id == courseId && record.isGraduation)
+            .length ??
+        0;
   }
 
   int getTeachCount() => _teachRecords?.length ?? 0;
@@ -157,7 +206,10 @@ class StudentState extends ChangeNotifier {
       return 0;
     }
 
-    return _teachRecords?.where((record) => record.courseId.id == courseId).length ?? 0;
+    return _teachRecords
+            ?.where((record) => record.courseId.id == courseId)
+            .length ??
+        0;
   }
 
   Map<String, int> getSelectedCourseLessonStatuses() {
@@ -213,44 +265,16 @@ class StudentState extends ChangeNotifier {
   /// Returns 0 for never practice, 1 for practiced, 2 for graduated, and 3 for
   /// taught.
   int getLessonStatus(Lesson lesson) {
-    var learnRecords = _learnRecords;
+    _init();
 
-    bool hasPracticed = false;
-    bool hasGraduated = false;
-    bool hasTaught = false;
-
-    if (learnRecords != null) {
-      for (PracticeRecord record in learnRecords) {
-        if (record.lessonId.id == lesson.id) {
-          if (record.isGraduation) {
-            hasGraduated = true;
-            hasPracticed = true;
-            break;
-          }
-          hasPracticed = true;
-        }
-      }
-    }
-
-    if (hasGraduated) {
-      var teachRecords = _teachRecords;
-      if (teachRecords != null) {
-        for (PracticeRecord record in teachRecords) {
-          if (record.lessonId.id == lesson.id) {
-            if (record.isGraduation) {
-              hasTaught = true;
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    if (hasTaught) {
+    var lessonCount = _lessonIdToLessonCountMap[lesson.id];
+    if (lessonCount == null) {
+      return 0;
+    } else if (lessonCount.teachCount > 0) {
       return 3;
-    } else if (hasGraduated) {
+    } else if (lessonCount.isGraduated) {
       return 2;
-    } else if (hasPracticed) {
+    } else if (lessonCount.practiceCount > 0) {
       return 1;
     } else {
       return 0;
@@ -334,35 +358,13 @@ class StudentState extends ChangeNotifier {
     _init();
     print('getCountsForLesson for ${lesson.title}');
 
-    LessonCount lessonCount = LessonCount();
-    var learnRecords = _learnRecords;
-    if (learnRecords != null) {
-      for (PracticeRecord record in learnRecords) {
-        if (record.lessonId.id == lesson.id) {
-          lessonCount.practiceCount++;
-          lessonCount.isGraduated =
-              lessonCount.isGraduated || record.isGraduation;
-        } else {
-          print(
-              'lesson id didn\'t match ${record.lessonId.id} and ${lesson.id}');
-        }
-      }
-    }
-
-    var teachRecords = _teachRecords;
-    if (teachRecords != null) {
-      for (PracticeRecord record in teachRecords) {
-        if (record.lessonId.id == lesson.id) {
-          lessonCount.teachCount++;
-        }
-      }
-    }
-
-    return lessonCount;
+    return _lessonIdToLessonCountMap[lesson.id] ?? LessonCount();
   }
 
   @visibleForTesting
-  void setPracticeRecords({List<PracticeRecord>? learnRecords, List<PracticeRecord>? teachRecords}) {
+  void setPracticeRecords(
+      {List<PracticeRecord>? learnRecords,
+      List<PracticeRecord>? teachRecords}) {
     _learnRecords = learnRecords;
     _teachRecords = teachRecords;
   }
@@ -374,86 +376,31 @@ class StudentState extends ChangeNotifier {
     _isInitialized = false;
     _learnRecords = null;
     _teachRecords = null;
+    _lessonIdToLessonCountMap.clear();
   }
 
   int getLessonsLearned(Course course, LibraryState libraryState) {
     _init();
 
-    int learnCount = 0;
-
-    Set<String> alreadyCountedLessonIds = {};
-
-    var learnRecords = _learnRecords;
-    if (learnRecords != null) {
-      for (PracticeRecord record in learnRecords) {
-        Lesson? lesson = libraryState.lessons
-            ?.firstWhereOrNull((element) => element.id == record.lessonId.id);
-
-        if ((lesson == null) || (lesson.courseId.id != course.id)) {
-          continue;
-        }
-
-        if (alreadyCountedLessonIds.contains(lesson.id)) {
-          continue;
-        }
-
-        if (record.isGraduation) {
-          alreadyCountedLessonIds.add(lesson.id!);
-          learnCount++;
-        }
-      }
-    }
-    return learnCount;
+    return _lessonIdToLessonCountMap.values
+        .where((element) => element.isGraduated)
+        .length;
   }
 
   List<String> getGraduatedLessonIds() {
-    if (!_libraryState.isCourseSelected) {
-      return [];
-    }
-
     _init();
 
-    List<String> graduatedLessonIds = [];
-    List<PracticeRecord>? learnRecords = _learnRecords;
-    Course? selectedCourse = _libraryState.selectedCourse;
-
-    if ((learnRecords == null) || (selectedCourse == null)) {
-      return [];
-    }
-
-    for (PracticeRecord record in learnRecords) {
-      Lesson? lesson = _libraryState.findLesson(record.lessonId.id);
-
-      if ((lesson == null) || (lesson.courseId.id != selectedCourse.id)) {
-        // The PracticeRecord is not relevant.
-        continue;
-      }
-
-      if (record.isGraduation) {
-        graduatedLessonIds.add(lesson.id!);
-      }
-    }
-
-    return graduatedLessonIds;
+    return _lessonIdToLessonCountMap.entries
+        .where((element) => element.value.isGraduated)
+        .map((e) => e.key)
+        .toList();
   }
 
   bool canTeachInCurrentCourse() {
-    if (!_libraryState.isCourseSelected) {
-      return false;
-    }
-
     _init();
 
-    Course? selectedCourse = _libraryState.selectedCourse;
-    if (selectedCourse == null) {
-      return false;
-    }
-
-    return _learnRecords?.any((element) =>
-            element.isGraduation &&
-            (_libraryState.findLesson(element.lessonId.id)?.courseId.id ==
-                selectedCourse.id)) ??
-        false;
+    return _lessonIdToLessonCountMap.values.any((element) =>
+    element.isGraduated);
   }
 }
 
