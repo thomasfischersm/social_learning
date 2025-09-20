@@ -74,13 +74,12 @@ class _CmsStartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final titleStyle = theme.textTheme.headlineSmall?.copyWith(
-      fontWeight: FontWeight.w700,
-    );
-    final bodyStyle = CustomTextStyles.getBody(context);
-    final linkStyle = CustomTextStyles.getLinkNoUnderline(context)?.copyWith(
-      fontWeight: FontWeight.w600,
-    );
+    final titleStyle = CustomTextStyles.subHeadline;
+    final bodyStyle = Theme.of(context).textTheme.bodyMedium;
+    final linkStyle = Theme.of(context)
+        .textTheme
+        .bodyMedium
+        ?.copyWith(decorationColor: Colors.blue);
 
     return SizedBox.expand(
       child: Card(
@@ -101,20 +100,20 @@ class _CmsStartCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(title, style: titleStyle),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Text(
                       description,
                       style: bodyStyle,
                     ),
                   ],
                 ),
+                const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text('Open', style: linkStyle),
                     const SizedBox(width: 8),
-                    Icon(Icons.arrow_forward,
-                        color: theme.colorScheme.primary),
+                    Icon(Icons.arrow_forward, color: theme.colorScheme.primary),
                   ],
                 )
               ],
