@@ -95,6 +95,7 @@ class SkillAssessmentHeaderCard extends StatelessWidget {
             maxLines: 5,
             decoration: const InputDecoration(
               labelText: 'Notes',
+              hintText: 'Great progress on the weight transfers. Focusing on partner connection next will give you the most benefit.',
               border: OutlineInputBorder(),
             ),
           ),

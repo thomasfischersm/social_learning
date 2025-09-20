@@ -64,7 +64,7 @@ class CourseDesignerState extends ChangeNotifier {
 
   Course? get course => _activeCourse;
 
-  void ensureInitialized() async {
+  Future<void> ensureInitialized() async {
     await _ensureInitialized();
   }
 
