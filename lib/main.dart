@@ -43,6 +43,7 @@ import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/profile_comparison_page.dart';
 import 'package:social_learning/ui_foundation/session_create_page.dart';
 import 'package:social_learning/ui_foundation/session_create_warning_page.dart';
+import 'package:social_learning/ui_foundation/cms_start_page.dart';
 import 'package:social_learning/ui_foundation/session_home_page.dart';
 import 'package:social_learning/ui_foundation/session_host_page.dart';
 import 'package:social_learning/ui_foundation/session_student_page.dart';
@@ -161,6 +162,7 @@ class SocialLearningApp extends StatelessWidget {
         '/cms_detail': (context) => const CmsDetailPage(),
         '/cms_syllabus': (context) => const CmsSyllabusPage(),
         '/cms_lesson': (context) => const CmsLessonPage(),
+        '/cms_start': (context) => const CmsStartPage(),
         '/session_home': (context) => const SessionHomePage(),
         '/session_create_warning': (context) =>
             const SessionCreateWarningPage(),
@@ -175,7 +177,8 @@ class SocialLearningApp extends StatelessWidget {
         '/code_of_conduct': (context) => const CodeOfConductPage(),
         '/instructor_dashboard': (context) => const InstructorDashboardPage(),
         '/instructor_clipboard': (context) => const InstructorClipboardPage(),
-        '/create_skill_assessment': (context) => const CreateSkillAssessmentPage(),
+        '/create_skill_assessment': (context) =>
+            const CreateSkillAssessmentPage(),
         '/view_skill_assessment': (context) => const ViewSkillAssessmentPage(),
         '/course_generation': (context) => const CourseGenerationPage(),
         '/course_generation_review': (context) =>
@@ -187,8 +190,8 @@ class SocialLearningApp extends StatelessWidget {
         '/course_designer_prerequisites': (context) =>
             const CourseDesignerPrerequisitesPage(),
         '/course_designer_scope': (context) => const CourseDesignerScopePage(),
-        '/course_designer_skill_rubric':
-            (context) => const CourseDesignerSkillRubricPage(),
+        '/course_designer_skill_rubric': (context) =>
+            const CourseDesignerSkillRubricPage(),
         '/course_designer_learning_objectives': (context) =>
             const CourseDesignerLearningObjectivesPage(),
         '/course_designer_session_plan': (context) =>

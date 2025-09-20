@@ -16,6 +16,7 @@ enum NavigationEnum {
   cmsDetail('/cms_detail'),
   cmsSyllabus('/cms_syllabus'),
   cmsLesson('/cms_lesson'),
+  cmsStart('/cms_start'),
   sessionHome('/session_home'),
   sessionCreateWarning('/session_create_warning'),
   sessionCreate('/session_create'),
