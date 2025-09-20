@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_tab_bar.dart';
-import 'package:social_learning/ui_foundation/ui_constants/instructor_nav_actions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 /// App bar used across CourseDesigner pages.
-/// Includes drawer toggle, course switch icon, and instructor navigation icons.
+/// Includes drawer toggle and course switch icon.
 class CourseDesignerAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -28,7 +27,6 @@ class CourseDesignerAppBar extends StatelessWidget implements PreferredSizeWidge
           onPressed: () => NavigationEnum.home.navigateClean(context),
           icon: const Icon(Icons.swap_horiz),
         ),
-        ...InstructorNavActions.createActions(context),
       ],
       bottom: currentNav == null
           ? null
