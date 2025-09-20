@@ -151,6 +151,7 @@ class BottomBarV2 {
       return 1;
     } else if (isManageVisible &&
         {
+          NavigationEnum.cmsStart.route,
           NavigationEnum.cmsSyllabus.route,
           NavigationEnum.cmsLesson.route,
           NavigationEnum.instructorClipboard.route,
