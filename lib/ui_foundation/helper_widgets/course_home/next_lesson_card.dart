@@ -8,59 +8,65 @@ import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class NextLessonCard extends StatelessWidget {
-  const NextLessonCard({super.key});
+  final Lesson? _lesson;
+
+  const NextLessonCard({super.key, required Lesson? lesson}) : _lesson = lesson;
+
+  factory NextLessonCard.forKnowledge(
+      LibraryState libraryState, StudentState studentState) {
+    var lessons = libraryState.lessons;
+    var course = libraryState.selectedCourse;
+    if (lessons == null || course == null) {
+      return NextLessonCard(lesson: null);
+    }
+
+    List<String> completed = studentState.getGraduatedLessonIds();
+    List<Lesson> remaining = lessons
+        .where((l) => l.courseId.id == course.id)
+        .where((l) => !completed.contains(l.id))
+        .toList()
+      ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+
+    if (remaining.isEmpty) {
+      return NextLessonCard(lesson: null);
+    } else {
+      return NextLessonCard(lesson: remaining.first);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<StudentState, LibraryState>(
-        builder: (context, studentState, libraryState, child) {
-      var lessons = libraryState.lessons;
-      var course = libraryState.selectedCourse;
-      if (lessons == null || course == null) {
-        return const SizedBox.shrink();
-      }
-      List<String> completed = studentState.getGraduatedLessonIds();
-      List<Lesson> remaining = lessons
-          .where((l) => l.courseId.id == course.id)
-          .where((l) => !completed.contains(l.id))
-          .toList()
-        ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-      if (remaining.isEmpty) {
-        return Card(
-            child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text('All lessons completed!',
-                    style: CustomTextStyles.getBody(context))));
-      }
-      Lesson lesson = remaining.first;
+    if (_lesson == null) {
       return Card(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          LessonCoverImageWidget(lesson.coverFireStoragePath),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:
-                Text('Next lesson', style: CustomTextStyles.subHeadline),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child:
-                Text(lesson.title, style: CustomTextStyles.getBody(context)),
-          ),
-          Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                  padding: const EdgeInsets.only(right: 8, bottom: 8, top: 8),
-                  child: ElevatedButton(
-                      onPressed: () =>
-                          LessonDetailArgument.goToLessonDetailPage(
-                              context, lesson.id!),
-                      child: const Icon(Icons.play_arrow))))
-        ],
-      ));
-    });
+          child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text('All lessons completed!',
+                  style: CustomTextStyles.getBody(context))));
+    }
+
+    return Card(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        LessonCoverImageWidget(_lesson!.coverFireStoragePath),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text('Next lesson', style: CustomTextStyles.subHeadline),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text(_lesson!.title, style: CustomTextStyles.getBody(context)),
+        ),
+        Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+                padding: const EdgeInsets.only(right: 8, bottom: 8, top: 8),
+                child: ElevatedButton(
+                    onPressed: () => LessonDetailArgument.goToLessonDetailPage(
+                        context, _lesson!.id!),
+                    child: const Icon(Icons.play_arrow))))
+      ],
+    ));
   }
 }
-
