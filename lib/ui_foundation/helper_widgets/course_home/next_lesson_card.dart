@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data/skill_rubric.dart';
+import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_home/next_skill_lesson_recommender.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/lesson_cover_image_widget.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -34,6 +37,16 @@ class NextLessonCard extends StatelessWidget {
     }
   }
 
+  factory NextLessonCard.forSkill(
+      LibraryState libraryState,
+      StudentState studentState,
+      ApplicationState applicationState,
+      SkillRubric skillRubric) {
+    Lesson? nextLesson = NextSkillLessonRecommender.recommendNextLesson(
+        libraryState, applicationState, studentState, skillRubric);
+    return NextLessonCard(lesson: nextLesson);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_lesson == null) {
@@ -45,6 +58,7 @@ class NextLessonCard extends StatelessWidget {
     }
 
     return Card(
+      clipBehavior: Clip.antiAlias,
         child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,

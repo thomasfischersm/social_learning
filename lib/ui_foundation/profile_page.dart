@@ -123,8 +123,7 @@ class ProfilePageState extends State<ProfilePage> {
                             },
                             child: LayoutBuilder(
                               builder: (context, constraints) {
-                                final size =
-                                    constraints.biggest.shortestSide;
+                                final size = constraints.biggest.shortestSide;
                                 return Stack(children: [
                                   Center(
                                     child: SizedBox(
@@ -139,7 +138,8 @@ class ProfilePageState extends State<ProfilePage> {
                                   const Positioned(
                                       bottom: 0,
                                       right: 0,
-                                      child: Icon(Icons.remove_red_eye))
+                                      child: Icon(Icons.remove_red_eye,
+                                          color: Colors.grey))
                                 ]);
                               },
                             ),

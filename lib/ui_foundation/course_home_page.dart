@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
+import 'package:social_learning/data/skill_rubric.dart';
+import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_home/progress_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_home/next_lesson_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_home/progress_video_feed.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/course_home/radar_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
@@ -23,35 +27,43 @@ class _CourseHomePageState extends State<CourseHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const LearningLabAppBar(),
-      bottomNavigationBar: BottomBarV2.build(context),
-      body: Align(
-          alignment: Alignment.topCenter,
-          child: CustomUiConstants.framePage(enableCourseLoadingGuard: true,
-              Consumer2<LibraryState, StudentState>(builder: (context, libraryState, studentState, child) {
-            Course? course = libraryState.selectedCourse;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ..._buildHeader(course),
-                IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(child: ProgressCard()),
-                      SizedBox(width: 8, height: double.infinity),
-                      Expanded(child: NextLessonCard.forKnowledge(libraryState, studentState)),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text('Community activity', style: CustomTextStyles.subHeadline),
-                const SizedBox(height: 8),
-                const ProgressVideoFeed(),
-              ],
-            );
-          }))),
-    );
+        appBar: const LearningLabAppBar(),
+        bottomNavigationBar: BottomBarV2.build(context),
+        body: Align(
+            alignment: Alignment.topCenter,
+            child: CustomUiConstants.framePage(enableCourseLoadingGuard: true,
+                Consumer2<LibraryState, StudentState>(
+                    builder: (context, libraryState, studentState, child) {
+              Course? course = libraryState.selectedCourse;
+              return FutureBuilder(
+                  future: SkillRubricsFunctions.loadForCourse(
+                      libraryState.selectedCourse!.id!),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    bool hasSkillRubric = snapshot.data != null &&
+                        SkillRubricsFunctions.hasRubricDefined(snapshot.data!);
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ..._buildHeader(course),
+                        if (hasSkillRubric)
+                          _buildLayoutWithSkill(
+                              libraryState, studentState, snapshot.data!)
+                        else
+                          _buildLayoutWithoutSkill(libraryState, studentState),
+                        const SizedBox(height: 16),
+                        Text('Community activity',
+                            style: CustomTextStyles.subHeadline),
+                        const SizedBox(height: 8),
+                        const ProgressVideoFeed(),
+                      ],
+                    );
+                  });
+            }))));
   }
 
   List<Widget> _buildHeader(Course? course) {
@@ -76,5 +88,68 @@ class _CourseHomePageState extends State<CourseHomePage> {
         const SizedBox(height: 16),
       ]
     ];
+  }
+
+  Widget _buildLayoutWithSkill(LibraryState libraryState,
+      StudentState studentState, SkillRubric skillRubric) {
+    return Column(children: [
+      IntrinsicHeight(
+          child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Expanded(
+            child: Card(
+                child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text('Knowledge',
+                        style: CustomTextStyles.subHeadline)))),
+        SizedBox(width: 8),
+        Expanded(
+            child: Card(
+                child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child:
+                        Text('Skill', style: CustomTextStyles.subHeadline)))),
+      ])),
+      IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(child: ProgressCard()),
+            SizedBox(width: 8),
+            Expanded(child: RadarCard()),
+          ],
+        ),
+      ),
+      SizedBox(height: 8),
+      IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+                child: NextLessonCard.forKnowledge(libraryState, studentState)),
+            SizedBox(width: 8),
+            Expanded(child: Consumer<ApplicationState>(
+                builder: (context, applicationState, _) {
+              return NextLessonCard.forSkill(
+                  libraryState, studentState, applicationState, skillRubric);
+            })),
+          ],
+        ),
+      )
+    ]);
+  }
+
+  Widget _buildLayoutWithoutSkill(
+      LibraryState libraryState, StudentState studentState) {
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(child: ProgressCard()),
+          SizedBox(width: 8, height: double.infinity),
+          Expanded(
+              child: NextLessonCard.forKnowledge(libraryState, studentState)),
+        ],
+      ),
+    );
   }
 }

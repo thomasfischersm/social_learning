@@ -575,4 +575,9 @@ class SkillRubricsFunctions {
     final boundedIndex = toIndex.clamp(0, toLessons.length) as int;
     toLessons.insert(boundedIndex, lesson);
   }
+
+  static bool hasRubricDefined(SkillRubric skillRubric) {
+    return skillRubric.dimensions.isNotEmpty &&
+        skillRubric.dimensions.any((d) => d.degrees.isNotEmpty);
+  }
 }
