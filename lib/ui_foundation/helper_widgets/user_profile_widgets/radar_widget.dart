@@ -24,7 +24,7 @@ class RadarWidget extends StatelessWidget {
   final bool drawPolygon;
   final Color fillColor;
 
-  const RadarWidget({
+  RadarWidget({
     super.key,
     this.user,
     this.assessment,
@@ -37,8 +37,9 @@ class RadarWidget extends StatelessWidget {
     this.outerColor,
     this.showLabels = true,
     this.drawPolygon = true,
-    this.fillColor = Colors.transparent,
-  }) : assert(user != null || assessment != null || dimensions != null,
+    Color? fillColor,
+  })  : fillColor = fillColor ?? mainColor.withOpacity(0.3),
+        assert(user != null || assessment != null || dimensions != null,
             'Provide user, assessment, or dimensions');
 
   @override
@@ -289,4 +290,3 @@ class _RadarPainter extends CustomPainter {
         old.fillColor != fillColor;
   }
 }
-

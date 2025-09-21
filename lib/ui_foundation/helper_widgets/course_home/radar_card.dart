@@ -18,9 +18,9 @@ class RadarCard extends StatelessWidget {
                 _navigateToSkillAssessment(context);
               },
                   child: Stack(children: [
-                    RadarWidget(user: applicationState.currentUser!,
+                    Center(child:RadarWidget(user: applicationState.currentUser!,
                         showLabels: false,
-                        size: 100),
+                        size: 100)),
                     const Positioned(
                         bottom: 0,
                         right: 0,

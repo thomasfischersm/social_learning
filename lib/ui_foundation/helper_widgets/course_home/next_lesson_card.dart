@@ -12,15 +12,16 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 
 class NextLessonCard extends StatelessWidget {
   final Lesson? _lesson;
+  final String _label;
 
-  const NextLessonCard({super.key, required Lesson? lesson}) : _lesson = lesson;
+  const NextLessonCard({super.key, required Lesson? lesson, required String label}) : _lesson = lesson, _label = label;
 
   factory NextLessonCard.forKnowledge(
       LibraryState libraryState, StudentState studentState) {
     var lessons = libraryState.lessons;
     var course = libraryState.selectedCourse;
     if (lessons == null || course == null) {
-      return NextLessonCard(lesson: null);
+      return NextLessonCard(lesson: null, label: 'knowledge');
     }
 
     List<String> completed = studentState.getGraduatedLessonIds();
@@ -31,9 +32,9 @@ class NextLessonCard extends StatelessWidget {
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
 
     if (remaining.isEmpty) {
-      return NextLessonCard(lesson: null);
+      return NextLessonCard(lesson: null, label: 'knowledge');
     } else {
-      return NextLessonCard(lesson: remaining.first);
+      return NextLessonCard(lesson: remaining.first, label: 'knowledge');
     }
   }
 
@@ -44,7 +45,7 @@ class NextLessonCard extends StatelessWidget {
       SkillRubric skillRubric) {
     Lesson? nextLesson = NextSkillLessonRecommender.recommendNextLesson(
         libraryState, applicationState, studentState, skillRubric);
-    return NextLessonCard(lesson: nextLesson);
+    return NextLessonCard(lesson: nextLesson, label: 'skill');
   }
 
   @override
@@ -66,11 +67,11 @@ class NextLessonCard extends StatelessWidget {
         LessonCoverImageWidget(_lesson!.coverFireStoragePath),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text('Next lesson', style: CustomTextStyles.subHeadline),
+          child: Text('Next $_label lesson', style: TextStyle(fontSize: 15, color: Colors.black)),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(_lesson!.title, style: CustomTextStyles.getBody(context)),
+          child: Text(_lesson!.title, style: Theme.of(context).textTheme.bodyMedium),
         ),
         Align(
             alignment: Alignment.centerRight,
