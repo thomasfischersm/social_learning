@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
@@ -30,8 +32,11 @@ class BeltColorFunctions {
   static Color getBeltColor(double proficiency) {
     // Handle edge cases
     if (proficiency < 0 || proficiency > 1) {
-      throw ArgumentError(
-          'Progress must be between 0 and 1 but was $proficiency');
+      dev.log(
+          'Progress must be between 0 and 1 but was $proficiency',
+          name: 'BeltColorFunctions.getBeltColor',
+          level: 900);
+      proficiency = proficiency.clamp(0, 1);
     }
 
     // Find the index of the color that corresponds to the progress

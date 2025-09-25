@@ -168,6 +168,7 @@ class UserFunctions {
     int lessons = max(libraryState.lessons?.length ?? 1, 1);
     int completedLessons = studentState.getLessonsLearned(course, libraryState);
     double proficiency = completedLessons / lessons.toDouble();
+    proficiency = proficiency.clamp(0.0, 1.0);
     proficiency = double.parse((proficiency.toStringAsFixed(2)));
     if (lessons == 1 || completedLessons == 0) {
       print(
