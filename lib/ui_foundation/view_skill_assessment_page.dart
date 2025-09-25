@@ -133,16 +133,14 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
     final libraryState = context.watch<LibraryState>();
     final course = libraryState.selectedCourse;
     final currentUser = appState.currentUser;
-    final showFab = course != null &&
+    final canCreateAssessment = course != null &&
         currentUser != null &&
-        course.creatorId == currentUser.uid;
-    print(
-        'showFab: $showFab course=$course course.creatorId=${course?.creatorId} currentUser.id=${currentUser?.uid}');
+        (course.creatorId == currentUser.uid || currentUser.isAdmin);
 
     return Scaffold(
       appBar: const LearningLabAppBar(title: 'Skill Assessment'),
       bottomNavigationBar: BottomBarV2.build(context),
-      floatingActionButton: showFab
+      floatingActionButton: canCreateAssessment
           ? FloatingActionButton(
               onPressed: () async {
                 final data = await _dataFuture;
@@ -178,17 +176,23 @@ class _ViewSkillAssessmentPageState extends State<ViewSkillAssessmentPage> {
                     children: [
                       const Text('No skill assessments found.'),
                       const SizedBox(height: 16),
-                      TextButton.icon(
-                        onPressed: () {
-                          CreateSkillAssessmentPageArgument.navigateTo(
-                            context,
-                            student.id,
-                            student.uid,
-                          );
-                        },
-                        icon: const Icon(Icons.add),
-                        label: const Text('Create a skill assessment'),
-                      ),
+                      if (canCreateAssessment)
+                        TextButton.icon(
+                          onPressed: () {
+                            CreateSkillAssessmentPageArgument.navigateTo(
+                              context,
+                              student.id,
+                              student.uid,
+                            );
+                          },
+                          icon: const Icon(Icons.add),
+                          label: const Text('Create a skill assessment'),
+                        )
+                      else
+                        const Text(
+                          'Ask your instructor to create a skill assessment for you.',
+                          textAlign: TextAlign.center,
+                        ),
                     ],
                   ),
                 );
