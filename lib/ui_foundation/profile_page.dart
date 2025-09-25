@@ -23,6 +23,7 @@ import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/radar_widget.dart';
+import 'package:social_learning/ui_foundation/view_skill_assessment_page.dart';
 
 import '../state/application_state.dart';
 import 'ui_constants/navigation_enum.dart';
@@ -119,7 +120,8 @@ class ProfilePageState extends State<ProfilePage> {
                           flex: 1,
                           child: GestureDetector(
                             onTap: () {
-                              // TODO: Navigate to skill assessments page.
+                              ViewSkillAssessmentPageArgument.navigateTo(
+                                  context, currentUser.uid);
                             },
                             child: LayoutBuilder(
                               builder: (context, constraints) {
