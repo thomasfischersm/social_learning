@@ -93,15 +93,26 @@ class SessionParticipantsSubscription
     if (matching.isEmpty) {
       if (!_isJoinPending) {
         _isJoinPending = true;
-        print('Student added itself as a participant');
+        print('Student added itself as a participant (pending join)');
         SessionParticipantFunctions.createParticipant(
           sessionId: session.id!,
           userId: currentUser.id,
           userUid: currentUser.uid,
           courseId: session.courseId.id,
           isInstructor: currentUser.isAdmin,
-        );
-        _isJoinPending = false;
+        )
+            .then((documentReference) {
+          print(
+              'Participant document created for ${currentUser.uid}: ${documentReference.id}');
+        }).catchError((error, stackTrace) {
+          print(
+              'Failed to create participant document for ${currentUser.uid}: $error');
+        }).whenComplete(() {
+          _isJoinPending = false;
+          print('Join attempt completed for ${currentUser.uid}');
+        });
+      } else {
+        print('Join already pending for ${currentUser.uid}, skipping.');
       }
       return;
     }
