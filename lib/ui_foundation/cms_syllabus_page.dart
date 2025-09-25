@@ -104,9 +104,11 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text(
-                                  'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
-                                  style: CustomTextStyles.getBody(context),
+                                Flexible(
+                                  child: SelectableText(
+                                    'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
+                                    style: CustomTextStyles.getBody(context),
+                                  ),
                                 ),
                                 IconButton(
                                     icon: const Icon(Icons.edit,
