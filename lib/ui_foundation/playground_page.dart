@@ -8,10 +8,15 @@ class PlaygroundPage extends StatefulWidget {
 }
 
 class _PlaygroundPageState extends State<PlaygroundPage> {
-  final List<_PlaygroundItem> _entries = <_PlaygroundItem>[];
-  final TextEditingController _textController = TextEditingController();
-  final FocusNode _textFocusNode = FocusNode();
+  final List<_PlaygroundItem> _greenEntries = <_PlaygroundItem>[];
+  final List<_PlaygroundItem> _redEntries = <_PlaygroundItem>[];
+  final TextEditingController _greenTextController = TextEditingController();
+  final TextEditingController _redTextController = TextEditingController();
+  final FocusNode _greenFocusNode = FocusNode();
+  final FocusNode _redFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
+  final GlobalKey _greenInputKey = GlobalKey();
+  final GlobalKey _redInputKey = GlobalKey();
   int _nextId = 0;
 
   @override
@@ -19,69 +24,65 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        _textFocusNode.requestFocus();
+        _greenFocusNode.requestFocus();
       }
     });
   }
 
   @override
   void dispose() {
-    _textController.dispose();
-    _textFocusNode.dispose();
+    _greenTextController.dispose();
+    _redTextController.dispose();
+    _greenFocusNode.dispose();
+    _redFocusNode.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _handleSubmit(String rawValue) {
+  void _handleSubmit({
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required List<_PlaygroundItem> targetList,
+    required GlobalKey inputKey,
+    required _PlaygroundCircleColor color,
+  }) {
+    final String rawValue = controller.text;
     final String value = rawValue.trim();
+    controller.clear();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        focusNode.requestFocus();
+      }
+    });
+
     if (value.isEmpty) {
-      _textController.clear();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          _textFocusNode.requestFocus();
-        }
-      });
+      _ensureInputVisible(inputKey);
       return;
     }
 
     setState(() {
-      _entries.add(_PlaygroundItem(id: _nextId++, text: value));
-    });
-
-    _textController.clear();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _textFocusNode.requestFocus();
-      }
+      targetList.add(_PlaygroundItem(id: _nextId++, text: value, color: color));
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-      }
+      _ensureInputVisible(inputKey);
     });
   }
 
-  void _handleReorder(int oldIndex, int newIndex) {
-    if (oldIndex >= _entries.length) {
+  void _ensureInputVisible(GlobalKey key) {
+    final BuildContext? context = key.currentContext;
+    if (context == null) {
       return;
     }
 
-    setState(() {
-      int targetIndex = newIndex;
-      if (targetIndex > _entries.length) {
-        targetIndex = _entries.length;
-      }
-      if (targetIndex > oldIndex) {
-        targetIndex -= 1;
-      }
-      final _PlaygroundItem movedEntry = _entries.removeAt(oldIndex);
-      _entries.insert(targetIndex, movedEntry);
-    });
+    if (_scrollController.hasClients) {
+      Scrollable.ensureVisible(
+        context,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   @override
@@ -90,45 +91,76 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       appBar: AppBar(
         title: const Text('Playground'),
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: ReorderableListView.builder(
-              scrollController: _scrollController,
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-              buildDefaultDragHandles: false,
-              itemCount: _entries.length + 1,
-              onReorder: _handleReorder,
-              itemBuilder: (BuildContext context, int index) {
-                if (index == _entries.length) {
-                  return _PlaygroundInputRow(
-                    key: const ValueKey<String>('playground_input_row'),
-                    controller: _textController,
-                    focusNode: _textFocusNode,
-                    onSubmitted: _handleSubmit,
-                  );
-                }
+      body: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+        itemCount: _greenEntries.length + _redEntries.length + 2,
+        itemBuilder: (BuildContext context, int index) {
+          if (index < _greenEntries.length) {
+            final _PlaygroundItem item = _greenEntries[index];
+            return _PlaygroundEntry(
+              key: ValueKey<int>(item.id),
+              text: item.text,
+              circleColor: item.color.asColor,
+            );
+          }
 
-                final _PlaygroundItem item = _entries[index];
-                return _PlaygroundEntry(
-                  key: ValueKey<int>(item.id),
-                  index: index,
-                  text: item.text,
-                );
-              },
+          if (index == _greenEntries.length) {
+            return _PlaygroundInputRow(
+              key: _greenInputKey,
+              controller: _greenTextController,
+              focusNode: _greenFocusNode,
+              labelText: 'Add a green circle',
+              onSubmitted: () => _handleSubmit(
+                controller: _greenTextController,
+                focusNode: _greenFocusNode,
+                targetList: _greenEntries,
+                inputKey: _greenInputKey,
+                color: _PlaygroundCircleColor.green,
+              ),
+            );
+          }
+
+          final int redSectionStart = _greenEntries.length + 1;
+          final int redEntriesEnd = redSectionStart + _redEntries.length;
+          if (index < redEntriesEnd) {
+            final _PlaygroundItem item =
+                _redEntries[index - redSectionStart];
+            return _PlaygroundEntry(
+              key: ValueKey<int>(item.id),
+              text: item.text,
+              circleColor: item.color.asColor,
+            );
+          }
+
+          return _PlaygroundInputRow(
+            key: _redInputKey,
+            controller: _redTextController,
+            focusNode: _redFocusNode,
+            labelText: 'Add a red circle',
+            onSubmitted: () => _handleSubmit(
+              controller: _redTextController,
+              focusNode: _redFocusNode,
+              targetList: _redEntries,
+              inputKey: _redInputKey,
+              color: _PlaygroundCircleColor.red,
             ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
 }
 
 class _PlaygroundEntry extends StatelessWidget {
-  const _PlaygroundEntry({super.key, required this.index, required this.text});
+  const _PlaygroundEntry({
+    super.key,
+    required this.text,
+    required this.circleColor,
+  });
 
-  final int index;
   final String text;
+  final Color circleColor;
 
   @override
   Widget build(BuildContext context) {
@@ -140,8 +172,8 @@ class _PlaygroundEntry extends StatelessWidget {
           Container(
             width: 120,
             height: 120,
-            decoration: const BoxDecoration(
-              color: Colors.blueGrey,
+            decoration: BoxDecoration(
+              color: circleColor,
               shape: BoxShape.circle,
             ),
           ),
@@ -152,19 +184,6 @@ class _PlaygroundEntry extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
-          const SizedBox(width: 12),
-          ReorderableDragStartListener(
-            index: index,
-            child: Container(
-              width: 40,
-              height: 40,
-              alignment: Alignment.center,
-              child: Icon(
-                Icons.drag_handle,
-                color: Colors.grey[600],
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -172,10 +191,28 @@ class _PlaygroundEntry extends StatelessWidget {
 }
 
 class _PlaygroundItem {
-  const _PlaygroundItem({required this.id, required this.text});
+  const _PlaygroundItem({
+    required this.id,
+    required this.text,
+    required this.color,
+  });
 
   final int id;
   final String text;
+  final _PlaygroundCircleColor color;
+}
+
+enum _PlaygroundCircleColor { green, red }
+
+extension _PlaygroundCircleColorX on _PlaygroundCircleColor {
+  Color get asColor {
+    switch (this) {
+      case _PlaygroundCircleColor.green:
+        return Colors.green;
+      case _PlaygroundCircleColor.red:
+        return Colors.red;
+    }
+  }
 }
 
 class _PlaygroundInputRow extends StatelessWidget {
@@ -184,11 +221,13 @@ class _PlaygroundInputRow extends StatelessWidget {
     required this.controller,
     required this.focusNode,
     required this.onSubmitted,
+    required this.labelText,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
-  final ValueChanged<String> onSubmitted;
+  final VoidCallback onSubmitted;
+  final String labelText;
 
   @override
   Widget build(BuildContext context) {
@@ -203,10 +242,10 @@ class _PlaygroundInputRow extends StatelessWidget {
             child: TextField(
               controller: controller,
               focusNode: focusNode,
-              onSubmitted: onSubmitted,
+              onSubmitted: (_) => onSubmitted(),
               textInputAction: TextInputAction.done,
-              decoration: const InputDecoration(
-                labelText: 'Add an entry',
+              decoration: InputDecoration(
+                labelText: labelText,
                 border: OutlineInputBorder(),
               ),
             ),
