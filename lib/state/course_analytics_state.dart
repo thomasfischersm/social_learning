@@ -18,31 +18,28 @@ class CourseAnalyticsState extends ChangeNotifier {
   final ApplicationState _applicationState;
   final LibraryState _libraryState;
 
-  final List<User> _courseUsers = [];
+  // final List<User> _courseUsers = [];
   final List<PracticeRecord> _practiceRecords = [];
 
-  CourseAnalyticsUsersSubscription? _userSubscription;
-  CourseAnalyticsPracticeRecordsSubscription? _practiceRecordSubscription;
+  late CourseAnalyticsUsersSubscription _userSubscription;
+  late CourseAnalyticsPracticeRecordsSubscription _practiceRecordSubscription;
 
   Future<void>? _initializationFuture;
   Timer? _disposeTimer;
-  bool _isInitializing = false;
-  bool _isInitialized = false;
-  bool _hasAccess = false;
+  _CourseAnalyticsStatus _internalStatus = _CourseAnalyticsStatus.uninitialized;
   String? _activeCourseId;
-  bool _isDisposed = false;
-  int _generation = 0;
 
   CourseAnalyticsState(this._applicationState, this._libraryState) {
+    _practiceRecordSubscription =
+        CourseAnalyticsPracticeRecordsSubscription(notifyListeners);
+    _userSubscription = CourseAnalyticsUsersSubscription(
+        _practiceRecordSubscription, notifyListeners);
     _libraryState.addListener(_handleLibraryStateChange);
   }
 
-  bool get hasAccess => _hasAccess;
-  bool get isInitialized => _isInitialized;
-
   Future<UnmodifiableListView<User>> getCourseUsers() async {
     await ensureInitialized();
-    return UnmodifiableListView<User>(_courseUsers);
+    return UnmodifiableListView<User>(_userSubscription.items);
   }
 
   Future<UnmodifiableListView<PracticeRecord>> getPracticeRecords() async {
@@ -51,13 +48,7 @@ class CourseAnalyticsState extends ChangeNotifier {
   }
 
   Future<void> ensureInitialized() {
-    if (_isDisposed) {
-      return Future.error(
-        StateError('CourseAnalyticsState has been disposed.'),
-      );
-    }
-
-    if (_isInitialized) {
+    if (_internalStatus == _CourseAnalyticsStatus.initialized) {
       return Future.value();
     }
 
@@ -65,81 +56,51 @@ class CourseAnalyticsState extends ChangeNotifier {
       return _initializationFuture!;
     }
 
-    final int generation = _generation;
-    _initializationFuture = _initialize(generation);
+    _initializationFuture = _initialize();
     return _initializationFuture!;
   }
 
-  Future<void> _initialize(int generation) async {
-    _isInitializing = true;
+  Future<void> _initialize() async {
+    _internalStatus = _CourseAnalyticsStatus.initializing;
     try {
       final Course? course = _libraryState.selectedCourse;
-      final User? user = await _applicationState.currentUserBlocking;
 
-      if (generation != _generation) {
-        return;
-      }
-
-      if (course == null || course.id == null || user == null) {
-        await _resetState();
-        _hasAccess = false;
-        return;
-      }
-
-      final bool isCourseOwner = course.creatorId == user.uid;
-      _hasAccess = user.isAdmin || isCourseOwner;
-      if (!_hasAccess) {
-        await _resetState();
-        _activeCourseId = course.id;
+      if (course == null || course.id == null || ! await _hasAccess()) {
         return;
       }
 
       _activeCourseId = course.id;
 
-      _userSubscription ??= CourseAnalyticsUsersSubscription(
-        notifyListeners,
-        _handleUsersChanged,
-      );
-      _practiceRecordSubscription ??=
-          CourseAnalyticsPracticeRecordsSubscription(
-        notifyListeners,
-        _handlePracticeRecordsChanged,
-      );
+      await _userSubscription.resubscribe((collection) => collection
+          .where('enrolledCourseIds', arrayContains: course.id)
+          .orderBy('lastActive', descending: true)
+          .limit(_maxRecentUsers));
 
-      await _userSubscription!.listenForCourse(course, _maxRecentUsers);
-      if (generation != _generation) {
-        return;
-      }
-
-      final List<String> menteeUids = _recentMenteeUids();
-      await _practiceRecordSubscription!
-          .listenForCourseAndMentees(course, menteeUids);
-      if (generation != _generation) {
-        return;
-      }
-
-      _isInitialized = true;
       _scheduleAutoDispose();
     } finally {
-      if (generation == _generation) {
-        _initializationFuture = null;
-      }
-      _isInitializing = false;
+      _internalStatus = _CourseAnalyticsStatus.initialized;
       notifyListeners();
     }
   }
 
+  Future<bool> _hasAccess() async {
+    final Course? course = _libraryState.selectedCourse;
+    if (course == null || course.id == null) {
+      return false;
+    }
+
+    final User? user = await _applicationState.currentUserBlocking;
+    return user != null && (user.isAdmin || course.creatorId == user.uid);
+  }
+
   Future<void> deinitialize() async {
-    _generation++;
     _disposeTimer?.cancel();
     _disposeTimer = null;
 
     await _resetState();
 
     _activeCourseId = null;
-    _hasAccess = false;
-    _isInitialized = false;
-    _isInitializing = false;
+    _internalStatus = _CourseAnalyticsStatus.uninitialized;
     _initializationFuture = null;
 
     notifyListeners();
@@ -150,7 +111,7 @@ class CourseAnalyticsState extends ChangeNotifier {
   }
 
   void _handleLibraryStateChange() {
-    if (!_isInitialized) {
+    if (_internalStatus != _CourseAnalyticsStatus.initialized) {
       return;
     }
 
@@ -167,62 +128,24 @@ class CourseAnalyticsState extends ChangeNotifier {
     });
   }
 
-  void _handleUsersChanged(List<User> users) {
-    if (_isDisposed) {
-      return;
-    }
-
-    _courseUsers
-      ..clear()
-      ..addAll(users);
-
-    if (_isInitializing || !_hasAccess) {
-      return;
-    }
-
-    final Course? course = _libraryState.selectedCourse;
-    if (course == null || course.id == null) {
-      return;
-    }
-
-    unawaited(_practiceRecordSubscription
-        ?.listenForCourseAndMentees(course, _recentMenteeUids()));
-  }
-
-  void _handlePracticeRecordsChanged(List<PracticeRecord> records) {
-    if (_isDisposed) {
-      return;
-    }
-
-    _practiceRecords
-      ..clear()
-      ..addAll(records);
-  }
-
-  List<String> _recentMenteeUids() {
-    return _courseUsers
-        .map((user) => user.uid)
-        .where((uid) => uid.isNotEmpty)
-        .toList(growable: false);
-  }
-
   Future<void> _resetState() async {
-    await _userSubscription?.cancel();
-    await _practiceRecordSubscription?.cancel();
-    _courseUsers.clear();
-    _practiceRecords.clear();
+    await _userSubscription.cancel();
+    await _practiceRecordSubscription.cancel();
   }
 
   @override
   void dispose() {
-    _isDisposed = true;
     _libraryState.removeListener(_handleLibraryStateChange);
     _disposeTimer?.cancel();
     _disposeTimer = null;
-    _userSubscription?.cancel();
-    _userSubscription = null;
-    _practiceRecordSubscription?.cancel();
-    _practiceRecordSubscription = null;
+    _userSubscription.cancel();
+    _practiceRecordSubscription.cancel();
     super.dispose();
   }
+}
+
+enum _CourseAnalyticsStatus {
+  uninitialized,
+  initializing,
+  initialized,
 }
