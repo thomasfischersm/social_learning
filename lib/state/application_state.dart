@@ -14,6 +14,7 @@ import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
+import 'package:social_learning/state/course_analytics_state.dart';
 
 class ApplicationState extends ChangeNotifier {
   ApplicationState() {
@@ -172,7 +173,7 @@ class ApplicationState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void signOut(BuildContext context) {
+  Future<void> signOut(BuildContext context) async {
     print('Start signOut');
     auth.FirebaseAuth.instance.signOut();
     print('FirebaseAuth signOut done');
@@ -197,6 +198,10 @@ class ApplicationState extends ChangeNotifier {
     StudentSessionState studentSessionState =
         Provider.of<StudentSessionState>(context, listen: false);
     studentSessionState.signOut();
+
+    CourseAnalyticsState courseAnalyticsState =
+        Provider.of<CourseAnalyticsState>(context, listen: false);
+    await courseAnalyticsState.signOut();
 
     OrganizerSessionState organizerSessionState =
         Provider.of<OrganizerSessionState>(context, listen: false);

@@ -13,14 +13,14 @@ class SignOutPage extends StatelessWidget {
       children: [
         const Text("Successfully signed out!"),
         TextButton(
-            onPressed: () {
+            onPressed: () async {
               ApplicationState applicationState =
                   Provider.of<ApplicationState>(context, listen: false);
               Navigator.pushNamedAndRemoveUntil(
                   context,
                   NavigationEnum.landing.route,
                       (Route<dynamic> route) => false);
-              applicationState.signOut(context);
+              await applicationState.signOut(context);
             },
             child: const Text("Ghost myself"))
       ],

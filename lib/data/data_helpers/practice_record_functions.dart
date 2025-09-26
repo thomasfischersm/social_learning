@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/practice_record.dart';
 
@@ -56,5 +57,16 @@ class PracticeRecordFunctions {
     return snapshot.docs
         .map((doc) => PracticeRecord.fromSnapshot(doc))
         .toList();
+  }
+
+  static Query<Map<String, dynamic>>
+      practiceRecordsForCourseAndMenteesQuery(
+    CollectionReference<Map<String, dynamic>> practiceRecordsCollection,
+    Course course,
+    List<String> menteeUids,
+  ) {
+    return practiceRecordsCollection
+        .where('courseId', isEqualTo: course.docRef)
+        .where('menteeUid', whereIn: menteeUids);
   }
 }
