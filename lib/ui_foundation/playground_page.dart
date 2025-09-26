@@ -67,12 +67,20 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   }
 
   void _handleReorder(int oldIndex, int newIndex) {
+    if (oldIndex >= _entries.length) {
+      return;
+    }
+
     setState(() {
-      if (newIndex > oldIndex) {
-        newIndex -= 1;
+      int targetIndex = newIndex;
+      if (targetIndex > _entries.length) {
+        targetIndex = _entries.length;
+      }
+      if (targetIndex > oldIndex) {
+        targetIndex -= 1;
       }
       final _PlaygroundItem movedEntry = _entries.removeAt(oldIndex);
-      _entries.insert(newIndex, movedEntry);
+      _entries.insert(targetIndex, movedEntry);
     });
   }
 
@@ -87,11 +95,20 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
           Expanded(
             child: ReorderableListView.builder(
               scrollController: _scrollController,
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
               buildDefaultDragHandles: false,
-              itemCount: _entries.length,
+              itemCount: _entries.length + 1,
               onReorder: _handleReorder,
               itemBuilder: (BuildContext context, int index) {
+                if (index == _entries.length) {
+                  return _PlaygroundInputRow(
+                    key: const ValueKey<String>('playground_input_row'),
+                    controller: _textController,
+                    focusNode: _textFocusNode,
+                    onSubmitted: _handleSubmit,
+                  );
+                }
+
                 final _PlaygroundItem item = _entries[index];
                 return _PlaygroundEntry(
                   key: ValueKey<int>(item.id),
@@ -99,27 +116,6 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                   text: item.text,
                 );
               },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-            child: Row(
-              children: <Widget>[
-                const SizedBox(width: 60, height: 60),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: TextField(
-                    controller: _textController,
-                    focusNode: _textFocusNode,
-                    onSubmitted: _handleSubmit,
-                    textInputAction: TextInputAction.done,
-                    decoration: const InputDecoration(
-                      labelText: 'Add an entry',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
         ],
@@ -180,4 +176,43 @@ class _PlaygroundItem {
 
   final int id;
   final String text;
+}
+
+class _PlaygroundInputRow extends StatelessWidget {
+  const _PlaygroundInputRow({
+    super.key,
+    required this.controller,
+    required this.focusNode,
+    required this.onSubmitted,
+  });
+
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final ValueChanged<String> onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          const SizedBox(width: 60, height: 60),
+          const SizedBox(width: 16),
+          Expanded(
+            child: TextField(
+              controller: controller,
+              focusNode: focusNode,
+              onSubmitted: onSubmitted,
+              textInputAction: TextInputAction.done,
+              decoration: const InputDecoration(
+                labelText: 'Add an entry',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
