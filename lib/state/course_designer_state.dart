@@ -199,6 +199,13 @@ class CourseDesignerState extends ChangeNotifier {
     }
   }
 
+  void signOut() {
+    _activeCourse = null;
+    _status = CourseDesignerStateStatus.uninitialized;
+    _initCompleter = Completer<void>();
+    clear();
+  }
+
   void clear() {
     _activeCourse = _libraryState.selectedCourse;
     courseProfile = null;

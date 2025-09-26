@@ -9,6 +9,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/available_session_state.dart';
+import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
@@ -185,6 +186,10 @@ class ApplicationState extends ChangeNotifier {
     LibraryState libraryState =
         Provider.of<LibraryState>(context, listen: false);
     libraryState.signOut();
+
+    final courseDesignerState =
+        Provider.of<CourseDesignerState>(context, listen: false);
+    courseDesignerState.signOut();
 
     StudentState studentState =
         Provider.of<StudentState>(context, listen: false);
