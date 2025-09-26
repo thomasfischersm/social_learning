@@ -97,6 +97,17 @@ class UserFunctions {
     return users;
   }
 
+  static Query<Map<String, dynamic>> recentActiveUsersForCourseQuery(
+    CollectionReference<Map<String, dynamic>> usersCollection,
+    Course course,
+    int maxUsers,
+  ) {
+    return usersCollection
+        .where('enrolledCourseIds', arrayContains: course.docRef)
+        .orderBy('lastLessonTimestamp', descending: true)
+        .limit(maxUsers);
+  }
+
   static Future<User> getCurrentUser() async {
     String uid = auth.FirebaseAuth.instance.currentUser!.uid;
     var snapshot = await FirestoreService.instance
