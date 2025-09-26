@@ -142,8 +142,8 @@ class _PlaygroundEntry extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
-            width: 60,
-            height: 60,
+            width: 120,
+            height: 120,
             decoration: const BoxDecoration(
               color: Colors.blueGrey,
               shape: BoxShape.circle,
