@@ -17,16 +17,6 @@ class InstructorDashboardTabBar extends StatefulWidget
       nav: NavigationEnum.instructorDashBoard,
       label: 'Dashboard',
     ),
-    _TabInfo(
-      icon: Icons.fact_check_outlined,
-      nav: NavigationEnum.instructorClipboard,
-      label: 'Coach Clipboard',
-    ),
-    _TabInfo(
-      icon: Icons.groups_outlined,
-      nav: NavigationEnum.sessionHost,
-      label: 'Host Session',
-    ),
   ];
 
   static int indexFromNav(NavigationEnum nav) {
