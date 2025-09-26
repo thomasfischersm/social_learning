@@ -8,10 +8,11 @@ class PlaygroundPage extends StatefulWidget {
 }
 
 class _PlaygroundPageState extends State<PlaygroundPage> {
-  final List<String> _entries = <String>[];
+  final List<_PlaygroundItem> _entries = <_PlaygroundItem>[];
   final TextEditingController _textController = TextEditingController();
   final FocusNode _textFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
+  int _nextId = 0;
 
   @override
   void initState() {
@@ -44,7 +45,7 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     }
 
     setState(() {
-      _entries.add(value);
+      _entries.add(_PlaygroundItem(id: _nextId++, text: value));
     });
 
     _textController.clear();
@@ -65,23 +66,43 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     });
   }
 
+  void _handleReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final _PlaygroundItem movedEntry = _entries.removeAt(oldIndex);
+      _entries.insert(newIndex, movedEntry);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Playground'),
       ),
-      body: ListView.builder(
-        controller: _scrollController,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-        itemCount: _entries.length + 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (index < _entries.length) {
-            return _PlaygroundEntry(text: _entries[index]);
-          }
-
-          return Padding(
-            padding: const EdgeInsets.only(top: 12),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: ReorderableListView.builder(
+              scrollController: _scrollController,
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+              buildDefaultDragHandles: false,
+              itemCount: _entries.length,
+              onReorder: _handleReorder,
+              itemBuilder: (BuildContext context, int index) {
+                final _PlaygroundItem item = _entries[index];
+                return _PlaygroundEntry(
+                  key: ValueKey<int>(item.id),
+                  index: index,
+                  text: item.text,
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
             child: Row(
               children: <Widget>[
                 const SizedBox(width: 60, height: 60),
@@ -100,16 +121,17 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
                 ),
               ],
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
 }
 
 class _PlaygroundEntry extends StatelessWidget {
-  const _PlaygroundEntry({required this.text});
+  const _PlaygroundEntry({super.key, required this.index, required this.text});
 
+  final int index;
   final String text;
 
   @override
@@ -134,8 +156,28 @@ class _PlaygroundEntry extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
+          const SizedBox(width: 12),
+          ReorderableDragStartListener(
+            index: index,
+            child: Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.drag_handle,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+class _PlaygroundItem {
+  const _PlaygroundItem({required this.id, required this.text});
+
+  final int id;
+  final String text;
 }
