@@ -14,6 +14,16 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   final ScrollController _scrollController = ScrollController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _textFocusNode.requestFocus();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _textController.dispose();
     _textFocusNode.dispose();
@@ -25,7 +35,11 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     final String value = rawValue.trim();
     if (value.isEmpty) {
       _textController.clear();
-      _textFocusNode.requestFocus();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _textFocusNode.requestFocus();
+        }
+      });
       return;
     }
 
@@ -34,7 +48,11 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     });
 
     _textController.clear();
-    _textFocusNode.requestFocus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _textFocusNode.requestFocus();
+      }
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
