@@ -13,9 +13,9 @@ class FirestoreListSubscription<T> {
   bool _isInitialized = false;
   StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _streamSubscription;
 
-  get isInitialized => _isInitialized;
+  bool get isInitialized => _isInitialized;
 
-  get items => _items;
+  List<T> get items => _items;
 
   FirestoreListSubscription(
       this._collectionName, this._convertSnapshot, this._notifyChange);
