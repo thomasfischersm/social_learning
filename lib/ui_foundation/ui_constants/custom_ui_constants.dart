@@ -91,22 +91,19 @@ class CustomUiConstants {
       bool enableCourseLoadingGuard = false,
       bool enableCourseAnalyticsGuard = false}) {
 
-    var creatorGuardEnabled = enableCreatorGuard;
-    var courseLoadingGuardEnabled = enableCourseLoadingGuard;
-
     if (enableCourseAnalyticsGuard) {
-      creatorGuardEnabled = true;
-      courseLoadingGuardEnabled = true;
+      enableCreatorGuard = true;
+      enableCourseLoadingGuard = true;
     }
 
     // Add guards in reverse order. The guard added last will be executed first.
     // This is important because when the user isn't logged in, exceptions
     // could be thrown if the user isn't redirected to sign-in right away.
-    if (courseLoadingGuardEnabled) {
+    if (enableCourseLoadingGuard) {
       child = CourseLoadingGuard(child: child);
     }
 
-    if (creatorGuardEnabled) {
+    if (enableCreatorGuard) {
       child = CreatorGuard(child: child);
     }
 
