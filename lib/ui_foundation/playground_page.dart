@@ -8,8 +8,10 @@ class PlaygroundPage extends StatefulWidget {
 }
 
 class _PlaygroundPageState extends State<PlaygroundPage> {
-  final List<_PlaygroundItem> _greenEntries = <_PlaygroundItem>[];
-  final List<_PlaygroundItem> _redEntries = <_PlaygroundItem>[];
+  final List<_PlaygroundRow> _rows = <_PlaygroundRow>[
+    const _PlaygroundRow.input(_PlaygroundRowType.greenInput),
+    const _PlaygroundRow.input(_PlaygroundRowType.redInput),
+  ];
   final TextEditingController _greenTextController = TextEditingController();
   final TextEditingController _redTextController = TextEditingController();
   final FocusNode _greenFocusNode = FocusNode();
@@ -42,7 +44,6 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
   void _handleSubmit({
     required TextEditingController controller,
     required FocusNode focusNode,
-    required List<_PlaygroundItem> targetList,
     required GlobalKey inputKey,
     required _PlaygroundCircleColor color,
   }) {
@@ -62,7 +63,19 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
     }
 
     setState(() {
-      targetList.add(_PlaygroundItem(id: _nextId++, text: value, color: color));
+      final _PlaygroundRow newRow = _PlaygroundRow.entry(
+        id: _nextId++,
+        text: value,
+        color: color,
+      );
+      final _PlaygroundRowType inputType =
+          color == _PlaygroundCircleColor.green
+              ? _PlaygroundRowType.greenInput
+              : _PlaygroundRowType.redInput;
+      final int inputIndex =
+          _rows.indexWhere((row) => row.type == inputType);
+      final int insertIndex = inputIndex >= 0 ? inputIndex : _rows.length;
+      _rows.insert(insertIndex, newRow);
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -91,21 +104,27 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       appBar: AppBar(
         title: const Text('Playground'),
       ),
-      body: ListView.builder(
-        controller: _scrollController,
+      body: ReorderableListView.builder(
+        buildDefaultDragHandles: false,
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-        itemCount: _greenEntries.length + _redEntries.length + 2,
+        itemCount: _rows.length,
+        onReorder: _handleReorder,
+        scrollController: _scrollController,
         itemBuilder: (BuildContext context, int index) {
-          if (index < _greenEntries.length) {
-            final _PlaygroundItem item = _greenEntries[index];
+          final _PlaygroundRow row = _rows[index];
+          if (row.isEntry) {
             return _PlaygroundEntry(
-              key: ValueKey<int>(item.id),
-              text: item.text,
-              circleColor: item.color.asColor,
+              key: ValueKey<int>(row.id!),
+              text: row.text!,
+              circleColor: row.color!.asColor,
+              dragHandle: ReorderableDragStartListener(
+                index: index,
+                child: const _PlaygroundDragHandle(),
+              ),
             );
           }
 
-          if (index == _greenEntries.length) {
+          if (row.type == _PlaygroundRowType.greenInput) {
             return _PlaygroundInputRow(
               key: _greenInputKey,
               controller: _greenTextController,
@@ -114,22 +133,9 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
               onSubmitted: () => _handleSubmit(
                 controller: _greenTextController,
                 focusNode: _greenFocusNode,
-                targetList: _greenEntries,
                 inputKey: _greenInputKey,
                 color: _PlaygroundCircleColor.green,
               ),
-            );
-          }
-
-          final int redSectionStart = _greenEntries.length + 1;
-          final int redEntriesEnd = redSectionStart + _redEntries.length;
-          if (index < redEntriesEnd) {
-            final _PlaygroundItem item =
-                _redEntries[index - redSectionStart];
-            return _PlaygroundEntry(
-              key: ValueKey<int>(item.id),
-              text: item.text,
-              circleColor: item.color.asColor,
             );
           }
 
@@ -141,7 +147,6 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
             onSubmitted: () => _handleSubmit(
               controller: _redTextController,
               focusNode: _redFocusNode,
-              targetList: _redEntries,
               inputKey: _redInputKey,
               color: _PlaygroundCircleColor.red,
             ),
@@ -150,6 +155,32 @@ class _PlaygroundPageState extends State<PlaygroundPage> {
       ),
     );
   }
+
+  void _handleReorder(int oldIndex, int newIndex) {
+    final _PlaygroundRow movingRow = _rows[oldIndex];
+    if (!movingRow.isEntry) {
+      return;
+    }
+
+    int targetIndex = newIndex;
+    if (targetIndex > oldIndex) {
+      targetIndex -= 1;
+    }
+
+    if (targetIndex < 0) {
+      targetIndex = 0;
+    } else if (targetIndex > _rows.length) {
+      targetIndex = _rows.length;
+    }
+
+    setState(() {
+      _rows.removeAt(oldIndex);
+      if (targetIndex > _rows.length) {
+        targetIndex = _rows.length;
+      }
+      _rows.insert(targetIndex, movingRow);
+    });
+  }
 }
 
 class _PlaygroundEntry extends StatelessWidget {
@@ -157,10 +188,12 @@ class _PlaygroundEntry extends StatelessWidget {
     super.key,
     required this.text,
     required this.circleColor,
+    required this.dragHandle,
   });
 
   final String text;
   final Color circleColor;
+  final Widget dragHandle;
 
   @override
   Widget build(BuildContext context) {
@@ -184,22 +217,26 @@ class _PlaygroundEntry extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ),
+          dragHandle,
         ],
       ),
     );
   }
 }
 
-class _PlaygroundItem {
-  const _PlaygroundItem({
-    required this.id,
-    required this.text,
-    required this.color,
-  });
+class _PlaygroundDragHandle extends StatelessWidget {
+  const _PlaygroundDragHandle();
 
-  final int id;
-  final String text;
-  final _PlaygroundCircleColor color;
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Icon(
+        Icons.drag_handle,
+        color: Colors.grey[600],
+      ),
+    );
+  }
 }
 
 enum _PlaygroundCircleColor { green, red }
@@ -214,6 +251,28 @@ extension _PlaygroundCircleColorX on _PlaygroundCircleColor {
     }
   }
 }
+
+class _PlaygroundRow {
+  const _PlaygroundRow.entry({
+    required this.id,
+    required this.text,
+    required this.color,
+  }) : type = _PlaygroundRowType.entry;
+
+  const _PlaygroundRow.input(this.type)
+      : id = null,
+        text = null,
+        color = null;
+
+  final int? id;
+  final String? text;
+  final _PlaygroundCircleColor? color;
+  final _PlaygroundRowType type;
+
+  bool get isEntry => type == _PlaygroundRowType.entry;
+}
+
+enum _PlaygroundRowType { entry, greenInput, redInput }
 
 class _PlaygroundInputRow extends StatelessWidget {
   const _PlaygroundInputRow({
