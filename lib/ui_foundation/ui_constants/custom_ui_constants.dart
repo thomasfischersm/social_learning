@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/auth_guard.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/course_analytics_guard.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/creator_guard.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/course_loading_guard.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -87,21 +88,34 @@ class CustomUiConstants {
       {bool enableScrolling = true,
       bool enableAuthGuard = true,
       bool enableCreatorGuard = false,
-      bool enableCourseLoadingGuard = false}) {
+      bool enableCourseLoadingGuard = false,
+      bool enableCourseAnalyticsGuard = false}) {
+
+    var creatorGuardEnabled = enableCreatorGuard;
+    var courseLoadingGuardEnabled = enableCourseLoadingGuard;
+
+    if (enableCourseAnalyticsGuard) {
+      creatorGuardEnabled = true;
+      courseLoadingGuardEnabled = true;
+    }
 
     // Add guards in reverse order. The guard added last will be executed first.
     // This is important because when the user isn't logged in, exceptions
     // could be thrown if the user isn't redirected to sign-in right away.
-    if (enableCourseLoadingGuard) {
+    if (courseLoadingGuardEnabled) {
       child = CourseLoadingGuard(child: child);
     }
 
-    if (enableCreatorGuard) {
+    if (creatorGuardEnabled) {
       child = CreatorGuard(child: child);
     }
 
     if (enableAuthGuard) {
       child = AuthGuard(child: child);
+    }
+
+    if (enableCourseAnalyticsGuard) {
+      child = CourseAnalyticsGuard(child: child);
     }
 
     if (enableScrolling) {
