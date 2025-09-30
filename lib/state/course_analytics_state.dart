@@ -47,6 +47,16 @@ class CourseAnalyticsState extends ChangeNotifier {
     return UnmodifiableListView<PracticeRecord>(_practiceRecords);
   }
 
+  /// Returns practice records students minus the practice records that
+  /// were created to bootstrap the instructor.
+  Future<List> getActualPracticeRecords() async {
+    await ensureInitialized();
+
+    return _practiceRecords
+        .where((record) => record.menteeUid != record.mentorUid)
+        .toList();
+  }
+
   Future<void> ensureInitialized() {
     if (_internalStatus == _CourseAnalyticsStatus.initialized) {
       return Future.value();
@@ -65,7 +75,7 @@ class CourseAnalyticsState extends ChangeNotifier {
     try {
       final Course? course = _libraryState.selectedCourse;
 
-      if (course == null || course.id == null || ! await _hasAccess()) {
+      if (course == null || course.id == null || !await _hasAccess()) {
         return;
       }
 
