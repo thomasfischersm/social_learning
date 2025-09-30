@@ -8,7 +8,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart'
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/session_round_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
-import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class SessionStudentArgument {

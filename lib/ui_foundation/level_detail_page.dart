@@ -7,7 +7,7 @@ import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 

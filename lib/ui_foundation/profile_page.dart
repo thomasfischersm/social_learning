@@ -15,7 +15,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/profile_progress_vi
 import 'package:social_learning/ui_foundation/helper_widgets/profile_text_editor.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/course.dart';

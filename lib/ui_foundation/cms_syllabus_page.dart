@@ -10,7 +10,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/cou
 import 'package:social_learning/ui_foundation/helper_widgets/edit_level_title_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/one_time_banner.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/course_designer_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/cms_syllabus/edit_invitation_code_dialog.dart';

@@ -16,7 +16,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/lesson_table_cell.d
 import 'package:social_learning/ui_foundation/helper_widgets/mentee_table_cell.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/mentor_table_cell.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
-import 'package:social_learning/ui_foundation/ui_constants//custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
