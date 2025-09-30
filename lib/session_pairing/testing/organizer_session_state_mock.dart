@@ -23,7 +23,7 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
   OrganizerSessionStateMock(super.applicationState, super.libraryState);
 
   @override
-  get sessionParticipants => _sessionParticipants;
+  List<SessionParticipant> get sessionParticipants => _sessionParticipants;
 
   @override
   User? getUser(SessionParticipant participant) => _participantUsers

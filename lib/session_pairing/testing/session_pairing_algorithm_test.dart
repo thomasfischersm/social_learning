@@ -18,7 +18,7 @@ class SessionPairingAlgorithmTest {
   void testBasicTeacherStudent() {
     // Initiate mocks.
     ApplicationStateMock applicationState = ApplicationStateMock();
-    LibraryStateMock libraryState = LibraryStateMock(10);
+    LibraryStateMock libraryState = LibraryStateMock(10, applicationState);
     OrganizerSessionStateMock organizerSessionState =
         OrganizerSessionStateMock(applicationState, libraryState);
 
@@ -47,7 +47,7 @@ class SessionPairingAlgorithmTest {
   void testBasic2Students() {
     // Initiate mocks.
     ApplicationStateMock applicationState = ApplicationStateMock();
-    LibraryStateMock libraryState = LibraryStateMock(10);
+    LibraryStateMock libraryState = LibraryStateMock(10, applicationState);
     OrganizerSessionStateMock organizerSessionState =
     OrganizerSessionStateMock(applicationState, libraryState);
 
@@ -74,7 +74,7 @@ class SessionPairingAlgorithmTest {
   void testBasic4Students() {
     // Initiate mocks.
     ApplicationStateMock applicationState = ApplicationStateMock();
-    LibraryStateMock libraryState = LibraryStateMock(10);
+    LibraryStateMock libraryState = LibraryStateMock(10, applicationState);
     OrganizerSessionStateMock organizerSessionState =
         OrganizerSessionStateMock(applicationState, libraryState);
 
@@ -110,7 +110,7 @@ class SessionPairingAlgorithmTest {
   void test4students1lesson() {
     // Initiate mocks.
     ApplicationStateMock applicationState = ApplicationStateMock();
-    LibraryStateMock libraryState = LibraryStateMock(10);
+    LibraryStateMock libraryState = LibraryStateMock(10, applicationState);
     OrganizerSessionStateMock organizerSessionState =
     OrganizerSessionStateMock(applicationState, libraryState);
 
@@ -139,7 +139,7 @@ class SessionPairingAlgorithmTest {
 
   void testIgnoresInactiveParticipants() {
     ApplicationStateMock applicationState = ApplicationStateMock();
-    LibraryStateMock libraryState = LibraryStateMock(10);
+    LibraryStateMock libraryState = LibraryStateMock(10, applicationState);
     OrganizerSessionStateMock organizerSessionState =
         OrganizerSessionStateMock(applicationState, libraryState);
 
