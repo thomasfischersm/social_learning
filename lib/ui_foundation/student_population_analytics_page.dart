@@ -102,11 +102,49 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
     }
 
     final config = _ChartConfig.from(context, rows);
-    return AspectRatio(
-      aspectRatio: 1,
-      child: LineChart(
-        _buildLineChartData(context, rows, config),
-      ),
+    final totals = _LegendTotals.from(rows);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildLegend(context, config, totals),
+        const SizedBox(height: 16),
+        AspectRatio(
+          aspectRatio: 1,
+          child: LineChart(
+            _buildLineChartData(context, rows, config),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLegend(
+    BuildContext context,
+    _ChartConfig config,
+    _LegendTotals totals,
+  ) {
+    final textStyle =
+        CustomTextStyles.getBodySmall(context) ?? Theme.of(context).textTheme.bodySmall;
+
+    return Wrap(
+      spacing: 16,
+      runSpacing: 8,
+      children: [
+        _LegendEntry(
+          color: config.practiceColor,
+          label: 'Total Practiced',
+          value: totals.totalCount,
+          textStyle: textStyle,
+        ),
+        _LegendEntry(
+          color: config.graduationColor,
+          label: 'Graduated',
+          value: totals.graduationCount,
+          textStyle: textStyle,
+        ),
+      ],
     );
   }
 
@@ -320,6 +358,65 @@ class _LessonDataRow {
   int get totalCount => graduationCount + practiceCount;
 
   _LessonDataRow(this.lesson);
+}
+
+class _LegendTotals {
+  _LegendTotals({
+    required this.totalCount,
+    required this.graduationCount,
+  });
+
+  final int totalCount;
+  final int graduationCount;
+
+  factory _LegendTotals.from(List<_LessonDataRow> rows) {
+    var graduationTotal = 0;
+    var practiceTotal = 0;
+
+    for (final row in rows) {
+      graduationTotal += row.graduationCount;
+      practiceTotal += row.practiceCount;
+    }
+
+    return _LegendTotals(
+      totalCount: graduationTotal + practiceTotal,
+      graduationCount: graduationTotal,
+    );
+  }
+}
+
+class _LegendEntry extends StatelessWidget {
+  const _LegendEntry({
+    required this.color,
+    required this.label,
+    required this.value,
+    required this.textStyle,
+  });
+
+  final Color color;
+  final String label;
+  final int value;
+  final TextStyle? textStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text('$label: $value', style: textStyle),
+      ],
+    );
+  }
 }
 
 class _ChartConfig {
