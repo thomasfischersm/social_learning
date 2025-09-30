@@ -14,6 +14,8 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
+const int _maxBottomLabels = 12;
+
 class StudentPopulationAnalyticsPage extends StatelessWidget {
   const StudentPopulationAnalyticsPage({super.key});
 
@@ -173,6 +175,13 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
             return const SizedBox.shrink();
           }
 
+          final isFirst = index == 0;
+          final isLast = index == rows.length - 1;
+          if (!isFirst && !isLast &&
+              index % config.bottomLabelStride != 0) {
+            return const SizedBox.shrink();
+          }
+
           return SideTitleWidget(
             space: 12,
             meta: meta,
@@ -322,6 +331,7 @@ class _ChartConfig {
     required this.graduationColor,
     required this.practiceColor,
     required this.axisLabelStyle,
+    required this.bottomLabelStride,
   });
 
   final List<FlSpot> graduationSpots;
@@ -331,6 +341,7 @@ class _ChartConfig {
   final Color graduationColor;
   final Color practiceColor;
   final TextStyle? axisLabelStyle;
+  final int bottomLabelStride;
 
   factory _ChartConfig.from(BuildContext context, List<_LessonDataRow> rows) {
     final theme = Theme.of(context);
@@ -359,6 +370,11 @@ class _ChartConfig {
     final practiceColor = theme.colorScheme.secondary
         .withOpacity(theme.brightness == Brightness.dark ? 0.45 : 0.55);
 
+    final bottomLabelStride = math.max(
+      1,
+      (rows.length / _maxBottomLabels).ceil(),
+    );
+
     return _ChartConfig(
       graduationSpots: graduationSpots,
       totalSpots: totalSpots,
@@ -367,6 +383,7 @@ class _ChartConfig {
       graduationColor: graduationColor,
       practiceColor: practiceColor,
       axisLabelStyle: axisLabelStyle,
+      bottomLabelStride: bottomLabelStride,
     );
   }
 }
