@@ -28,6 +28,7 @@ enum NavigationEnum {
   codeOfConduct('/code_of_conduct'),
   onlineSessionReview('/online_session_review'),
   instructorDashBoard('/instructor_dashboard'),
+  studentPopulationAnalytics('/student_population_analytics'),
   instructorClipboard('/instructor_clipboard'),
   createSkillAssessment('/create_skill_assessment'),
   viewSkillAssessment('/view_skill_assessment'),

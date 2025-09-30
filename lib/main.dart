@@ -41,6 +41,7 @@ import 'package:social_learning/ui_foundation/online_session_active_page.dart';
 import 'package:social_learning/ui_foundation/online_session_review_page.dart';
 import 'package:social_learning/ui_foundation/online_session_waiting_room_page.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
+import 'package:social_learning/ui_foundation/student_population_analytics_page.dart';
 import 'package:social_learning/ui_foundation/playground_page.dart';
 import 'package:social_learning/ui_foundation/profile_comparison_page.dart';
 import 'package:social_learning/ui_foundation/session_create_page.dart';
@@ -181,6 +182,8 @@ class SocialLearningApp extends StatelessWidget {
         '/create_course': (context) => const CourseCreatePage(),
         '/code_of_conduct': (context) => const CodeOfConductPage(),
         '/instructor_dashboard': (context) => const InstructorDashboardPage(),
+        '/student_population_analytics': (context) =>
+            const StudentPopulationAnalyticsPage(),
         '/instructor_clipboard': (context) => const InstructorClipboardPage(),
         '/create_skill_assessment': (context) =>
             const CreateSkillAssessmentPage(),
