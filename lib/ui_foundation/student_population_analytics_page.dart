@@ -83,7 +83,8 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
       }
     }
 
-    print('Built data for ${rows.length} lessons');
+    print(
+        'Built data for ${rows.length} lessons and ${practiceRecords.length} practice records');
 
     return rows;
   }

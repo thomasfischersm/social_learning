@@ -1,4 +1,5 @@
-
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/firestore_subscription/course_analytics_practice_records_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/firestore_list_subscription.dart';
@@ -19,9 +20,16 @@ class CourseAnalyticsUsersSubscription extends FirestoreListSubscription<User> {
   @override
   postProcess(List<User> users) {
     List<String> uids = users.map<String>((User user) => user.uid).toList();
+    print(
+        'CourseAnalyticsUsersSubscription resubscribing for ${uids.length} uids and ${users.length} users');
 
-    _practiceRecordsSubscription.resubscribe((collectionReference) =>
-        collectionReference.where(Filter.or(Filter('mentorUid', whereIn: uids),
-            Filter('menteeUid', whereIn: uids))));
+    if (uids.isEmpty ) {
+      _practiceRecordsSubscription.cancel();
+    } else {
+      _practiceRecordsSubscription.resubscribe((collectionReference) =>
+          collectionReference.where(
+              Filter.or(Filter('mentorUid', whereIn: uids),
+                  Filter('menteeUid', whereIn: uids))));
+    }
   }
 }

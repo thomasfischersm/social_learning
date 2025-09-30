@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
@@ -13,7 +16,7 @@ import 'package:social_learning/state/firestore_subscription/course_analytics_us
 import 'package:social_learning/state/library_state.dart';
 
 class CourseAnalyticsState extends ChangeNotifier {
-  static const int _maxRecentUsers = 30;
+  static const int _maxRecentUsers = 30 ~/ 2;
   static const Duration _autoDisposeDuration = Duration(hours: 1);
 
   final ApplicationState _applicationState;
@@ -45,7 +48,8 @@ class CourseAnalyticsState extends ChangeNotifier {
 
   Future<UnmodifiableListView<PracticeRecord>> getPracticeRecords() async {
     await ensureInitialized();
-    return UnmodifiableListView<PracticeRecord>(_practiceRecordSubscription.items);
+    return UnmodifiableListView<PracticeRecord>(
+        _practiceRecordSubscription.items);
   }
 
   /// Returns practice records students minus the practice records that
@@ -81,10 +85,12 @@ class CourseAnalyticsState extends ChangeNotifier {
       }
 
       _activeCourseId = course.id;
+      DocumentReference courseRef =
+          FirestoreService.instance.doc('/courses/${course.id}');
 
       await _userSubscription.resubscribe((collection) => collection
-          .where('enrolledCourseIds', arrayContains: course.id)
-          .orderBy('lastActive', descending: true)
+          .where('enrolledCourseIds', arrayContains: courseRef)
+          .orderBy('lastLessonTimestamp', descending: true)
           .limit(_maxRecentUsers));
 
       _scheduleAutoDispose();
