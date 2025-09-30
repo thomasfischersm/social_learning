@@ -35,6 +35,7 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
             children: [
               Text('Student Population Analytics',
                   style: CustomTextStyles.subHeadline),
+              const SizedBox(height: 16),
               FutureBuilder(
                   future: _buildData(context),
                   builder: (context, snapshot) {
@@ -177,8 +178,7 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
 
           final isFirst = index == 0;
           final isLast = index == rows.length - 1;
-          if (!isFirst && !isLast &&
-              index % config.bottomLabelStride != 0) {
+          if (!isFirst && !isLast && index % config.bottomLabelStride != 0) {
             return const SizedBox.shrink();
           }
 
