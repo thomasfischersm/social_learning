@@ -28,10 +28,27 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
       body: Align(
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('Hello World'),
+              Text('Student Population Analytics',
+                  style: CustomTextStyles.subHeadline),
+              FutureBuilder(
+                  future: _buildData(context),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 32),
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    } else if (snapshot.hasError ||
+                        !snapshot.hasData ||
+                        snapshot.data!.isEmpty) {
+                      return _buildEmptyChartState();
+                    } else {
+                      return _buildChart(context, snapshot.data!);
+                    }
+                  })
             ],
           ),
           enableCourseLoadingGuard: true,
@@ -48,8 +65,8 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
         context.watch<CourseAnalyticsState>();
 
     List<Lesson> lessons = libraryState.lessons ?? [];
-    UnmodifiableListView<PracticeRecord> practiceRecords =
-        await courseAnalyticsState.getPracticeRecords();
+    List<PracticeRecord> practiceRecords =
+        await courseAnalyticsState.getActualPracticeRecords();
 
     List<_LessonDataRow> rows =
         lessons.map((lesson) => _LessonDataRow(lesson)).toList();
@@ -67,18 +84,6 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
     }
 
     return rows;
-  }
-
-  Widget _buildUi(BuildContext context, List<_LessonDataRow> rows) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Student Population Analytics',
-            style: CustomTextStyles.subHeadline),
-        const SizedBox(height: 16),
-        _buildChart(context, rows),
-      ],
-    );
   }
 
   /// Builds a line chart where the x-axis is the lessons (in order) and the
@@ -334,9 +339,8 @@ class _ChartConfig {
         .fold<double>(0, (previous, element) => math.max(previous, element));
     final maxY = rawMaxY < 0 ? 0.0 : rawMaxY;
     final adjustedMaxY = maxY == 0 ? 1.0 : maxY * 1.1;
-    final leftInterval = adjustedMaxY <= 4
-        ? 1.0
-        : (adjustedMaxY / 4).ceilToDouble();
+    final leftInterval =
+        adjustedMaxY <= 4 ? 1.0 : (adjustedMaxY / 4).ceilToDouble();
 
     final graduationColor = theme.colorScheme.primary
         .withOpacity(theme.brightness == Brightness.dark ? 0.5 : 0.7);

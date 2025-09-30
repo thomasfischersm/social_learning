@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/practice_record.dart';
@@ -49,7 +50,7 @@ class CourseAnalyticsState extends ChangeNotifier {
 
   /// Returns practice records students minus the practice records that
   /// were created to bootstrap the instructor.
-  Future<List> getActualPracticeRecords() async {
+  Future<List<PracticeRecord>> getActualPracticeRecords() async {
     await ensureInitialized();
 
     return _practiceRecords
@@ -89,7 +90,9 @@ class CourseAnalyticsState extends ChangeNotifier {
       _scheduleAutoDispose();
     } finally {
       _internalStatus = _CourseAnalyticsStatus.initialized;
-      notifyListeners();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        notifyListeners();
+      });
     }
   }
 
