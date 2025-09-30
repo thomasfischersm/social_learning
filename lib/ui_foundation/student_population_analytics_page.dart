@@ -166,7 +166,6 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
           }
 
           return SideTitleWidget(
-            axisSide: meta.axisSide,
             space: 12,
             meta: meta,
             child: RotatedBox(
@@ -196,7 +195,6 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
             return const SizedBox.shrink();
           }
           return SideTitleWidget(
-            axisSide: meta.axisSide,
             space: 8,
             meta: meta,
             child: Text(
@@ -235,7 +233,8 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
     return LineTouchData(
       handleBuiltInTouches: true,
       touchTooltipData: LineTouchTooltipData(
-        tooltipBgColor: theme.colorScheme.surfaceVariant.withOpacity(0.95),
+        getTooltipColor: (touchedSpot) =>
+            theme.colorScheme.surfaceVariant.withOpacity(0.95),
         getTooltipItems: (touchedSpots) {
           if (touchedSpots.isEmpty) {
             return [];
