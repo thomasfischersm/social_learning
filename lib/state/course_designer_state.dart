@@ -25,7 +25,6 @@ import 'package:social_learning/data/teachable_item_inclusion_status.dart';
 import 'package:social_learning/data/teachable_item_tag.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
-import 'package:social_learning/cloud_functions/skill_rubric_generation_response.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/state/library_state.dart';
 

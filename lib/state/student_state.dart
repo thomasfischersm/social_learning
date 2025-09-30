@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +24,7 @@ class StudentState extends ChangeNotifier {
   StreamSubscription? _mentorSubscription;
 
   // Cache the progress state for each lesson.
-  Map<String, LessonCount> _lessonIdToLessonCountMap = {};
+  final Map<String, LessonCount> _lessonIdToLessonCountMap = {};
 
   StudentState(this._applicationState, this._libraryState);
 

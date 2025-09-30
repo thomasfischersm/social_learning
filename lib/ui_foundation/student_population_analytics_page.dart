@@ -234,7 +234,7 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
       handleBuiltInTouches: true,
       touchTooltipData: LineTouchTooltipData(
         getTooltipColor: (touchedSpot) =>
-            theme.colorScheme.surfaceVariant.withOpacity(0.95),
+            theme.colorScheme.surfaceContainerHighest.withOpacity(0.95),
         getTooltipItems: (touchedSpots) {
           if (touchedSpots.isEmpty) {
             return [];

@@ -117,7 +117,7 @@ class RadarWidget extends StatelessWidget {
     return CustomPaint(
       size: Size.square(size),
       painter: _RadarPainter(
-        dimensions: dims!,
+        dimensions: dims,
         mainColor: mainColor,
         mainLineWidth: mainLineWidth,
         supportColor: supportColor,

@@ -43,7 +43,7 @@ class SessionPairingAlgorithmPerformanceTest {
     final elapsedMilliseconds = elapsed.inMilliseconds;
     print(
       'SessionPairingAlgorithm pairing with $studentCount students took '
-      '${elapsedMilliseconds}ms (${elapsedMicroseconds}µs)',
+      '${elapsedMilliseconds}ms ($elapsedMicrosecondsµs)',
     );
   }
 }

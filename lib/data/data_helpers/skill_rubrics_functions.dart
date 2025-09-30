@@ -59,10 +59,9 @@ class SkillRubricsFunctions {
         for (int i = 0; i < dim.degrees.length; i++) {
           final deg = dim.degrees[i];
           final exerciseText =
-              "Suggested exercises to reach the next degree:\n" +
-                  deg.lessons
-                      .map((e) => "- " + _removePrefix(e, "- "))
-                      .join("\n");
+              "Suggested exercises to reach the next degree:\n${deg.lessons
+                      .map((e) => "- ${_removePrefix(e, "- ")}")
+                      .join("\n")}";
           final fullDescription = [
             _removePrefix(deg.criteria, "${deg.name}: "),
             exerciseText
@@ -548,7 +547,7 @@ class SkillRubricsFunctions {
     if (fromIndex < 0 || fromIndex >= lessons.length) return;
     final lesson = lessons.removeAt(fromIndex);
     final insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
-    final boundedIndex = insertIndex.clamp(0, lessons.length) as int;
+    final boundedIndex = insertIndex.clamp(0, lessons.length);
     lessons.insert(boundedIndex, lesson);
   }
 
@@ -572,7 +571,7 @@ class SkillRubricsFunctions {
     final toDegIndex = toDegrees.indexWhere((d) => d.id == toDegreeId);
     if (toDegIndex < 0) return;
     final toLessons = toDegrees[toDegIndex].lessonRefs;
-    final boundedIndex = toIndex.clamp(0, toLessons.length) as int;
+    final boundedIndex = toIndex.clamp(0, toLessons.length);
     toLessons.insert(boundedIndex, lesson);
   }
 

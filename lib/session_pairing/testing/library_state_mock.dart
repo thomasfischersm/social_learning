@@ -1,7 +1,6 @@
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/session_pairing/testing/application_state_mock.dart';
-import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 
 class LibraryStateMock extends LibraryState {
