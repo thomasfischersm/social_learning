@@ -105,7 +105,7 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
     final totals = _LegendTotals.from(rows);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildLegend(context, config, totals),
@@ -133,15 +133,15 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
       runSpacing: 8,
       children: [
         _LegendEntry(
-          color: config.practiceColor,
-          label: 'Total Practiced',
-          value: totals.totalCount,
-          textStyle: textStyle,
-        ),
-        _LegendEntry(
           color: config.graduationColor,
           label: 'Graduated',
           value: totals.graduationCount,
+          textStyle: textStyle,
+        ),
+        _LegendEntry(
+          color: config.practiceColor,
+          label: 'Total Taught',
+          value: totals.totalCount,
           textStyle: textStyle,
         ),
       ],
