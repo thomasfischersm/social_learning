@@ -155,6 +155,7 @@ class BottomBarV2 {
           NavigationEnum.cmsSyllabus.route,
           NavigationEnum.cmsLesson.route,
           NavigationEnum.instructorClipboard.route,
+          NavigationEnum.studyHistoryAnlytics.route,
           NavigationEnum.courseGeneration.route,
           NavigationEnum.courseGenerationReview.route,
           NavigationEnum.courseDesignerIntro.route,
