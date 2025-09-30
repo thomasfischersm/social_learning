@@ -83,6 +83,8 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
       }
     }
 
+    print('Built data for ${rows.length} lessons');
+
     return rows;
   }
 
@@ -333,6 +335,7 @@ class _ChartConfig {
       graduationSpots.add(FlSpot(x, row.graduationCount.toDouble()));
       totalSpots.add(FlSpot(x, row.totalCount.toDouble()));
     }
+    print('Graduation spot count: ${graduationSpots.length}');
 
     final rawMaxY = totalSpots
         .map((spot) => spot.y)

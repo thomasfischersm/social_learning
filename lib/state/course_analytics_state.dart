@@ -20,7 +20,7 @@ class CourseAnalyticsState extends ChangeNotifier {
   final LibraryState _libraryState;
 
   // final List<User> _courseUsers = [];
-  final List<PracticeRecord> _practiceRecords = [];
+  // final List<PracticeRecord> _practiceRecords = [];
 
   late CourseAnalyticsUsersSubscription _userSubscription;
   late CourseAnalyticsPracticeRecordsSubscription _practiceRecordSubscription;
@@ -45,7 +45,7 @@ class CourseAnalyticsState extends ChangeNotifier {
 
   Future<UnmodifiableListView<PracticeRecord>> getPracticeRecords() async {
     await ensureInitialized();
-    return UnmodifiableListView<PracticeRecord>(_practiceRecords);
+    return UnmodifiableListView<PracticeRecord>(_practiceRecordSubscription.items);
   }
 
   /// Returns practice records students minus the practice records that
@@ -53,7 +53,7 @@ class CourseAnalyticsState extends ChangeNotifier {
   Future<List<PracticeRecord>> getActualPracticeRecords() async {
     await ensureInitialized();
 
-    return _practiceRecords
+    return (await getPracticeRecords())
         .where((record) => record.menteeUid != record.mentorUid)
         .toList();
   }
