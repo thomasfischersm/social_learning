@@ -22,6 +22,11 @@ class InstructorDashboardTabBar extends StatefulWidget
       nav: NavigationEnum.studentPopulationAnalytics,
       label: 'Student Analytics',
     ),
+    _TabInfo(
+      icon: Icons.history,
+      nav: NavigationEnum.studyHistoryAnlytics,
+      label: 'Study History',
+    ),
   ];
 
   static int indexFromNav(NavigationEnum nav) {

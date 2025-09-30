@@ -29,6 +29,7 @@ enum NavigationEnum {
   onlineSessionReview('/online_session_review'),
   instructorDashBoard('/instructor_dashboard'),
   studentPopulationAnalytics('/student_population_analytics'),
+  studyHistoryAnlytics('/study_history_anlytics'),
   instructorClipboard('/instructor_clipboard'),
   createSkillAssessment('/create_skill_assessment'),
   viewSkillAssessment('/view_skill_assessment'),
