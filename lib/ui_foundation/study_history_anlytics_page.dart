@@ -70,8 +70,8 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
 
     return AspectRatio(
       aspectRatio: 1.4,
-      child: LineChart(
-        _buildLineChartData(context, rows, config),
+      child: BarChart(
+        _buildBarChartData(context, rows, config),
       ),
     );
   }
@@ -83,22 +83,21 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
     );
   }
 
-  LineChartData _buildLineChartData(
+  BarChartData _buildBarChartData(
     BuildContext context,
     List<_DayDataRow> rows,
     _ChartConfig config,
   ) {
-    return LineChartData(
-      minX: 0,
-      maxX: rows.length <= 1 ? 1 : (rows.length - 1).toDouble(),
-      minY: 0,
+    return BarChartData(
+      alignment:
+          rows.length <= 1 ? BarChartAlignment.center : BarChartAlignment.spaceBetween,
+      barTouchData: _buildTouchData(context, rows, config),
+      barGroups: config.barGroups,
       maxY: config.adjustedMaxY,
+      minY: 0,
       gridData: _buildGridData(context, config.leftInterval),
       titlesData: _buildTitlesData(rows, config),
       borderData: _buildBorderData(context),
-      lineTouchData: _buildTouchData(context, rows, config),
-      lineBarsData: _buildLineBarsData(config),
-      betweenBarsData: _buildBetweenBarsData(config),
     );
   }
 
@@ -192,7 +191,7 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
     );
   }
 
-  LineTouchData _buildTouchData(
+  BarTouchData _buildTouchData(
     BuildContext context,
     List<_DayDataRow> rows,
     _ChartConfig config,
@@ -203,69 +202,25 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
         const TextStyle(fontSize: 12);
     final dateFormat = DateFormat.yMMMd();
 
-    return LineTouchData(
+    return BarTouchData(
+      enabled: true,
       handleBuiltInTouches: true,
-      touchTooltipData: LineTouchTooltipData(
-        getTooltipColor: (touchedSpot) =>
+      touchTooltipData: BarTouchTooltipData(
+        getTooltipColor: (_) =>
             theme.colorScheme.surfaceContainerHighest.withOpacity(0.95),
-        getTooltipItems: (touchedSpots) {
-          if (touchedSpots.isEmpty) {
-            return [];
-          }
+        tooltipPadding: const EdgeInsets.all(8),
+        getTooltipItem: (group, groupIndex, rod, rodIndex) {
+          final index = group.x.toInt().clamp(0, rows.length - 1);
+          final row = rows[index];
+          final dateLabel = dateFormat.format(row.day);
 
-          return touchedSpots.map((spot) {
-            final index = spot.x.toInt().clamp(0, rows.length - 1);
-            final row = rows[index];
-            final dateLabel = dateFormat.format(row.day);
-
-            if (spot.barIndex == 0) {
-              return LineTooltipItem(
-                '$dateLabel\nGraduated: ${row.graduationCount}',
-                tooltipStyle,
-              );
-            }
-
-            return LineTooltipItem(
-              '$dateLabel\nPracticed: ${row.practiceCount}\nGraduated: ${row.graduationCount}',
-              tooltipStyle,
-            );
-          }).toList();
+          return BarTooltipItem(
+            '$dateLabel\nPracticed: ${row.practiceCount}\nGraduated: ${row.graduationCount}',
+            tooltipStyle,
+          );
         },
       ),
     );
-  }
-
-  List<LineChartBarData> _buildLineBarsData(_ChartConfig config) {
-    return [
-      LineChartBarData(
-        spots: config.graduationSpots,
-        isCurved: false,
-        barWidth: 2,
-        color: Colors.transparent,
-        belowBarData: BarAreaData(
-          show: true,
-          color: config.graduationColor,
-        ),
-        dotData: const FlDotData(show: false),
-      ),
-      LineChartBarData(
-        spots: config.totalSpots,
-        isCurved: false,
-        barWidth: 2,
-        color: Colors.transparent,
-        dotData: const FlDotData(show: false),
-      ),
-    ];
-  }
-
-  List<BetweenBarsData> _buildBetweenBarsData(_ChartConfig config) {
-    return [
-      BetweenBarsData(
-        fromIndex: 0,
-        toIndex: 1,
-        color: config.practiceColor,
-      ),
-    ];
   }
 
   Future<List<_DayDataRow>> _buildData(BuildContext context) async {
@@ -312,43 +267,59 @@ class _DayDataRow {
 
 class _ChartConfig {
   _ChartConfig({
-    required this.graduationSpots,
-    required this.totalSpots,
+    required this.barGroups,
     required this.adjustedMaxY,
     required this.leftInterval,
     required this.bottomInterval,
-    required this.graduationColor,
-    required this.practiceColor,
     required this.axisLabelStyle,
   });
 
-  final List<FlSpot> graduationSpots;
-  final List<FlSpot> totalSpots;
+  final List<BarChartGroupData> barGroups;
   final double adjustedMaxY;
   final double leftInterval;
   final double bottomInterval;
-  final Color graduationColor;
-  final Color practiceColor;
   final TextStyle? axisLabelStyle;
 
   factory _ChartConfig.from(BuildContext context, List<_DayDataRow> rows) {
     final theme = Theme.of(context);
     final axisLabelStyle = CustomTextStyles.getBodySmall(context);
 
-    final graduationSpots = <FlSpot>[];
-    final totalSpots = <FlSpot>[];
+    final graduationColor = theme.colorScheme.primary
+        .withOpacity(theme.brightness == Brightness.dark ? 0.5 : 0.7);
+    final practiceColor = theme.colorScheme.secondary
+        .withOpacity(theme.brightness == Brightness.dark ? 0.45 : 0.55);
+
+    final barGroups = <BarChartGroupData>[];
+    double maxY = 0;
     for (int index = 0; index < rows.length; index++) {
       final row = rows[index];
-      final x = index.toDouble();
-      graduationSpots.add(FlSpot(x, row.graduationCount.toDouble()));
-      totalSpots.add(FlSpot(x, row.totalCount.toDouble()));
+      final practiceValue = row.practiceCount.toDouble();
+      final totalValue = row.totalCount.toDouble();
+      maxY = math.max(maxY, totalValue);
+
+      barGroups.add(
+        BarChartGroupData(
+          x: index,
+          barRods: [
+            BarChartRodData(
+              toY: totalValue,
+              rodStackItems: [
+                BarChartRodStackItem(0, practiceValue, practiceColor),
+                BarChartRodStackItem(
+                  practiceValue,
+                  totalValue,
+                  graduationColor,
+                ),
+              ],
+              borderRadius: BorderRadius.zero,
+              width: 18,
+            ),
+          ],
+        ),
+      );
     }
 
-    final rawMaxY = totalSpots
-        .map((spot) => spot.y)
-        .fold<double>(0, (previous, element) => math.max(previous, element));
-    final maxY = rawMaxY < 0 ? 0.0 : rawMaxY;
-    final adjustedMaxY = maxY == 0 ? 1.0 : maxY * 1.1;
+    final adjustedMaxY = maxY <= 0 ? 1.0 : maxY * 1.1;
     final leftInterval =
         adjustedMaxY <= 4 ? 1.0 : (adjustedMaxY / 4).ceilToDouble();
 
@@ -356,19 +327,11 @@ class _ChartConfig {
         ? 1.0
         : math.max(1, (rows.length / 6).ceil()).toDouble();
 
-    final graduationColor = theme.colorScheme.primary
-        .withOpacity(theme.brightness == Brightness.dark ? 0.5 : 0.7);
-    final practiceColor = theme.colorScheme.secondary
-        .withOpacity(theme.brightness == Brightness.dark ? 0.45 : 0.55);
-
     return _ChartConfig(
-      graduationSpots: graduationSpots,
-      totalSpots: totalSpots,
+      barGroups: barGroups,
       adjustedMaxY: adjustedMaxY,
       leftInterval: leftInterval,
       bottomInterval: bottomInterval,
-      graduationColor: graduationColor,
-      practiceColor: practiceColor,
       axisLabelStyle: axisLabelStyle,
     );
   }
