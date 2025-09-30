@@ -59,7 +59,7 @@ void main() {
   final performanceTest = SessionPairingAlgorithmPerformanceTest();
   Map<int, int> runsToTime = {};
 
-  for (int studentCount = 2; studentCount <= 14; studentCount++) {
+  for (int studentCount = 2; studentCount <= 12; studentCount++) {
     test(
         'SessionPairingAlgorithm performance with '
         '$studentCount students', () {
@@ -67,12 +67,15 @@ void main() {
       performanceTest.runForStudentCount(studentCount);
       stopwatch.stop();
 
-      runsToTime[studentCount] = stopwatch.elapsed.inSeconds;
-    });
+      runsToTime[studentCount] = stopwatch.elapsed.inMilliseconds;
+      print('Size of times: ${runsToTime.length}');
 
-    List<int> keys = runsToTime.keys.toList()..sort();
-    for (int key in keys) {
-      print('Students: $key, Time: ${runsToTime[key]}s');
-    }
+      List<int> keys = runsToTime.keys.toList()..sort();
+      for (int key in keys) {
+        print('Students: $key, Time: ${runsToTime[key]}s');
+      }
+      print('Done!');
+    });
   }
+
 }
