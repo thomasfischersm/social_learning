@@ -66,7 +66,8 @@ dependencies:
   percent_indicator: ^4.2.5
   http: any
   flutter_svg: any
-  fl_chart: ^1.1.0
+  fl_chart: ^1.1.1
+  vector_math: ^2.1.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
