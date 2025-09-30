@@ -244,15 +244,23 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
           if (touchedSpots.isEmpty) {
             return [];
           }
-          final index = touchedSpots.first.x.toInt().clamp(0, rows.length - 1);
-          final row = rows[index];
 
-          return [
-            LineTooltipItem(
+          return touchedSpots.map((spot) {
+            final index = spot.x.toInt().clamp(0, rows.length - 1);
+            final row = rows[index];
+
+            if (spot.barIndex == 0) {
+              return LineTooltipItem(
+                'Graduated: ${row.graduationCount}',
+                tooltipStyle,
+              );
+            }
+
+            return LineTooltipItem(
               '${row.lesson.title}\nPracticed: ${row.totalCount}\nGraduated: ${row.graduationCount}',
               tooltipStyle,
-            ),
-          ];
+            );
+          }).toList();
         },
       ),
     );
