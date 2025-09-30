@@ -37,7 +37,7 @@ class OrganizerSessionState extends ChangeNotifier {
 
   get currentSession => _sessionSubscription.item;
 
-  get sessionParticipants => _sessionParticipantsSubscription.items;
+  List<SessionParticipant> get sessionParticipants => _sessionParticipantsSubscription.items;
 
   get participantUsers => _participantUsersSubscription.items;
 

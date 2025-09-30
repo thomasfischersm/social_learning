@@ -82,7 +82,7 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
   /// lesson. The graduated count should be a solid area. The practice count
   /// should be on top of the graduated count as another solid area.
   Widget _buildChart(BuildContext context, List<_LessonDataRow> rows) {
-    // TODO
+    return Text('Chart goes here');
   }
 }
 

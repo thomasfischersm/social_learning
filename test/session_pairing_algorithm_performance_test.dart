@@ -1,4 +1,6 @@
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
 import 'package:social_learning/session_pairing/testing/application_state_mock.dart';
@@ -10,7 +12,7 @@ class SessionPairingAlgorithmPerformanceTest {
 
   void runForStudentCount(int studentCount) {
     final applicationState = ApplicationStateMock();
-    final libraryState = LibraryStateMock(studentCount);
+    final libraryState = LibraryStateMock(studentCount, applicationState);
     final organizerSessionState =
         OrganizerSessionStateMock(applicationState, libraryState);
 
@@ -46,14 +48,31 @@ class SessionPairingAlgorithmPerformanceTest {
   }
 }
 
-void main() {
-  final performanceTest = SessionPairingAlgorithmPerformanceTest();
+late FakeFirebaseFirestore _fake;
 
-  for (int studentCount = 2; studentCount <= 20; studentCount++) {
+void main() {
+  setUp(() {
+    _fake = FakeFirebaseFirestore();
+    FirestoreService.instance = _fake;
+  });
+
+  final performanceTest = SessionPairingAlgorithmPerformanceTest();
+  Map<int, int> runsToTime = {};
+
+  for (int studentCount = 2; studentCount <= 14; studentCount++) {
     test(
         'SessionPairingAlgorithm performance with '
         '$studentCount students', () {
+      final stopwatch = Stopwatch()..start();
       performanceTest.runForStudentCount(studentCount);
+      stopwatch.stop();
+
+      runsToTime[studentCount] = stopwatch.elapsed.inSeconds;
     });
+
+    List<int> keys = runsToTime.keys.toList()..sort();
+    for (int key in keys) {
+      print('Students: $key, Time: ${runsToTime[key]}s');
+    }
   }
 }
