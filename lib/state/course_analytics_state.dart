@@ -88,10 +88,12 @@ class CourseAnalyticsState extends ChangeNotifier {
       DocumentReference courseRef =
           FirestoreService.instance.doc('/courses/${course.id}');
 
-      await _userSubscription.resubscribe((collection) => collection
-          .where('enrolledCourseIds', arrayContains: courseRef)
-          .orderBy('lastLessonTimestamp', descending: true)
-          .limit(_maxRecentUsers));
+      await _userSubscription.resubscribeWithCourseRef(
+          courseRef,
+          (collection) => collection
+              .where('enrolledCourseIds', arrayContains: courseRef)
+              .orderBy('lastLessonTimestamp', descending: true)
+              .limit(_maxRecentUsers));
 
       _scheduleAutoDispose();
     } finally {

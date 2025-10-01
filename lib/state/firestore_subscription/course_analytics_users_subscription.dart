@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class CourseAnalyticsUsersSubscription extends FirestoreListSubscription<User> {
   final CourseAnalyticsPracticeRecordsSubscription _practiceRecordsSubscription;
 
+  DocumentReference? _courseRef;
+
   CourseAnalyticsUsersSubscription(
     this._practiceRecordsSubscription,
     Function() notifyChange,
@@ -23,13 +25,20 @@ class CourseAnalyticsUsersSubscription extends FirestoreListSubscription<User> {
     print(
         'CourseAnalyticsUsersSubscription resubscribing for ${uids.length} uids and ${users.length} users');
 
-    if (uids.isEmpty ) {
+    if (uids.isEmpty) {
       _practiceRecordsSubscription.cancel();
     } else {
       _practiceRecordsSubscription.resubscribe((collectionReference) =>
-          collectionReference.where(
+          collectionReference.where('courseId', isEqualTo: _courseRef).where(
               Filter.or(Filter('mentorUid', whereIn: uids),
                   Filter('menteeUid', whereIn: uids))));
     }
+  }
+
+  resubscribeWithCourseRef(DocumentReference courseRef, Query<Map<String, dynamic>> Function(
+      CollectionReference<Map<String, dynamic>> collectionReference)
+  whereFunction) {
+    _courseRef = courseRef;
+    return super.resubscribe(whereFunction);
   }
 }
