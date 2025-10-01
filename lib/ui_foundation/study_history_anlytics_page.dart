@@ -89,11 +89,14 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
     _ChartConfig config,
   ) {
     return BarChartData(
-      alignment:
-          rows.length <= 1 ? BarChartAlignment.center : BarChartAlignment.spaceBetween,
-      barTouchData: _buildTouchData(context, rows, config),
+      alignment: rows.length <= 1
+          ? BarChartAlignment.center
+          : BarChartAlignment.start,
+      barTouchData: _buildTouchData(context, config),
       barGroups: config.barGroups,
       maxY: config.adjustedMaxY,
+      maxX: config.maxX,
+      minX: config.minX,
       minY: 0,
       gridData: _buildGridData(context, config.leftInterval),
       titlesData: _buildTitlesData(rows, config),
@@ -130,11 +133,23 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
     return AxisTitles(
       sideTitles: SideTitles(
         showTitles: true,
-        interval: config.bottomInterval,
+        interval: 1,
         reservedSize: 48,
         getTitlesWidget: (value, meta) {
-          final index = value.round();
-          if (index < 0 || index >= rows.length) {
+          final roundedValue = value.round();
+          if ((value - roundedValue).abs() > 0.01) {
+            return const SizedBox.shrink();
+          }
+
+          final row = config.rowsByX[roundedValue];
+          if (row == null) {
+            return const SizedBox.shrink();
+          }
+
+          final orderIndex = config.orderIndexByX[roundedValue] ?? 0;
+          final shouldShowLabel = orderIndex == rows.length - 1 ||
+              orderIndex % config.bottomLabelInterval == 0;
+          if (!shouldShowLabel) {
             return const SizedBox.shrink();
           }
 
@@ -143,7 +158,7 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                dateFormat.format(rows[index].day),
+                dateFormat.format(row.day),
                 style: config.axisLabelStyle,
                 textAlign: TextAlign.center,
               ),
@@ -193,7 +208,6 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
 
   BarTouchData _buildTouchData(
     BuildContext context,
-    List<_DayDataRow> rows,
     _ChartConfig config,
   ) {
     final theme = Theme.of(context);
@@ -210,8 +224,11 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
             theme.colorScheme.surfaceContainerHighest.withOpacity(0.95),
         tooltipPadding: const EdgeInsets.all(8),
         getTooltipItem: (group, groupIndex, rod, rodIndex) {
-          final index = group.x.toInt().clamp(0, rows.length - 1);
-          final row = rows[index];
+          final roundedX = group.x.round();
+          final row = config.rowsByX[roundedX];
+          if (row == null) {
+            return null;
+          }
           final dateLabel = dateFormat.format(row.day);
 
           return BarTooltipItem(
@@ -270,14 +287,22 @@ class _ChartConfig {
     required this.barGroups,
     required this.adjustedMaxY,
     required this.leftInterval,
-    required this.bottomInterval,
+    required this.minX,
+    required this.maxX,
+    required this.rowsByX,
+    required this.orderIndexByX,
+    required this.bottomLabelInterval,
     required this.axisLabelStyle,
   });
 
   final List<BarChartGroupData> barGroups;
   final double adjustedMaxY;
   final double leftInterval;
-  final double bottomInterval;
+  final double minX;
+  final double maxX;
+  final Map<int, _DayDataRow> rowsByX;
+  final Map<int, int> orderIndexByX;
+  final int bottomLabelInterval;
   final TextStyle? axisLabelStyle;
 
   factory _ChartConfig.from(BuildContext context, List<_DayDataRow> rows) {
@@ -290,16 +315,29 @@ class _ChartConfig {
         .withOpacity(theme.brightness == Brightness.dark ? 0.45 : 0.55);
 
     final barGroups = <BarChartGroupData>[];
+    final rowsByX = <int, _DayDataRow>{};
+    final orderIndexByX = <int, int>{};
     double maxY = 0;
+    double? minX;
+    double? maxX;
+    final baseDay = rows.first.day;
+    const barWidth = 8.0;
     for (int index = 0; index < rows.length; index++) {
       final row = rows[index];
+      final dayOffset = row.day.difference(baseDay).inDays;
+      final xPosition = dayOffset.toDouble();
       final practiceValue = row.practiceCount.toDouble();
       final totalValue = row.totalCount.toDouble();
       maxY = math.max(maxY, totalValue);
 
+      rowsByX[dayOffset] = row;
+      orderIndexByX[dayOffset] = index;
+      minX = minX == null ? xPosition : math.min(minX!, xPosition);
+      maxX = maxX == null ? xPosition : math.max(maxX!, xPosition);
+
       barGroups.add(
         BarChartGroupData(
-          x: index,
+          x: xPosition,
           barRods: [
             BarChartRodData(
               toY: totalValue,
@@ -312,7 +350,7 @@ class _ChartConfig {
                 ),
               ],
               borderRadius: BorderRadius.zero,
-              width: 18,
+              width: barWidth,
             ),
           ],
         ),
@@ -323,15 +361,22 @@ class _ChartConfig {
     final leftInterval =
         adjustedMaxY <= 4 ? 1.0 : (adjustedMaxY / 4).ceilToDouble();
 
-    final bottomInterval = rows.length <= 1
-        ? 1.0
-        : math.max(1, (rows.length / 6).ceil()).toDouble();
+    final bottomLabelInterval = rows.length <= 1
+        ? 1
+        : math.max(1, (rows.length / 6).ceil());
+
+    final minXWithPadding = (minX ?? 0) - 0.6;
+    final maxXWithPadding = (maxX ?? 0) + 0.6;
 
     return _ChartConfig(
       barGroups: barGroups,
       adjustedMaxY: adjustedMaxY,
       leftInterval: leftInterval,
-      bottomInterval: bottomInterval,
+      minX: minXWithPadding,
+      maxX: maxXWithPadding,
+      rowsByX: rowsByX,
+      orderIndexByX: orderIndexByX,
+      bottomLabelInterval: bottomLabelInterval,
       axisLabelStyle: axisLabelStyle,
     );
   }
