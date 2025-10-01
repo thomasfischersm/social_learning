@@ -105,8 +105,8 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
         ),
         _LegendEntry(
           color: config.practiceColor,
-          label: 'Practiced',
-          value: totals.practiceCount,
+          label: 'Total taught',
+          value: totals.graduationCount + totals.practiceCount,
           textStyle: textStyle,
         ),
       ],
