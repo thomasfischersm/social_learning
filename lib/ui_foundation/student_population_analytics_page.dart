@@ -131,7 +131,7 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
       children: [
         _LegendEntry(
           color: config.graduationColor,
-          label: 'Graduated',
+          label: 'Graduated Lessons',
           value: totals.graduationCount,
           textStyle: textStyle,
         ),
