@@ -14,6 +14,8 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 const int _kBottomAxisLabelCount = 4;
+const double _kBarWidth = 2.0;
+const double _kDayGroupSpacing = _kBarWidth * 2;
 
 class StudyHistoryAnlyticsPage extends StatelessWidget {
   const StudyHistoryAnlyticsPage({super.key});
@@ -103,8 +105,8 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
         ),
         _LegendEntry(
           color: config.practiceColor,
-          label: 'Total taught',
-          value: totals.graduationCount + totals.practiceCount,
+          label: 'Practiced',
+          value: totals.practiceCount,
           textStyle: textStyle,
         ),
       ],
@@ -134,6 +136,7 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
       gridData: _buildGridData(context, config.leftInterval),
       titlesData: _buildTitlesData(rows, config),
       borderData: _buildBorderData(context),
+      groupsSpace: _kDayGroupSpacing,
     );
   }
 
@@ -264,7 +267,7 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
           final dateLabel = dateFormat.format(row.day);
 
           return BarTooltipItem(
-            '$dateLabel\nPracticed: ${row.practiceCount}\nGraduated: ${row.graduationCount}',
+            '$dateLabel\nGraduated: ${row.graduationCount}\nPracticed: ${row.practiceCount}',
             tooltipStyle,
           );
         },
@@ -351,35 +354,52 @@ class _ChartConfig {
     final orderIndexByX = <int, int>{};
     double maxY = 0;
     final baseDay = rows.first.day;
-    const barWidth = 8.0;
-    for (int index = 0; index < rows.length; index++) {
-      final row = rows[index];
+    final rowsByOffset = <int, _DayDataRow>{};
+    for (final row in rows) {
       final dayOffset = row.day.difference(baseDay).inDays;
-      final practiceValue = row.practiceCount.toDouble();
-      final totalValue = row.totalCount.toDouble();
-      maxY = math.max(maxY, totalValue);
+      rowsByOffset[dayOffset] = row;
+    }
 
-      rowsByX[dayOffset] = row;
-      orderIndexByX[dayOffset] = index;
+    final totalSpan = rows.last.day.difference(baseDay).inDays;
+    var orderIndex = 0;
+
+    for (int dayOffset = 0; dayOffset <= totalSpan; dayOffset++) {
+      final row = rowsByOffset[dayOffset];
+      final practiceValue = row?.practiceCount.toDouble() ?? 0;
+      final graduationValue = row?.graduationCount.toDouble() ?? 0;
+      final totalValue = practiceValue + graduationValue;
+
+      if (row != null) {
+        rowsByX[dayOffset] = row;
+        orderIndexByX[dayOffset] = orderIndex;
+        orderIndex++;
+        maxY = math.max(maxY, totalValue);
+      }
 
       barGroups.add(
         BarChartGroupData(
           x: dayOffset,
-          barRods: [
-            BarChartRodData(
-              toY: totalValue,
-              rodStackItems: [
-                BarChartRodStackItem(0, practiceValue, practiceColor),
-                BarChartRodStackItem(
-                  practiceValue,
-                  totalValue,
-                  graduationColor,
-                ),
-              ],
-              borderRadius: BorderRadius.zero,
-              width: barWidth,
-            ),
-          ],
+          barRods: row == null
+              ? const <BarChartRodData>[]
+              : <BarChartRodData>[
+                  BarChartRodData(
+                    toY: totalValue,
+                    rodStackItems: [
+                      BarChartRodStackItem(
+                        0,
+                        graduationValue,
+                        graduationColor,
+                      ),
+                      BarChartRodStackItem(
+                        graduationValue,
+                        totalValue,
+                        practiceColor,
+                      ),
+                    ],
+                    borderRadius: BorderRadius.zero,
+                    width: _kBarWidth,
+                  ),
+                ],
         ),
       );
     }
