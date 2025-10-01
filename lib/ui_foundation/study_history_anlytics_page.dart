@@ -1,5 +1,4 @@
 import 'dart:collection';
-
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -13,6 +12,8 @@ import 'package:social_learning/ui_foundation/helper_widgets/instructor_dashboar
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+
+const int _kBottomAxisLabelCount = 4;
 
 class StudyHistoryAnlyticsPage extends StatelessWidget {
   const StudyHistoryAnlyticsPage({super.key});
@@ -184,8 +185,7 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
           }
 
           final orderIndex = config.orderIndexByX[roundedValue] ?? 0;
-          final shouldShowLabel = orderIndex == rows.length - 1 ||
-              orderIndex % config.bottomLabelInterval == 0;
+          final shouldShowLabel = config.bottomLabelIndices.contains(orderIndex);
           if (!shouldShowLabel) {
             return const SizedBox.shrink();
           }
@@ -328,7 +328,7 @@ class _ChartConfig {
     required this.maxX,
     required this.rowsByX,
     required this.orderIndexByX,
-    required this.bottomLabelInterval,
+    required this.bottomLabelIndices,
     required this.axisLabelStyle,
     required this.practiceColor,
     required this.graduationColor,
@@ -341,7 +341,7 @@ class _ChartConfig {
   final double maxX;
   final Map<int, _DayDataRow> rowsByX;
   final Map<int, int> orderIndexByX;
-  final int bottomLabelInterval;
+  final Set<int> bottomLabelIndices;
   final TextStyle? axisLabelStyle;
   final Color practiceColor;
   final Color graduationColor;
@@ -402,9 +402,7 @@ class _ChartConfig {
     final leftInterval =
         adjustedMaxY <= 4 ? 1.0 : (adjustedMaxY / 4).ceilToDouble();
 
-    final bottomLabelInterval = rows.length <= 1
-        ? 1
-        : math.max(1, (rows.length / 6).ceil());
+    final bottomLabelIndices = _buildBottomLabelIndices(rows.length);
 
     final minXWithPadding = (minX ?? 0) - 0.6;
     final maxXWithPadding = (maxX ?? 0) + 0.6;
@@ -417,12 +415,34 @@ class _ChartConfig {
       maxX: maxXWithPadding,
       rowsByX: rowsByX,
       orderIndexByX: orderIndexByX,
-      bottomLabelInterval: bottomLabelInterval,
+      bottomLabelIndices: bottomLabelIndices,
       axisLabelStyle: axisLabelStyle,
       practiceColor: practiceColor,
       graduationColor: graduationColor,
     );
   }
+}
+
+Set<int> _buildBottomLabelIndices(int rowCount) {
+  if (rowCount <= 0) {
+    return const <int>{};
+  }
+
+  final targetLabelCount = math.min(_kBottomAxisLabelCount, rowCount);
+  final indices = SplayTreeSet<int>()
+    ..add(0)
+    ..add(rowCount - 1);
+
+  if (targetLabelCount <= 2) {
+    return indices;
+  }
+
+  final step = (rowCount - 1) / (targetLabelCount - 1);
+  for (int i = 1; i < targetLabelCount - 1; i++) {
+    indices.add((i * step).round());
+  }
+
+  return indices;
 }
 
 class _LegendTotals {
