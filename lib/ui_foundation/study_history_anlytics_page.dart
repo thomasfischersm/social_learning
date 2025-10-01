@@ -67,12 +67,49 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
 
   Widget _buildChart(BuildContext context, List<_DayDataRow> rows) {
     final config = _ChartConfig.from(context, rows);
+    final totals = _LegendTotals.from(rows);
 
-    return AspectRatio(
-      aspectRatio: 1.4,
-      child: BarChart(
-        _buildBarChartData(context, rows, config),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildLegend(context, config, totals),
+        const SizedBox(height: 16),
+        AspectRatio(
+          aspectRatio: 1.4,
+          child: BarChart(
+            _buildBarChartData(context, rows, config),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLegend(
+    BuildContext context,
+    _ChartConfig config,
+    _LegendTotals totals,
+  ) {
+    final textStyle =
+        CustomTextStyles.getBodySmall(context) ?? Theme.of(context).textTheme.bodySmall;
+
+    return Wrap(
+      spacing: 16,
+      runSpacing: 8,
+      children: [
+        _LegendEntry(
+          color: config.practiceColor,
+          label: 'Practiced',
+          value: totals.practiceCount,
+          textStyle: textStyle,
+        ),
+        _LegendEntry(
+          color: config.graduationColor,
+          label: 'Graduated',
+          value: totals.graduationCount,
+          textStyle: textStyle,
+        ),
+      ],
     );
   }
 
@@ -272,6 +309,8 @@ class _ChartConfig {
     required this.leftInterval,
     required this.bottomInterval,
     required this.axisLabelStyle,
+    required this.practiceColor,
+    required this.graduationColor,
   });
 
   final List<BarChartGroupData> barGroups;
@@ -279,6 +318,8 @@ class _ChartConfig {
   final double leftInterval;
   final double bottomInterval;
   final TextStyle? axisLabelStyle;
+  final Color practiceColor;
+  final Color graduationColor;
 
   factory _ChartConfig.from(BuildContext context, List<_DayDataRow> rows) {
     final theme = Theme.of(context);
@@ -333,6 +374,67 @@ class _ChartConfig {
       leftInterval: leftInterval,
       bottomInterval: bottomInterval,
       axisLabelStyle: axisLabelStyle,
+      practiceColor: practiceColor,
+      graduationColor: graduationColor,
+    );
+  }
+}
+
+class _LegendTotals {
+  _LegendTotals({
+    required this.practiceCount,
+    required this.graduationCount,
+  });
+
+  final int practiceCount;
+  final int graduationCount;
+
+  factory _LegendTotals.from(List<_DayDataRow> rows) {
+    var practiceTotal = 0;
+    var graduationTotal = 0;
+
+    for (final row in rows) {
+      practiceTotal += row.practiceCount;
+      graduationTotal += row.graduationCount;
+    }
+
+    return _LegendTotals(
+      practiceCount: practiceTotal,
+      graduationCount: graduationTotal,
+    );
+  }
+}
+
+class _LegendEntry extends StatelessWidget {
+  const _LegendEntry({
+    required this.color,
+    required this.label,
+    required this.value,
+    required this.textStyle,
+  });
+
+  final Color color;
+  final String label;
+  final int value;
+  final TextStyle? textStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text('$label: $value', style: textStyle),
+      ],
     );
   }
 }
