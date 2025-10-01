@@ -40,10 +40,7 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
                 future: _buildData(context),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 32),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
+                    return const SizedBox();
                   }
 
                   if (snapshot.hasError ||
