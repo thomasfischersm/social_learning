@@ -277,7 +277,7 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
         context.watch<CourseAnalyticsState>();
 
     UnmodifiableListView<PracticeRecord> practiceRecords =
-        await courseAnalyticsState.getPracticeRecords();
+        UnmodifiableListView(await courseAnalyticsState.getActualPracticeRecords());
 
     final Map<DateTime, _DayDataRow> dayToRow = {};
 
