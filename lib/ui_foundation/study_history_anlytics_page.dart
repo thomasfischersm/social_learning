@@ -384,6 +384,7 @@ class _ChartConfig {
               : <BarChartRodData>[
                   BarChartRodData(
                     toY: totalValue,
+                    color: Colors.transparent,
                     rodStackItems: [
                       BarChartRodStackItem(
                         0,
