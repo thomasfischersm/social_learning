@@ -132,8 +132,6 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
       barTouchData: _buildTouchData(context, config),
       barGroups: config.barGroups,
       maxY: config.adjustedMaxY,
-      maxX: config.maxX,
-      minX: config.minX,
       minY: 0,
       gridData: _buildGridData(context, config.leftInterval),
       titlesData: _buildTitlesData(rows, config),
@@ -324,8 +322,6 @@ class _ChartConfig {
     required this.barGroups,
     required this.adjustedMaxY,
     required this.leftInterval,
-    required this.minX,
-    required this.maxX,
     required this.rowsByX,
     required this.orderIndexByX,
     required this.bottomLabelInterval,
@@ -337,8 +333,6 @@ class _ChartConfig {
   final List<BarChartGroupData> barGroups;
   final double adjustedMaxY;
   final double leftInterval;
-  final double minX;
-  final double maxX;
   final Map<int, _DayDataRow> rowsByX;
   final Map<int, int> orderIndexByX;
   final int bottomLabelInterval;
@@ -359,26 +353,21 @@ class _ChartConfig {
     final rowsByX = <int, _DayDataRow>{};
     final orderIndexByX = <int, int>{};
     double maxY = 0;
-    double? minX;
-    double? maxX;
     final baseDay = rows.first.day;
     const barWidth = 8.0;
     for (int index = 0; index < rows.length; index++) {
       final row = rows[index];
       final dayOffset = row.day.difference(baseDay).inDays;
-      final xPosition = dayOffset.toDouble();
       final practiceValue = row.practiceCount.toDouble();
       final totalValue = row.totalCount.toDouble();
       maxY = math.max(maxY, totalValue);
 
       rowsByX[dayOffset] = row;
       orderIndexByX[dayOffset] = index;
-      minX = minX == null ? xPosition : math.min(minX!, xPosition);
-      maxX = maxX == null ? xPosition : math.max(maxX!, xPosition);
 
       barGroups.add(
         BarChartGroupData(
-          x: xPosition,
+          x: dayOffset,
           barRods: [
             BarChartRodData(
               toY: totalValue,
@@ -406,15 +395,10 @@ class _ChartConfig {
         ? 1
         : math.max(1, (rows.length / 6).ceil());
 
-    final minXWithPadding = (minX ?? 0) - 0.6;
-    final maxXWithPadding = (maxX ?? 0) + 0.6;
-
     return _ChartConfig(
       barGroups: barGroups,
       adjustedMaxY: adjustedMaxY,
       leftInterval: leftInterval,
-      minX: minXWithPadding,
-      maxX: maxXWithPadding,
       rowsByX: rowsByX,
       orderIndexByX: orderIndexByX,
       bottomLabelInterval: bottomLabelInterval,
