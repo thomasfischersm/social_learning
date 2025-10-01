@@ -126,9 +126,7 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
     _ChartConfig config,
   ) {
     return BarChartData(
-      alignment: rows.length <= 1
-          ? BarChartAlignment.center
-          : BarChartAlignment.start,
+      alignment: config.barAlignment,
       barTouchData: _buildTouchData(context, config),
       barGroups: config.barGroups,
       maxY: config.adjustedMaxY,
@@ -320,6 +318,7 @@ class _DayDataRow {
 class _ChartConfig {
   _ChartConfig({
     required this.barGroups,
+    required this.barAlignment,
     required this.adjustedMaxY,
     required this.leftInterval,
     required this.rowsByX,
@@ -331,6 +330,7 @@ class _ChartConfig {
   });
 
   final List<BarChartGroupData> barGroups;
+  final BarChartAlignment barAlignment;
   final double adjustedMaxY;
   final double leftInterval;
   final Map<int, _DayDataRow> rowsByX;
@@ -353,6 +353,66 @@ class _ChartConfig {
     final rowsByX = <int, _DayDataRow>{};
     final orderIndexByX = <int, int>{};
     double maxY = 0;
+    final shouldCompressSpacing = rows.length <= _kBottomAxisLabelCount;
+
+    if (shouldCompressSpacing) {
+      for (int index = 0; index < rows.length; index++) {
+        final row = rows[index];
+        final practiceValue = row.practiceCount.toDouble();
+        final graduationValue = row.graduationCount.toDouble();
+        final totalValue = practiceValue + graduationValue;
+
+        rowsByX[index] = row;
+        orderIndexByX[index] = index;
+        maxY = math.max(maxY, totalValue);
+
+        barGroups.add(
+          BarChartGroupData(
+            x: index,
+            barRods: <BarChartRodData>[
+              BarChartRodData(
+                toY: totalValue,
+                rodStackItems: [
+                  BarChartRodStackItem(
+                    0,
+                    graduationValue,
+                    graduationColor,
+                  ),
+                  BarChartRodStackItem(
+                    graduationValue,
+                    totalValue,
+                    practiceColor,
+                  ),
+                ],
+                borderRadius: BorderRadius.zero,
+                width: _kBarWidth,
+              ),
+            ],
+          ),
+        );
+      }
+
+      final adjustedMaxY = maxY <= 0 ? 1.0 : maxY * 1.1;
+      final leftInterval =
+          adjustedMaxY <= 4 ? 1.0 : (adjustedMaxY / 4).ceilToDouble();
+      final bottomLabelIndices = _buildBottomLabelIndices(rows.length);
+
+      return _ChartConfig(
+        barGroups: barGroups,
+        barAlignment: rows.length <= 1
+            ? BarChartAlignment.center
+            : BarChartAlignment.spaceBetween,
+        adjustedMaxY: adjustedMaxY,
+        leftInterval: leftInterval,
+        rowsByX: rowsByX,
+        orderIndexByX: orderIndexByX,
+        bottomLabelIndices: bottomLabelIndices,
+        axisLabelStyle: axisLabelStyle,
+        practiceColor: practiceColor,
+        graduationColor: graduationColor,
+      );
+    }
+
     final baseDay = rows.first.day;
     final rowsByOffset = <int, _DayDataRow>{};
     for (final row in rows) {
@@ -407,11 +467,13 @@ class _ChartConfig {
     final adjustedMaxY = maxY <= 0 ? 1.0 : maxY * 1.1;
     final leftInterval =
         adjustedMaxY <= 4 ? 1.0 : (adjustedMaxY / 4).ceilToDouble();
-
     final bottomLabelIndices = _buildBottomLabelIndices(rows.length);
 
     return _ChartConfig(
       barGroups: barGroups,
+      barAlignment: rows.length <= 1
+          ? BarChartAlignment.center
+          : BarChartAlignment.start,
       adjustedMaxY: adjustedMaxY,
       leftInterval: leftInterval,
       rowsByX: rowsByX,
