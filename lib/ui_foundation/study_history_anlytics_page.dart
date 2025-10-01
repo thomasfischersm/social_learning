@@ -98,15 +98,15 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
       runSpacing: 8,
       children: [
         _LegendEntry(
-          color: config.practiceColor,
-          label: 'Practiced',
-          value: totals.practiceCount,
-          textStyle: textStyle,
-        ),
-        _LegendEntry(
           color: config.graduationColor,
           label: 'Graduated',
           value: totals.graduationCount,
+          textStyle: textStyle,
+        ),
+        _LegendEntry(
+          color: config.practiceColor,
+          label: 'Total taught',
+          value: totals.graduationCount + totals.practiceCount,
           textStyle: textStyle,
         ),
       ],
