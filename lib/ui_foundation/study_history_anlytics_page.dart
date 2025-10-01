@@ -14,6 +14,8 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
+const int _kBottomDateLabelCount = 4;
+
 class StudyHistoryAnlyticsPage extends StatelessWidget {
   const StudyHistoryAnlyticsPage({super.key});
 
@@ -130,11 +132,13 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
     return AxisTitles(
       sideTitles: SideTitles(
         showTitles: true,
-        interval: config.bottomInterval,
+        interval: 1,
         reservedSize: 48,
         getTitlesWidget: (value, meta) {
           final index = value.round();
-          if (index < 0 || index >= rows.length) {
+          if (index < 0 ||
+              index >= rows.length ||
+              !config.bottomLabelIndexes.contains(index)) {
             return const SizedBox.shrink();
           }
 
@@ -270,14 +274,14 @@ class _ChartConfig {
     required this.barGroups,
     required this.adjustedMaxY,
     required this.leftInterval,
-    required this.bottomInterval,
+    required this.bottomLabelIndexes,
     required this.axisLabelStyle,
   });
 
   final List<BarChartGroupData> barGroups;
   final double adjustedMaxY;
   final double leftInterval;
-  final double bottomInterval;
+  final List<int> bottomLabelIndexes;
   final TextStyle? axisLabelStyle;
 
   factory _ChartConfig.from(BuildContext context, List<_DayDataRow> rows) {
@@ -323,15 +327,31 @@ class _ChartConfig {
     final leftInterval =
         adjustedMaxY <= 4 ? 1.0 : (adjustedMaxY / 4).ceilToDouble();
 
-    final bottomInterval = rows.length <= 1
-        ? 1.0
-        : math.max(1, (rows.length / 6).ceil()).toDouble();
+    final desiredLabelCount = math.min(_kBottomDateLabelCount, rows.length);
+    final bottomLabelIndexes = <int>{};
+    if (desiredLabelCount > 0) {
+      final lastIndex = rows.length - 1;
+      if (desiredLabelCount == 1) {
+        bottomLabelIndexes.add(0);
+      } else {
+        for (int i = 0; i < desiredLabelCount; i++) {
+          final position = (i * lastIndex) / (desiredLabelCount - 1);
+          bottomLabelIndexes.add(position.round().clamp(0, lastIndex));
+        }
+      }
+
+      bottomLabelIndexes
+        ..add(0)
+        ..add(lastIndex);
+    }
+
+    final sortedBottomLabelIndexes = bottomLabelIndexes.toList()..sort();
 
     return _ChartConfig(
       barGroups: barGroups,
       adjustedMaxY: adjustedMaxY,
       leftInterval: leftInterval,
-      bottomInterval: bottomInterval,
+      bottomLabelIndexes: sortedBottomLabelIndexes,
       axisLabelStyle: axisLabelStyle,
     );
   }
