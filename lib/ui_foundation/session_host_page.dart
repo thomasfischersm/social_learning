@@ -6,6 +6,7 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/session_pairing/fast/fast_session_pairing_algorithm.dart';
 import 'package:social_learning/session_pairing/paired_session.dart';
 import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
 import 'package:social_learning/state/library_state.dart';
@@ -50,8 +51,7 @@ class SessionHostState extends State<SessionHostPage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(
-                enableCourseLoadingGuard: true,
+            child: CustomUiConstants.framePage(enableCourseLoadingGuard: true,
                 Consumer2<OrganizerSessionState, LibraryState>(builder:
                     (context, organizerSessionState, libraryState, child) {
               return Column(
@@ -324,8 +324,9 @@ class SessionHostState extends State<SessionHostPage> {
 
     // Match students.
     var libraryState = Provider.of<LibraryState>(context, listen: false);
-    PairedSession pairedSession = SessionPairingAlgorithm()
-        .generateNextSessionPairing(organizerSessionState, libraryState);
+    PairedSession pairedSession =
+        FastSessionPairingAlgorithm.generateNextSessionPairing(
+            organizerSessionState, libraryState);
 
     // Save next round to the Firestore.
     organizerSessionState.saveNextRound(pairedSession);
