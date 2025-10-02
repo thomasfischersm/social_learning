@@ -52,9 +52,12 @@ class UserTableCellState extends State<UserTableCell> {
         padding: const EdgeInsets.only(left: 8, bottom: 8),
         child: (Row(
           children: [
-            InkWell(
+            Flexible(child:InkWell(
                 onTap: () => _goToProfile(widget.user),
-                child: Text(widget.user?.displayName ?? '')),
+                child: Text(
+                  widget.user?.displayName ?? '',
+                  softWrap: true,
+                ))),
             if (showDeleteButton)
               _createRemoveButton(widget.removeUser, context)
           ],
