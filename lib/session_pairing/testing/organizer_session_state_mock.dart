@@ -85,4 +85,18 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
 
     _graduatedLessons[participant] = graduatedLessons;
   }
+
+  @override
+  int getTeachCountForUser(String userId) {
+    return _sessionParticipants
+        .firstWhere((user) => user.participantId.id == userId)
+        .teachCount;
+  }
+
+  @override
+  int getLearnCountForUser(String userId) {
+    return _sessionParticipants
+        .firstWhere((user) => user.participantId.id == userId)
+        .learnCount;
+  }
 }

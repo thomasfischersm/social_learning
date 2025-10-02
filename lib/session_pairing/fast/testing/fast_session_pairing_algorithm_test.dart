@@ -9,6 +9,8 @@ class FastSessionPairingAlgorithmTest {
   void testAll() {
     test2BasicTwoStudent();
     test2BasicFourStudent();
+    test2FourStudentFixRemaining();
+    test2EightStudent();
 
     // testBasicTeacherStudent();
     // testBasic2Students();
@@ -54,6 +56,37 @@ class FastSessionPairingAlgorithmTest {
 
     // Create test users.
     organizerSessionState.addTestUser('A', false, []);
+    organizerSessionState.addTestUser('B', false, [libraryState.lessons![0]], learnCount: 1);
+    organizerSessionState.addTestUser('C', false, [libraryState.lessons![0]]);
+    organizerSessionState.addTestUser('D', false, [libraryState.lessons![0],libraryState.lessons![1]], learnCount: 1);
+
+    // Try pairing
+    PairedSession pairedSession =
+    FastSessionPairingAlgorithm.generateNextSessionPairing(
+        organizerSessionState, libraryState);
+
+    // Output the result.
+    print('***** Test Result ****');
+    pairedSession.debugPrint();
+    print('********************');
+
+    // Evaluate the result.
+    // Evaluate the result.
+    PairedSessionTester(pairedSession, organizerSessionState)
+        .assertPair('D', 'C', 'Lesson 1001')
+        .assertPair('B', 'A', 'Lesson 1000')
+        .go('T2 Basic 4-student test');
+  }
+
+  void test2FourStudentFixRemaining() {
+    // Initiate mocks.
+    ApplicationStateMock applicationState = ApplicationStateMock();
+    LibraryStateMock libraryState = LibraryStateMock(10, applicationState);
+    OrganizerSessionStateMock organizerSessionState =
+    OrganizerSessionStateMock(applicationState, libraryState);
+
+    // Create test users.
+    organizerSessionState.addTestUser('A', false, []);
     organizerSessionState.addTestUser('B', false, [libraryState.lessons![0]], teachCount: 1);
     organizerSessionState.addTestUser('C', false, [libraryState.lessons![0]]);
     organizerSessionState.addTestUser('D', false, [libraryState.lessons![0],libraryState.lessons![1]], teachCount: 1);
@@ -71,9 +104,49 @@ class FastSessionPairingAlgorithmTest {
     // Evaluate the result.
     // Evaluate the result.
     PairedSessionTester(pairedSession, organizerSessionState)
-        .assertPair('D', 'A', 'Lesson 1001')
-        .assertPair('C', 'B', 'Lesson 1000')
-        .go('T2 Basic 4-student test');
+        .assertPair('D', 'B', 'Lesson 1001')
+        .assertPair('C', 'A', 'Lesson 1000')
+        .go('T2 4-student fix remaining');
+  }
+
+
+  void test2EightStudent() {
+    // Initiate mocks.
+    ApplicationStateMock applicationState = ApplicationStateMock();
+    LibraryStateMock libraryState = LibraryStateMock(10, applicationState);
+    OrganizerSessionStateMock organizerSessionState =
+    OrganizerSessionStateMock(applicationState, libraryState);
+
+    // Create test users.
+    organizerSessionState.addTestUser('A', false, [libraryState.lessons![0],libraryState.lessons![1], libraryState.lessons![2], libraryState.lessons![3]]);
+    organizerSessionState.addTestUser('B', false, [libraryState.lessons![0],libraryState.lessons![1], libraryState.lessons![2]]);
+    organizerSessionState.addTestUser('C', false, [libraryState.lessons![0]]);
+    organizerSessionState.addTestUser('D', false, [libraryState.lessons![0]]);
+    organizerSessionState.addTestUser('E', false, [libraryState.lessons![0]]);
+    organizerSessionState.addTestUser('F', false, [], teachCount: 4);
+    organizerSessionState.addTestUser('G', false, [], teachCount: 3);
+    organizerSessionState.addTestUser('H', false, [], teachCount: 2);
+    organizerSessionState.addTestUser('I', false, [], teachCount: 1);
+
+    // Try pairing
+    PairedSession pairedSession =
+    FastSessionPairingAlgorithm.generateNextSessionPairing(
+        organizerSessionState, libraryState);
+
+    // Output the result.
+    print('***** Test Result ****');
+    pairedSession.debugPrint();
+    print('********************');
+
+    // Evaluate the result.
+    // Evaluate the result.
+    PairedSessionTester(pairedSession, organizerSessionState)
+        .assertPair('A', 'E', 'Lesson 1001')
+        .assertPair('B', 'I', 'Lesson 1000')
+        .assertPair('C', 'H', 'Lesson 1000')
+        .assertPair('D', 'G', 'Lesson 1000')
+        .assertUnpaired(['F'])
+        .go('T2 8-student basic');
   }
 
   void testBasicTeacherStudent() {

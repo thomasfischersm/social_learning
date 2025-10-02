@@ -42,10 +42,10 @@ class FastPairingContext {
 
       // Init teach counts.
       int teachCount = organizerSessionState
-          .getTeachCountForUser(participant.participantUid);
+          .getTeachCountForUser(participant.participantId.id);
       int learnCount = organizerSessionState
-          .getLearnCountForUser(participant.participantUid);
-      int teachDeficit = teachCount - learnCount;
+          .getLearnCountForUser(participant.participantId.id);
+      int teachDeficit = learnCount - teachCount;
       teachCountByParticipant[participant] = teachDeficit;
 
       // Init user lookup.
@@ -111,5 +111,32 @@ class FastPairingContext {
 
   PairedSession getPairedSession() {
     return PairedSession(pairs, leftoverGroup);
+  }
+
+  void debugPrintAll(String label) {
+    print('-------------------------------');
+    print('FastPairingContext dump: $label');
+
+    _debugPrintUsers('All participants', allParticipants);
+    _debugPrintUsers('Teaching group', teachingGroup);
+    _debugPrintUsers('Learning group', learningGroup);
+    _debugPrintUsers('Leftover group', leftoverGroup);
+    _debugPrintPairs();
+  }
+
+  void _debugPrintUsers(String label, List<SessionParticipant> participants) {
+    print('\n$label:');
+    for (var participant in participants) {
+      var user = userByParticipant[participant];
+      print('  Participant ID: ${participant.id}, User: ${user?.displayName}');
+    }
+  }
+
+  void _debugPrintPairs() {
+    print('\nLearner Pairs:');
+    for (var pair in pairs) {
+      print(
+          '  Mentor: ${pair.teachingParticipant.id} (${pair.teachingUser.displayName}) -> Mentee: ${pair.learningParticipant.id} (${pair.learningUser.displayName}), Lesson: ${pair.lesson?.title}');
+    }
   }
 }

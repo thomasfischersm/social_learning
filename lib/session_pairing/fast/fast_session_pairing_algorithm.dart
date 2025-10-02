@@ -15,18 +15,23 @@ class FastSessionPairingAlgorithm {
     // #1 Initialize context.
     FastPairingContext context =
         FastPairingContext(organizerSessionState, libraryState);
+    context.debugPrintAll('# 1 Initialize context');
 
     // #2 Split into initial teaching and learning groups.
     _splitIntoTeachingAndLearningGroups(context);
+    context.debugPrintAll('# 2 Split into teaching and learning groups');
 
     // #3 Attempt to pair the initial groups.
     _attemptIdealPairing(context);
+    context.debugPrintAll('# 3 Attempt ideal pairing');
 
     // #4 Try to pair the leftover group.
     _pairLeftoverGroup(context);
+    context.debugPrintAll('# 4 Pair leftover group');
 
     // #5 Attempt to split pairs to accommodate remaining leftovers.
     _splitPairsToPairLeftOverGroup(context);
+    context.debugPrintAll('# 5 Split pairs to pair leftover group');
 
     return context.getPairedSession();
   }
