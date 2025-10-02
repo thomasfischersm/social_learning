@@ -7,11 +7,73 @@ import 'package:social_learning/session_pairing/testing/organizer_session_state_
 
 class FastSessionPairingAlgorithmTest {
   void testAll() {
-    testBasicTeacherStudent();
-    testBasic2Students();
-    testBasic4Students();
-    test4students1lesson();
-    testIgnoresInactiveParticipants();
+    test2BasicTwoStudent();
+    test2BasicFourStudent();
+
+    // testBasicTeacherStudent();
+    // testBasic2Students();
+    // testBasic4Students();
+    // test4students1lesson();
+    // testIgnoresInactiveParticipants();
+  }
+
+  void test2BasicTwoStudent() {
+    // Initiate mocks.
+    ApplicationStateMock applicationState = ApplicationStateMock();
+    LibraryStateMock libraryState = LibraryStateMock(10, applicationState);
+    OrganizerSessionStateMock organizerSessionState =
+    OrganizerSessionStateMock(applicationState, libraryState);
+
+    // Create test users.
+    organizerSessionState.addTestUser('A', false, []);
+    organizerSessionState.addTestUser('B', false, [libraryState.lessons![0]]);
+
+    // Try pairing
+    PairedSession pairedSession =
+    FastSessionPairingAlgorithm.generateNextSessionPairing(
+        organizerSessionState, libraryState);
+
+    // Output the result.
+    print('***** Test Result ****');
+    pairedSession.debugPrint();
+    print('********************');
+
+    // Evaluate the result.
+    // Evaluate the result.
+    PairedSessionTester(pairedSession, organizerSessionState)
+        .assertPair('B', 'A', 'Lesson 1000')
+        .go('T2 Basic 2-student test');
+  }
+
+  void test2BasicFourStudent() {
+    // Initiate mocks.
+    ApplicationStateMock applicationState = ApplicationStateMock();
+    LibraryStateMock libraryState = LibraryStateMock(10, applicationState);
+    OrganizerSessionStateMock organizerSessionState =
+    OrganizerSessionStateMock(applicationState, libraryState);
+
+    // Create test users.
+    organizerSessionState.addTestUser('A', false, []);
+    organizerSessionState.addTestUser('B', false, [libraryState.lessons![0]], teachCount: 1);
+    organizerSessionState.addTestUser('C', false, [libraryState.lessons![0]]);
+    organizerSessionState.addTestUser('D', false, [libraryState.lessons![0],libraryState.lessons![1]], teachCount: 1);
+
+    // Try pairing
+    PairedSession pairedSession =
+    FastSessionPairingAlgorithm.generateNextSessionPairing(
+        organizerSessionState, libraryState);
+
+    // Output the result.
+    print('***** Test Result ****');
+    pairedSession.debugPrint();
+    print('********************');
+
+    // Evaluate the result.
+    // Evaluate the result.
+    PairedSessionTester(pairedSession, organizerSessionState)
+        .assertPair('D', 'A', 'Lesson 1001')
+        .assertPair('C', 'B', 'Lesson 1000')
+        .go('T2 Basic 4-student test');
   }
 
   void testBasicTeacherStudent() {

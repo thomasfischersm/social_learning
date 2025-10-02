@@ -43,7 +43,7 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
       _graduatedLessons[participant] ?? [];
 
   addTestUser(String name, bool isAdmin, List<Lesson> graduatedLessons,
-      {bool isActive = true}) {
+      {bool isActive = true, int teachCount = 0, int learnCount = 0}) {
     var user = User(
         nextId,
         nextId,
@@ -77,8 +77,8 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
         _courseRef,
         isAdmin,
         isActive,
-        0,
-        0,
+        teachCount,
+        learnCount,
         LearningStrategyEnum.completeBeforeAdvance);
     _sessionParticipants.add(participant);
     print('$name has user id ${user.id} and participant id ${participant.id}');

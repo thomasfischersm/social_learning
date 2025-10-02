@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/session_participant.dart';
@@ -55,7 +56,8 @@ class FastPairingContext {
     }
   }
 
-  void sortByTeachDeficitAndGraduateCount(List<SessionParticipant> participants) {
+  void sortByTeachDeficitAndGraduateCount(
+      List<SessionParticipant> participants) {
     participants.sort((a, b) {
       if (a.isInstructor && !b.isInstructor) {
         return -1; // a comes before b
@@ -88,17 +90,22 @@ class FastPairingContext {
     });
   }
 
-  Lesson? findBestLessonToTeach(SessionParticipant mentor, SessionParticipant mentee) {
+  Lesson? findBestLessonToTeach(
+      SessionParticipant mentor, SessionParticipant mentee) {
     // TODO: Admin and creator can always teach
 
     Set<String> mentorLessonIds = graduatedLessonIdsByParticipant[mentor] ?? {};
     Set<String> menteeLessonIds = graduatedLessonIdsByParticipant[mentee] ?? {};
 
-    Set<String> teachableLessonIds = mentorLessonIds.difference(menteeLessonIds);
-    Set<Lesson> teachableLessons = teachableLessonIds.map((id) => libraryState.findLesson(id)!).toSet();
-    Lesson? bestLesson = teachableLessons.reduce((lessonA, lessonB) {
-        return (lessonA.sortOrder < lessonB.sortOrder) ? lessonA : lessonB;
-    });
+    Set<String> teachableLessonIds =
+        mentorLessonIds.difference(menteeLessonIds);
+    Set<Lesson> teachableLessons =
+        teachableLessonIds.map((id) => libraryState.findLesson(id)!).toSet();
+    Lesson? bestLesson = teachableLessons.isEmpty
+        ? null
+        : teachableLessons.reduce((lessonA, lessonB) {
+            return (lessonA.sortOrder < lessonB.sortOrder) ? lessonA : lessonB;
+          });
     return bestLesson;
   }
 

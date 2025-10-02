@@ -62,7 +62,7 @@ dependencies:
   permission_handler: ^11.3.1
   flutter_speed_dial: ^7.0.0
   visibility_detector: ^0.4.0+2
-  collection: any
+  collection: ^1.19.1
   cloud_functions: ^5.5.0
   percent_indicator: ^4.2.5
   http: any
