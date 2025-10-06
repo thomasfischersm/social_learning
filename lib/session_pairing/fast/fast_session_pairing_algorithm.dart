@@ -155,7 +155,7 @@ class FastSessionPairingAlgorithm {
   }
 
   static void _splitIntoTeachingAndLearningGroups(FastPairingContext context) {
-    List<SessionParticipant> participants = List.from(context.allParticipants);
+    List<SessionParticipant> participants = List.from(context.allActiveParticipants);
     context.sortByTeachDeficitAndGraduateCount(participants);
     context.teachingGroup = participants.sublist(0, participants.length ~/ 2);
     context.learningGroup = participants.sublist(participants.length ~/ 2);

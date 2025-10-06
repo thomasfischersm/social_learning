@@ -12,15 +12,14 @@ class FastPairingContext {
   final OrganizerSessionState organizerSessionState;
   final LibraryState libraryState;
 
+  final List<SessionParticipant> allActiveParticipants = [];
   final graduateCountByParticipant = <SessionParticipant, int>{};
   final teachCountByParticipant = <SessionParticipant, int>{};
   final graduatedLessonIdsByParticipant = <SessionParticipant, Set<String>>{};
   final userByParticipant = <SessionParticipant, User>{};
 
-  List<User> get allUsers => organizerSessionState.participantUsers;
+  // List<User> get allUsers => organizerSessionState.participantUsers;
 
-  List<SessionParticipant> get allParticipants =>
-      organizerSessionState.sessionParticipants;
 
   List<SessionParticipant> learningGroup = [];
   List<SessionParticipant> teachingGroup = [];
@@ -29,7 +28,11 @@ class FastPairingContext {
   List<LearnerPair> pairs = [];
 
   FastPairingContext(this.organizerSessionState, this.libraryState) {
-    for (SessionParticipant participant in allParticipants) {
+    allActiveParticipants.addAll(organizerSessionState.sessionParticipants
+        .where((participant) => participant.isActive)
+        .toList());
+
+    for (SessionParticipant participant in allActiveParticipants) {
       // Init graduate counts.
       List<Lesson> graduatedLessons =
           organizerSessionState.getGraduatedLessons(participant);
@@ -117,7 +120,7 @@ class FastPairingContext {
     print('-------------------------------');
     print('FastPairingContext dump: $label');
 
-    _debugPrintUsers('All participants', allParticipants);
+    _debugPrintUsers('All participants', allActiveParticipants);
     _debugPrintUsers('Teaching group', teachingGroup);
     _debugPrintUsers('Learning group', learningGroup);
     _debugPrintUsers('Leftover group', leftoverGroup);
