@@ -140,6 +140,9 @@ class BottomBarV2 {
       NavigationEnum.home.route,
       NavigationEnum.courseHome.route,
       NavigationEnum.instructorDashBoard.route,
+      NavigationEnum.instructorClipboard.route,
+      NavigationEnum.studentPopulationAnalytics.route,
+      NavigationEnum.studyHistoryAnlytics.route,
     }.contains(currentRoute)) {
       return 0;
     } else if (isLessonsVisible &&
@@ -154,8 +157,6 @@ class BottomBarV2 {
           NavigationEnum.cmsStart.route,
           NavigationEnum.cmsSyllabus.route,
           NavigationEnum.cmsLesson.route,
-          NavigationEnum.instructorClipboard.route,
-          NavigationEnum.studyHistoryAnlytics.route,
           NavigationEnum.courseGeneration.route,
           NavigationEnum.courseGenerationReview.route,
           NavigationEnum.courseDesignerIntro.route,
