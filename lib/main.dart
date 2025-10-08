@@ -30,6 +30,7 @@ import 'package:social_learning/ui_foundation/course_designer_session_plan_page.
 import 'package:social_learning/ui_foundation/course_generation_review_page.dart';
 import 'package:social_learning/ui_foundation/course_create_page.dart';
 import 'package:social_learning/ui_foundation/course_generation_page.dart';
+import 'package:social_learning/ui_foundation/comment_review_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/course_home_page.dart';
 import 'package:social_learning/ui_foundation/instructor_dashboard_page.dart';
@@ -187,6 +188,7 @@ class SocialLearningApp extends StatelessWidget {
             const StudentPopulationAnalyticsPage(),
         '/study_history_anlytics': (context) =>
             const StudyHistoryAnlyticsPage(),
+        '/comment_review': (context) => const CommentReviewPage(),
         '/instructor_clipboard': (context) => const InstructorClipboardPage(),
         '/create_skill_assessment': (context) =>
             const CreateSkillAssessmentPage(),
