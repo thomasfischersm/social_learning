@@ -13,7 +13,6 @@ class StudentNetworkAnalyticsPage extends StatelessWidget {
     return Scaffold(
       appBar: const InstructorDashboardAppBar(
         currentNav: NavigationEnum.studentNetworkAnalytics,
-        title: 'Student Network Analytics',
       ),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(
@@ -30,6 +29,7 @@ class StudentNetworkAnalyticsPage extends StatelessWidget {
               const Text('Content coming here'),
             ],
           ),
+          enableScrolling: false,
           enableCourseLoadingGuard: true,
           enableCreatorGuard: true,
           enableCourseAnalyticsGuard: true,

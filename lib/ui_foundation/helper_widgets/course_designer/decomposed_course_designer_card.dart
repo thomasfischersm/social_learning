@@ -3,7 +3,19 @@ import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme
 
 class DecomposedCourseDesignerCard {
 
-  static Widget buildHeader(String title) {
+  static Widget buildHeader(String title, {GestureTapCallback? onTap}) {
+    Widget titleWidget = Text(
+        title,
+        style: CourseDesignerTheme.cardHeaderTextStyle,
+      );
+
+    if (onTap != null) {
+      titleWidget = InkWell(
+        onTap: onTap,
+        child: titleWidget,
+      );
+    }
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -13,10 +25,7 @@ class DecomposedCourseDesignerCard {
         border: Border.all(color: CourseDesignerTheme.cardBorderColor),
       ),
       padding: CourseDesignerTheme.cardHeaderPadding,
-      child: Text(
-        title,
-        style: CourseDesignerTheme.cardHeaderTextStyle,
-      ),
+      child: titleWidget,
     );
   }
 

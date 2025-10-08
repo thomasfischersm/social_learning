@@ -540,7 +540,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                                       const WidgetSpan(
                                           child: SizedBox(width: 16)),
                                     TextSpan(
-                                      text: _formatCommentTimestamp(
+                                      text: formatCommentTimestamp(
                                           comment.createdAt?.toLocal()),
                                       style:
                                       const TextStyle(
@@ -551,7 +551,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                         if (isSelf)
                           IconButton(
                               onPressed: () {
-                                _deleteComment(comment);
+                                deleteComment(context, comment);
                               },
                               icon: Icon(Icons.close, color: Colors.grey)),
                       ])));
@@ -597,7 +597,7 @@ class LessonDetailState extends State<LessonDetailPage> {
     }
   }
 
-  String _formatCommentTimestamp(DateTime? date) {
+  static String formatCommentTimestamp(DateTime? date) {
     if (date == null) {
       return '';
     }
@@ -831,7 +831,7 @@ class LessonDetailState extends State<LessonDetailPage> {
     setState(() {});
   }
 
-  void _deleteComment(LessonComment comment) {
+  static void deleteComment(BuildContext context, LessonComment comment) {
     // Show a dialog to confirm
     showDialog(
         context: context,

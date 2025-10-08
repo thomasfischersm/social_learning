@@ -9,6 +9,8 @@ import 'package:social_learning/data/lesson_comment.dart';
 import 'package:social_learning/data/user.dart';
 
 void main() {
+  final DocumentReference _courseRef = docRef('courses', 'course1');
+
   late FakeFirebaseFirestore fake;
   late Lesson lesson;
   late User user;
@@ -19,7 +21,7 @@ void main() {
 
     lesson = Lesson(
       'lesson1',
-      docRef('courses', 'course1'),
+      _courseRef,
       null,
       0,
       'Lesson 1',
@@ -86,6 +88,7 @@ void main() {
     final comment = LessonComment(
       doc.id,
       lessonRef,
+      _courseRef,
       'To be deleted',
       userRef,
       user.uid,

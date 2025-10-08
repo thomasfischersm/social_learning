@@ -24,7 +24,6 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
     return Scaffold(
       appBar: const InstructorDashboardAppBar(
         currentNav: NavigationEnum.studentPopulationAnalytics,
-        title: 'Student Population Analytics',
       ),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(

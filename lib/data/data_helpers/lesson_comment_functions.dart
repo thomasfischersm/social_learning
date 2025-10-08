@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
+import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/lesson.dart';
@@ -18,6 +19,7 @@ class LessonCommentFunctions {
 
     await _firestore.collection('lessonComments').add({
       'lessonId': lessonRef,
+      'courseId': lesson.courseId,
       'text': comment,
       'creatorId': userRef,
       'creatorUid': user.uid,
@@ -35,5 +37,18 @@ class LessonCommentFunctions {
       print('Failed to delete comment: $error');
       debugPrintStack(stackTrace: stackTrace);
     });
+  }
+
+  static Stream<List<LessonComment>> getLessonCommentsForCourse(Course course) {
+    final courseRef = docRef('courses', course.id!);
+
+    return _firestore
+        .collection('lessonComments')
+        .where('courseId', isEqualTo: courseRef)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((d) => LessonComment.fromQuerySnapshot(d))
+            .toList());
   }
 }
