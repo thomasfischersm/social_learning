@@ -85,7 +85,6 @@ class _InstructorDashboardTabBarState extends State<InstructorDashboardTabBar>
   Widget build(BuildContext context) {
     return TabBar(
       controller: _controller,
-      isScrollable: true,
       tabs: [
         for (final tab in InstructorDashboardTabBar._tabs)
           Tab(
