@@ -30,6 +30,7 @@ import 'package:social_learning/ui_foundation/course_designer_session_plan_page.
 import 'package:social_learning/ui_foundation/course_generation_review_page.dart';
 import 'package:social_learning/ui_foundation/course_create_page.dart';
 import 'package:social_learning/ui_foundation/course_generation_page.dart';
+import 'package:social_learning/ui_foundation/comment_review_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/course_home_page.dart';
 import 'package:social_learning/ui_foundation/instructor_dashboard_page.dart';
@@ -42,6 +43,7 @@ import 'package:social_learning/ui_foundation/online_session_review_page.dart';
 import 'package:social_learning/ui_foundation/online_session_waiting_room_page.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/student_population_analytics_page.dart';
+import 'package:social_learning/ui_foundation/student_network_analytics_page.dart';
 import 'package:social_learning/ui_foundation/study_history_anlytics_page.dart';
 import 'package:social_learning/ui_foundation/playground_page.dart';
 import 'package:social_learning/ui_foundation/profile_comparison_page.dart';
@@ -185,8 +187,11 @@ class SocialLearningApp extends StatelessWidget {
         '/instructor_dashboard': (context) => const InstructorDashboardPage(),
         '/student_population_analytics': (context) =>
             const StudentPopulationAnalyticsPage(),
+        '/student_network_analytics': (context) =>
+            const StudentNetworkAnalyticsPage(),
         '/study_history_anlytics': (context) =>
             const StudyHistoryAnlyticsPage(),
+        '/comment_review': (context) => const CommentReviewPage(),
         '/instructor_clipboard': (context) => const InstructorClipboardPage(),
         '/create_skill_assessment': (context) =>
             const CreateSkillAssessmentPage(),
