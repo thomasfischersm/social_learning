@@ -142,6 +142,7 @@ class BottomBarV2 {
       NavigationEnum.instructorDashBoard.route,
       NavigationEnum.instructorClipboard.route,
       NavigationEnum.studentPopulationAnalytics.route,
+      NavigationEnum.studentNetworkAnalytics.route,
       NavigationEnum.studyHistoryAnlytics.route,
     }.contains(currentRoute)) {
       return 0;
