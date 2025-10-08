@@ -87,8 +87,12 @@ class CommentReviewPage extends StatelessWidget {
       AsyncSnapshot<List<LessonComment>>? commentSnapshot,
       AsyncSnapshot<List<User>>? userSnapshot,
       LibraryState libraryState) {
+    if (commentSnapshot == null || commentSnapshot.data!.isEmpty) {
+      return _buildEmptyCommentsView(context);
+    }
+
     Map<String, List<LessonComment>> lessonCommentsByLessonId = groupBy(
-        commentSnapshot?.data ?? [],
+        commentSnapshot.data ?? [],
         (LessonComment comment) => comment.lessonId.id);
 
     List<User> users = userSnapshot?.data ?? [];
@@ -119,5 +123,12 @@ class CommentReviewPage extends StatelessWidget {
     }
 
     return ListView(children: rows);
+  }
+
+  Widget _buildEmptyCommentsView(BuildContext context) {
+    return Text(
+      'No comments have been made in this course.',
+      style: CustomTextStyles.getBody(context),
+    );
   }
 }
