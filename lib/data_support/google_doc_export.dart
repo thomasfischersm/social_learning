@@ -9,6 +9,8 @@ import 'package:intl/intl.dart';
 import 'package:social_learning/globals.dart';
 
 class GoogleDocExport {
+  // The Google docs API has changed. Commenting out for now.
+  /*
   static Future<String?> export() async {
     // Sign in.
     var googleSignIn = await createClient();
@@ -36,7 +38,8 @@ class GoogleDocExport {
   }
 
   static Future<GoogleSignIn?> createClient() async {
-    var googleSignIn = GoogleSignIn(
+    var signIn = GoogleSignIn.instance;
+    await signIn.initialize(
         clientId:
             '518330283384-41akqio9j5lhuqp5pb4e0jp29qo30ttp.apps.googleusercontent.com',
         scopes: <String>[
@@ -49,7 +52,7 @@ class GoogleDocExport {
     }
 
     return googleSignIn;
-  }
+  }*/
 
   static Future<void> _exportCourses(
       DocsApi docsApi, String documentId, String revisionId) async {

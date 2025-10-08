@@ -54,7 +54,7 @@ class CmsHomePageState extends State<CmsHomePage> {
                               context, NavigationEnum.cmsLesson.route);
                         },
                         child: const Text('Create new lesson')),
-                    TextButton(
+                    /*TextButton(
                         child: const Text('Test Google docs'),
                         onPressed: () {
                           _testGoogleDocs();
@@ -64,14 +64,15 @@ class CmsHomePageState extends State<CmsHomePage> {
                       onPressed: () {
                         GoogleDocExport.export();
                       },
-                    ),
+                    ),*/
                   ],
                 );
               }))),
     );
   }
 
-  void _testGoogleDocs() async {
+  // The Google docs API has changed. Commenting out for now.
+  /*void _testGoogleDocs() async {
     var googleSignIn = GoogleSignIn(
         clientId:
             '518330283384-41akqio9j5lhuqp5pb4e0jp29qo30ttp.apps.googleusercontent.com',
@@ -128,7 +129,7 @@ class CmsHomePageState extends State<CmsHomePage> {
     print('wrote timestamp to the Google doc');
 
     _testUpdateGoogleDoc(docsApi);
-  }
+  }*/
 }
 
 void _testUpdateGoogleDoc(DocsApi docsApi) async {

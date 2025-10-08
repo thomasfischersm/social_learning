@@ -37,38 +37,39 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.5
-  firebase_core: ^3.15.2
-  cloud_firestore: ^5.6.12
+  firebase_core: ^4.1.1
+  cloud_firestore: ^6.0.2
   provider: ^6.0.5
-  firebase_ui_auth: ^2.0.0
+  firebase_ui_auth: ^3.0.0
   shared_preferences: ^2.0.15
   image_picker: ^1.0.0
-  firebase_storage: ^12.3.0
+  firebase_storage: ^13.0.2
   image_picker_for_web: ^3.0.5
   url_launcher: ^6.1.11
-  firebase_crashlytics: ^4.1.1
-  firebase_analytics: ^11.3.1
-  firebase_performance: ^0.10.0+6
-  google_sign_in: ^6.1.4
-  googleapis: ^13.2.0
-  extension_google_sign_in_as_googleapis_auth: ^2.0.10
+  firebase_crashlytics: ^5.0.2
+  firebase_analytics: ^12.0.2
+  firebase_performance: ^0.11.1
+  google_sign_in: ^7.2.0
+  googleapis: ^15.0.0
+  extension_google_sign_in_as_googleapis_auth: ^3.0.0
   intl: ^0.20.2
 
 
   firebase_auth: any
-  fluttertoast: ^8.2.8
+  fluttertoast: ^9.0.0
   youtube_player_iframe: ^5.1.5
-  geolocator: ^13.0.1
-  permission_handler: ^11.3.1
+  geolocator: ^14.0.2
+  permission_handler: ^12.0.1
   flutter_speed_dial: ^7.0.0
   visibility_detector: ^0.4.0+2
   collection: ^1.19.1
-  cloud_functions: ^5.5.0
+  cloud_functions: ^6.0.2
   percent_indicator: ^4.2.5
   http: any
   flutter_svg: any
   fl_chart: ^1.1.1
   vector_math: ^2.1.4
+  flutter_graph_view: ^1.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -78,8 +79,8 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
-  fake_cloud_firestore: ^3.1.0
+  flutter_lints: ^6.0.0
+  fake_cloud_firestore: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
