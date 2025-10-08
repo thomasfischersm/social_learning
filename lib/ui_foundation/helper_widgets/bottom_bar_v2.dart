@@ -144,6 +144,7 @@ class BottomBarV2 {
       NavigationEnum.studentPopulationAnalytics.route,
       NavigationEnum.studentNetworkAnalytics.route,
       NavigationEnum.studyHistoryAnlytics.route,
+      NavigationEnum.commentReview.route,
     }.contains(currentRoute)) {
       return 0;
     } else if (isLessonsVisible &&

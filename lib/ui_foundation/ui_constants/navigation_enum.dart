@@ -31,6 +31,7 @@ enum NavigationEnum {
   studentPopulationAnalytics('/student_population_analytics'),
   studentNetworkAnalytics('/student_network_analytics'),
   studyHistoryAnlytics('/study_history_anlytics'),
+  commentReview('/comment_review'),
   instructorClipboard('/instructor_clipboard'),
   createSkillAssessment('/create_skill_assessment'),
   viewSkillAssessment('/view_skill_assessment'),
