@@ -51,13 +51,15 @@ class CourseFunctions {
       {required String title,
       required String description,
       required String invitationCode,
-      required String creatorId}) {
+      required String creatorId,
+      String? whatsappLink}) {
     return FirestoreService.instance.collection('courses').add({
       'title': title,
       'description': description,
       'creatorId': creatorId,
       'isPrivate': true,
       'invitationCode': invitationCode,
+      'whatsappLink': whatsappLink,
     });
   }
 

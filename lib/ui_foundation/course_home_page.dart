@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
@@ -13,6 +14,8 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_home/radar_c
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/ui_constants/whatsapp_util.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../data/course.dart';
 
@@ -85,6 +88,28 @@ class _CourseHomePageState extends State<CourseHomePage> {
                 icon: const Icon(Icons.info_outline))
           ],
         ),
+        if (course.whatsappLink?.isNotEmpty ?? false)
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                    text: 'Whatsapp: ',
+                    style: CustomTextStyles.getBodyNote(context)),
+                TextSpan(
+                  text: WhatsappUtil.formatWhatsappLink(course.whatsappLink),
+                  style: CustomTextStyles.getBodyNote(context)?.copyWith(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.blue,
+                  ),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      launchUrl(Uri.parse(course.whatsappLink!));
+                    },
+                ),
+              ],
+            ),
+          ),
         const SizedBox(height: 16),
       ]
     ];

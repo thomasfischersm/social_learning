@@ -6,6 +6,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/cms_lesson_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/cms_syllabus/edit_whatsapp_link_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/course_designer_drawer.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/edit_level_title_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/one_time_banner.dart';
@@ -15,6 +16,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/general/course_desi
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/cms_syllabus/edit_invitation_code_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/cms_syllabus/edit_course_title_dialog.dart';
+import 'package:social_learning/ui_foundation/ui_constants/whatsapp_util.dart';
 
 class CmsSyllabusPage extends StatefulWidget {
   const CmsSyllabusPage({super.key});
@@ -62,8 +64,7 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                     prefsKey: 'instructorDashboardHint',
                     message:
                         'Tap the chart icon above to open your Instructor Dashboard.',
-                    leading:
-                        const Icon(Icons.bar_chart, color: Colors.blue),
+                    leading: const Icon(Icons.bar_chart, color: Colors.blue),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -87,56 +88,78 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                                   showDialog(
                                       context: context,
                                       builder: (_) => EditCourseTitleDialog(
-                                            currentTitle:
-                                                libraryState.selectedCourse
-                                                        ?.title ??
-                                                    '',
+                                            currentTitle: libraryState
+                                                    .selectedCourse?.title ??
+                                                '',
                                           ));
                                 },
                               )
                             ],
                           ),
                         ),
-                        if (libraryState.selectedCourse?.invitationCode !=
-                            null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: SelectableText(
-                                    'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
-                                    style: CustomTextStyles.getBody(context),
-                                  ),
+                        if (libraryState.selectedCourse?.invitationCode != null)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: SelectableText(
+                                  'Invitation code: ${libraryState.selectedCourse?.invitationCode}',
+                                  style: CustomTextStyles.getBody(context),
                                 ),
-                                IconButton(
-                                    icon: const Icon(Icons.edit,
-                                        size: 20, color: Colors.grey),
-                                    tooltip: 'Edit invitation code',
-                                    onPressed: () {
-                                      showDialog(
-                                          context: context,
-                                          builder: (_) =>
-                                              EditInvitationCodeDialog(
-                                                currentCode: libraryState
-                                                        .selectedCourse
-                                                        ?.invitationCode ??
-                                                    '',
-                                              ));
-                                    })
-                              ],
-                            ),
+                              ),
+                              IconButton(
+                                  icon: const Icon(Icons.edit,
+                                      size: 20, color: Colors.grey),
+                                  tooltip: 'Edit invitation code',
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (_) =>
+                                            EditInvitationCodeDialog(
+                                              currentCode: libraryState
+                                                      .selectedCourse
+                                                      ?.invitationCode ??
+                                                  '',
+                                            ));
+                                  })
+                            ],
                           ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: SelectableText(
+                                  'Whatsapp invitation link: ${WhatsappUtil.formatWhatsappLink(libraryState.selectedCourse?.whatsappLink)}',
+                                  style: CustomTextStyles.getBody(context),
+                                ),
+                              ),
+                              IconButton(
+                                  icon: const Icon(Icons.edit,
+                                      size: 20, color: Colors.grey),
+                                  tooltip: 'Edit Whatsapp link',
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (_) => EditWhatsappLinkDialog(
+                                              currentCode: libraryState
+                                                      .selectedCourse
+                                                      ?.whatsappLink ??
+                                                  '',
+                                            ));
+                                  })
+                            ],
+                          ),
+                        ),
                         generateLevelList(context, libraryState),
                         InkWell(
                             onTap: () {
                               _addLevel(context, libraryState);
                             },
                             child: Text('Add level',
-                                style:
-                                    CustomTextStyles.getLinkNoUnderline(
-                                        context))),
+                                style: CustomTextStyles.getLinkNoUnderline(
+                                    context))),
                         _generateUnattachedLessons(context, libraryState),
                         CustomUiConstants.getGeneralFooter(context)
                       ],

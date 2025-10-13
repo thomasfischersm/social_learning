@@ -8,6 +8,7 @@ class Course {
   String creatorId;
   bool isPrivate;
   String? invitationCode;
+  String? whatsappLink;
 
   Course(this.id, this.title, this.creatorId, this.description, this.isPrivate,
       this.invitationCode);
@@ -18,7 +19,8 @@ class Course {
         creatorId = e.data()['creatorId'] as String,
         description = e.data()['description'] as String,
         isPrivate = e.data()['isPrivate'] as bool? ?? false,
-        invitationCode = e.data()['invitationCode'] as String?;
+        invitationCode = e.data()['invitationCode'] as String?,
+        whatsappLink = e.data()['whatsappLink'] as String?;
 
   Course.fromDocument(DocumentSnapshot<Map<String, dynamic>> doc)
       : id = doc.id,
@@ -26,8 +28,8 @@ class Course {
         creatorId = doc.data()?['creatorId'] as String,
         description = doc.data()?['description'] as String,
         isPrivate = doc.data()?['isPrivate'] as bool? ?? false,
-        invitationCode = doc.data()?['invitationCode'] as String?;
+        invitationCode = doc.data()?['invitationCode'] as String?,
+        whatsappLink = doc.data()?['whatsappLink'] as String?;
 
-  DocumentReference get docRef =>
-      FirestoreService.instance.doc('/courses/$id');
+  DocumentReference get docRef => FirestoreService.instance.doc('/courses/$id');
 }

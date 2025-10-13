@@ -72,9 +72,11 @@ class LibraryState extends ChangeNotifier {
   List<Course> get availableCourses => _availableCourses;
 
   List<Lesson>? _lessons;
+
   List<Lesson>? get lessons => _lessons;
 
   List<Level>? _levels;
+
   List<Level>? get levels => _levels;
 
   LibraryState(this._applicationState) {
@@ -102,10 +104,12 @@ class LibraryState extends ChangeNotifier {
     }
     _isInitialized = true;
 
-    print('LibraryState.initialize: Blocking on waiting for user to be signed in');
+    print(
+        'LibraryState.initialize: Blocking on waiting for user to be signed in');
     final currentCourseId =
         (await _applicationState.currentUserBlocking)?.currentCourseId?.id;
-    print('LibraryState.initialize: currentUser = ${_applicationState.currentUser}');
+    print(
+        'LibraryState.initialize: currentUser = ${_applicationState.currentUser}');
 
     final futures = <Future<void>>[loadCourseList()];
     if (currentCourseId != null) {
@@ -211,8 +215,7 @@ class LibraryState extends ChangeNotifier {
       _levelListListener?.cancel();
       final completer = Completer<void>();
 
-      _levelListListener =
-          LevelFunctions.listenLevels(courseId, (levelList) {
+      _levelListListener = LevelFunctions.listenLevels(courseId, (levelList) {
         _levels = levelList;
         if (!completer.isCompleted) {
           completer.complete();
@@ -363,7 +366,8 @@ class LibraryState extends ChangeNotifier {
   @Deprecated('Left over from the first version of the CMS.')
   void createLessonLegacy(
       String courseId, String title, String instructions, bool isLevel) async {
-    await LessonFunctions.createLessonLegacy(courseId, title, instructions, isLevel);
+    await LessonFunctions.createLessonLegacy(
+        courseId, title, instructions, isLevel);
   }
 
   Future<Lesson> createLesson(
@@ -455,6 +459,7 @@ class LibraryState extends ChangeNotifier {
       String courseName,
       String invitationCode,
       String description,
+      String whatsappLink,
       ApplicationState applicationState,
       LibraryState libraryState) async {
     DocumentReference<Map<String, dynamic>> docRef =
@@ -462,7 +467,8 @@ class LibraryState extends ChangeNotifier {
             title: courseName,
             description: description,
             invitationCode: invitationCode,
-            creatorId: _applicationState.currentUser!.uid);
+            creatorId: _applicationState.currentUser!.uid,
+            whatsappLink: whatsappLink);
     var course = Course.fromDocument(await docRef.get());
 
     // Automatically enroll the creator in their own course.
@@ -470,8 +476,8 @@ class LibraryState extends ChangeNotifier {
 
     // Reload courses and switch to the newly created course.
     await _reloadEnrolledCourses();
-    selectedCourse =
-        _availableCourses.firstWhereOrNull((element) => element.id == course.id);
+    selectedCourse = _availableCourses
+        .firstWhereOrNull((element) => element.id == course.id);
 
     return course;
   }
@@ -482,8 +488,8 @@ class LibraryState extends ChangeNotifier {
     if (course != null) {
       await _applicationState.enrollInPrivateCourse(course);
       await _reloadEnrolledCourses();
-      selectedCourse =
-          _availableCourses.firstWhereOrNull((element) => element.id == course.id);
+      selectedCourse = _availableCourses
+          .firstWhereOrNull((element) => element.id == course.id);
     }
     return course;
   }
@@ -505,6 +511,17 @@ class LibraryState extends ChangeNotifier {
     }
     course.title = newTitle;
     await CourseFunctions.updateCourse(course.id!, {'title': newTitle});
+    notifyListeners();
+  }
+
+  Future<void> updateWhatsappLink(String? whatsappLink) async {
+    var course = selectedCourse;
+    if (course == null) {
+      return;
+    }
+    course.whatsappLink = whatsappLink;
+    await CourseFunctions.updateCourse(
+        course.id!, {'whatsappLink': whatsappLink});
     notifyListeners();
   }
 
@@ -689,7 +706,6 @@ class LibraryState extends ChangeNotifier {
       debugPrintStack(stackTrace: stackTrace);
     }
   }
-
 
   Future<bool> doesCourseTitleExist(String title) async {
     return CourseFunctions.titleExists(title);

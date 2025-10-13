@@ -7,6 +7,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/general/learning_la
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/ui_foundation/ui_constants/whatsapp_util.dart';
 
 class CourseCreatePage extends StatefulWidget {
   const CourseCreatePage({super.key});
@@ -21,9 +22,11 @@ class CourseCreateState extends State<CourseCreatePage> {
   final courseNameController = TextEditingController();
   final invitationCodeController = TextEditingController();
   final descriptionController = TextEditingController();
+  final whatsappLinkController = TextEditingController();
 
   String? courseNameError;
   String? invitationCodeError;
+  String? whatsappLinkError;
 
   bool _isFormComplete = false;
 
@@ -34,6 +37,7 @@ class CourseCreateState extends State<CourseCreatePage> {
     courseNameController.addListener(_checkFormComplete);
     invitationCodeController.addListener(_checkFormComplete);
     descriptionController.addListener(_checkFormComplete);
+    whatsappLinkController.addListener(_checkFormComplete);
   }
 
   void _checkFormComplete() {
@@ -51,86 +55,95 @@ class CourseCreateState extends State<CourseCreatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const LearningLabAppBar(title: 'Learning Lab'),
-        bottomNavigationBar: BottomBarV2.build(context),
-        floatingActionButton: FloatingActionButton(
-            backgroundColor: _isFormComplete
-                ? Theme.of(context).primaryColor
-                : Theme.of(context).disabledColor,
-            onPressed: _createCourse,
-            child: const Icon(Icons.add)),
-        body: Align(
-            alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                  Consumer2<LibraryState, ApplicationState>(
-                    builder:
-                        (context, libraryState, applicationState, child) {
-                      return Card(
-                        margin: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(16.0),
-                                  topRight: Radius.circular(16.0),
-                                ),
-                              ),
-                              child: Text('Create Course',
-                                  style: CustomTextStyles.headline),
+      appBar: const LearningLabAppBar(title: 'Learning Lab'),
+      bottomNavigationBar: BottomBarV2.build(context),
+      floatingActionButton: FloatingActionButton(
+          backgroundColor: _isFormComplete
+              ? Theme.of(context).primaryColor
+              : Theme.of(context).disabledColor,
+          onPressed: _createCourse,
+          child: const Icon(Icons.add)),
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: CustomUiConstants.framePage(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Consumer2<LibraryState, ApplicationState>(
+                builder: (context, libraryState, applicationState, child) {
+                  return Card(
+                    margin: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColor,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16.0),
+                              topRight: Radius.circular(16.0),
                             ),
-                            const SizedBox(height: 8),
-                            Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Column(
-                                children: [
-                                  TextField(
-                                    decoration: CustomUiConstants
-                                        .getFilledInputDecoration(
-                                      context,
-                                      labelText: 'Course Name',
-                                    ).copyWith(errorText: courseNameError),
-                                    controller: courseNameController,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  TextField(
-                                    decoration: CustomUiConstants
-                                        .getFilledInputDecoration(
-                                      context,
-                                      labelText: 'Invitation Code',
-                                    ).copyWith(
-                                        errorText: invitationCodeError),
-                                    controller: invitationCodeController,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  TextField(
-                                    decoration: CustomUiConstants
-                                        .getFilledInputDecoration(
-                                      context,
-                                      labelText: 'Description',
-                                    ),
-                                    controller: descriptionController,
-                                    minLines: 5,
-                                    maxLines: null,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                          ),
+                          child: Text('Create Course',
+                              style: CustomTextStyles.headline),
                         ),
-                      );
-                    },
-                  ),
-              ],
-            ),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            children: [
+                              TextField(
+                                decoration:
+                                    CustomUiConstants.getFilledInputDecoration(
+                                  context,
+                                  labelText: 'Course Name',
+                                ).copyWith(errorText: courseNameError),
+                                controller: courseNameController,
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                decoration:
+                                    CustomUiConstants.getFilledInputDecoration(
+                                  context,
+                                  labelText: 'Invitation Code',
+                                ).copyWith(errorText: invitationCodeError),
+                                controller: invitationCodeController,
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                decoration:
+                                    CustomUiConstants.getFilledInputDecoration(
+                                  context,
+                                  labelText: 'Description',
+                                ),
+                                controller: descriptionController,
+                                minLines: 5,
+                                maxLines: null,
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                decoration:
+                                    CustomUiConstants.getFilledInputDecoration(
+                                  context,
+                                  labelText:
+                                      'Whatsapp invitation link (optional)',
+                                ).copyWith(errorText: whatsappLinkError),
+                                controller: whatsappLinkController,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 
   void _createCourse() async {
@@ -140,15 +153,29 @@ class CourseCreateState extends State<CourseCreatePage> {
       return;
     }
 
-    String courseName = courseNameController.text;
-    String invitationCode = invitationCodeController.text;
-    String description = descriptionController.text;
+    String courseName = courseNameController.text.trim();
+    String invitationCode = invitationCodeController.text.trim();
+    String description = descriptionController.text.trim();
+    String whatsappLink = whatsappLinkController.text.trim();
     print('Attempting to create course $courseName');
 
     var applicationState =
         Provider.of<ApplicationState>(context, listen: false);
     LibraryState libraryState =
         Provider.of<LibraryState>(context, listen: false);
+
+    // Check if the WhatsApp link is valid, if provided.
+    if (whatsappLink.isNotEmpty &&
+        !WhatsappUtil.isWhatsappLinkValid(whatsappLink)) {
+      setState(() {
+        whatsappLinkError = 'Invalid WhatsApp link format';
+      });
+      return;
+    } else {
+      setState(() {
+        whatsappLinkError = null;
+      });
+    }
 
     // Check if the course title already exists.
     if (await libraryState.doesCourseTitleExist(courseName)) {
@@ -176,7 +203,7 @@ class CourseCreateState extends State<CourseCreatePage> {
 
     libraryState
         .createPrivateCourse(courseName, invitationCode, description,
-            applicationState, libraryState)
+            whatsappLink, applicationState, libraryState)
         .then((course) {
       if (context.mounted) {
         Navigator.pushNamed(context, NavigationEnum.cmsSyllabus.route);
