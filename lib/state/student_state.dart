@@ -151,6 +151,8 @@ class StudentState extends ChangeNotifier {
       data['roughUserLocation'] = mentee.location;
     }
 
+    // To save space in Firebase, only record graduation requirements if the
+    // student didn't graduate.
     if (!isGraduation &&
         graduationRequirementsMet != null &&
         graduationRequirementsMet.isNotEmpty) {
