@@ -160,6 +160,8 @@ class StudentState extends ChangeNotifier {
       data['graduationRequirementsMet'] = graduationRequirementsMet;
     }
 
+    print('Record practice record: $data');
+
     await FirebaseFirestore.instance.collection('practiceRecords').add(data);
   }
 
@@ -373,10 +375,12 @@ class StudentState extends ChangeNotifier {
     List<PracticeRecord>? lessonLearnRecords = _learnRecords
         ?.where((element) => element.lessonId.id == lesson.id)
         .toList();
+    print('${lesson.title} has ${lessonLearnRecords?.length} practice records.');
 
     if (lessonLearnRecords == null || lessonLearnRecords.isEmpty) {
       return 0;
     } else if (lessonLearnRecords.any((element) => element.isGraduation)) {
+      print('${lesson.title} has been graduated.');
       return 1;
     } else {
       PracticeRecord lastRecord = lessonLearnRecords.reduce((a, b) {

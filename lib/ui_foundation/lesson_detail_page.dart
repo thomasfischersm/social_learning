@@ -430,6 +430,7 @@ class LessonDetailState extends State<LessonDetailPage> {
               ),
               ElevatedButton(
                   onPressed: () {
+                    print('Record pressed');
                     User? localLearner = selectedLearner;
                     if (localLearner != null) {
                       setState(() {
@@ -444,6 +445,7 @@ class LessonDetailState extends State<LessonDetailPage> {
             ],
             content: RecordDialogContent(currentLesson,
                     (User? student, bool isReadyToGraduate, List<bool> graduationRequirements) {
+                  print('Setting isReady to $isReadyToGraduate');
                   selectedLearner = student;
                   isReady = isReadyToGraduate;
                   graduationRequirementsMet = graduationRequirements;

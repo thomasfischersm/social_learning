@@ -59,7 +59,8 @@ class UserFunctions {
     });
   }
 
-  static Future<void> updateCurrentCourse(User currentUser, String courseId) async {
+  static Future<void> updateCurrentCourse(
+      User currentUser, String courseId) async {
     var courseRef = docRef('courses', courseId);
     currentUser.currentCourseId = courseRef;
     FirestoreService.instance
@@ -126,10 +127,7 @@ class UserFunctions {
   }
 
   static Future<User> getUserById(String id) async {
-    var doc = await FirestoreService.instance
-        .collection('users')
-        .doc(id)
-        .get();
+    var doc = await FirestoreService.instance.collection('users').doc(id).get();
     return User.fromSnapshot(doc);
   }
 
@@ -201,14 +199,19 @@ class UserFunctions {
     // Update course proficiency.
     if (courseProficiency != null) {
       // Remove the old entry.
-      await docRef('users', user.id).update({
+      print('Removing old course proficiency.');
+      Map<Object, Object?> data = {
         'courseProficiencies': FieldValue.arrayRemove([
           {
             'courseId': courseProficiency.courseId,
             'proficiency': courseProficiency.proficiency,
           }
         ]),
+      };
+      data.forEach((key, value) {
+        print('bad stuff: $key: $value');
       });
+      await docRef('users', user.id).update(data);
     }
 
     // Add the new entry.
@@ -225,9 +228,8 @@ class UserFunctions {
     if (courseProficiency != null) {
       courseProficiency.proficiency = proficiency;
     } else {
-      user.courseProficiencies?.add(CourseProficiency(
-          docRef('courses', course.id!),
-          proficiency));
+      user.courseProficiencies
+          ?.add(CourseProficiency(docRef('courses', course.id!), proficiency));
     }
 
     print('Updated proficiency to $proficiency.');
@@ -363,8 +365,7 @@ class UserFunctions {
       }
 
       user.location = newLocation;
-      await docRef('users', applicationState.currentUser!.id)
-          .update(userData);
+      await docRef('users', applicationState.currentUser!.id).update(userData);
 
       return true;
     } catch (e) {
@@ -406,8 +407,7 @@ class UserFunctions {
       WriteBatch batch = FirestoreService.instance.batch();
       for (var doc in snapshot.docs) {
         var record = PracticeRecord.fromSnapshot(doc);
-        batch.update(
-            docRef('practiceRecords', record.id), {
+        batch.update(docRef('practiceRecords', record.id), {
           'roughUserLocation': currentLocation,
         });
       }
@@ -457,8 +457,7 @@ class UserFunctions {
         // TODO: Perhaps batch the writes.
         var record = PracticeRecord.fromSnapshot(doc);
         if (record.roughUserLocation != null) {
-          batch.update(
-              docRef('practiceRecords', record.id), {
+          batch.update(docRef('practiceRecords', record.id), {
             'roughUserLocation': null,
           });
         }
@@ -582,21 +581,22 @@ class UserFunctions {
   // }
 
   static Future<void> openEmailClient(User? user) async {
-      if (user == null || user.email == null) {
-        return;
-      }
-
-      final Uri emailUri = Uri(
-        scheme: 'mailto',
-        path: user.email,
-        query: Uri.encodeQueryComponent('subject=Hello&body=Hi ${user.displayName},'),
-      );
-
-      if (await canLaunchUrl(emailUri)) {
-        print('Launching email client with URI: $emailUri');
-        await launchUrl(emailUri, mode: LaunchMode.externalApplication);
-      } else {
-        throw 'Could not launch $emailUri';
-      }
+    if (user == null || user.email == null) {
+      return;
     }
+
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: user.email,
+      query: Uri.encodeQueryComponent(
+          'subject=Hello&body=Hi ${user.displayName},'),
+    );
+
+    if (await canLaunchUrl(emailUri)) {
+      print('Launching email client with URI: $emailUri');
+      await launchUrl(emailUri, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $emailUri';
+    }
+  }
 }
