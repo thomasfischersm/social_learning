@@ -24,7 +24,7 @@ Future<void> showLessonGraduationRequirementsDialog(
 
   if (graduationRequirements.isEmpty) {
     requirementWidgets.add(
-      const Text('This lesson does not have any graduation requirements yet.'),
+      const Text('This lesson does not have any graduation requirements.'),
     );
   } else {
     for (int index = 0; index < graduationRequirements.length; index++) {

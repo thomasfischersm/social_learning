@@ -119,8 +119,8 @@ class StudentState extends ChangeNotifier {
     return _lessonIdToLessonCountMap[lesson.id]?.isGraduated ?? false;
   }
 
-  void recordTeachingWithCheck(
-      Lesson lesson, User mentee, bool isGraduation, List<bool>? graduationRequirementsMet, BuildContext context) {
+  void recordTeachingWithCheck(Lesson lesson, User mentee, bool isGraduation,
+      List<bool>? graduationRequirementsMet, BuildContext context) {
     var hasGraduated = (getLessonStatus(lesson) > 1);
     var isAdmin = (Provider.of<ApplicationState>(context, listen: false)
             .currentUser
@@ -128,7 +128,8 @@ class StudentState extends ChangeNotifier {
         false);
     if (hasGraduated || isAdmin) {
       print('Recording practiceRecord.');
-      recordTeaching(lesson.id!, lesson.courseId.id, mentee, isGraduation, graduationRequirementsMet);
+      recordTeaching(lesson.id!, lesson.courseId.id, mentee, isGraduation,
+          graduationRequirementsMet);
     } else {
       print('Silently discarding practiceRecord ${getLessonStatus(lesson)}');
     }
@@ -387,7 +388,18 @@ class StudentState extends ChangeNotifier {
 
         return aTime.isAfter(bTime) ? a : b;
       });
-      return 0.5; // Todo: implement looking at graduation requirements.
+
+      int metCount = lastRecord.graduationRequirementsMet
+              ?.fold<int>(0, (total, met) => total + (met ? 1 : 0)) ??
+          0;
+
+      int requirementCount = lesson.graduationRequirements?.length ?? 0;
+      print('Practice record: /practiceRecords/${lastRecord.id}');
+      print(
+          'getLessonCompletionPercent for ${lesson.title} is ${metCount / requirementCount} and $metCount and $requirementCount');
+      return requirementCount == 0
+          ? 0.5
+          : (metCount / requirementCount).clamp(0.05, 0.95);
     }
   }
 
