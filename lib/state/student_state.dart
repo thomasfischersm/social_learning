@@ -360,6 +360,45 @@ class StudentState extends ChangeNotifier {
     return _lessonIdToLessonCountMap[lesson.id] ?? LessonCount();
   }
 
+  double getLessonCompletionPercent(Lesson lesson) {
+    List<PracticeRecord>? lessonLearnRecords = _learnRecords
+        ?.where((element) => element.lessonId.id == lesson.id)
+        .toList();
+
+    if (lessonLearnRecords == null || lessonLearnRecords.isEmpty) {
+      return 0;
+    } else if (lessonLearnRecords.any((element) => element.isGraduation)) {
+      return 1;
+    } else {
+      PracticeRecord lastRecord = lessonLearnRecords.reduce((a, b) {
+        final aTime = a.timestamp?.toDate();
+        final bTime = b.timestamp?.toDate();
+
+        if (aTime == null) return b;
+        if (bTime == null) return a;
+
+        return aTime.isAfter(bTime) ? a : b;
+      });
+      return 0.5; // Todo: implement looking at graduation requirements.
+    }
+  }
+
+  double getLevelCompletionPercent(Level level) {
+    String? levelId = level.id;
+    if (levelId == null) {
+      return 0;
+    }
+
+    Iterable<Lesson> lessons = (level.title == 'Flex Lessons')
+        ? _libraryState.getUnattachedLessons()
+        : _libraryState.getLessonsByLevel(levelId);
+    double sum = lessons.fold(
+        0, (total, lesson) => total + getLessonCompletionPercent(lesson));
+    print(
+        'getLevelCompletionPercent for ${level.title} is ${sum / lessons.length} and $sum and ${lessons.length}');
+    return sum / lessons.length;
+  }
+
   @visibleForTesting
   void setPracticeRecords(
       {List<PracticeRecord>? learnRecords,
@@ -398,8 +437,8 @@ class StudentState extends ChangeNotifier {
   bool canTeachInCurrentCourse() {
     _init();
 
-    return _lessonIdToLessonCountMap.values.any((element) =>
-    element.isGraduated);
+    return _lessonIdToLessonCountMap.values
+        .any((element) => element.isGraduated);
   }
 }
 

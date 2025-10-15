@@ -11,6 +11,8 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
+import 'helper_widgets/general/progress_checkbox.dart';
+
 class LevelDetailArgument {
   String? levelId;
   bool isFlexLessons = false;
@@ -44,9 +46,9 @@ class LevelDetailState extends State<LevelDetailPage> {
         if (level != null) {
           int levelPosition = libraryState.findLevelPosition(level);
           appBarTitle = 'Level ${levelPosition + 1}: ${level.title}';
-        } else if (argument?.isFlexLessons == true) {
-          appBarTitle = 'Flex Lessons';
         }
+      } else if (argument?.isFlexLessons == true) {
+        appBarTitle = 'Flex Lessons';
       }
       return Scaffold(
           appBar: LearningLabAppBar(title: appBarTitle),
@@ -54,8 +56,7 @@ class LevelDetailState extends State<LevelDetailPage> {
           body: Align(
             alignment: Alignment.topCenter,
             child: CustomUiConstants.framePage(enableCourseLoadingGuard: true,
-                Consumer<StudentState>(
-                    builder: (context, studentState, child) {
+                Consumer<StudentState>(builder: (context, studentState, child) {
               LevelDetailArgument? argument = ModalRoute.of(context)!
                   .settings
                   .arguments as LevelDetailArgument?;
@@ -76,7 +77,7 @@ class LevelDetailState extends State<LevelDetailPage> {
     });
   }
 
-  _generateRegularLessonView(
+  Widget _generateRegularLessonView(
       String levelId, LibraryState libraryState, StudentState studentState) {
     Level? level = libraryState.findLevel(levelId);
     if (level == null) {
@@ -97,7 +98,7 @@ class LevelDetailState extends State<LevelDetailPage> {
           level.description ?? '',
           style: CustomTextStyles.getBody(context),
         )),
-        generateLessonList(lessons, libraryState, studentState),
+        _generateLessonList(lessons, libraryState, studentState),
         CustomUiConstants.getTextPadding(Text(
           '',
           style: CustomTextStyles.getBody(context),
@@ -112,7 +113,7 @@ class LevelDetailState extends State<LevelDetailPage> {
     ));
   }
 
-  _generateFlexLessonView(
+  Widget _generateFlexLessonView(
       LibraryState libraryState, StudentState studentState) {
     Iterable<Lesson> lessons = libraryState.getUnattachedLessons();
 
@@ -127,7 +128,7 @@ class LevelDetailState extends State<LevelDetailPage> {
         CustomUiConstants.getTextPadding(const Text(
           'These are optional lessons that enrich the learning experience, allow deeper dives into topics, or supplement specific student needs.',
         )),
-        generateLessonList(lessons, libraryState, studentState),
+        _generateLessonList(lessons, libraryState, studentState),
         CustomUiConstants.getTextPadding(Text(
           '',
           style: CustomTextStyles.getBody(context),
@@ -142,8 +143,8 @@ class LevelDetailState extends State<LevelDetailPage> {
     ));
   }
 
-  Widget generateLessonList(Iterable<Lesson> lessons, LibraryState libraryState,
-      StudentState studentState) {
+  Widget _generateLessonList(Iterable<Lesson> lessons,
+      LibraryState libraryState, StudentState studentState) {
     List<Widget> children = [];
     for (Lesson lesson in lessons) {
       List<Widget> columnChildren = [];
@@ -175,29 +176,36 @@ class LevelDetailState extends State<LevelDetailPage> {
             text,
             style: emphasizedTextStyle,
           )),
-          if (lessonCount.isGraduated)
-            Icon(Icons.workspace_premium,
-                color: CustomTextStyles.fullyLearnedColor)
+          // if (lessonCount.isGraduated)
+          //   Icon(Icons.workspace_premium,
+          //       color: CustomTextStyles.fullyLearnedColor)
         ],
       ));
       // if ((lesson.synopsis != null) && (lesson.synopsis!.isNotEmpty)) {
       columnChildren.add(Text('${lesson.synopsis}\n'));
       // }
 
-      children.add(InkWell(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: columnChildren,
-        ),
-        onTap: () {
-          Navigator.pushNamed(context, NavigationEnum.lessonDetail.route,
-              arguments: LessonDetailArgument(lesson.id!));
-        },
-      ));
+      children.add(Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(
+            padding: EdgeInsets.only(top: 2),
+            child: ProgressCheckbox(
+                value: studentState.getLessonCompletionPercent(lesson))),
+        SizedBox(width: 8),
+        Expanded(
+            child: InkWell(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: columnChildren,
+          ),
+          onTap: () {
+            Navigator.pushNamed(context, NavigationEnum.lessonDetail.route,
+                arguments: LessonDetailArgument(lesson.id!));
+          },
+        ))
+      ]));
     }
 
     print('Done generate lesson list');
-    if (1 == 2) return const Text('Test');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: children,

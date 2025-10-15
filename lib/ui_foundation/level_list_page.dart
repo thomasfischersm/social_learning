@@ -8,6 +8,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/progress_checkbox.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
@@ -47,23 +48,9 @@ class LevelListState extends State<LevelListPage> {
                     '${libraryState.selectedCourse?.title} Curriculum',
                     style: CustomTextStyles.headline,
                   )),
-                  generateLevelList(levelCompletions, libraryState),
-                  CustomUiConstants.getTextPadding(Text(
-                    '\nStats',
-                    style: CustomTextStyles.headline,
-                  )),
-                  Text(
-                    'Lessons practiced: ${studentState.getPracticeCountForSelectedCourse()}',
-                    style: CustomTextStyles.getBody(context),
-                  ),
-                  Text(
-                    'Lessons completed: ${studentState.getGraduationCountForSelectedCourse()}',
-                    style: CustomTextStyles.getBody(context),
-                  ),
-                  Text(
-                    'Lessons taught: ${studentState.getTeachCountForSelectedCourse()}',
-                    style: CustomTextStyles.getBody(context),
-                  ),
+                  _generateLevelList(
+                      levelCompletions, libraryState, studentState),
+                  ..._buildStats(studentState),
                   CustomUiConstants.getGeneralFooter(context)
                 ],
               ));
@@ -72,8 +59,8 @@ class LevelListState extends State<LevelListPage> {
     });
   }
 
-  Widget generateLevelList(
-      List<LevelCompletion> levelCompletions, LibraryState libraryState) {
+  Widget _generateLevelList(List<LevelCompletion> levelCompletions,
+      LibraryState libraryState, StudentState studentState) {
     if (levelCompletions.isEmpty) {
       return Text(
         'Undergoing maintenance - no levels!',
@@ -88,7 +75,7 @@ class LevelListState extends State<LevelListPage> {
 
       String levelText = 'Level ${i + 1}: ${level.title}';
       if (level.title == 'Flex Lessons') {
-        levelText = levelText;
+        levelText = level.title;
       }
       TextStyle? levelTextStyle;
       if (levelCompletion.isLevelGraduated) {
@@ -103,27 +90,55 @@ class LevelListState extends State<LevelListPage> {
         levelTextStyle = CustomTextStyles.getBody(context);
       }
 
-      children.add(InkWell(
-          onTap: () {
-            var levelId = level.id;
-            if (levelId != null) {
-              var routeArgument = level.title != 'Flex Lessons'
-                  ? LevelDetailArgument(levelId)
-                  : LevelDetailArgument.flexLessons();
-              Navigator.pushNamed(context, NavigationEnum.levelDetail.route,
-                  arguments: routeArgument);
-            }
-          },
-          child: Text(
-            levelText,
-            style: levelTextStyle,
-          )));
+      children.add(Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        ProgressCheckbox(value: studentState.getLevelCompletionPercent(level)),
+        const SizedBox(width: 8),
+        Expanded(
+            child: InkWell(
+                onTap: () {
+                  var levelId = level.id;
+                  if (levelId != null) {
+                    var routeArgument = level.title != 'Flex Lessons'
+                        ? LevelDetailArgument(levelId)
+                        : LevelDetailArgument.flexLessons();
+                    Navigator.pushNamed(
+                        context, NavigationEnum.levelDetail.route,
+                        arguments: routeArgument);
+                  }
+                },
+                child: Text(
+                  levelText,
+                  style: levelTextStyle,
+                  softWrap: true,
+                ))),
+      ]));
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: children,
     );
+  }
+
+  List<Widget> _buildStats(StudentState studentState) {
+    return <Widget>[
+      CustomUiConstants.getTextPadding(Text(
+        '\nStats',
+        style: CustomTextStyles.headline,
+      )),
+      Text(
+        'Lessons practiced: ${studentState.getPracticeCountForSelectedCourse()}',
+        style: CustomTextStyles.getBody(context),
+      ),
+      Text(
+        'Lessons completed: ${studentState.getGraduationCountForSelectedCourse()}',
+        style: CustomTextStyles.getBody(context),
+      ),
+      Text(
+        'Lessons taught: ${studentState.getTeachCountForSelectedCourse()}',
+        style: CustomTextStyles.getBody(context),
+      ),
+    ];
   }
 
   int _getLevelNumber(List<Lesson>? lessons, index) {
