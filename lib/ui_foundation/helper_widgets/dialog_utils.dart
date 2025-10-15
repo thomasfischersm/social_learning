@@ -60,4 +60,31 @@ class DialogUtils {
     );
   }
 
+  static Future<void> showInfoDialogWithContent(
+    BuildContext context,
+    String title,
+    Widget content, {
+    VoidCallback? onConfirm,
+    String confirmLabel = 'OK',
+  }) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: content,
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text(confirmLabel),
+              onPressed: () {
+                Navigator.of(context).pop();
+                onConfirm?.call();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }

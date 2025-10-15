@@ -11,6 +11,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
+import 'helper_widgets/general/lesson_graduation_requirements_dialog.dart';
 import 'helper_widgets/general/progress_checkbox.dart';
 
 class LevelDetailArgument {
@@ -189,7 +190,14 @@ class LevelDetailState extends State<LevelDetailPage> {
         Padding(
             padding: EdgeInsets.only(top: 2),
             child: ProgressCheckbox(
-                value: studentState.getLessonCompletionPercent(lesson))),
+              value: studentState.getLessonCompletionPercent(lesson),
+              onTap: () {
+                showLessonGraduationRequirementsDialog(
+                  context,
+                  lesson,
+                );
+              },
+            )),
         SizedBox(width: 8),
         Expanded(
             child: InkWell(

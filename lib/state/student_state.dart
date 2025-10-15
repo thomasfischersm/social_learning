@@ -391,6 +391,38 @@ class StudentState extends ChangeNotifier {
     }
   }
 
+  PracticeRecord? getLatestGraduationPracticeRecord(Lesson lesson) {
+    _init();
+
+    final String? lessonId = lesson.id;
+    if (lessonId == null) {
+      return null;
+    }
+
+    final Iterable<PracticeRecord>? lessonLearnRecords =
+        _learnRecords?.where((record) => record.lessonId.id == lessonId);
+
+    if (lessonLearnRecords == null || lessonLearnRecords.isEmpty) {
+      return null;
+    }
+
+    final PracticeRecord latestRecord = lessonLearnRecords.reduce((a, b) {
+      final DateTime? aTime = a.timestamp?.toDate();
+      final DateTime? bTime = b.timestamp?.toDate();
+
+      if (aTime == null) {
+        return b;
+      }
+      if (bTime == null) {
+        return a;
+      }
+
+      return aTime.isAfter(bTime) ? a : b;
+    });
+
+    return latestRecord;
+  }
+
   double getLevelCompletionPercent(Level level) {
     String? levelId = level.id;
     if (levelId == null) {
