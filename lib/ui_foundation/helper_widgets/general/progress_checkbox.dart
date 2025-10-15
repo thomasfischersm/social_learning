@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../ui_constants/custom_text_styles.dart';
+
 /// A read-only checkbox that visualizes fractional progress by partially
 /// filling the checkbox from right to left.
 ///
@@ -108,8 +110,6 @@ class ProgressCheckbox extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(1.0)),
         ));
 
-    final Color activeFillColor =
-    resolveFillColor(<MaterialState>{MaterialState.selected});
     final Color inactiveFillColor = resolveFillColor(<MaterialState>{});
     final BorderSide activeSide =
     resolveSide(<MaterialState>{MaterialState.selected});
@@ -118,6 +118,16 @@ class ProgressCheckbox extends StatelessWidget {
     resolveCheckColor(<MaterialState>{MaterialState.selected});
 
     final bool isComplete = clampedValue == 1.0;
+    final Color defaultTextColor =
+        theme.textTheme.bodyMedium?.color ?? colors.onSurface;
+    final Color displayActiveColor = isComplete
+        ? CustomTextStyles.fullyLearnedColor
+        : (clampedValue > 0.0
+        ? CustomTextStyles.partiallyLearnedColor
+        : defaultTextColor);
+    final BorderSide displayInactiveSide = clampedValue == 0.0
+        ? inactiveSide.copyWith(color: defaultTextColor)
+        : inactiveSide;
     final bool hasProgress = clampedValue > 0.0;
 
     return Semantics(
@@ -131,11 +141,11 @@ class ProgressCheckbox extends StatelessWidget {
           painter: _ProgressCheckboxPainter(
             value: clampedValue,
             shape: shape,
-            activeColor: activeFillColor,
+            activeColor: displayActiveColor,
             inactiveColor: inactiveFillColor,
             checkColor: checkColor,
             activeSide: activeSide,
-            inactiveSide: inactiveSide,
+            inactiveSide: displayInactiveSide,
           ),
         ),
       ),
