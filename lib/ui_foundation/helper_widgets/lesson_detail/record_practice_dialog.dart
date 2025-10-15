@@ -60,13 +60,13 @@ class RecordPracticeDialogState extends State<RecordPracticeDialog> {
           },
           child: const Text('Cancel'),
         ),
-        ElevatedButton(onPressed: _recordPractice, child: const Text('Record')),
+        ElevatedButton(onPressed: _recordPressed, child: const Text('Record')),
       ],
       content: _buildContent(context),
     );
   }
 
-  void _recordPractice() {
+  void _recordPressed() {
     print('Record pressed');
     User? localLearner = _selectedLearner;
     if (localLearner != null) {
@@ -77,10 +77,10 @@ class RecordPracticeDialogState extends State<RecordPracticeDialog> {
         Navigator.pop(context);
       });
     } else {
+      _learnerFieldFocusNode?.requestFocus();
       setState(() {
         _showLearnerSelectionError = true;
       });
-      _learnerFieldFocusNode?.requestFocus();
     }
   }
 
@@ -180,8 +180,6 @@ class RecordPracticeDialogState extends State<RecordPracticeDialog> {
       fieldViewBuilder: (context, textController, focusNode, onFieldSubmitted) {
         Widget child;
         _learnerFieldFocusNode = focusNode;
-        textController.removeListener(_clearLearnerSelectionError);
-        textController.addListener(_clearLearnerSelectionError);
         if (_selectedLearner != null) {
           child = InkWell(
               onTap: () {
@@ -227,6 +225,7 @@ class RecordPracticeDialogState extends State<RecordPracticeDialog> {
                   ? 'Please select a learner before recording.'
                   : null,
             ),
+            onChanged: (_) => _clearLearnerSelectionError(),
           );
         }
         return SizedBox(
