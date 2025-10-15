@@ -33,6 +33,8 @@ class RecordPracticeDialogState extends State<RecordPracticeDialog> {
   bool _isReadyToGraduate = false;
   List<bool> _graduationRequirementsMet = [];
   double? _learnerFieldWidth;
+  bool _showLearnerSelectionError = false;
+  FocusNode? _learnerFieldFocusNode;
 
   @override
   void initState() {
@@ -74,6 +76,11 @@ class RecordPracticeDialogState extends State<RecordPracticeDialog> {
                 _isReadyToGraduate, _graduationRequirementsMet, context);
         Navigator.pop(context);
       });
+    } else {
+      setState(() {
+        _showLearnerSelectionError = true;
+      });
+      _learnerFieldFocusNode?.requestFocus();
     }
   }
 
@@ -172,12 +179,16 @@ class RecordPracticeDialogState extends State<RecordPracticeDialog> {
       },
       fieldViewBuilder: (context, textController, focusNode, onFieldSubmitted) {
         Widget child;
+        _learnerFieldFocusNode = focusNode;
+        textController.removeListener(_clearLearnerSelectionError);
+        textController.addListener(_clearLearnerSelectionError);
         if (_selectedLearner != null) {
           child = InkWell(
               onTap: () {
                 setState(() {
                   _selectedLearner = null;
                   textController.clear();
+                  _showLearnerSelectionError = false;
                 });
                 focusNode.requestFocus();
               },
@@ -210,8 +221,12 @@ class RecordPracticeDialogState extends State<RecordPracticeDialog> {
             controller: textController,
             focusNode: focusNode,
             style: CustomTextStyles.getBody(context),
-            decoration:
-                const InputDecoration(hintText: 'Start typing the name.'),
+            decoration: InputDecoration(
+              hintText: 'Start typing the name.',
+              errorText: _showLearnerSelectionError
+                  ? 'Please select a learner before recording.'
+                  : null,
+            ),
           );
         }
         return SizedBox(
@@ -255,9 +270,18 @@ class RecordPracticeDialogState extends State<RecordPracticeDialog> {
       onSelected: (User selection) {
         setState(() {
           _selectedLearner = selection;
+          _showLearnerSelectionError = false;
         });
       },
     );
+  }
+
+  void _clearLearnerSelectionError() {
+    if (_showLearnerSelectionError) {
+      setState(() {
+        _showLearnerSelectionError = false;
+      });
+    }
   }
 
   List<Widget> _generateGraduationRequirementsChecks() {
