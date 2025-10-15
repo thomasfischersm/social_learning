@@ -7,6 +7,7 @@ class PracticeRecord {
   String menteeUid;
   String mentorUid;
   bool isGraduation;
+  List<bool>? graduationRequirementsMet;
   GeoPoint? roughUserLocation;
   Timestamp? timestamp;
 
@@ -20,6 +21,10 @@ class PracticeRecord {
         menteeUid = e.data()['menteeUid'] as String,
         mentorUid = e.data()['mentorUid'] as String,
         isGraduation = e.data()['isGraduation'] as bool,
+        graduationRequirementsMet =
+            (e.data()['graduationRequirementsMet'] as List<dynamic>?)
+                ?.map((e) => e as bool)
+                .toList(),
         roughUserLocation = e.data()['roughUserLocation'] as GeoPoint?,
         timestamp = e.data()['timestamp'] as Timestamp?;
 }

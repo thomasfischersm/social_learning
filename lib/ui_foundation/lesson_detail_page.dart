@@ -412,6 +412,7 @@ class LessonDetailState extends State<LessonDetailPage> {
   void _showRecordDialog(BuildContext context, Lesson currentLesson) {
     User? selectedLearner;
     bool isReady = false;
+    List<bool> graduationRequirementsMet = [];
     showDialog(
         context: context,
         builder: (context) {
@@ -434,7 +435,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                       setState(() {
                         Provider.of<StudentState>(context, listen: false)
                             .recordTeachingWithCheck(
-                            currentLesson, localLearner, isReady, context);
+                            currentLesson, localLearner, isReady, graduationRequirementsMet, context);
                         Navigator.pop(context);
                       });
                     }
@@ -442,9 +443,10 @@ class LessonDetailState extends State<LessonDetailPage> {
                   child: const Text('Record')),
             ],
             content: RecordDialogContent(currentLesson,
-                    (User? student, bool isReadyToGraduate) {
+                    (User? student, bool isReadyToGraduate, List<bool> graduationRequirements) {
                   selectedLearner = student;
                   isReady = isReadyToGraduate;
+                  graduationRequirementsMet = graduationRequirements;
                 }),
           );
         });
@@ -903,7 +905,8 @@ class DisabledDialogState extends State<DisabledDialogContent> {
 
 class RecordDialogContent extends StatefulWidget {
   Lesson lesson;
-  Function onUserSelected;
+  final void Function(User? student, bool isReadyToGraduate,
+      List<bool> graduationRequirementStatuses) onUserSelected;
 
   RecordDialogContent(this.lesson, this.onUserSelected, {super.key});
 
@@ -943,10 +946,10 @@ class RecordDialogState extends State<RecordDialogContent> {
   Widget build(BuildContext context) {
     if (_selectedStudent != null) {
       widget.onUserSelected(_selectedStudent!,
-          _isReadyToGraduate && _checkGraduationRequirements());
+          _isReadyToGraduate && _checkGraduationRequirements(), _graduationRequirements);
     } else {
       widget.onUserSelected(
-          null, _isReadyToGraduate && _checkGraduationRequirements());
+          null, _isReadyToGraduate && _checkGraduationRequirements(), _graduationRequirements);
     }
 
     return Column(

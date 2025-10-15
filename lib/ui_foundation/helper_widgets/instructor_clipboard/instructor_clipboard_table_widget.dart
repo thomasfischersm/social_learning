@@ -117,7 +117,7 @@ class InstructorClipboardTableState
       () {
         final studentState = Provider.of<StudentState>(context, listen: false);
         studentState.recordTeachingWithCheck(
-            lesson, widget.student, true, context);
+            lesson, widget.student, true, null, context);
         setState(() {
           _lessonState[lesson.id!] = LessonState.graduated;
         });

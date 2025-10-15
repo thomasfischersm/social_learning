@@ -120,7 +120,7 @@ class StudentState extends ChangeNotifier {
   }
 
   void recordTeachingWithCheck(
-      Lesson lesson, User mentee, bool isGraduation, BuildContext context) {
+      Lesson lesson, User mentee, bool isGraduation, List<bool>? graduationRequirementsMet, BuildContext context) {
     var hasGraduated = (getLessonStatus(lesson) > 1);
     var isAdmin = (Provider.of<ApplicationState>(context, listen: false)
             .currentUser
@@ -128,14 +128,14 @@ class StudentState extends ChangeNotifier {
         false);
     if (hasGraduated || isAdmin) {
       print('Recording practiceRecord.');
-      recordTeaching(lesson.id!, lesson.courseId.id, mentee, isGraduation);
+      recordTeaching(lesson.id!, lesson.courseId.id, mentee, isGraduation, graduationRequirementsMet);
     } else {
       print('Silently discarding practiceRecord ${getLessonStatus(lesson)}');
     }
   }
 
-  void recordTeaching(
-      String lessonId, String courseId, User mentee, bool isGraduation) async {
+  void recordTeaching(String lessonId, String courseId, User mentee,
+      bool isGraduation, List<bool>? graduationRequirementsMet) async {
     var data = <String, dynamic>{
       'lessonId': FirebaseFirestore.instance.doc('lessons/$lessonId'),
       'courseId': FirebaseFirestore.instance.doc('courses/$courseId'),
@@ -149,6 +149,12 @@ class StudentState extends ChangeNotifier {
         mentee.location != null &&
         isGraduation) {
       data['roughUserLocation'] = mentee.location;
+    }
+
+    if (!isGraduation &&
+        graduationRequirementsMet != null &&
+        graduationRequirementsMet.isNotEmpty) {
+      data['graduationRequirementsMet'] = graduationRequirementsMet;
     }
 
     await FirebaseFirestore.instance.collection('practiceRecords').add(data);

@@ -405,7 +405,7 @@ class LibraryState extends ChangeNotifier {
     // creator can teach it.
     if (selectedCourse?.isPrivate == true) {
       studentState.recordTeaching(
-          newLessonRef.id, selectedCourse!.id!, currentUser, true);
+          newLessonRef.id, selectedCourse!.id!, currentUser, true, null);
     }
 
     return Lesson.fromSnapshot(await newLessonRef.get());
