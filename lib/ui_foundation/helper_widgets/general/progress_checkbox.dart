@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../ui_constants/custom_text_styles.dart';
 
@@ -13,11 +14,13 @@ class ProgressCheckbox extends StatelessWidget {
   const ProgressCheckbox({
     super.key,
     required this.value,
+    this.onTap,
   });
 
   /// The completion value represented by the checkbox. Expected to be within
   /// `0` to `1`.
   final double value;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -129,26 +132,46 @@ class ProgressCheckbox extends StatelessWidget {
         ? inactiveSide.copyWith(color: defaultTextColor)
         : inactiveSide;
     final bool hasProgress = clampedValue > 0.0;
+    final bool isPartial = !isComplete && hasProgress;
+    final bool isInteractive = isPartial && onTap != null;
+
+    Widget checkbox = SizedBox.square(
+      dimension: _kBoxSize,
+      child: CustomPaint(
+        painter: _ProgressCheckboxPainter(
+          value: clampedValue,
+          shape: shape,
+          activeColor: displayActiveColor,
+          inactiveColor: inactiveFillColor,
+          checkColor: checkColor,
+          activeSide: activeSide,
+          inactiveSide: displayInactiveSide,
+        ),
+      ),
+    );
+
+    if (isInteractive) {
+      checkbox = Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          customBorder: shape,
+          child: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: checkbox,
+          ),
+        ),
+      );
+    }
 
     return Semantics(
       checked: isComplete,
       mixed: !isComplete && hasProgress ? true : null,
       value: '${(clampedValue * 100).round()}%',
-      readOnly: true,
-      child: SizedBox.square(
-        dimension: _kBoxSize,
-        child: CustomPaint(
-          painter: _ProgressCheckboxPainter(
-            value: clampedValue,
-            shape: shape,
-            activeColor: displayActiveColor,
-            inactiveColor: inactiveFillColor,
-            checkColor: checkColor,
-            activeSide: activeSide,
-            inactiveSide: displayInactiveSide,
-          ),
-        ),
-      ),
+      readOnly: !isInteractive,
+      button: isInteractive,
+      onTap: isInteractive ? onTap : null,
+      child: checkbox,
     );
   }
 }
