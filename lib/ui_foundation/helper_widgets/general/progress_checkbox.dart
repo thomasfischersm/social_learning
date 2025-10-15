@@ -125,9 +125,15 @@ class ProgressCheckbox extends StatelessWidget {
         : (clampedValue > 0.0
         ? CustomTextStyles.partiallyLearnedColor
         : defaultTextColor);
-    final BorderSide displayInactiveSide = clampedValue == 0.0
-        ? inactiveSide.copyWith(color: defaultTextColor)
-        : inactiveSide;
+    final BorderSide displayInactiveSide;
+    if (clampedValue == 0.0) {
+      displayInactiveSide = inactiveSide.copyWith(color: defaultTextColor);
+    } else if (clampedValue < 1.0) {
+      displayInactiveSide =
+          inactiveSide.copyWith(color: CustomTextStyles.partiallyLearnedColor);
+    } else {
+      displayInactiveSide = inactiveSide;
+    }
     final bool hasProgress = clampedValue > 0.0;
 
     return Semantics(
@@ -154,7 +160,6 @@ class ProgressCheckbox extends StatelessWidget {
 }
 
 const double _kBoxSize = Checkbox.width;
-const double _kFillInset = 1.0;
 const double _kCheckScale = 0.76;
 const double _kCheckStrokeWidth = 2.4;
 const Offset _kCheckStart = Offset(0.14, 0.60);
@@ -186,7 +191,7 @@ class _ProgressCheckboxPainter extends CustomPainter {
     final Path shapePath = shape.getOuterPath(rect);
 
     final BorderSide side = value == 1.0 ? activeSide : inactiveSide;
-    final double inset = side.width / 2 + _kFillInset;
+    final double inset = side.width / 2;
     final Rect fillBounds = Rect.fromLTWH(
       rect.left + inset,
       rect.top + inset,
