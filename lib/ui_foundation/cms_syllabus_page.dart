@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
@@ -17,6 +18,7 @@ import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart'
 import 'package:social_learning/ui_foundation/helper_widgets/cms_syllabus/edit_invitation_code_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/cms_syllabus/edit_course_title_dialog.dart';
 import 'package:social_learning/ui_foundation/ui_constants/whatsapp_util.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class CmsSyllabusPage extends StatefulWidget {
   const CmsSyllabusPage({super.key});
@@ -129,10 +131,26 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Flexible(
-                                child: SelectableText(
-                                  'Whatsapp invitation link: ${WhatsappUtil.formatWhatsappLink(libraryState.selectedCourse?.whatsappLink)}',
-                                  style: CustomTextStyles.getBody(context),
+                              RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                        text: 'Whatsapp: ',
+                                        style: CustomTextStyles.getBody(context)),
+                                    TextSpan(
+                                      text: WhatsappUtil.formatWhatsappLink(libraryState.selectedCourse?.whatsappLink),
+                                      style: CustomTextStyles.getBody(context)?.copyWith(
+                                        color: Colors.blue,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: Colors.blue,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          _openWhatsapp(libraryState
+                                              .selectedCourse?.whatsappLink);
+                                        },
+                                    ),
+                                  ],
                                 ),
                               ),
                               IconButton(
@@ -462,6 +480,22 @@ class CmsSyllabusState extends State<CmsSyllabusPage> {
 
     if (confirmed == true) {
       libraryState.deleteLesson(lesson);
+    }
+  }
+
+  void _openWhatsapp(String? whatsappLink) async {
+    if (whatsappLink != null && whatsappLink.isNotEmpty) {
+      final Uri url = Uri.parse(whatsappLink);
+      print('Whatsapp URL: $whatsappLink');
+      if (!await launchUrl(url)) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Could not launch $url'),
+            ),
+          );
+        }
+      }
     }
   }
 }
