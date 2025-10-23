@@ -293,7 +293,7 @@ class LibraryState extends ChangeNotifier {
     return null;
   }
 
-  void updateSortOrder(Lesson touchedLesson, int newSortOrder) async {
+  Future<void> updateSortOrder(Lesson touchedLesson, int newSortOrder) async {
     int oldSortOrder = touchedLesson.sortOrder;
     var lessons = _lessons;
 
@@ -301,8 +301,9 @@ class LibraryState extends ChangeNotifier {
       return;
     }
 
-    newSortOrder = max(newSortOrder, 0);
-    newSortOrder = min(newSortOrder, lessons.length - 1);
+    newSortOrder = newSortOrder.clamp(0, lessons.length - 1);
+
+    List<Lesson> lessonsToUpdate = [];
 
     if ((newSortOrder == oldSortOrder)) {
       return;
@@ -311,7 +312,9 @@ class LibraryState extends ChangeNotifier {
         if ((touchedLesson != lesson) &&
             (lesson.sortOrder > oldSortOrder) &&
             (lesson.sortOrder <= newSortOrder)) {
-          _setSortOrder(lesson, lesson.sortOrder - 1);
+          lesson.sortOrder = lesson.sortOrder - 1;
+          lessonsToUpdate.add(lesson);
+          // _setSortOrder(lesson, lesson.sortOrder - 1);
         }
       }
     } else {
@@ -319,12 +322,17 @@ class LibraryState extends ChangeNotifier {
         if ((touchedLesson != lesson) &&
             (lesson.sortOrder < oldSortOrder) &&
             (lesson.sortOrder >= newSortOrder)) {
-          _setSortOrder(lesson, lesson.sortOrder + 1);
+          lesson.sortOrder = lesson.sortOrder + 1;
+          lessonsToUpdate.add(lesson);
+          // _setSortOrder(lesson, lesson.sortOrder + 1);
         }
       }
     }
 
-    _setSortOrder(touchedLesson, newSortOrder);
+    touchedLesson.sortOrder = newSortOrder;
+    lessonsToUpdate.add(touchedLesson);
+    // _setSortOrder(touchedLesson, newSortOrder);
+    await LessonFunctions.setSortOrderAsBatch(lessonsToUpdate);
   }
 
   void _setSortOrder(Lesson lesson, int newSortOrder) async {
@@ -615,7 +623,7 @@ class LibraryState extends ChangeNotifier {
   void attachLesson(Level level, Lesson selectedLesson, int sortOrder) async {
     await LessonFunctions.attachLessonToLevel(selectedLesson.id!, level.id!);
 
-    updateSortOrder(selectedLesson, sortOrder);
+    await updateSortOrder(selectedLesson, sortOrder);
 
     // TODO: Remove
     _fixSortOrderForDebugging();
@@ -643,7 +651,7 @@ class LibraryState extends ChangeNotifier {
     return 0;
   }
 
-  sortUnattachedLessons() {
+  void sortUnattachedLessons() {
     // Get the highest sort order of attached lessons.
     var attachedLessons = lessons?.where((lesson) => lesson.levelId != null);
     int highestSortOrder =
@@ -666,7 +674,7 @@ class LibraryState extends ChangeNotifier {
     }
   }
 
-  _fixSortOrderForDebugging() {
+  void _fixSortOrderForDebugging() {
     int sortOrder = 0;
     for (Level level in levels!) {
       for (Lesson lesson in getLessonsByLevel(level.id!)) {

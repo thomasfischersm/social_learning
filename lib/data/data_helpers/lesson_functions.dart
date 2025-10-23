@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/lesson.dart';
 
@@ -12,8 +13,7 @@ class LessonFunctions {
     final coursePath = '/courses/$courseId';
     return FirestoreService.instance
         .collection('lessons')
-        .where('courseId',
-            isEqualTo: FirestoreService.instance.doc(coursePath))
+        .where('courseId', isEqualTo: FirestoreService.instance.doc(coursePath))
         .orderBy('sortOrder', descending: false)
         .snapshots()
         .map((snapshot) =>
@@ -21,11 +21,34 @@ class LessonFunctions {
         .listen(onData);
   }
 
-  static Future<void> setSortOrder(String lessonId, int newSortOrder) {
+  static Future<void> setSortOrder(String lessonId, int newSortOrder) async {
     return FirestoreService.instance.doc('/lessons/$lessonId').set({
       'sortOrder': newSortOrder,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
     }, SetOptions(merge: true));
+  }
+
+  static Future<void> setSortOrderAsBatch(List<Lesson> lessons) async {
+    WriteBatch batch = FirestoreService.instance.batch();
+
+    for (Lesson lesson in lessons) {
+      String? lessonId = lesson.id;
+      if (lessonId == null) {
+        continue;
+      }
+      print('### Batch: Set sort order for ${lesson.title} from ${lesson.sortOrder} to ${lesson.sortOrder}');
+      batch.update(
+          docRef(
+            'lessons',
+            lessonId,
+          ),
+          {
+            'sortOrder': lesson.sortOrder,
+            'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
+          });
+    }
+
+    return batch.commit();
   }
 
   static Future<void> deleteLesson(String lessonId) {
@@ -109,4 +132,3 @@ class LessonFunctions {
     }, SetOptions(merge: true));
   }
 }
-
