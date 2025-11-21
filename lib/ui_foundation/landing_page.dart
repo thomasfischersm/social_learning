@@ -10,70 +10,79 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: CustomUiConstants.framePage(
-            enableAuthGuard: false,
-            Column(
-              children: [
-                AutoSignInWidget(),
-                Text(
-                  'Learning Lab',
-                  style: Theme.of(context).textTheme.displaySmall,
-                ),
-                const Spacer(),
-                Text(
-                  'How it works',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                Text(
-                  'Learning Lab = \nLearn a lesson → Master it → Teach a peer',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  textAlign: TextAlign.center,
-                ),
-                const Spacer(),
-                Text(
-                  'Benefits:',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                Text(
-                  '• Learn from a peer. Ask questions. Get guidance.\n'
-                  '• Skip the isolation/frustration of learning alone.\n'
-                  '• Deepen your mastery by teaching.',
-                  // '\n'
-                  // 'Available for in-person and online!',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const Spacer(),
-                Text(
-                  'The Learning Revolution is here!',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                Text(
-                  // 'You learn everything from a mentor. Your mentor answers your questions and gets you unstuck. Your mentor doesn''t have to know everything. They only have to have mastered the lesson at hand. The intelligence of the curriculum guides you through learning the whole subject one piece at a time.',
-                  'Learn each lesson with a mentor who’s there to answer your questions and help you get unstuck. Your mentor only needs to master the specific lesson—not the entire subject—so you get clear, focused guidance. An expert-designed curriculum then connects these bite-sized lessons into a complete, effective learning journey.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                const Spacer(),
-                Text(
-                  'How to get started',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                Text(
-                  'Come to an in-person event\n'
-                  'or\n'
-                  'connect with an online mentor',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                  textAlign: TextAlign.center,
-                ),
-                const Spacer(),
-                const Divider(),
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed(NavigationEnum.signIn.route);
-                    },
-                    child: const Text('Register/sign in')),
-              ],
+        child: CustomUiConstants.framePage(enableAuthGuard: false,
+            LayoutBuilder(builder:
+                (BuildContext context, BoxConstraints viewportConstraints) {
+      return SingleChildScrollView(
+          child: ConstrainedBox(
+        constraints: BoxConstraints(minHeight: viewportConstraints.maxHeight),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            AutoSignInWidget(),
+            Text(
+              'Learning Lab',
+              style: Theme.of(context).textTheme.displaySmall,
             ),
-            enableScrolling: false));
+            Column(children: [
+              Text(
+                'How it works',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Text(
+                'Learning Lab = \nLearn a lesson → Master it → Teach a peer',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+            ]),
+            Column(children: [
+              Text(
+                'Benefits:',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Text(
+                '• Learn from a peer. Ask questions. Get guidance.\n'
+                '• Skip the isolation/frustration of learning alone.\n'
+                '• Deepen your mastery by teaching.',
+                // '\n'
+                // 'Available for in-person and online!',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ]),
+            Column(children: [
+              Text(
+                'The Learning Revolution is here!',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Text(
+                // 'You learn everything from a mentor. Your mentor answers your questions and gets you unstuck. Your mentor doesn''t have to know everything. They only have to have mastered the lesson at hand. The intelligence of the curriculum guides you through learning the whole subject one piece at a time.',
+                'Learn each lesson with a mentor who’s there to answer your questions and help you get unstuck. Your mentor only needs to master the specific lesson—not the entire subject—so you get clear, focused guidance. An expert-designed curriculum then connects these bite-sized lessons into a complete, effective learning journey.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ]),
+            Column(children: [
+              Text(
+                'How to get started',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              Text(
+                'Come to an in-person event\n'
+                'or\n'
+                'connect with an online mentor',
+                style: Theme.of(context).textTheme.bodyLarge,
+                textAlign: TextAlign.center,
+              ),
+            ]),
+            const Divider(),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(NavigationEnum.signIn.route);
+                },
+                child: const Text('Register/sign in')),
+          ],
+        ),
+      ));
+    }), enableScrolling: false));
   }
 }
