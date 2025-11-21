@@ -57,7 +57,7 @@ class InPersonSessionSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: state.availableSessions.map((Session session) {
         final sessionLabel =
-            '${session.name} by ${session.organizerName} with ${session.participantCount} participants';
+            '• ${session.name} by ${session.organizerName} with ${session.participantCount} participants';
         return InkWell(
           onTap: () => _joinSession(session, context),
           child: Padding(
