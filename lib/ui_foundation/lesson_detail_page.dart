@@ -53,7 +53,7 @@ class LessonDetailPage extends StatefulWidget {
 class LessonDetailState extends State<LessonDetailPage> {
   final TextEditingController _commentController = TextEditingController();
   final TextEditingController _youtubeUploadUrlController =
-  TextEditingController();
+      TextEditingController();
   String? _youtubeUploadError;
   List<bool> _isSectionExpanded = [];
 
@@ -68,9 +68,7 @@ class LessonDetailState extends State<LessonDetailPage> {
         Lesson? lesson = _getLesson(null, context);
         if (lesson != null) {
           setState(() {
-            var sectionCount = lesson.instructions
-                .split('---')
-                .length;
+            var sectionCount = lesson.instructions.split('---').length;
             if (!lesson.instructions
                 .toLowerCase()
                 .startsWith('instructions---')) {
@@ -91,10 +89,7 @@ class LessonDetailState extends State<LessonDetailPage> {
     libraryState ??= Provider.of<LibraryState>(context, listen: false);
 
     LessonDetailArgument? argument =
-    ModalRoute
-        .of(context)
-        ?.settings
-        .arguments as LessonDetailArgument?;
+        ModalRoute.of(context)?.settings.arguments as LessonDetailArgument?;
 
     if (argument != null) {
       String lessonId = argument.lessonId;
@@ -171,9 +166,9 @@ class LessonDetailState extends State<LessonDetailPage> {
                                 children: <Widget>[
                                   SingleChildScrollView(
                                     child: /*IntrinsicHeight(child:*/
-                                    Column(
+                                        Column(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: <Widget>[
                                         _generateInstructionText(
                                             lesson, context)
@@ -219,9 +214,9 @@ class LessonDetailState extends State<LessonDetailPage> {
   int? _findLevelPosition(Lesson? lesson, LibraryState libraryState) {
     var levelId = lesson?.levelId;
     Level? level =
-    (levelId != null) ? libraryState.findLevelByDocRef(levelId) : null;
+        (levelId != null) ? libraryState.findLevelByDocRef(levelId) : null;
     int? levelPosition =
-    (level != null) ? libraryState.findLevelPosition(level) : null;
+        (level != null) ? libraryState.findLevelPosition(level) : null;
     return levelPosition;
   }
 
@@ -229,7 +224,7 @@ class LessonDetailState extends State<LessonDetailPage> {
       LessonCount counts, BuildContext context, StudentState studentState) {
     return [
       if (lesson.coverFireStoragePath != null)
-      /* Expanded(
+        /* Expanded(
                             child:*/
         Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -246,16 +241,16 @@ class LessonDetailState extends State<LessonDetailPage> {
           children: [
             Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(lesson.synopsis ?? '',
-                        style: CustomTextStyles.getBody(context)),
-                    Text(
-                      _generateLessonStatus(studentState, counts),
-                      style: CustomTextStyles.getBody(context),
-                    ),
-                  ],
-                )),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(lesson.synopsis ?? '',
+                    style: CustomTextStyles.getBody(context)),
+                Text(
+                  _generateLessonStatus(studentState, counts),
+                  style: CustomTextStyles.getBody(context),
+                ),
+              ],
+            )),
             if (StringUtil.isNotEmpty(lesson.recapVideo))
               _addVideoIcon(lesson.recapVideo!, 'Recap', context),
             if (StringUtil.isNotEmpty(lesson.lessonVideo))
@@ -295,7 +290,7 @@ class LessonDetailState extends State<LessonDetailPage> {
     List<InlineSpan> textSpans = [];
 
     List<String> instructions =
-    lesson.instructions.replaceAll('\r', '').split('\n');
+        lesson.instructions.replaceAll('\r', '').split('\n');
 
     if (!instructions[0].toLowerCase().startsWith('instructions---')) {
       instructions.insert(0, 'Instructions---');
@@ -303,7 +298,7 @@ class LessonDetailState extends State<LessonDetailPage> {
 
     int sectionIndex = -1;
     bool isExpanded =
-    _isSectionExpanded.isNotEmpty ? _isSectionExpanded[0] : true;
+        _isSectionExpanded.isNotEmpty ? _isSectionExpanded[0] : true;
     for (String str in instructions) {
       str = str.trim();
       final int savedIndex = sectionIndex;
@@ -315,27 +310,23 @@ class LessonDetailState extends State<LessonDetailPage> {
             : false;
         final int savedIndex = sectionIndex;
         print(
-            'Size of _isSectionExpanded: ${_isSectionExpanded
-                .length} and sectionIndex: $sectionIndex and savedIndex: $savedIndex and isExpanded: $isExpanded');
+            'Size of _isSectionExpanded: ${_isSectionExpanded.length} and sectionIndex: $sectionIndex and savedIndex: $savedIndex and isExpanded: $isExpanded');
 
         str = str.substring(0, str.length - 3);
-        textSpans..add(WidgetSpan(
-            child: GestureDetector(
-                onTap: () => _toggleSectionExpanded(savedIndex),
-                child: Icon(
-                    isExpanded ? Icons.arrow_drop_down : Icons
-                        .arrow_right))))..add(TextSpan(
-            text: '$str\n',
-            style: CustomTextStyles.subHeadline,
-            recognizer: TapGestureRecognizer()
-              ..onTap = () => _toggleSectionExpanded(savedIndex)));
-      } else {
-        if (isExpanded) {
-          textSpans.add(TextSpan(
+        textSpans
+          ..add(WidgetSpan(
+              child: GestureDetector(
+                  onTap: () => _toggleSectionExpanded(savedIndex),
+                  child: Icon(
+                      isExpanded ? Icons.arrow_drop_down : Icons.arrow_right))))
+          ..add(TextSpan(
               text: '$str\n',
-              style: CustomTextStyles.getBody(context),
+              style: CustomTextStyles.subHeadline,
               recognizer: TapGestureRecognizer()
                 ..onTap = () => _toggleSectionExpanded(savedIndex)));
+      } else {
+        if (isExpanded) {
+          textSpans.add(_generateTextSpanWithLinks(str));
         }
       }
     }
@@ -345,7 +336,44 @@ class LessonDetailState extends State<LessonDetailPage> {
         child: SelectableText.rich(TextSpan(children: textSpans)));
   }
 
-  _toggleSectionExpanded(int sectionIndex) {
+  TextSpan _generateTextSpanWithLinks(String paragraph) {
+    paragraph += '\n';
+    final List<InlineSpan> spans = [];
+    final RegExp urlRegExp = RegExp(r'(https?:\/\/\S+)');
+
+    int start = 0;
+    for (final Match match in urlRegExp.allMatches(paragraph)) {
+      if (match.start > start) {
+        spans.add(TextSpan(
+            text: paragraph.substring(start, match.start),
+            style: CustomTextStyles.getBody(context)));
+      }
+
+      final String url = match.group(0)!;
+      spans.add(TextSpan(
+          text: url,
+          style: CustomTextStyles.getLink(context),
+          recognizer: TapGestureRecognizer()
+            ..onTap = () async {
+              final Uri? uri = Uri.tryParse(url);
+              if (uri != null) {
+                await launchUrl(uri);
+              }
+            }));
+      start = match.end;
+    }
+
+    if (start < paragraph.length) {
+      spans.add(TextSpan(
+        text: paragraph.substring(start),
+        style: CustomTextStyles.getBody(context),
+      ));
+    }
+
+    return TextSpan(children: spans);
+  }
+
+  void _toggleSectionExpanded(int sectionIndex) {
     print('Toggling section $sectionIndex');
     setState(() {
       if (_isSectionExpanded.length > sectionIndex) {
@@ -390,22 +418,19 @@ class LessonDetailState extends State<LessonDetailPage> {
     }
   }
 
-
-  Widget _createCommentsView(Lesson lesson, BuildContext context,
-      ApplicationState applicationState) {
+  Widget _createCommentsView(
+      Lesson lesson, BuildContext context, ApplicationState applicationState) {
     DocumentReference lessonId = docRef('lessons', lesson.id!);
     print('Querying for comments for lesson: $lessonId');
     Widget commentColumn = StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('lessonComments')
             .where('lessonId', isEqualTo: lessonId)
-        // .orderBy('createdAt', descending: true)
+            // .orderBy('createdAt', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
           print(
-              'StreamBuilder came back with ${snapshot
-                  .connectionState} and ${snapshot.data} and ${snapshot.data
-                  ?.docs.length}');
+              'StreamBuilder came back with ${snapshot.connectionState} and ${snapshot.data} and ${snapshot.data?.docs.length}');
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -424,7 +449,7 @@ class LessonDetailState extends State<LessonDetailPage> {
             return b.createdAt!.compareTo(a.createdAt!);
           });
           var userIds =
-          comments.map((comment) => comment.creatorId.id).toSet().toList();
+              comments.map((comment) => comment.creatorId.id).toSet().toList();
           print('UserIds: $userIds');
 
           return FutureBuilder(
@@ -450,7 +475,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                 for (LessonComment comment in comments) {
                   User? commenter = userMap[comment.creatorId.id];
                   bool isSelf =
-                  (commenter?.id == applicationState.currentUser?.id);
+                      (commenter?.id == applicationState.currentUser?.id);
 
                   commentWidgets.add(Container(
                       padding: const EdgeInsets.only(top: 4, bottom: 4),
@@ -465,30 +490,28 @@ class LessonDetailState extends State<LessonDetailPage> {
                               )),
                         Expanded(
                             child: Container(
-                              padding: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12.0)),
-                              child: RichText(
-                                  text: TextSpan(children: [
-                                    TextSpan(
-                                        text: commenter?.displayName,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    const WidgetSpan(child: SizedBox(width: 8)),
-                                    TextSpan(text: comment.text),
-                                    if (comment.createdAt != null)
-                                      const WidgetSpan(
-                                          child: SizedBox(width: 16)),
-                                    TextSpan(
-                                      text: formatCommentTimestamp(
-                                          comment.createdAt?.toLocal()),
-                                      style:
-                                      const TextStyle(
-                                          fontStyle: FontStyle.italic),
-                                    ),
-                                  ])),
-                            )),
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12.0)),
+                          child: RichText(
+                              text: TextSpan(children: [
+                            TextSpan(
+                                text: commenter?.displayName,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                            const WidgetSpan(child: SizedBox(width: 8)),
+                            TextSpan(text: comment.text),
+                            if (comment.createdAt != null)
+                              const WidgetSpan(child: SizedBox(width: 16)),
+                            TextSpan(
+                              text: formatCommentTimestamp(
+                                  comment.createdAt?.toLocal()),
+                              style:
+                                  const TextStyle(fontStyle: FontStyle.italic),
+                            ),
+                          ])),
+                        )),
                         if (isSelf)
                           IconButton(
                               onPressed: () {
@@ -507,12 +530,12 @@ class LessonDetailState extends State<LessonDetailPage> {
       children: [
         Expanded(
             child: TextField(
-              onSubmitted: (_) => _sendComment(lesson, applicationState),
-              controller: _commentController,
-              decoration: const InputDecoration(
-                  hintText: 'Leave a comment...',
-                  contentPadding: EdgeInsets.all(8.0)),
-            )),
+          onSubmitted: (_) => _sendComment(lesson, applicationState),
+          controller: _commentController,
+          decoration: const InputDecoration(
+              hintText: 'Leave a comment...',
+              contentPadding: EdgeInsets.all(8.0)),
+        )),
         IconButton(
             icon: const Icon(Icons.send),
             onPressed: () => _sendComment(lesson, applicationState))
@@ -568,8 +591,8 @@ class LessonDetailState extends State<LessonDetailPage> {
     );
   }
 
-  List<Widget> _createShowcaseUploadView(Lesson lesson,
-      ApplicationState applicationState) {
+  List<Widget> _createShowcaseUploadView(
+      Lesson lesson, ApplicationState applicationState) {
     return [
       Text('Upload a video of today\'s progress.',
           style: CustomTextStyles.subHeadline),
@@ -609,12 +632,12 @@ class LessonDetailState extends State<LessonDetailPage> {
       if (_youtubeUploadError != null)
         Text(_youtubeUploadError!,
             style:
-            CustomTextStyles.getBody(context)?.copyWith(color: Colors.red))
+                CustomTextStyles.getBody(context)?.copyWith(color: Colors.red))
     ];
   }
 
-  Widget _createMyShowcaseView(Lesson lesson,
-      ApplicationState applicationState) {
+  Widget _createMyShowcaseView(
+      Lesson lesson, ApplicationState applicationState) {
     var currentUser = applicationState.currentUser;
     if (currentUser == null) {
       return const SizedBox.shrink();
@@ -642,8 +665,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                   children: progressVideos.map((progressVideo) {
                     final String? timeDiff;
                     if (progressVideo.timestamp != null) {
-                      timeDiff = DateTime
-                          .now()
+                      timeDiff = DateTime.now()
                           .difference(progressVideo.timestamp!.toDate())
                           .inDays
                           .toString();
@@ -679,45 +701,41 @@ class LessonDetailState extends State<LessonDetailPage> {
             style: CustomTextStyles.subHeadline,
           )),
       ProgressVideoFunctions.createProgressVideosForLessonStream(lesson.id!,
-              (context, progressVideos) {
-            if (progressVideos.isEmpty) {
-              return const SizedBox.shrink();
-            }
-            return Column(children: [
-              ...progressVideos.map((progressVideo) =>
-                  Column(children: [
-                    YouTubeVideoWidget(videoId: progressVideo.youtubeVideoId!),
-                    Row(children: [
-                      Padding(
-                          padding: const EdgeInsets.only(
-                            top: 4,
-                            bottom: 6,
-                            right: 4,
-                          ),
-                          child: SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: ProfileImageWidgetV2.fromUserId(
-                                  progressVideo.userId,
-                                  linkToOtherProfile: true))),
-                      Text(
-                          DateFormat.yMd().format(
-                              progressVideo.timestamp?.toDate() ??
-                                  DateTime.now()),
-                          style: CustomTextStyles.getBody(context))
-                    ]),
-                  ]))
-            ]);
-          })
+          (context, progressVideos) {
+        if (progressVideos.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Column(children: [
+          ...progressVideos.map((progressVideo) => Column(children: [
+                YouTubeVideoWidget(videoId: progressVideo.youtubeVideoId!),
+                Row(children: [
+                  Padding(
+                      padding: const EdgeInsets.only(
+                        top: 4,
+                        bottom: 6,
+                        right: 4,
+                      ),
+                      child: SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: ProfileImageWidgetV2.fromUserId(
+                              progressVideo.userId,
+                              linkToOtherProfile: true))),
+                  Text(
+                      DateFormat.yMd().format(
+                          progressVideo.timestamp?.toDate() ?? DateTime.now()),
+                      style: CustomTextStyles.getBody(context))
+                ]),
+              ]))
+        ]);
+      })
     ]);
   }
 
-  _submitYoutubeUrl(BuildContext context, Lesson lesson,
-      ApplicationState applicationState) {
+  _submitYoutubeUrl(
+      BuildContext context, Lesson lesson, ApplicationState applicationState) {
     var youtubeUrl = _youtubeUploadUrlController.text;
-    if (youtubeUrl
-        .trim()
-        .isEmpty) {
+    if (youtubeUrl.trim().isEmpty) {
       _youtubeUploadError = 'Please enter a URL.';
     }
 
@@ -746,25 +764,25 @@ class LessonDetailState extends State<LessonDetailPage> {
     if (!currentUser.isGeoLocationEnabled || currentLocation == null) {
       return Center(
           child: Column(children: [
-            InkWell(
-                onTap: () => _enableLocation(applicationState),
-                child: const Text(
-                    'Please enable location services to connect with other students.')),
-            TextButton(
-                onPressed: () => _enableLocation(applicationState),
-                child: const Text('Enable location'))
-          ]));
+        InkWell(
+            onTap: () => _enableLocation(applicationState),
+            child: const Text(
+                'Please enable location services to connect with other students.')),
+        TextButton(
+            onPressed: () => _enableLocation(applicationState),
+            child: const Text('Enable location'))
+      ]));
     }
 
     return SingleChildScrollView(
         child: Column(
-          children: [
-            Text('Find students who can teach you this lesson',
-                style: CustomTextStyles.subHeadline),
-            NearbyMentorsListWidget(
-                lessonId: lessonId, currentLocation: currentLocation),
-          ],
-        ));
+      children: [
+        Text('Find students who can teach you this lesson',
+            style: CustomTextStyles.subHeadline),
+        NearbyMentorsListWidget(
+            lessonId: lessonId, currentLocation: currentLocation),
+      ],
+    ));
   }
 
   void _enableLocation(ApplicationState applicationState) {
@@ -780,7 +798,7 @@ class LessonDetailState extends State<LessonDetailPage> {
           return AlertDialog(
             title: const Text('Delete comment'),
             content:
-            const Text('Are you sure you want to delete this comment?'),
+                const Text('Are you sure you want to delete this comment?'),
             actions: [
               TextButton(
                   onPressed: () {
@@ -799,7 +817,6 @@ class LessonDetailState extends State<LessonDetailPage> {
   }
 }
 
-
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar _tabBar;
 
@@ -812,8 +829,8 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => _tabBar.preferredSize.height;
 
   @override
-  Widget build(BuildContext context, double shrinkOffset,
-      bool overlapsContent) {
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
       color: Colors.white,
       child: _tabBar,
