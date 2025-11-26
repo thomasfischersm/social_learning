@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data_support/json_curriculum_sync.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
