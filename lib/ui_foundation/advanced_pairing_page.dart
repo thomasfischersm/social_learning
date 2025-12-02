@@ -455,8 +455,246 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   }
 
   void _handleToggleParticipant(Lesson lesson, SessionParticipant participant) {
-    // TODO: Implement pairing logic that toggles the participant into the
-    // active group and locks the lesson for that group.
+    if (lesson.id == null || participant.id == null) {
+      return;
+    }
+
+    final organizerSessionState =
+        Provider.of<OrganizerSessionState>(context, listen: false);
+    final libraryState = Provider.of<LibraryState>(context, listen: false);
+    final lessons = _sortedLessons(libraryState);
+    final lessonIndexById = {
+      for (int i = 0; i < lessons.length; i++) lessons[i].id!: i
+    };
+
+    setState(() {
+      final selectedGroupIndex = _ensureSelectedGroup();
+      final selectedGroup = _groups[selectedGroupIndex];
+      final wasInSelected = selectedGroup.memberIds.contains(participant.id);
+      final wasSameLesson = selectedGroup.lessonId == lesson.id;
+
+      _removeParticipantFromAllGroups(participant.id!);
+
+      final updatedSelectedGroup = _groups[selectedGroupIndex];
+      final updatedMembers = {...updatedSelectedGroup.memberIds};
+
+      String? updatedLessonId = updatedSelectedGroup.lessonId;
+      if (!(wasInSelected && wasSameLesson)) {
+        updatedMembers.add(participant.id!);
+        updatedLessonId = lesson.id;
+      } else if (updatedMembers.isEmpty) {
+        updatedLessonId = null;
+      }
+
+      _groups[selectedGroupIndex] = updatedSelectedGroup.copyWith(
+        memberIds: updatedMembers,
+        lessonId: updatedMembers.isEmpty ? null : updatedLessonId,
+      );
+
+      _groups = _groups
+          .map((group) => _applyPairingRules(
+                group,
+                organizerSessionState,
+                lessonIndexById,
+              ))
+          .toList(growable: false);
+
+      _normalizeEmptyGroups();
+    });
+  }
+
+  int _ensureSelectedGroup() {
+    if (_groups.isEmpty) {
+      _groupCounter++;
+      _groups.add(_StudentGroup(id: 'group-$_groupCounter', isSelected: true));
+    }
+    var selectedIndex = _groups.indexWhere((group) => group.isSelected);
+    if (selectedIndex == -1) {
+      _groups[0] = _groups[0].copyWith(isSelected: true);
+      selectedIndex = 0;
+    }
+    return selectedIndex;
+  }
+
+  void _removeParticipantFromAllGroups(String participantId) {
+    _groups = _groups
+        .map(
+          (group) => group.memberIds.contains(participantId)
+              ? group.copyWith(
+                  memberIds: {...group.memberIds}..remove(participantId),
+                  learnerId: group.learnerId == participantId
+                      ? null
+                      : group.learnerId,
+                  mentorId: group.mentorId == participantId
+                      ? null
+                      : group.mentorId,
+                  additionalLearnerIds: {...group.additionalLearnerIds}
+                    ..remove(participantId),
+                )
+              : group,
+        )
+        .toList(growable: false);
+  }
+
+  _StudentGroup _applyPairingRules(
+    _StudentGroup group,
+    OrganizerSessionState organizerSessionState,
+    Map<String, int> lessonIndexById,
+  ) {
+    if (group.memberIds.isEmpty) {
+      return group.copyWith(
+        learnerId: null,
+        mentorId: null,
+        additionalLearnerIds: {},
+      );
+    }
+
+    final members = group.memberIds
+        .map((id) => _findParticipantById(id, organizerSessionState))
+        .whereType<SessionParticipant>()
+        .toList();
+
+    final learner = _selectLearner(
+      members,
+      organizerSessionState,
+      lessonIndexById,
+    );
+    final mentor = _selectMentor(
+      members,
+      group.lessonId,
+      organizerSessionState,
+      lessonIndexById,
+    );
+    final additionalLearners = members
+        .where((p) => p.id != learner?.id && p.id != mentor?.id)
+        .map((p) => p.id!)
+        .toSet();
+
+    return group.copyWith(
+      learnerId: learner?.id,
+      mentorId: mentor?.id,
+      additionalLearnerIds: additionalLearners,
+    );
+  }
+
+  SessionParticipant? _selectLearner(
+    List<SessionParticipant> members,
+    OrganizerSessionState organizerSessionState,
+    Map<String, int> lessonIndexById,
+  ) {
+    if (members.isEmpty) {
+      return null;
+    }
+
+    final sorted = [...members]
+      ..sort((a, b) => _compareParticipants(
+            a,
+            b,
+            organizerSessionState,
+            lessonIndexById,
+          ));
+    return sorted.first;
+  }
+
+  SessionParticipant? _selectMentor(
+    List<SessionParticipant> members,
+    String? lessonId,
+    OrganizerSessionState organizerSessionState,
+    Map<String, int> lessonIndexById,
+  ) {
+    if (members.isEmpty) {
+      return null;
+    }
+
+    final eligibleForLesson = lessonId == null
+        ? <SessionParticipant>[]
+        : members
+            .where((member) =>
+                _hasGraduatedLesson(member, lessonId, organizerSessionState))
+            .toList();
+
+    if (eligibleForLesson.length == 1) {
+      return eligibleForLesson.first;
+    }
+
+    final candidates = eligibleForLesson.isNotEmpty ? eligibleForLesson : members;
+    candidates.sort((a, b) => _compareParticipants(
+          a,
+          b,
+          organizerSessionState,
+          lessonIndexById,
+        ));
+    return candidates.first;
+  }
+
+  int _compareParticipants(
+    SessionParticipant a,
+    SessionParticipant b,
+    OrganizerSessionState organizerSessionState,
+    Map<String, int> lessonIndexById,
+  ) {
+    final highestA =
+        _highestGraduatedIndex(a, organizerSessionState, lessonIndexById);
+    final highestB =
+        _highestGraduatedIndex(b, organizerSessionState, lessonIndexById);
+    if (highestA != highestB) {
+      return highestB.compareTo(highestA);
+    }
+
+    final countA =
+        organizerSessionState.getGraduatedLessons(a).length;
+    final countB =
+        organizerSessionState.getGraduatedLessons(b).length;
+    if (countA != countB) {
+      return countB.compareTo(countA);
+    }
+
+    final createdA = organizerSessionState
+            .getUser(a)
+            ?.created
+            .toDate() ??
+        DateTime.now();
+    final createdB = organizerSessionState
+            .getUser(b)
+            ?.created
+            .toDate() ??
+        DateTime.now();
+    return createdA.compareTo(createdB);
+  }
+
+  int _highestGraduatedIndex(
+    SessionParticipant participant,
+    OrganizerSessionState organizerSessionState,
+    Map<String, int> lessonIndexById,
+  ) {
+    final graduated = organizerSessionState.getGraduatedLessons(participant);
+    if (graduated.isEmpty) {
+      return -1;
+    }
+    final indexes = graduated.map((lesson) => lessonIndexById[lesson.id] ?? -1);
+    return indexes.reduce(max);
+  }
+
+  bool _hasGraduatedLesson(
+    SessionParticipant participant,
+    String lessonId,
+    OrganizerSessionState organizerSessionState,
+  ) {
+    return organizerSessionState
+        .getGraduatedLessons(participant)
+        .any((lesson) => lesson.id == lessonId);
+  }
+
+  SessionParticipant? _findParticipantById(
+    String id,
+    OrganizerSessionState organizerSessionState,
+  ) {
+    for (final participant in organizerSessionState.sessionParticipants) {
+      if (participant.id == id) {
+        return participant;
+      }
+    }
+    return null;
   }
 
   Color _rowColor(
@@ -680,13 +918,20 @@ class _StudentGroup {
   final Set<String> memberIds;
   final String? lessonId;
   final bool isSelected;
+  final String? mentorId;
+  final String? learnerId;
+  final Set<String> additionalLearnerIds;
 
   _StudentGroup({
     required this.id,
     this.lessonId,
     this.isSelected = false,
+    this.mentorId,
+    this.learnerId,
+    Set<String>? additionalLearnerIds,
     Set<String>? memberIds,
-  }) : memberIds = memberIds ?? {};
+  })  : memberIds = memberIds ?? {},
+        additionalLearnerIds = additionalLearnerIds ?? {};
 
   bool get isEmpty => memberIds.isEmpty && lessonId == null;
 
@@ -695,12 +940,19 @@ class _StudentGroup {
     Set<String>? memberIds,
     String? lessonId,
     bool? isSelected,
+    String? mentorId,
+    String? learnerId,
+    Set<String>? additionalLearnerIds,
   }) {
     return _StudentGroup(
       id: id ?? this.id,
       memberIds: memberIds ?? this.memberIds,
       lessonId: lessonId ?? this.lessonId,
       isSelected: isSelected ?? this.isSelected,
+      mentorId: mentorId ?? this.mentorId,
+      learnerId: learnerId ?? this.learnerId,
+      additionalLearnerIds:
+          additionalLearnerIds ?? this.additionalLearnerIds,
     );
   }
 }
