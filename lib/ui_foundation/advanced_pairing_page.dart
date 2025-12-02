@@ -6,14 +6,17 @@ import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart' as sl_user;
+import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
+import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/ui_foundation/other_profile_page.dart';
 
 class AdvancedPairingPage extends StatefulWidget {
   const AdvancedPairingPage({super.key});
@@ -169,6 +172,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                                     context,
                                                     participant,
                                                     organizerSessionState,
+                                                    libraryState,
                                                     nameColumnWidth,
                                                   ),
                                               ],
@@ -336,6 +340,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     BuildContext context,
     SessionParticipant participant,
     OrganizerSessionState organizerSessionState,
+    LibraryState libraryState,
     double width,
   ) {
     final user = organizerSessionState.getUser(participant);
@@ -347,25 +352,47 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         ? '${displayName.substring(0, 5)}...'
         : displayName;
 
-    return Container(
-      width: width,
-      height: _rowHeight,
+    return Material(
       color: rowColor,
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: Row(
-        children: [
-          _buildProfileImage(user, fontSize),
-          if (user?.profileFireStoragePath != null) const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              compactName,
-              overflow: TextOverflow.ellipsis,
-              style: textStyle,
-            ),
+      child: InkWell(
+        onTap: user == null
+            ? null
+            : () => _handleProfileTap(context, libraryState, user),
+        child: Container(
+          width: width,
+          height: _rowHeight,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            children: [
+              _buildProfileImage(user, fontSize),
+              if (user?.profileFireStoragePath != null) const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  compactName,
+                  overflow: TextOverflow.ellipsis,
+                  style: textStyle,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
+  }
+
+  void _handleProfileTap(
+      BuildContext context, LibraryState libraryState, sl_user.User user) {
+    final currentUser =
+        Provider.of<ApplicationState>(context, listen: false).currentUser;
+    final selectedCourse = libraryState.selectedCourse;
+    final isCourseCreator = selectedCourse?.creatorId == currentUser?.uid;
+    final isAdmin = currentUser?.isAdmin ?? false;
+
+    if (isCourseCreator || isAdmin) {
+      InstructorClipboardArgument.navigateTo(context, user.id, user.uid);
+    } else {
+      OtherProfileArgument.goToOtherProfile(context, user.id, user.uid);
+    }
   }
 
   Widget _buildProfileImage(sl_user.User? user, double fontSize) {
