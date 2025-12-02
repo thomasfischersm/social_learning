@@ -34,6 +34,7 @@ import 'package:social_learning/ui_foundation/comment_review_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/course_home_page.dart';
 import 'package:social_learning/ui_foundation/instructor_dashboard_page.dart';
+import 'package:social_learning/ui_foundation/advanced_pairing_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
@@ -212,6 +213,7 @@ class SocialLearningApp extends StatelessWidget {
             const CourseDesignerLearningObjectivesPage(),
         '/course_designer_session_plan': (context) =>
             const CourseDesignerSessionPlanPage(),
+        '/advanced_pairing': (context) => const AdvancedPairingPage(),
         '/playground': (context) => const PlaygroundPage(),
       },
     );
