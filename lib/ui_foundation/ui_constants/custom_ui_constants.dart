@@ -4,6 +4,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/general/auth_guard.
 import 'package:social_learning/ui_foundation/helper_widgets/general/course_analytics_guard.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/creator_guard.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/course_loading_guard.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/organizer_guard.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -88,6 +89,7 @@ class CustomUiConstants {
       {bool enableScrolling = true,
       bool enableAuthGuard = true,
       bool enableCreatorGuard = false,
+      bool enableOrganizerGuard = false,
       bool enableCourseLoadingGuard = false,
       bool enableCourseAnalyticsGuard = false}) {
 
@@ -105,6 +107,10 @@ class CustomUiConstants {
 
     if (enableCreatorGuard) {
       child = CreatorGuard(child: child);
+    }
+
+    if (enableOrganizerGuard) {
+      child = OrganizerGuard(child: child);
     }
 
     if (enableAuthGuard) {
