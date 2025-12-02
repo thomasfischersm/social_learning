@@ -26,10 +26,10 @@ class AdvancedPairingPage extends StatefulWidget {
 }
 
 class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
-  static const double _lessonCellWidth = 80;
-  static const double _rowHeight = 64;
-  static const double _levelHeaderHeight = 40;
-  static const double _lessonHeaderHeight = 48;
+  static const double _lessonCellWidth = 56;
+  static const double _rowHeight = 44;
+  static const double _levelHeaderHeight = 32;
+  static const double _lessonHeaderHeight = 36;
   static const double _bottomPanelHeight = 96;
 
   final ScrollController _horizontalHeaderController = ScrollController();
@@ -140,9 +140,12 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                       Expanded(
                         child: LayoutBuilder(
                           builder: (context, constraints) {
-                            final nameColumnWidth = _isHorizontalScrolled
-                                ? max(constraints.maxWidth * 0.2, 160.0)
-                                : max(constraints.maxWidth * 0.28, 200.0);
+                            final nameColumnWidth = _calculateNameColumnWidth(
+                              context,
+                              constraints,
+                              participants,
+                              organizerSessionState,
+                            );
 
                             return Column(
                               children: [
@@ -235,6 +238,51 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     );
   }
 
+  double _calculateNameColumnWidth(
+    BuildContext context,
+    BoxConstraints constraints,
+    List<SessionParticipant> participants,
+    OrganizerSessionState organizerSessionState,
+  ) {
+    final textStyle = CustomTextStyles.getBody(context);
+    final fontSize = textStyle?.fontSize ?? 14.0;
+    const basePadding = 16.0;
+
+    double widestContent = 0;
+    for (final participant in participants) {
+      final user = organizerSessionState.getUser(participant);
+      final displayName = user?.displayName ?? 'Unknown';
+      final visibleName = _truncateName(
+        displayName,
+        _isHorizontalScrolled ? 6 : 10,
+      );
+
+      final textPainter = TextPainter(
+        text: TextSpan(text: visibleName, style: textStyle),
+        maxLines: 1,
+        textDirection: TextDirection.ltr,
+      )..layout();
+
+      final iconWidth = user?.profileFireStoragePath != null ? fontSize : 0.0;
+      final spacing = user?.profileFireStoragePath != null ? 8.0 : 0.0;
+      widestContent = max(
+        widestContent,
+        basePadding + iconWidth + spacing + textPainter.width,
+      );
+    }
+
+    const minWidth = 120.0;
+    final maxAllowedWidth = constraints.maxWidth * 0.45;
+    return max(minWidth, min(widestContent, maxAllowedWidth));
+  }
+
+  String _truncateName(String name, int maxChars) {
+    if (name.length <= maxChars) {
+      return name;
+    }
+    return '${name.substring(0, maxChars)}...';
+  }
+
   Widget _buildHeader(
     BuildContext context,
     double nameColumnWidth,
@@ -256,7 +304,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
               height: _lessonHeaderHeight,
               width: nameColumnWidth,
               color: Theme.of(context).colorScheme.surface,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
               alignment: Alignment.centerLeft,
               child: Text(
                 'Student',
@@ -348,9 +396,10 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     final textStyle = CustomTextStyles.getBody(context);
     final fontSize = textStyle?.fontSize ?? 14;
     final displayName = user?.displayName ?? 'Unknown';
-    final compactName = _isHorizontalScrolled && displayName.length > 5
-        ? '${displayName.substring(0, 5)}...'
-        : displayName;
+    final compactName = _truncateName(
+      displayName,
+      _isHorizontalScrolled ? 6 : 10,
+    );
 
     return Material(
       color: rowColor,
