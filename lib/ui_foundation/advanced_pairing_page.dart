@@ -232,12 +232,11 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                                       child: Column(
                                                         children: [
                                                           for (final participant in participants)
-                                                            _buildLessonRow(
-                                                              participant,
-                                                              organizerSessionState,
-                                                              lessons,
-                                                              lessonIndexById,
-                                                            ),
+                                                          _buildLessonRow(
+                                                            participant,
+                                                            organizerSessionState,
+                                                            lessons,
+                                                          ),
                                                         ],
                                                       ),
                                                     ),
@@ -499,7 +498,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     SessionParticipant participant,
     OrganizerSessionState organizerSessionState,
     List<Lesson> lessons,
-    Map<String, int> lessonIndexById,
   ) {
     final rowColor = _rowColor(context, participant, organizerSessionState);
 
@@ -529,7 +527,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                 organizerSessionState,
                 participant,
                 lesson,
-                lessonIndexById,
               ),
             ),
         ],
@@ -542,18 +539,13 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     OrganizerSessionState organizerSessionState,
     SessionParticipant participant,
     Lesson lesson,
-    Map<String, int> lessonIndexById,
   ) {
     final isSelected = _isParticipantSelectedForLesson(participant, lesson);
     final iconColor = isSelected
         ? Theme.of(context).colorScheme.primary
         : Colors.grey.shade600;
-    final completionLabel = _lessonCompletionLabel(
-      organizerSessionState,
-      participant,
-      lesson,
-      lessonIndexById,
-    );
+    final hasCompletedLesson = lesson.id != null &&
+        _hasGraduatedLesson(participant, lesson.id!, organizerSessionState);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -569,35 +561,14 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
           ),
           tooltip: 'Toggle pairing for this lesson',
         ),
-        if (completionLabel != null)
-          Text(
-            completionLabel,
-            style: CustomTextStyles.getBodyNote(context)?.copyWith(
-              color: Colors.green.shade700,
-              fontWeight: FontWeight.bold,
-            ),
+        if (hasCompletedLesson)
+          Icon(
+            Icons.check_circle,
+            color: Colors.green.shade700,
+            size: 16,
           ),
       ],
     );
-  }
-
-  String? _lessonCompletionLabel(
-    OrganizerSessionState organizerSessionState,
-    SessionParticipant participant,
-    Lesson lesson,
-    Map<String, int> lessonIndexById,
-  ) {
-    final user = organizerSessionState.getUser(participant);
-    final graduated =
-        user != null && organizerSessionState.hasUserGraduatedLesson(user, lesson);
-    if (!graduated) {
-      return null;
-    }
-
-    final lessonLabel = lessonIndexById[lesson.id] != null
-        ? 'L${lessonIndexById[lesson.id]! + 1}'
-        : 'Grad';
-    return lessonLabel;
   }
 
   bool _isParticipantSelectedForLesson(
