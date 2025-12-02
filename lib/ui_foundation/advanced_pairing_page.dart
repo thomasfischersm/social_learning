@@ -1002,6 +1002,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: ChoiceChip(
+                          showCheckmark: false,
                           selected: group.isSelected,
                           onSelected: (_) => _selectGroup(group.id),
                           label: Row(
