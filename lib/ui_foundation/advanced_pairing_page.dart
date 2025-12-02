@@ -9,11 +9,13 @@ import 'package:social_learning/data/user.dart' as sl_user;
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
+import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
@@ -42,6 +44,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   bool _isHorizontalScrolled = false;
   int _groupCounter = 1;
   late List<_StudentGroup> _groups;
+  final Set<String> _localGraduationOverrides = {};
 
   @override
   void initState() {
@@ -929,10 +932,18 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                 '${group.lessonId != null ? lessonLabelById[group.lessonId] ?? '--' : '--'}',
                               ),
                               const SizedBox(width: 6),
-                              Icon(
-                                Icons.info_outline,
-                                size: 18,
-                                color: Colors.grey,
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                icon: const Icon(
+                                  Icons.info_outline,
+                                  size: 18,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () => _showGroupInfoDialog(
+                                  group,
+                                  lessonIndexById,
+                                ),
                               ),
                             ],
                           ),
@@ -950,6 +961,239 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         ),
       ),
     );
+  }
+
+  void _showGroupInfoDialog(
+    _StudentGroup group,
+    Map<String, int> lessonIndexById,
+  ) {
+    final organizerSessionState =
+        Provider.of<OrganizerSessionState>(context, listen: false);
+    final libraryState = Provider.of<LibraryState>(context, listen: false);
+    final applicationState =
+        Provider.of<ApplicationState>(context, listen: false);
+
+    final lesson = group.lessonId != null
+        ? libraryState.findLesson(group.lessonId!)
+        : null;
+    final level = lesson?.levelId != null
+        ? libraryState.findLevelByDocRef(lesson!.levelId!)
+        : null;
+    final members = group.memberIds
+        .map((id) => _buildGroupMemberInfo(id, group, organizerSessionState))
+        .whereType<_GroupMemberInfo>()
+        .toList();
+
+    members.sort((a, b) {
+      if (a.isMentor != b.isMentor) {
+        return a.isMentor ? -1 : 1;
+      }
+      return a.user.displayName.compareTo(b.user.displayName);
+    });
+
+    final lessonIndex =
+        lesson?.id != null ? lessonIndexById[lesson!.id] : null;
+    final lessonLabel = lessonIndex != null ? 'L${lessonIndex + 1}' : '--';
+    final canGraduate = _canCurrentUserGraduate(applicationState, libraryState);
+
+    DialogUtils.showInfoDialogWithContent(
+      context,
+      'Group Details',
+      SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Level: ${level?.title ?? 'Unassigned level'}',
+              style: CustomTextStyles.getBody(context)
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            InkWell(
+              onTap: lesson?.id == null
+                  ? null
+                  : () => _openLessonDetails(lesson!.id!),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Lesson: ',
+                    style: CustomTextStyles.getBody(context)
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Expanded(
+                    child: Text(
+                      lesson != null
+                          ? '$lessonLabel • ${lesson.title}'
+                          : 'No lesson selected',
+                      style: CustomTextStyles.getBody(context)?.copyWith(
+                        color: lesson?.id != null
+                            ? Theme.of(context).colorScheme.primary
+                            : null,
+                        decoration: lesson?.id != null
+                            ? TextDecoration.underline
+                            : null,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (members.isEmpty)
+              const Text('No students in this group yet.'),
+            for (final member in members)
+              _buildGroupMemberRow(
+                member,
+                lesson,
+                organizerSessionState,
+                canGraduate,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _GroupMemberInfo? _buildGroupMemberInfo(
+    String participantId,
+    _StudentGroup group,
+    OrganizerSessionState organizerSessionState,
+  ) {
+    final participant = _findParticipantById(participantId, organizerSessionState);
+    final user = organizerSessionState.getUserById(participantId);
+    if (participant == null || user == null) {
+      return null;
+    }
+
+    return _GroupMemberInfo(
+      user: user,
+      isMentor: group.mentorId == participantId,
+    );
+  }
+
+  Widget _buildGroupMemberRow(
+    _GroupMemberInfo member,
+    Lesson? lesson,
+    OrganizerSessionState organizerSessionState,
+    bool canGraduate,
+  ) {
+    final isGraduated = lesson != null &&
+        _isLessonGraduated(member.user, lesson, organizerSessionState);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Checkbox(
+            value: isGraduated,
+            onChanged: (!canGraduate || lesson == null || member.user.id == null)
+                ? null
+                : (_) => _handleGraduationToggle(member.user, lesson, isGraduated),
+          ),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    member.user.displayName,
+                    style: CustomTextStyles.getBody(context),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (member.isMentor) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color:
+                          Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      'Mentor',
+                      style: CustomTextStyles.getBodyNote(context)?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  bool _isLessonGraduated(
+    sl_user.User user,
+    Lesson lesson,
+    OrganizerSessionState organizerSessionState,
+  ) {
+    final userId = user.id;
+    final lessonId = lesson.id;
+    if (userId == null || lessonId == null) {
+      return false;
+    }
+
+    if (_localGraduationOverrides.contains(_graduationKey(userId, lessonId))) {
+      return true;
+    }
+
+    return organizerSessionState.hasUserGraduatedLesson(user, lesson);
+  }
+
+  String _graduationKey(String userId, String lessonId) => '$userId::$lessonId';
+
+  void _handleGraduationToggle(
+    sl_user.User user,
+    Lesson lesson,
+    bool alreadyGraduated,
+  ) {
+    if (user.id == null || lesson.id == null) {
+      return;
+    }
+
+    if (alreadyGraduated) {
+      DialogUtils.showInfoDialog(
+        context,
+        'Already Graduated',
+        '${user.displayName} has already graduated "${lesson.title}".',
+        () {},
+      );
+      return;
+    }
+
+    DialogUtils.showConfirmationDialog(
+      context,
+      'Graduate Lesson?',
+      'Graduate ${user.displayName} for "${lesson.title}"?',
+      () {
+        final studentState = Provider.of<StudentState>(context, listen: false);
+        studentState.recordTeachingWithCheck(lesson, user, true, null, context);
+        setState(() {
+          _localGraduationOverrides.add(_graduationKey(user.id!, lesson.id!));
+        });
+      },
+    );
+  }
+
+  bool _canCurrentUserGraduate(
+    ApplicationState applicationState,
+    LibraryState libraryState,
+  ) {
+    final creatorId = libraryState.selectedCourse?.creatorId;
+    final currentUser = applicationState.currentUser;
+    return currentUser != null &&
+        (currentUser.isAdmin || (creatorId != null && creatorId == currentUser.uid));
+  }
+
+  void _openLessonDetails(String lessonId) {
+    LessonDetailArgument.goToLessonDetailPage(context, lessonId);
   }
 
   void _selectGroup(String groupId) {
@@ -1036,4 +1280,14 @@ class _StudentGroup {
           additionalLearnerIds ?? this.additionalLearnerIds,
     );
   }
+}
+
+class _GroupMemberInfo {
+  final sl_user.User user;
+  final bool isMentor;
+
+  _GroupMemberInfo({
+    required this.user,
+    required this.isMentor,
+  });
 }
