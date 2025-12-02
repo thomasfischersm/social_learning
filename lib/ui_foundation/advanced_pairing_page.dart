@@ -114,126 +114,131 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return Scaffold(
       appBar: const LearningLabAppBar(),
       bottomNavigationBar: BottomBarV2.build(context),
-      body: CustomUiConstants.framePage(
-        Consumer2<OrganizerSessionState, LibraryState>(
-          builder: (context, organizerSessionState, libraryState, child) {
-            final lessons = _sortedLessons(libraryState);
-            final levelGroups = _buildLevelGroups(lessons, libraryState.levels);
-            final participants =
-                _sortedParticipants(organizerSessionState, lessons);
-            final lessonIndexById = {
-              for (int i = 0; i < lessons.length; i++) lessons[i].id!: i
-            };
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: CustomUiConstants.framePage(
+          Consumer2<OrganizerSessionState, LibraryState>(
+            builder: (context, organizerSessionState, libraryState, child) {
+              final lessons = _sortedLessons(libraryState);
+              final levelGroups = _buildLevelGroups(lessons, libraryState.levels);
+              final participants =
+                  _sortedParticipants(organizerSessionState, lessons);
+              final lessonIndexById = {
+                for (int i = 0; i < lessons.length; i++) lessons[i].id!: i
+              };
 
-            return Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: _bottomPanelHeight + 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomUiConstants.getTextPadding(Text(
-                        'Advanced Pairing',
-                        style: CustomTextStyles.headline,
-                      )),
-                      const SizedBox(height: 8),
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final nameColumnWidth = _calculateNameColumnWidth(
-                              context,
-                              constraints,
-                              participants,
-                              organizerSessionState,
-                            );
+              return Stack(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(bottom: _bottomPanelHeight + 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomUiConstants.getTextPadding(Text(
+                          'Advanced Pairing',
+                          style: CustomTextStyles.headline,
+                        )),
+                        const SizedBox(height: 8),
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final nameColumnWidth = _calculateNameColumnWidth(
+                                context,
+                                constraints,
+                                participants,
+                                organizerSessionState,
+                              );
 
-                            return Column(
-                              children: [
-                                _buildHeader(
-                                  context,
-                                  nameColumnWidth,
-                                  lessons,
-                                  levelGroups,
-                                  lessonIndexById,
-                                ),
-                                const SizedBox(height: 4),
-                                Expanded(
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: nameColumnWidth,
-                                        child: Scrollbar(
-                                          controller: _verticalNamesController,
-                                          thumbVisibility: true,
-                                          child: SingleChildScrollView(
+                              return Column(
+                                children: [
+                                  _buildHeader(
+                                    context,
+                                    nameColumnWidth,
+                                    lessons,
+                                    levelGroups,
+                                    lessonIndexById,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Expanded(
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                          width: nameColumnWidth,
+                                          child: Scrollbar(
                                             controller: _verticalNamesController,
-                                            child: Column(
-                                              children: [
-                                                for (final participant in participants)
-                                                  _buildNameCell(
-                                                    context,
-                                                    participant,
-                                                    organizerSessionState,
-                                                    libraryState,
-                                                    nameColumnWidth,
-                                                  ),
-                                              ],
+                                            thumbVisibility: true,
+                                            child: SingleChildScrollView(
+                                              controller: _verticalNamesController,
+                                              child: Column(
+                                                children: [
+                                                  for (final participant in participants)
+                                                    _buildNameCell(
+                                                      context,
+                                                      participant,
+                                                      organizerSessionState,
+                                                      libraryState,
+                                                      nameColumnWidth,
+                                                    ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Expanded(
-                                        child: Scrollbar(
-                                          controller: _horizontalBodyController,
-                                          thumbVisibility: true,
-                                          child: SingleChildScrollView(
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child: Scrollbar(
                                             controller: _horizontalBodyController,
-                                            scrollDirection: Axis.horizontal,
-                                            child: SizedBox(
-                                              width:
-                                                  max(lessons.length * _lessonCellWidth, constraints.maxWidth),
-                                              child: Scrollbar(
-                                                controller: _verticalBodyController,
-                                                thumbVisibility: true,
-                                                child: SingleChildScrollView(
+                                            thumbVisibility: true,
+                                            child: SingleChildScrollView(
+                                              controller: _horizontalBodyController,
+                                              scrollDirection: Axis.horizontal,
+                                              child: SizedBox(
+                                                width: max(
+                                                    lessons.length * _lessonCellWidth,
+                                                    constraints.maxWidth),
+                                                child: Scrollbar(
                                                   controller: _verticalBodyController,
-                                                  child: Column(
-                                                    children: [
-                                                      for (final participant in participants)
-                                                        _buildLessonRow(
-                                                          participant,
-                                                          organizerSessionState,
-                                                          lessons,
-                                                          lessonIndexById,
-                                                        ),
-                                                    ],
+                                                  thumbVisibility: true,
+                                                  child: SingleChildScrollView(
+                                                    controller: _verticalBodyController,
+                                                    child: Column(
+                                                      children: [
+                                                        for (final participant in participants)
+                                                          _buildLessonRow(
+                                                            participant,
+                                                            organizerSessionState,
+                                                            lessons,
+                                                            lessonIndexById,
+                                                          ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            );
-                          },
+                                ],
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                _buildGroupPanel(context, lessonIndexById),
-              ],
-            );
-          },
+                  _buildGroupPanel(context, lessonIndexById),
+                ],
+              );
+            },
+          ),
+          enableCourseLoadingGuard: true,
+          enableScrolling: false,
         ),
-        enableCourseLoadingGuard: true,
-        enableScrolling: false,
       ),
     );
   }
