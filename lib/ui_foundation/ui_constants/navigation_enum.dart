@@ -45,6 +45,7 @@ enum NavigationEnum {
   courseDesignerSkillRubric('/course_designer_skill_rubric'),
   courseDesignerLearningObjectives('/course_designer_learning_objectives'),
   courseDesignerSessionPlan('/course_designer_session_plan'),
+  advancedPairing('/advanced_pairing'),
   ;
 
   final String route;
