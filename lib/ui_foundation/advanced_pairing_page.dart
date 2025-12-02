@@ -1003,32 +1003,23 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                     for (final group in _groups)
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
-                        child: ChoiceChip(
-                          showCheckmark: false,
+                        child: InputChip(
+                          label: Text(
+                            '${group.memberIds.length}ppl: '
+                            '${group.lessonId != null ? lessonLabelById[group.lessonId] ?? '--' : '--'}',
+                          ),
                           selected: group.isSelected,
+                          showCheckmark: false,
                           onSelected: (_) => _selectGroup(group.id),
-                          label: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                '${group.memberIds.length}ppl: '
-                                '${group.lessonId != null ? lessonLabelById[group.lessonId] ?? '--' : '--'}',
-                              ),
-                              const SizedBox(width: 6),
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon: const Icon(
-                                  Icons.info_outline,
-                                  size: 18,
-                                  color: Colors.grey,
-                                ),
-                                onPressed: () => _showGroupInfoDialog(
-                                  group,
-                                  lessonIndexById,
-                                ),
-                              ),
-                            ],
+                          deleteIcon: const Icon(
+                            Icons.info_outline,
+                            size: 18,
+                            color: Colors.grey,
+                          ),
+                          deleteButtonTooltipMessage: 'Group info',
+                          onDeleted: () => _showGroupInfoDialog(
+                            group,
+                            lessonIndexById,
                           ),
                         ),
                       ),

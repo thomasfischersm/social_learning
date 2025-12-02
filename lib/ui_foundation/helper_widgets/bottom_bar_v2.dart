@@ -182,6 +182,7 @@ class BottomBarV2 {
           NavigationEnum.onlineSessionActive.route,
           NavigationEnum.codeOfConduct.route,
           NavigationEnum.onlineSessionReview.route,
+          NavigationEnum.advancedPairing.route,
         }.contains(currentRoute)) {
       return 1 + (isLessonsVisible ? 1 : 0) + (isManageVisible ? 1 : 0);
     } else if (isProfileVisible &&
