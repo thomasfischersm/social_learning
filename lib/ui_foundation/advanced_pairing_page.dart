@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart' as sl_user;
 import 'package:social_learning/state/application_state.dart';
@@ -45,6 +46,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   int _groupCounter = 1;
   late List<_StudentGroup> _groups;
   final Set<String> _localGraduationOverrides = {};
+  int _loadedRoundNumber = -1;
 
   @override
   void initState() {
@@ -149,6 +151,11 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
               final lessonIndexById = {
                 for (int i = 0; i < lessons.length; i++) lessons[i].id!: i
               };
+
+              _maybeLoadExistingPairings(
+                organizerSessionState,
+                lessonIndexById,
+              );
 
               return Stack(
                 children: [
@@ -941,6 +948,107 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     });
 
     return participants;
+  }
+
+  void _maybeLoadExistingPairings(
+    OrganizerSessionState organizerSessionState,
+    Map<String, int> lessonIndexById,
+  ) {
+    final existingPairings = organizerSessionState.lastRound;
+    if (existingPairings == null || existingPairings.isEmpty) {
+      return;
+    }
+
+    final latestRoundNumber = existingPairings.first.roundNumber;
+    if (_loadedRoundNumber == latestRoundNumber) {
+      return;
+    }
+
+    final participantByUserId = {
+      for (final participant in organizerSessionState.sessionParticipants)
+        participant.participantId.id: participant,
+    };
+
+    final groups = <_StudentGroup>[];
+    var nextGroupId = 1;
+
+    for (final pairing in existingPairings) {
+      final group = _buildGroupFromPairing(
+        pairing,
+        participantByUserId,
+        nextGroupId,
+      );
+      if (group != null) {
+        groups.add(group.copyWith(isSelected: groups.isEmpty));
+        nextGroupId++;
+      }
+    }
+
+    if (groups.isEmpty) {
+      return;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _groupCounter = max(_groupCounter, nextGroupId - 1);
+        _loadedRoundNumber = latestRoundNumber;
+        _groups = groups
+            .map((group) => _applyPairingRules(
+                  group,
+                  organizerSessionState,
+                  lessonIndexById,
+                ))
+            .toList(growable: false);
+        _normalizeEmptyGroups();
+      });
+    });
+  }
+
+  _StudentGroup? _buildGroupFromPairing(
+    SessionPairing pairing,
+    Map<String, SessionParticipant> participantByUserId,
+    int groupNumber,
+  ) {
+    final memberIds = <String>{};
+    String? mentorId;
+    String? learnerId;
+
+    final mentorParticipant =
+        participantByUserId[pairing.mentorId?.id];
+    final learnerParticipant =
+        participantByUserId[pairing.menteeId?.id];
+
+    if (mentorParticipant?.id != null) {
+      memberIds.add(mentorParticipant!.id!);
+      mentorId = mentorParticipant.id;
+    }
+
+    if (learnerParticipant?.id != null) {
+      memberIds.add(learnerParticipant!.id!);
+      learnerId = learnerParticipant.id;
+    }
+
+    final additionalLearners = <String>{};
+    for (final additionalStudent in pairing.additionalStudentIds) {
+      final participant = participantByUserId[additionalStudent.id];
+      if (participant?.id != null) {
+        additionalLearners.add(participant!.id!);
+        memberIds.add(participant.id!);
+      }
+    }
+
+    if (memberIds.isEmpty && pairing.lessonId == null) {
+      return null;
+    }
+
+    return _StudentGroup(
+      id: 'group-$groupNumber',
+      memberIds: memberIds,
+      lessonId: pairing.lessonId?.id,
+      mentorId: mentorId,
+      learnerId: learnerId,
+      additionalLearnerIds: additionalLearners,
+    );
   }
 
   Widget _buildGroupPanel(
