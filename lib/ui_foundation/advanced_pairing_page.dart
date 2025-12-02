@@ -63,6 +63,22 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     });
   }
 
+  void _handleGridPan(DragUpdateDetails details) {
+    void applyDelta(ScrollController controller, double delta) {
+      if (!controller.hasClients || !controller.position.hasPixels) {
+        return;
+      }
+      final newOffset = (controller.offset - delta)
+          .clamp(controller.position.minScrollExtent, controller.position.maxScrollExtent);
+      controller.jumpTo(newOffset);
+    }
+
+    applyDelta(_horizontalHeaderController, details.delta.dx);
+    applyDelta(_horizontalBodyController, details.delta.dx);
+    applyDelta(_verticalNamesController, details.delta.dy);
+    applyDelta(_verticalBodyController, details.delta.dy);
+  }
+
   void _handleHorizontalScroll() {
     final isScrolled =
         _horizontalBodyController.offset.abs() > 4 || _horizontalHeaderController.offset.abs() > 4;
@@ -141,78 +157,82 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                 ? max(constraints.maxWidth * 0.2, 160.0)
                                 : max(constraints.maxWidth * 0.28, 200.0);
 
-                            return Column(
-                              children: [
-                                _buildHeader(
-                                  context,
-                                  nameColumnWidth,
-                                  lessons,
-                                  levelGroups,
-                                  lessonIndexById,
-                                ),
-                                const SizedBox(height: 4),
-                                Expanded(
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: nameColumnWidth,
-                                        child: Scrollbar(
-                                          controller: _verticalNamesController,
-                                          thumbVisibility: true,
-                                          child: SingleChildScrollView(
+                            return GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onPanUpdate: _handleGridPan,
+                              child: Column(
+                                children: [
+                                  _buildHeader(
+                                    context,
+                                    nameColumnWidth,
+                                    lessons,
+                                    levelGroups,
+                                    lessonIndexById,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Expanded(
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                          width: nameColumnWidth,
+                                          child: Scrollbar(
                                             controller: _verticalNamesController,
-                                            child: Column(
-                                              children: [
-                                                for (final participant in participants)
-                                                  _buildNameCell(
-                                                    context,
-                                                    participant,
-                                                    organizerSessionState,
-                                                    nameColumnWidth,
-                                                  ),
-                                              ],
+                                            thumbVisibility: true,
+                                            child: SingleChildScrollView(
+                                              controller: _verticalNamesController,
+                                              child: Column(
+                                                children: [
+                                                  for (final participant in participants)
+                                                    _buildNameCell(
+                                                      context,
+                                                      participant,
+                                                      organizerSessionState,
+                                                      nameColumnWidth,
+                                                    ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Expanded(
-                                        child: Scrollbar(
-                                          controller: _horizontalBodyController,
-                                          thumbVisibility: true,
-                                          child: SingleChildScrollView(
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child: Scrollbar(
                                             controller: _horizontalBodyController,
-                                            scrollDirection: Axis.horizontal,
-                                            child: SizedBox(
-                                              width:
-                                                  max(lessons.length * _lessonCellWidth, constraints.maxWidth),
-                                              child: Scrollbar(
-                                                controller: _verticalBodyController,
-                                                thumbVisibility: true,
-                                                child: SingleChildScrollView(
+                                            thumbVisibility: true,
+                                            child: SingleChildScrollView(
+                                              controller: _horizontalBodyController,
+                                              scrollDirection: Axis.horizontal,
+                                              child: SizedBox(
+                                                width: max(
+                                                    lessons.length * _lessonCellWidth, constraints.maxWidth),
+                                                child: Scrollbar(
                                                   controller: _verticalBodyController,
-                                                  child: Column(
-                                                    children: [
-                                                      for (final participant in participants)
-                                                        _buildLessonRow(
-                                                          participant,
-                                                          organizerSessionState,
-                                                          lessons,
-                                                          lessonIndexById,
-                                                        ),
-                                                    ],
+                                                  thumbVisibility: true,
+                                                  child: SingleChildScrollView(
+                                                    controller: _verticalBodyController,
+                                                    child: Column(
+                                                      children: [
+                                                        for (final participant in participants)
+                                                          _buildLessonRow(
+                                                            participant,
+                                                            organizerSessionState,
+                                                            lessons,
+                                                            lessonIndexById,
+                                                          ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             );
                           },
                         ),
@@ -398,31 +418,50 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       child: Row(
         children: [
           for (final lesson in lessons)
-            InkWell(
-              onTap: () => _handleToggleParticipant(lesson, participant),
-              child: Container(
-                width: _lessonCellWidth,
-                height: _rowHeight,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                      width: 0.5,
-                    ),
-                    bottom: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                      width: 0.5,
-                    ),
+            Container(
+              width: _lessonCellWidth,
+              height: _rowHeight,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(
+                    color: Theme.of(context).dividerColor,
+                    width: 0.5,
+                  ),
+                  bottom: BorderSide(
+                    color: Theme.of(context).dividerColor,
+                    width: 0.5,
                   ),
                 ),
-                child: _buildLessonStateIcon(
-                  context,
-                  organizerSessionState,
-                  participant,
-                  lesson,
-                  lessonIndexById,
-                ),
+              ),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: _buildLessonStateIcon(
+                      context,
+                      organizerSessionState,
+                      participant,
+                      lesson,
+                      lessonIndexById,
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 6,
+                    right: 6,
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      icon: const Icon(
+                        Icons.person_add_alt_1,
+                        color: Colors.grey,
+                        size: 22,
+                      ),
+                      tooltip: 'Toggle student assignment',
+                      onPressed: () => _handleToggleParticipant(lesson, participant),
+                    ),
+                  ),
+                ],
               ),
             ),
         ],
