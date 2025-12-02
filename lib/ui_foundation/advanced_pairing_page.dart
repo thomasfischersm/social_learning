@@ -641,7 +641,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                 organizerSessionState,
                 lessonIndexById,
               ))
-          .toList(growable: false);
+          .toList(growable: true);
 
       _normalizeEmptyGroups();
     });
