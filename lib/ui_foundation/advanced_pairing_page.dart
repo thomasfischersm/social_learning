@@ -6,12 +6,12 @@ import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart' as sl_user;
-import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 
@@ -33,8 +33,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   final ScrollController _horizontalBodyController = ScrollController();
   final ScrollController _verticalNamesController = ScrollController();
   final ScrollController _verticalBodyController = ScrollController();
-
-  final Map<String, Future<String?>> _profileUrlFutures = {};
 
   bool _isSyncingHorizontal = false;
   bool _isSyncingVertical = false;
@@ -373,27 +371,16 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     if (user?.profileFireStoragePath == null) {
       return const SizedBox();
     }
-    final future = _profileUrlFutures.putIfAbsent(
-      user!.id,
-      () => UserFunctions.getProfilePhotoUrl(user),
-    );
 
-    final size = fontSize;
-    return FutureBuilder<String?>(
-      future: future,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData || snapshot.data == null) {
-          return const SizedBox();
-        }
-        return ClipOval(
-          child: Image.network(
-            snapshot.data!,
-            width: size,
-            height: size,
-            fit: BoxFit.cover,
-          ),
-        );
-      },
+    return SizedBox(
+      width: fontSize,
+      height: fontSize,
+      child: ProfileImageWidgetV2.fromUser(
+        user!,
+        maxRadius: fontSize / 2,
+        enableDoubleTapSwitch: false,
+        linkToOtherProfile: false,
+      ),
     );
   }
 
