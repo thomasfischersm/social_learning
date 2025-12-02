@@ -112,7 +112,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       appBar: const LearningLabAppBar(),
       bottomNavigationBar: BottomBarV2.build(context),
       body: CustomUiConstants.framePage(
-        enableCourseLoadingGuard: true,
         Consumer2<OrganizerSessionState, LibraryState>(
           builder: (context, organizerSessionState, libraryState, child) {
             final lessons = _sortedLessons(libraryState);
@@ -226,6 +225,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
             );
           },
         ),
+        enableCourseLoadingGuard: true,
+        enableScrolling: false,
       ),
     );
   }
