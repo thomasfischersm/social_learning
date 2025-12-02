@@ -51,7 +51,7 @@ class SessionHostState extends State<SessionHostPage> {
         bottomNavigationBar: BottomBarV2.build(context),
         body: Align(
             alignment: Alignment.topCenter,
-            child: CustomUiConstants.framePage(enableCourseLoadingGuard: true,
+            child: CustomUiConstants.framePage(
                 Consumer2<OrganizerSessionState, LibraryState>(builder:
                     (context, organizerSessionState, libraryState, child) {
               return Column(
@@ -77,7 +77,9 @@ class SessionHostState extends State<SessionHostPage> {
                       context, organizerSessionState, libraryState),
                 ],
               );
-            }))));
+            }),
+                enableCourseLoadingGuard: true,
+                enableOrganizerGuard: true)));
   }
 
   _createParticipantTable(
