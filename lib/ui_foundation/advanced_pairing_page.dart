@@ -66,6 +66,36 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     });
   }
 
+  void _handlePanUpdate(DragUpdateDetails details) {
+    final deltaX = -details.delta.dx;
+    final deltaY = -details.delta.dy;
+
+    _isSyncingHorizontal = true;
+    _scrollControllerBy(_horizontalHeaderController, deltaX);
+    _scrollControllerBy(_horizontalBodyController, deltaX);
+    _isSyncingHorizontal = false;
+
+    _isSyncingVertical = true;
+    _scrollControllerBy(_verticalNamesController, deltaY);
+    _scrollControllerBy(_verticalBodyController, deltaY);
+    _isSyncingVertical = false;
+
+    _handleHorizontalScroll();
+  }
+
+  void _scrollControllerBy(ScrollController controller, double delta) {
+    if (!controller.hasClients) {
+      return;
+    }
+
+    final position = controller.position;
+    final target = (position.pixels + delta)
+        .clamp(position.minScrollExtent, position.maxScrollExtent);
+    if (target != position.pixels) {
+      controller.jumpTo(target);
+    }
+  }
+
   void _handleHorizontalScroll() {
     final isScrolled =
         _horizontalBodyController.offset.abs() > 4 || _horizontalHeaderController.offset.abs() > 4;
@@ -147,79 +177,83 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                               organizerSessionState,
                             );
 
-                            return Column(
-                              children: [
-                                _buildHeader(
-                                  context,
-                                  nameColumnWidth,
-                                  lessons,
-                                  levelGroups,
-                                  lessonIndexById,
-                                ),
-                                const SizedBox(height: 4),
-                                Expanded(
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: nameColumnWidth,
-                                        child: Scrollbar(
-                                          controller: _verticalNamesController,
-                                          thumbVisibility: true,
-                                          child: SingleChildScrollView(
+                            return GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onPanUpdate: _handlePanUpdate,
+                              child: Column(
+                                children: [
+                                  _buildHeader(
+                                    context,
+                                    nameColumnWidth,
+                                    lessons,
+                                    levelGroups,
+                                    lessonIndexById,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Expanded(
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                          width: nameColumnWidth,
+                                          child: Scrollbar(
                                             controller: _verticalNamesController,
-                                            child: Column(
-                                              children: [
-                                                for (final participant in participants)
-                                                  _buildNameCell(
-                                                    context,
-                                                    participant,
-                                                    organizerSessionState,
-                                                    libraryState,
-                                                    nameColumnWidth,
-                                                  ),
-                                              ],
+                                            thumbVisibility: true,
+                                            child: SingleChildScrollView(
+                                              controller: _verticalNamesController,
+                                              child: Column(
+                                                children: [
+                                                  for (final participant in participants)
+                                                    _buildNameCell(
+                                                      context,
+                                                      participant,
+                                                      organizerSessionState,
+                                                      libraryState,
+                                                      nameColumnWidth,
+                                                    ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Expanded(
-                                        child: Scrollbar(
-                                          controller: _horizontalBodyController,
-                                          thumbVisibility: true,
-                                          child: SingleChildScrollView(
+                                        const SizedBox(width: 4),
+                                        Expanded(
+                                          child: Scrollbar(
                                             controller: _horizontalBodyController,
-                                            scrollDirection: Axis.horizontal,
-                                            child: SizedBox(
-                                              width:
-                                                  max(lessons.length * _lessonCellWidth, constraints.maxWidth),
-                                              child: Scrollbar(
-                                                controller: _verticalBodyController,
-                                                thumbVisibility: true,
-                                                child: SingleChildScrollView(
+                                            thumbVisibility: true,
+                                            child: SingleChildScrollView(
+                                              controller: _horizontalBodyController,
+                                              scrollDirection: Axis.horizontal,
+                                              child: SizedBox(
+                                                width:
+                                                    max(lessons.length * _lessonCellWidth, constraints.maxWidth),
+                                                child: Scrollbar(
                                                   controller: _verticalBodyController,
-                                                  child: Column(
-                                                    children: [
-                                                      for (final participant in participants)
-                                                        _buildLessonRow(
-                                                          participant,
-                                                          organizerSessionState,
-                                                          lessons,
-                                                          lessonIndexById,
-                                                        ),
-                                                    ],
+                                                  thumbVisibility: true,
+                                                  child: SingleChildScrollView(
+                                                    controller: _verticalBodyController,
+                                                    child: Column(
+                                                      children: [
+                                                        for (final participant in participants)
+                                                          _buildLessonRow(
+                                                            participant,
+                                                            organizerSessionState,
+                                                            lessons,
+                                                            lessonIndexById,
+                                                          ),
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             );
                           },
                         ),
@@ -468,41 +502,85 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     Map<String, int> lessonIndexById,
   ) {
     final rowColor = _rowColor(context, participant, organizerSessionState);
+    final selectedGroup = _selectedGroupOrNull();
 
     return Container(
       color: rowColor,
       child: Row(
         children: [
           for (final lesson in lessons)
-            InkWell(
-              onTap: () => _handleToggleParticipant(lesson, participant),
-              child: Container(
-                width: _lessonCellWidth,
-                height: _rowHeight,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                      width: 0.5,
-                    ),
-                    bottom: BorderSide(
-                      color: Theme.of(context).dividerColor,
-                      width: 0.5,
-                    ),
+            Container(
+              width: _lessonCellWidth,
+              height: _rowHeight,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(
+                    color: Theme.of(context).dividerColor,
+                    width: 0.5,
+                  ),
+                  bottom: BorderSide(
+                    color: Theme.of(context).dividerColor,
+                    width: 0.5,
                   ),
                 ),
-                child: _buildLessonStateIcon(
-                  context,
-                  organizerSessionState,
-                  participant,
-                  lesson,
-                  lessonIndexById,
-                ),
+              ),
+              child: _buildLessonCellContent(
+                context,
+                organizerSessionState,
+                participant,
+                lesson,
+                lessonIndexById,
+                selectedGroup,
               ),
             ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLessonCellContent(
+    BuildContext context,
+    OrganizerSessionState organizerSessionState,
+    SessionParticipant participant,
+    Lesson lesson,
+    Map<String, int> lessonIndexById,
+    _StudentGroup? selectedGroup,
+  ) {
+    final isPinned = _isParticipantSelectedForLesson(
+      participant,
+      lesson,
+      selectedGroup,
+    );
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        IconButton(
+          onPressed: () => _handleToggleParticipant(lesson, participant),
+          icon: Icon(
+            isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+            color: isPinned
+                ? Theme.of(context).colorScheme.primary
+                : Colors.grey,
+          ),
+          padding: EdgeInsets.zero,
+          visualDensity: VisualDensity.compact,
+          tooltip: 'Toggle selection for this lesson',
+          iconSize: 22,
+        ),
+        Positioned(
+          bottom: 4,
+          right: 4,
+          child: _buildLessonStateIcon(
+            context,
+            organizerSessionState,
+            participant,
+            lesson,
+            lessonIndexById,
+          ),
+        ),
+      ],
     );
   }
 
@@ -577,6 +655,26 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
 
       _normalizeEmptyGroups();
     });
+  }
+
+  _StudentGroup? _selectedGroupOrNull() {
+    for (final group in _groups) {
+      if (group.isSelected) {
+        return group;
+      }
+    }
+    return null;
+  }
+
+  bool _isParticipantSelectedForLesson(
+    SessionParticipant participant,
+    Lesson lesson,
+    _StudentGroup? selectedGroup,
+  ) {
+    if (selectedGroup == null || selectedGroup.lessonId != lesson.id) {
+      return false;
+    }
+    return selectedGroup.memberIds.contains(participant.id);
   }
 
   int _ensureSelectedGroup() {
