@@ -371,6 +371,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                               'Level ${group.levelNumber}: ${group.levelTitle}',
                               style: CustomTextStyles.getBodyNote(context)
                                   ?.copyWith(fontWeight: FontWeight.bold),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                       ],

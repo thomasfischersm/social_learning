@@ -109,7 +109,9 @@ class LevelListState extends State<LevelListPage> {
                 child: Text(
                   levelText,
                   style: levelTextStyle,
-                  softWrap: true,
+                  softWrap: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ))),
       ]));
     }
