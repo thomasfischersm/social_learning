@@ -188,9 +188,9 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                       _rowColor(context, participant, organizerSessionState);
 
                                   return Container(
-                                    color: rowColor,
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
+                                      color: rowColor,
                                       border: Border(
                                         right: BorderSide(
                                           color: Theme.of(context).dividerColor,
