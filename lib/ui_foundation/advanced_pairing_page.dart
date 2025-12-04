@@ -316,7 +316,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   ) {
     final user = organizerSessionState.getUser(participant);
     final rowColor = _rowColor(context, participant, organizerSessionState);
-    final textStyle = CustomTextStyles.getBody(context);
+    final textStyle = CustomTextStyles.getBodyNote(context);
     final fontSize = textStyle?.fontSize ?? 14;
     final displayName = user?.displayName ?? 'Unknown';
     final compactName = _truncateName(
