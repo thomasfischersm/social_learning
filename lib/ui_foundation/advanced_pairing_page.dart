@@ -97,6 +97,13 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                 organizerSessionState,
                               );
 
+                              const tableGap = 4.0;
+
+                              final minTableBodyWidth = max(
+                                0.0,
+                                constraints.maxWidth - nameColumnWidth - tableGap,
+                              );
+
                               return StickyHeaderTable(
                                 rowCount: participants.length,
                                 columnCount: lessons.length,
@@ -104,7 +111,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                 columnWidth: _lessonCellWidth,
                                 rowHeight: _rowHeight,
                                 headerHeight: _levelHeaderHeight + _lessonHeaderHeight,
-                                minTableBodyWidth: constraints.maxWidth,
+                                gap: tableGap,
+                                minTableBodyWidth: minTableBodyWidth,
                                 onHorizontalScrollOffsetChanged: (offset) {
                                   final isScrolled = offset.abs() > 4;
                                   if (_isHorizontalScrolled != isScrolled) {
