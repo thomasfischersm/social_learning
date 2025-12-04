@@ -20,6 +20,7 @@ import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
+import 'package:social_learning/util/text_width_util.dart';
 
 class AdvancedPairingPage extends StatefulWidget {
   const AdvancedPairingPage({super.key});
@@ -285,8 +286,10 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     final textStyle = CustomTextStyles.getBody(context);
     final fontSize = textStyle?.fontSize ?? 14.0;
     const basePadding = 16.0;
+    final textDirection = Directionality.of(context);
 
-    double widestContent = 0;
+    final visibleNames = <String>[];
+    double maxIconWidth = 0;
     for (final participant in participants) {
       final user = organizerSessionState.getUser(participant);
       final displayName = user?.displayName ?? 'Unknown';
@@ -294,20 +297,21 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         displayName,
         _isHorizontalScrolled ? 6 : 10,
       );
+      visibleNames.add(visibleName);
 
-      final textPainter = TextPainter(
-        text: TextSpan(text: visibleName, style: textStyle),
-        maxLines: 1,
-        textDirection: TextDirection.ltr,
-      )..layout();
-
-      final iconWidth = user?.profileFireStoragePath != null ? fontSize : 0.0;
-      final spacing = user?.profileFireStoragePath != null ? 8.0 : 0.0;
-      widestContent = max(
-        widestContent,
-        basePadding + iconWidth + spacing + textPainter.width,
-      );
+      if (user?.profileFireStoragePath != null) {
+        maxIconWidth = max(maxIconWidth, fontSize + 8.0);
+      }
     }
+
+    final widestTextWidth = TextWidthUtil.calculateMaxWidth(
+      context,
+      visibleNames,
+      textStyle: textStyle,
+      textDirection: textDirection,
+    );
+
+    final widestContent = basePadding + maxIconWidth + widestTextWidth;
 
     const minWidth = 120.0;
     final maxAllowedWidth = constraints.maxWidth * 0.45;
