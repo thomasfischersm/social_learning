@@ -14,6 +14,7 @@ import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/sticky_header_table.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
@@ -35,13 +36,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   static const double _lessonHeaderHeight = 36;
   static const double _bottomPanelHeight = 96;
 
-  final ScrollController _horizontalHeaderController = ScrollController();
-  final ScrollController _horizontalBodyController = ScrollController();
-  final ScrollController _verticalNamesController = ScrollController();
-  final ScrollController _verticalBodyController = ScrollController();
-
-  bool _isSyncingHorizontal = false;
-  bool _isSyncingVertical = false;
   bool _isHorizontalScrolled = false;
   int _groupCounter = 1;
   late List<_StudentGroup> _groups;
@@ -54,84 +48,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     _groups = [
       _StudentGroup(id: 'group-$_groupCounter', isSelected: true),
     ];
-    _horizontalHeaderController.addListener(_handleHorizontalScroll);
-    _horizontalBodyController.addListener(_handleHorizontalScroll);
-    _verticalBodyController.addListener(() {
-      _syncVerticalScroll(_verticalBodyController, _verticalNamesController);
-    });
-    _verticalNamesController.addListener(() {
-      _syncVerticalScroll(_verticalNamesController, _verticalBodyController);
-    });
-    _horizontalHeaderController.addListener(() {
-      _syncHorizontalScroll(
-          _horizontalHeaderController, _horizontalBodyController);
-    });
-    _horizontalBodyController.addListener(() {
-      _syncHorizontalScroll(_horizontalBodyController, _horizontalHeaderController);
-    });
-  }
-
-  void _handleHorizontalScroll() {
-    final isScrolled =
-        _horizontalBodyController.offset.abs() > 4 || _horizontalHeaderController.offset.abs() > 4;
-    if (_isHorizontalScrolled != isScrolled) {
-      setState(() {
-        _isHorizontalScrolled = isScrolled;
-      });
-    }
-  }
-
-  void _syncHorizontalScroll(
-      ScrollController primary, ScrollController secondary) {
-    if (_isSyncingHorizontal) {
-      return;
-    }
-    _isSyncingHorizontal = true;
-    if (secondary.hasClients &&
-        (secondary.offset - primary.offset).abs() > 1) {
-      secondary.jumpTo(primary.offset);
-    }
-    _isSyncingHorizontal = false;
-  }
-
-  void _syncVerticalScroll(ScrollController primary, ScrollController secondary) {
-    if (_isSyncingVertical) {
-      return;
-    }
-    _isSyncingVertical = true;
-    if (secondary.hasClients && (secondary.offset - primary.offset).abs() > 1) {
-      secondary.jumpTo(primary.offset);
-    }
-    _isSyncingVertical = false;
-  }
-
-  void _handleGridPan(DragUpdateDetails details) {
-    _scrollBy(_horizontalBodyController, -details.delta.dx);
-    _scrollBy(_horizontalHeaderController, -details.delta.dx);
-    _scrollBy(_verticalBodyController, -details.delta.dy);
-    _scrollBy(_verticalNamesController, -details.delta.dy);
-  }
-
-  void _scrollBy(ScrollController controller, double delta) {
-    if (!controller.hasClients || controller.positions.isEmpty) {
-      return;
-    }
-
-    final position = controller.position;
-    final targetOffset = (controller.offset + delta)
-        .clamp(position.minScrollExtent, position.maxScrollExtent);
-    if (targetOffset != controller.offset) {
-      controller.jumpTo(targetOffset);
-    }
-  }
-
-  @override
-  void dispose() {
-    _horizontalHeaderController.dispose();
-    _horizontalBodyController.dispose();
-    _verticalNamesController.dispose();
-    _verticalBodyController.dispose();
-    super.dispose();
   }
 
   @override
@@ -180,83 +96,119 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                 organizerSessionState,
                               );
 
-                              return GestureDetector(
-                                onPanUpdate: _handleGridPan,
-                                behavior: HitTestBehavior.deferToChild,
-                                child: Column(
+                              return StickyHeaderTable(
+                                rowCount: participants.length,
+                                columnCount: lessons.length,
+                                rowHeaderWidth: nameColumnWidth,
+                                columnWidth: _lessonCellWidth,
+                                rowHeight: _rowHeight,
+                                headerHeight: _levelHeaderHeight + _lessonHeaderHeight,
+                                minTableBodyWidth: constraints.maxWidth,
+                                onHorizontalScrollOffsetChanged: (offset) {
+                                  final isScrolled = offset.abs() > 4;
+                                  if (_isHorizontalScrolled != isScrolled) {
+                                    setState(() {
+                                      _isHorizontalScrolled = isScrolled;
+                                    });
+                                  }
+                                },
+                                buildCorner: (context, width, _) => Column(
                                   children: [
-                                    _buildHeader(
-                                      context,
-                                      nameColumnWidth,
-                                      lessons,
-                                      levelGroups,
-                                      lessonIndexById,
+                                    Container(
+                                      height: _levelHeaderHeight,
+                                      width: width,
+                                      color: Theme.of(context).colorScheme.surface,
                                     ),
-                                    const SizedBox(height: 4),
-                                    Expanded(
+                                    Container(
+                                      height: _lessonHeaderHeight,
+                                      width: width,
+                                      color: Theme.of(context).colorScheme.surface,
+                                      padding:
+                                          const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        'Student',
+                                        style: CustomTextStyles.getBodyNote(context)
+                                            ?.copyWith(fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                buildColumnHeader: (context, _) => Column(
+                                  children: [
+                                    SizedBox(
+                                      height: _levelHeaderHeight,
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          SizedBox(
-                                            width: nameColumnWidth,
-                                            child: Scrollbar(
-                                              controller: _verticalNamesController,
-                                              thumbVisibility: true,
-                                              child: SingleChildScrollView(
-                                                controller: _verticalNamesController,
-                                                child: Column(
-                                                  children: [
-                                                    for (final participant in participants)
-                                                      _buildNameCell(
-                                                        context,
-                                                        participant,
-                                                        organizerSessionState,
-                                                        libraryState,
-                                                        nameColumnWidth,
-                                                      ),
-                                                  ],
-                                                ),
+                                          for (final group in levelGroups)
+                                            Container(
+                                              width: _lessonCellWidth * group.lessonCount,
+                                              height: _levelHeaderHeight,
+                                              padding:
+                                                  const EdgeInsets.symmetric(horizontal: 8),
+                                              alignment: Alignment.centerLeft,
+                                              color: Theme.of(context).colorScheme.surface,
+                                              child: Text(
+                                                'Level ${group.levelNumber}: ${group.levelTitle}',
+                                                style: CustomTextStyles.getBodyNote(context)
+                                                    ?.copyWith(fontWeight: FontWeight.bold),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
                                               ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Expanded(
-                                            child: Scrollbar(
-                                              controller: _horizontalBodyController,
-                                              thumbVisibility: true,
-                                              child: SingleChildScrollView(
-                                                controller: _horizontalBodyController,
-                                                scrollDirection: Axis.horizontal,
-                                                child: SizedBox(
-                                                  width: max(
-                                                      lessons.length * _lessonCellWidth,
-                                                      constraints.maxWidth),
-                                                  child: Scrollbar(
-                                                    controller: _verticalBodyController,
-                                                    thumbVisibility: true,
-                                                    child: SingleChildScrollView(
-                                                      controller: _verticalBodyController,
-                                                      child: Column(
-                                                        children: [
-                                                          for (final participant in participants)
-                                                          _buildLessonRow(
-                                                            participant,
-                                                            organizerSessionState,
-                                                            lessons,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: _lessonHeaderHeight,
+                                      child: Row(
+                                        children: [
+                                          for (int i = 0; i < lessons.length; i++)
+                                            _buildLessonHeaderCell(context, lessons[i], i + 1),
                                         ],
                                       ),
                                     ),
                                   ],
                                 ),
+                                buildRowHeader: (context, rowIndex) {
+                                  final participant = participants[rowIndex];
+                                  return _buildNameCell(
+                                    context,
+                                    participant,
+                                    organizerSessionState,
+                                    libraryState,
+                                    nameColumnWidth,
+                                  );
+                                },
+                                buildCell: (context, rowIndex, columnIndex) {
+                                  final participant = participants[rowIndex];
+                                  final lesson = lessons[columnIndex];
+                                  final rowColor =
+                                      _rowColor(context, participant, organizerSessionState);
+
+                                  return Container(
+                                    color: rowColor,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        right: BorderSide(
+                                          color: Theme.of(context).dividerColor,
+                                          width: 0.5,
+                                        ),
+                                        bottom: BorderSide(
+                                          color: Theme.of(context).dividerColor,
+                                          width: 0.5,
+                                        ),
+                                      ),
+                                    ),
+                                    child: _buildLessonCellContent(
+                                      context,
+                                      organizerSessionState,
+                                      participant,
+                                      lesson,
+                                    ),
+                                  );
+                                },
                               );
                             },
                           ),
@@ -319,87 +271,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       return name;
     }
     return '${name.substring(0, maxChars)}...';
-  }
-
-  Widget _buildHeader(
-    BuildContext context,
-    double nameColumnWidth,
-    List<Lesson> lessons,
-    List<_LevelGroup> levelGroups,
-    Map<String, int> lessonIndexById,
-  ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
-          children: [
-            Container(
-              height: _levelHeaderHeight,
-              width: nameColumnWidth,
-              color: Theme.of(context).colorScheme.surface,
-            ),
-            Container(
-              height: _lessonHeaderHeight,
-              width: nameColumnWidth,
-              color: Theme.of(context).colorScheme.surface,
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Student',
-                style: CustomTextStyles.getBodyNote(context)
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(width: 4),
-        Expanded(
-          child: Scrollbar(
-            controller: _horizontalHeaderController,
-            thumbVisibility: true,
-            child: SingleChildScrollView(
-              controller: _horizontalHeaderController,
-              scrollDirection: Axis.horizontal,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: _levelHeaderHeight,
-                    child: Row(
-                      children: [
-                        for (final group in levelGroups)
-                          Container(
-                            width: _lessonCellWidth * group.lessonCount,
-                            height: _levelHeaderHeight,
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            alignment: Alignment.centerLeft,
-                            color: Theme.of(context).colorScheme.surface,
-                            child: Text(
-                              'Level ${group.levelNumber}: ${group.levelTitle}',
-                              style: CustomTextStyles.getBodyNote(context)
-                                  ?.copyWith(fontWeight: FontWeight.bold),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: _lessonHeaderHeight,
-                    child: Row(
-                      children: [
-                        for (int i = 0; i < lessons.length; i++)
-                          _buildLessonHeaderCell(context, lessons[i], i + 1),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildLessonHeaderCell(BuildContext context, Lesson lesson, int label) {
@@ -497,46 +368,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         maxRadius: fontSize / 2,
         enableDoubleTapSwitch: false,
         linkToOtherProfile: false,
-      ),
-    );
-  }
-
-  Widget _buildLessonRow(
-    SessionParticipant participant,
-    OrganizerSessionState organizerSessionState,
-    List<Lesson> lessons,
-  ) {
-    final rowColor = _rowColor(context, participant, organizerSessionState);
-
-    return Container(
-      color: rowColor,
-      child: Row(
-        children: [
-          for (final lesson in lessons)
-            Container(
-              width: _lessonCellWidth,
-              height: _rowHeight,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                border: Border(
-                  right: BorderSide(
-                    color: Theme.of(context).dividerColor,
-                    width: 0.5,
-                  ),
-                  bottom: BorderSide(
-                    color: Theme.of(context).dividerColor,
-                    width: 0.5,
-                  ),
-                ),
-              ),
-              child: _buildLessonCellContent(
-                context,
-                organizerSessionState,
-                participant,
-                lesson,
-              ),
-            ),
-        ],
       ),
     );
   }
