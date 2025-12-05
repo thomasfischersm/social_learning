@@ -243,7 +243,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     List<SessionParticipant> participants,
     OrganizerSessionState organizerSessionState,
   ) {
-    final textStyle = CustomTextStyles.getBody(context);
+    final textStyle = CustomTextStyles.getBodyNote(context);
     final fontSize = textStyle?.fontSize ?? 14.0;
     const basePadding = 16.0;
     final textDirection = Directionality.of(context);
