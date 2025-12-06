@@ -31,7 +31,7 @@ class AdvancedPairingPage extends StatefulWidget {
 }
 
 class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
-  static const double _lessonCellWidth = 56;
+  static const double _lessonCellWidth = 44;
   static const double _rowHeight = 44;
   static const double _levelHeaderHeight = 32;
   static const double _lessonHeaderHeight = 36;
@@ -62,7 +62,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
           Consumer2<OrganizerSessionState, LibraryState>(
             builder: (context, organizerSessionState, libraryState, child) {
               final lessons = _sortedLessons(libraryState);
-              final levelGroups = _buildLevelGroups(lessons, libraryState.levels);
+              final levelGroups =
+                  _buildLevelGroups(lessons, libraryState.levels);
               final participants =
                   _sortedParticipants(organizerSessionState, lessons);
               final lessonIndexById = {
@@ -101,7 +102,9 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
 
                               final minTableBodyWidth = max(
                                 0.0,
-                                constraints.maxWidth - nameColumnWidth - tableGap,
+                                constraints.maxWidth -
+                                    nameColumnWidth -
+                                    tableGap,
                               );
 
                               return StickyHeaderTable(
@@ -110,7 +113,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                 rowHeaderWidth: nameColumnWidth,
                                 columnWidth: _lessonCellWidth,
                                 rowHeight: _rowHeight,
-                                headerHeight: _levelHeaderHeight + _lessonHeaderHeight,
+                                headerHeight:
+                                    _levelHeaderHeight + _lessonHeaderHeight,
                                 gap: tableGap,
                                 minTableBodyWidth: minTableBodyWidth,
                                 onHorizontalScrollOffsetChanged: (offset) {
@@ -126,19 +130,23 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                     Container(
                                       height: _levelHeaderHeight,
                                       width: width,
-                                      color: Theme.of(context).colorScheme.surface,
+                                      color:
+                                          Theme.of(context).colorScheme.surface,
                                     ),
                                     Container(
                                       height: _lessonHeaderHeight,
                                       width: width,
-                                      color: Theme.of(context).colorScheme.surface,
-                                      padding:
-                                          const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                      color:
+                                          Theme.of(context).colorScheme.surface,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 8),
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         'Student',
-                                        style: CustomTextStyles.getBodyNote(context)
-                                            ?.copyWith(fontWeight: FontWeight.bold),
+                                        style: CustomTextStyles.getBodyNote(
+                                                context)
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.bold),
                                       ),
                                     ),
                                   ],
@@ -151,16 +159,23 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                         children: [
                                           for (final group in levelGroups)
                                             Container(
-                                              width: _lessonCellWidth * group.lessonCount,
+                                              width: _lessonCellWidth *
+                                                  group.lessonCount,
                                               height: _levelHeaderHeight,
                                               padding:
-                                                  const EdgeInsets.symmetric(horizontal: 8),
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8),
                                               alignment: Alignment.centerLeft,
-                                              color: Theme.of(context).colorScheme.surface,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .surface,
                                               child: Text(
                                                 'Level ${group.levelNumber}: ${group.levelTitle}',
-                                                style: CustomTextStyles.getBodyNote(context)
-                                                    ?.copyWith(fontWeight: FontWeight.bold),
+                                                style: CustomTextStyles
+                                                        .getBodyNote(context)
+                                                    ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
                                               ),
@@ -172,8 +187,11 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                       height: _lessonHeaderHeight,
                                       child: Row(
                                         children: [
-                                          for (int i = 0; i < lessons.length; i++)
-                                            _buildLessonHeaderCell(context, lessons[i], i + 1),
+                                          for (int i = 0;
+                                              i < lessons.length;
+                                              i++)
+                                            _buildLessonHeaderCell(
+                                                context, lessons[i], i + 1),
                                         ],
                                       ),
                                     ),
@@ -192,8 +210,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                                 buildCell: (context, rowIndex, columnIndex) {
                                   final participant = participants[rowIndex];
                                   final lesson = lessons[columnIndex];
-                                  final rowColor =
-                                      _rowColor(context, participant, organizerSessionState);
+                                  final rowColor = _rowColor(context,
+                                      participant, organizerSessionState);
 
                                   return Container(
                                     alignment: Alignment.center,
@@ -284,7 +302,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return '${name.substring(0, maxChars)}...';
   }
 
-  Widget _buildLessonHeaderCell(BuildContext context, Lesson lesson, int label) {
+  Widget _buildLessonHeaderCell(
+      BuildContext context, Lesson lesson, int label) {
     return InkWell(
       onTap: () => DialogUtils.showInfoDialog(
         context,
@@ -336,7 +355,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
           child: Row(
             children: [
               _buildProfileImage(user, fontSize),
-              if (user?.profileFireStoragePath != null) const SizedBox(width: 8),
+              if (user?.profileFireStoragePath != null)
+                const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   compactName,
@@ -390,34 +410,28 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     Lesson lesson,
   ) {
     final isSelected = _isParticipantSelectedForLesson(participant, lesson);
-    final iconColor = isSelected
-        ? Theme.of(context).colorScheme.primary
-        : Colors.grey.shade600;
+    final iconColor = isSelected ? Colors.black : Colors.grey.shade400;
     final hasCompletedLesson = lesson.id != null &&
         _hasGraduatedLesson(participant, lesson.id!, organizerSessionState);
+    final Color backgroundColor = (hasCompletedLesson)
+        ? CustomTextStyles.fullyLearnedColor
+        : Colors.white;
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          onPressed: () => _handleToggleParticipant(lesson, participant),
-          padding: EdgeInsets.zero,
-          constraints: const BoxConstraints(),
-          icon: Icon(
-            Icons.how_to_reg,
-            color: iconColor,
-            size: 22,
+    return Container(
+        color: backgroundColor,
+        child: Center(
+          child: IconButton(
+            onPressed: () => _handleToggleParticipant(lesson, participant),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            icon: Icon(
+              Icons.how_to_reg,
+              color: iconColor,
+              size: 22,
+            ),
+            tooltip: 'Toggle pairing for this lesson',
           ),
-          tooltip: 'Toggle pairing for this lesson',
-        ),
-        if (hasCompletedLesson)
-          Icon(
-            Icons.check_circle,
-            color: Colors.green.shade700,
-            size: 16,
-          ),
-      ],
-    );
+        ));
   }
 
   bool _isParticipantSelectedForLesson(
@@ -508,12 +522,10 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
           (group) => group.memberIds.contains(participantId)
               ? group.copyWith(
                   memberIds: {...group.memberIds}..remove(participantId),
-                  learnerId: group.learnerId == participantId
-                      ? null
-                      : group.learnerId,
-                  mentorId: group.mentorId == participantId
-                      ? null
-                      : group.mentorId,
+                  learnerId:
+                      group.learnerId == participantId ? null : group.learnerId,
+                  mentorId:
+                      group.mentorId == participantId ? null : group.mentorId,
                   additionalLearnerIds: {...group.additionalLearnerIds}
                     ..remove(participantId),
                 )
@@ -572,13 +584,12 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       return null;
     }
 
-    final sorted = [...members]
-      ..sort((a, b) => _compareParticipants(
-            a,
-            b,
-            organizerSessionState,
-            lessonIndexById,
-          ));
+    final sorted = [...members]..sort((a, b) => _compareParticipants(
+          a,
+          b,
+          organizerSessionState,
+          lessonIndexById,
+        ));
     return sorted.first;
   }
 
@@ -603,7 +614,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       return eligibleForLesson.first;
     }
 
-    final candidates = eligibleForLesson.isNotEmpty ? eligibleForLesson : members;
+    final candidates =
+        eligibleForLesson.isNotEmpty ? eligibleForLesson : members;
     candidates.sort((a, b) => _compareParticipants(
           a,
           b,
@@ -627,24 +639,16 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       return highestB.compareTo(highestA);
     }
 
-    final countA =
-        organizerSessionState.getGraduatedLessons(a).length;
-    final countB =
-        organizerSessionState.getGraduatedLessons(b).length;
+    final countA = organizerSessionState.getGraduatedLessons(a).length;
+    final countB = organizerSessionState.getGraduatedLessons(b).length;
     if (countA != countB) {
       return countB.compareTo(countA);
     }
 
-    final createdA = organizerSessionState
-            .getUser(a)
-            ?.created
-            .toDate() ??
-        DateTime.now();
-    final createdB = organizerSessionState
-            .getUser(b)
-            ?.created
-            .toDate() ??
-        DateTime.now();
+    final createdA =
+        organizerSessionState.getUser(a)?.created.toDate() ?? DateTime.now();
+    final createdB =
+        organizerSessionState.getUser(b)?.created.toDate() ?? DateTime.now();
     return createdA.compareTo(createdB);
   }
 
@@ -683,11 +687,10 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return null;
   }
 
-  Color _rowColor(
-      BuildContext context,
-      SessionParticipant participant,
+  Color _rowColor(BuildContext context, SessionParticipant participant,
       OrganizerSessionState organizerSessionState) {
-    final isInGroup = _groups.any((group) => group.memberIds.contains(participant.id));
+    final isInGroup =
+        _groups.any((group) => group.memberIds.contains(participant.id));
     final teachDeficit = participant.teachCount - participant.learnCount;
     final intensity = min(teachDeficit.abs() / 5.0, 1.0);
     Color base = Theme.of(context).colorScheme.surfaceVariant;
@@ -719,7 +722,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return lessons;
   }
 
-  List<_LevelGroup> _buildLevelGroups(List<Lesson> lessons, List<Level>? levels) {
+  List<_LevelGroup> _buildLevelGroups(
+      List<Lesson> lessons, List<Level>? levels) {
     final levelLookup = {for (final level in levels ?? []) level.id!: level};
     final groups = <_LevelGroup>[];
     int lessonCount = 0;
@@ -733,7 +737,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       final level = levelLookup[currentLevelId!];
       groups.add(_LevelGroup(
         levelNumber: nextLevelNumber++,
-        levelTitle: level?.title ?? 'Unassigned',
+        levelTitle: level?.title ?? 'Flex Lessons',
         lessonCount: lessonCount,
       ));
     }
@@ -855,10 +859,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     String? mentorId;
     String? learnerId;
 
-    final mentorParticipant =
-        participantByUserId[pairing.mentorId?.id];
-    final learnerParticipant =
-        participantByUserId[pairing.menteeId?.id];
+    final mentorParticipant = participantByUserId[pairing.mentorId?.id];
+    final learnerParticipant = participantByUserId[pairing.menteeId?.id];
 
     if (mentorParticipant?.id != null) {
       memberIds.add(mentorParticipant!.id!);
@@ -896,7 +898,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   Widget _buildGroupPanel(
       BuildContext context, Map<String, int> lessonIndexById) {
     final lessonLabelById = {
-      for (final entry in lessonIndexById.entries) entry.key: 'L${entry.value + 1}'
+      for (final entry in lessonIndexById.entries)
+        entry.key: 'L${entry.value + 1}'
     };
 
     return Align(
@@ -986,8 +989,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       return a.user.displayName.compareTo(b.user.displayName);
     });
 
-    final lessonIndex =
-        lesson?.id != null ? lessonIndexById[lesson!.id] : null;
+    final lessonIndex = lesson?.id != null ? lessonIndexById[lesson!.id] : null;
     final lessonLabel = lessonIndex != null ? 'L${lessonIndex + 1}' : '--';
     final canGraduate = _canCurrentUserGraduate(applicationState, libraryState);
 
@@ -1036,8 +1038,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
               ),
             ),
             const SizedBox(height: 12),
-            if (members.isEmpty)
-              const Text('No students in this group yet.'),
+            if (members.isEmpty) const Text('No students in this group yet.'),
             for (final member in members)
               _buildGroupMemberRow(
                 member,
@@ -1056,7 +1057,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     _StudentGroup group,
     OrganizerSessionState organizerSessionState,
   ) {
-    final participant = _findParticipantById(participantId, organizerSessionState);
+    final participant =
+        _findParticipantById(participantId, organizerSessionState);
     final user = organizerSessionState.getUserById(participantId);
     if (participant == null || user == null) {
       return null;
@@ -1083,9 +1085,12 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         children: [
           Checkbox(
             value: isGraduated,
-            onChanged: (!canGraduate || lesson == null || member.user.id == null)
+            onChanged: (!canGraduate ||
+                    lesson == null ||
+                    member.user.id == null)
                 ? null
-                : (_) => _handleGraduationToggle(member.user, lesson, isGraduated),
+                : (_) =>
+                    _handleGraduationToggle(member.user, lesson, isGraduated),
           ),
           Expanded(
             child: Row(
@@ -1103,8 +1108,10 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color:
-                          Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -1184,7 +1191,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     final creatorId = libraryState.selectedCourse?.creatorId;
     final currentUser = applicationState.currentUser;
     return currentUser != null &&
-        (currentUser.isAdmin || (creatorId != null && creatorId == currentUser.uid));
+        (currentUser.isAdmin ||
+            (creatorId != null && creatorId == currentUser.uid));
   }
 
   void _openLessonDetails(String lessonId) {
@@ -1271,8 +1279,7 @@ class _StudentGroup {
       isSelected: isSelected ?? this.isSelected,
       mentorId: mentorId ?? this.mentorId,
       learnerId: learnerId ?? this.learnerId,
-      additionalLearnerIds:
-          additionalLearnerIds ?? this.additionalLearnerIds,
+      additionalLearnerIds: additionalLearnerIds ?? this.additionalLearnerIds,
     );
   }
 }
