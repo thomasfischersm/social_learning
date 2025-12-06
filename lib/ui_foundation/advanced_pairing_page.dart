@@ -273,9 +273,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
 
     final widestContent = basePadding + maxIconWidth + widestTextWidth;
 
-    const minWidth = 120.0;
     final maxAllowedWidth = constraints.maxWidth * 0.45;
-    return max(minWidth, min(widestContent, maxAllowedWidth));
+    return min(widestContent, maxAllowedWidth);
   }
 
   String _truncateName(String name, int maxChars) {
