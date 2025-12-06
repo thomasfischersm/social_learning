@@ -40,7 +40,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   bool _isHorizontalScrolled = false;
   int _groupCounter = 1;
   late List<_StudentGroup> _groups;
-  final Set<String> _localGraduationOverrides = {};
   int _loadedRoundNumber = -1;
 
   @override
@@ -977,6 +976,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     final level = lesson?.levelId != null
         ? libraryState.findLevelByDocRef(lesson!.levelId!)
         : null;
+    print('Showing group info dialog for ${group.memberIds}');
     final members = group.memberIds
         .map((id) => _buildGroupMemberInfo(id, group, organizerSessionState))
         .whereType<_GroupMemberInfo>()
@@ -997,57 +997,59 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       context,
       'Group Details',
       SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Level: ${level?.title ?? 'Unassigned level'}',
-              style: CustomTextStyles.getBody(context)
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 6),
-            InkWell(
-              onTap: lesson?.id == null
-                  ? null
-                  : () => _openLessonDetails(lesson!.id!),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Lesson: ',
-                    style: CustomTextStyles.getBody(context)
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  Expanded(
-                    child: Text(
-                      lesson != null
-                          ? '$lessonLabel • ${lesson.title}'
-                          : 'No lesson selected',
-                      style: CustomTextStyles.getBody(context)?.copyWith(
-                        color: lesson?.id != null
-                            ? Theme.of(context).colorScheme.primary
-                            : null,
-                        decoration: lesson?.id != null
-                            ? TextDecoration.underline
-                            : null,
+        child: Consumer<OrganizerSessionState>(builder: (context, _, __) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Level: ${level?.title ?? 'Unassigned level'}',
+                style: CustomTextStyles.getBody(context)
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 6),
+              InkWell(
+                onTap: lesson?.id == null
+                    ? null
+                    : () => _openLessonDetails(lesson!.id!),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Lesson: ',
+                      style: CustomTextStyles.getBody(context)
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    Expanded(
+                      child: Text(
+                        lesson != null
+                            ? '$lessonLabel • ${lesson.title}'
+                            : 'No lesson selected',
+                        style: CustomTextStyles.getBody(context)?.copyWith(
+                          color: lesson?.id != null
+                              ? Theme.of(context).colorScheme.primary
+                              : null,
+                          decoration: lesson?.id != null
+                              ? TextDecoration.underline
+                              : null,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            if (members.isEmpty) const Text('No students in this group yet.'),
-            for (final member in members)
-              _buildGroupMemberRow(
-                member,
-                lesson,
-                organizerSessionState,
-                canGraduate,
-              ),
-          ],
-        ),
+              const SizedBox(height: 12),
+              if (members.isEmpty) const Text('No students in this group yet.'),
+              for (final member in members)
+                _buildGroupMemberRow(
+                  member,
+                  lesson,
+                  organizerSessionState,
+                  canGraduate,
+                ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -1057,10 +1059,17 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     _StudentGroup group,
     OrganizerSessionState organizerSessionState,
   ) {
-    final participant =
+    SessionParticipant? participant =
         _findParticipantById(participantId, organizerSessionState);
-    final user = organizerSessionState.getUserById(participantId);
-    if (participant == null || user == null) {
+    if (participant == null) {
+      return null;
+    }
+
+    final user =
+        organizerSessionState.getUserById(participant.participantId.id);
+    print(
+        'for participantId $participantId: Found participant $participant and $user');
+    if (user == null) {
       return null;
     }
 
@@ -1083,24 +1092,13 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Checkbox(
-            value: isGraduated,
-            onChanged: (!canGraduate ||
-                    lesson == null ||
-                    member.user.id == null)
-                ? null
-                : (_) =>
-                    _handleGraduationToggle(member.user, lesson, isGraduated),
-          ),
           Expanded(
             child: Row(
               children: [
-                Expanded(
-                  child: Text(
-                    member.user.displayName,
-                    style: CustomTextStyles.getBody(context),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                Text(
+                  member.user.displayName,
+                  style: CustomTextStyles.getBody(context),
+                  overflow: TextOverflow.ellipsis,
                 ),
                 if (member.isMentor) ...[
                   const SizedBox(width: 8),
@@ -1126,6 +1124,15 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
               ],
             ),
           ),
+          Checkbox(
+            value: isGraduated,
+            onChanged: (!canGraduate ||
+                    lesson == null ||
+                    member.user.id == null)
+                ? null
+                : (_) =>
+                    _handleGraduationToggle(member.user, lesson, isGraduated),
+          ),
         ],
       ),
     );
@@ -1140,10 +1147,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     final lessonId = lesson.id;
     if (userId == null || lessonId == null) {
       return false;
-    }
-
-    if (_localGraduationOverrides.contains(_graduationKey(userId, lessonId))) {
-      return true;
     }
 
     return organizerSessionState.hasUserGraduatedLesson(user, lesson);
@@ -1177,9 +1180,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       () {
         final studentState = Provider.of<StudentState>(context, listen: false);
         studentState.recordTeachingWithCheck(lesson, user, true, null, context);
-        setState(() {
-          _localGraduationOverrides.add(_graduationKey(user.id!, lesson.id!));
-        });
+        setState(() {});
       },
     );
   }
