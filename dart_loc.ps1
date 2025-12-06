@@ -2,23 +2,35 @@ param(
     [string]$Path = "."
 )
 
-Write-Host "Scanning for .dart files under '$Path'..."`n
+# Single regex to ignore dependency/build/IDE folders
+$ignoreRegex = '\\node_modules\\|\\.dart_tool\\|\\build\\|\\.git\\|\\.idea\\|\\.vscode'
 
-# Get all .dart files recursively
-$files = Get-ChildItem -Path $Path -Recurse -Include *.dart -File
+function Count-Lines {
+    param(
+        [string]$Extension
+    )
 
-if (-not $files) {
-    Write-Host "No .dart files found."
-    exit 0
+    $files = Get-ChildItem -Path $Path -Recurse -File -Include "*.$Extension" |
+        Where-Object { $_.FullName -notmatch $ignoreRegex }
+
+    if (-not $files) {
+        return @{ Files = 0; Lines = 0 }
+    }
+
+    $totalLines = 0
+    foreach ($file in $files) {
+        $totalLines += (Get-Content $file.FullName | Measure-Object -Line).Lines
+    }
+
+    return @{ Files = $files.Count; Lines = $totalLines }
 }
 
-$totalLines = 0
+Write-Host "Scanning source files under '$Path'..."`n
 
-foreach ($file in $files) {
-    $lineCount = (Get-Content $file.FullName | Measure-Object -Line).Lines
-    $totalLines += $lineCount
-}
+$dart = Count-Lines -Extension "dart"
+$java = Count-Lines -Extension "java"
+$ts   = Count-Lines -Extension "ts"
 
-$fileCount = $files.Count
-
-Write-Host "Dart files: $fileCount   Total Dart lines: $totalLines"
+Write-Host "Dart:       $($dart.Files) files, $($dart.Lines) lines"
+Write-Host "Java:       $($java.Files) files, $($java.Lines) lines"
+Write-Host "TypeScript: $($ts.Files) files, $($ts.Lines) lines"
