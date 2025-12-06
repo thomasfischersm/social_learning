@@ -130,4 +130,8 @@ class SessionParticipantsSubscription
     print('Reactivating existing participant document: ${existing.id}');
     SessionParticipantFunctions.updateIsActive(existing.id!, true);
   }
+
+  SessionParticipant getParticipantByParticipantId(String participantId) {
+    return items.firstWhere((participant) => participant.participantId.id == participantId);
+  }
 }

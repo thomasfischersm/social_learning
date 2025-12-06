@@ -1,10 +1,10 @@
-
 import 'dart:math';
 
 import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/state/firestore_subscription/firestore_list_subscription.dart';
 
-class SessionPairingsSubscription extends FirestoreListSubscription<SessionPairing> {
+class SessionPairingsSubscription
+    extends FirestoreListSubscription<SessionPairing> {
   final Map<int, List<SessionPairing>> _roundNumberToSessionPairings = {};
 
   get roundNumberToSessionPairings => _roundNumberToSessionPairings;
@@ -12,7 +12,10 @@ class SessionPairingsSubscription extends FirestoreListSubscription<SessionPairi
   SessionPairingsSubscription(Function() notifyChange)
       : super(
           'sessionPairings',
-          (snapshot) => SessionPairing.fromSnapshot(snapshot),
+          (snapshot) {
+            print('Trying to load session paring: ${snapshot.id}');
+            return SessionPairing.fromSnapshot(snapshot);
+          },
           notifyChange,
         );
 

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/data/data_helpers/session_pairing_helper.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_pairing.dart';
@@ -35,9 +36,10 @@ class OrganizerSessionState extends ChangeNotifier {
 
   late SessionPairingsSubscription _sessionPairingSubscription;
 
-  get currentSession => _sessionSubscription.item;
+  Session? get currentSession => _sessionSubscription.item;
 
-  List<SessionParticipant> get sessionParticipants => _sessionParticipantsSubscription.items;
+  List<SessionParticipant> get sessionParticipants =>
+      _sessionParticipantsSubscription.items;
 
   get participantUsers => _participantUsersSubscription.items;
 
@@ -48,6 +50,8 @@ class OrganizerSessionState extends ChangeNotifier {
 
   List<SessionPairing>? get lastRound =>
       _sessionPairingSubscription.getLastRound();
+
+  List<SessionPairing> get allPairings => _sessionPairingSubscription.items;
 
   OrganizerSessionState(ApplicationState applicationState, this._libraryState) {
     // Start subscriptions.
@@ -216,6 +220,16 @@ class OrganizerSessionState extends ChangeNotifier {
   User? getUser(SessionParticipant sessionParticipant) =>
       _participantUsersSubscription.getUser(sessionParticipant);
 
+  User? getUserByParticipantId(String? participantId) {
+    if (participantId == null) {
+      return null;
+    }
+
+    SessionParticipant participant = _sessionParticipantsSubscription
+        .getParticipantByParticipantId(participantId);
+    _participantUsersSubscription.getUser(participant);
+  }
+
   User? getUserById(String? id) =>
       (id == null) ? null : _participantUsersSubscription.getUserById(id);
 
@@ -348,27 +362,29 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void removeLesson(SessionPairing sessionPairing) {
-    FirebaseFirestore.instance
-        .doc('/sessionPairings/${sessionPairing.id}')
-        .update({
-      'lessonId': null,
-    }).then((value) {
-      print('Removed lesson from session pairing.');
-    }).catchError((error) {
-      print('Failed to remove lesson from session pairing: $error');
-    });
+    removeLesson(sessionPairing);
   }
 
   void addLesson(Lesson lesson, SessionPairing sessionPairing) {
-    FirebaseFirestore.instance
-        .doc('/sessionPairings/${sessionPairing.id}')
-        .update({
-      'lessonId': FirebaseFirestore.instance.doc('/lessons/${lesson.id}'),
-    }).then((value) {
-      print('Added lesson to session pairing.');
-    }).catchError((error) {
-      print('Failed to add lesson to session pairing: $error');
-    });
+    SessionPairingHelper.addLesson(sessionPairing, lesson);
+  }
+
+  void updateStudentsAndLesson(
+      String pairingId,
+      String? mentorUserId,
+      String? menteeUserId,
+      List<String>? additionalStudentUserIds,
+      String? lessonId) {
+    SessionPairingHelper.updateStudentsAndLesson(pairingId, mentorUserId,
+        menteeUserId, additionalStudentUserIds, lessonId);
+  }
+
+  Future<String> addPairing(SessionPairing pairing) async {
+    return await SessionPairingHelper.addPairing(pairing);
+  }
+
+  void removePairing(String pairingId) {
+    SessionPairingHelper.removePairing(pairingId);
   }
 
   void _handleCourseChange(ApplicationState applicationState) {
