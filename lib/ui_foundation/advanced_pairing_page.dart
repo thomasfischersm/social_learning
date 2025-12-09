@@ -80,15 +80,10 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                   _buildLevelGroups(lessons, libraryState.levels);
               final participants =
                   _sortedParticipants(organizerSessionState, lessons);
-              final lesson2IndexById = {
-                for (int i = 0; i < lessons.length; i++) lessons[i].id!: i
-              };
 
-              return Stack(
+              return Column(
                 children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(bottom: _bottomPanelHeight + 16),
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -251,6 +246,9 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                         ),
                       ],
                     ),
+                  ),
+                  const SizedBox(
+                    height: 12,
                   ),
                   _buildGroupPanel(context, libraryState),
                 ],
@@ -836,47 +834,44 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       }
     }
 
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        height: _bottomPanelHeight,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 8,
-              offset: Offset(0, -2),
-            ),
-          ],
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final group in _groups)
-              InputChip(
-                label: Text(
-                  '${group.memberParticipantIds.length}ppl: '
-                  '${group.lessonId != null ? lessonLabelById[group.lessonId] ?? '--' : '--'}',
-                ),
-                selected: group.isSelected,
-                showCheckmark: false,
-                onSelected: (_) => _selectGroup(group.id),
-                deleteIcon: const Icon(
-                  Icons.info_outline,
-                  size: 18,
-                  color: Colors.grey,
-                ),
-                deleteButtonTooltipMessage: 'Group info',
-                onDeleted: () => _showGroupInfoDialog(
-                  group,
-                  libraryState,
-                ),
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 8,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          for (final group in _groups)
+            InputChip(
+              label: Text(
+                '${group.memberParticipantIds.length}ppl: '
+                '${group.lessonId != null ? lessonLabelById[group.lessonId] ?? '--' : '--'}',
               ),
-          ],
-        ),
+              selected: group.isSelected,
+              showCheckmark: false,
+              onSelected: (_) => _selectGroup(group.id),
+              deleteIcon: const Icon(
+                Icons.info_outline,
+                size: 18,
+                color: Colors.grey,
+              ),
+              deleteButtonTooltipMessage: 'Group info',
+              onDeleted: () => _showGroupInfoDialog(
+                group,
+                libraryState,
+              ),
+            ),
+        ],
       ),
     );
   }
