@@ -764,11 +764,11 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         groups.any((group) => group.memberParticipantIds.isEmpty);
     if (!hasEmptyGroup) {
       groups.add(_StudentGroup(round: _roundCounter++));
+    }
 
-      bool hasSelectedGroup = _groups.any((group) => group.isSelected);
-      if (!hasSelectedGroup) {
-        groups.last.isSelected = true;
-      }
+    bool hasSelectedGroup = groups.any((group) => group.isSelected);
+    if (!hasSelectedGroup) {
+      groups.last.isSelected = true;
     }
 
     if (_StudentGroup.deepEquals(groups, _lastLoadedGroups)) {
