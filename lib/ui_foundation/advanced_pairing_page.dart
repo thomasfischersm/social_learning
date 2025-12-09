@@ -551,7 +551,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         // Remove unnecessary empty groups.
         int emptyGroupCount =
             _groups.where((group) => group.memberParticipantIds.isEmpty).length;
-        if (emptyGroupCount > 1) {
+        if (emptyGroupCount > 1) { // Implies that the current group is empty.
           _groups.remove(group);
 
           // Persist to Firebase.
@@ -559,11 +559,10 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
           if (groupId != null) {
             await organizerSessionState.removePairing(groupId);
           }
-          break;
+        } else {
+          // Persist to Firebase.
+          await _updateStudentsAndLesson(group, organizerSessionState);
         }
-
-        // Persist to Firebase.
-        await _updateStudentsAndLesson(group, organizerSessionState);
       }
     }
 
@@ -822,40 +821,30 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
           ],
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
+        child: Wrap(
+          spacing: 8,
+          runSpacing: 8,
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (final group in _groups)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: InputChip(
-                          label: Text(
-                            '${group.memberParticipantIds.length}ppl: '
-                            '${group.lessonId != null ? lessonLabelById[group.lessonId] ?? '--' : '--'}',
-                          ),
-                          selected: group.isSelected,
-                          showCheckmark: false,
-                          onSelected: (_) => _selectGroup(group.id),
-                          deleteIcon: const Icon(
-                            Icons.info_outline,
-                            size: 18,
-                            color: Colors.grey,
-                          ),
-                          deleteButtonTooltipMessage: 'Group info',
-                          onDeleted: () => _showGroupInfoDialog(
-                            group,
-                            lessonIndexById,
-                          ),
-                        ),
-                      ),
-                  ],
+            for (final group in _groups)
+              InputChip(
+                label: Text(
+                  '${group.memberParticipantIds.length}ppl: '
+                  '${group.lessonId != null ? lessonLabelById[group.lessonId] ?? '--' : '--'}',
+                ),
+                selected: group.isSelected,
+                showCheckmark: false,
+                onSelected: (_) => _selectGroup(group.id),
+                deleteIcon: const Icon(
+                  Icons.info_outline,
+                  size: 18,
+                  color: Colors.grey,
+                ),
+                deleteButtonTooltipMessage: 'Group info',
+                onDeleted: () => _showGroupInfoDialog(
+                  group,
+                  lessonIndexById,
                 ),
               ),
-            ),
           ],
         ),
       ),
