@@ -380,22 +380,22 @@ class OrganizerSessionState extends ChangeNotifier {
     SessionPairingHelper.addLesson(sessionPairing, lesson);
   }
 
-  Future<void> updateStudentsAndLesson(
+  void updateStudentsAndLesson(
       String pairingId,
       String? mentorUserId,
       String? menteeUserId,
       List<String>? additionalStudentUserIds,
-      String? lessonId) async {
-    await SessionPairingHelper.updateStudentsAndLesson(pairingId, mentorUserId,
-        menteeUserId, additionalStudentUserIds, lessonId);
+      String? lessonId, WriteBatch batch) {
+    SessionPairingHelper.updateStudentsAndLesson(pairingId, mentorUserId,
+        menteeUserId, additionalStudentUserIds, lessonId, batch);
   }
 
-  Future<String> addPairing(SessionPairing pairing) async {
-    return await SessionPairingHelper.addPairing(pairing);
+  String addPairing(SessionPairing pairing, WriteBatch batch) {
+    return SessionPairingHelper.addPairing(pairing, batch);
   }
 
-  Future<void> removePairing(String pairingId) async {
-    await SessionPairingHelper.removePairing(pairingId);
+  void removePairing(String pairingId, WriteBatch batch) {
+    SessionPairingHelper.removePairing(pairingId, batch);
   }
 
   void _handleCourseChange(ApplicationState applicationState) {

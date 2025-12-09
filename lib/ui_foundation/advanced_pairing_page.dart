@@ -1,9 +1,11 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
@@ -447,8 +449,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return selectedGroup.memberParticipantIds.contains(participant.id);
   }
 
-  void _handleToggleParticipant(
-      Lesson lesson, SessionParticipant participant) async {
+  void _handleToggleParticipant(Lesson lesson, SessionParticipant participant) {
     if (lesson.id == null || participant.id == null) {
       return;
     }
@@ -456,6 +457,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     final organizerSessionState =
         Provider.of<OrganizerSessionState>(context, listen: false);
     final libraryState = Provider.of<LibraryState>(context, listen: false);
+    final batch = FirestoreService.instance.batch();
 
     int selectedGroupIndex = _getSelectedGroup();
     _StudentGroup selectedGroup = _groups[selectedGroupIndex];
@@ -464,8 +466,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
 
     // Possibly remove the participant from another group.
     _dumpGroups(0);
-    await _removeParticipantFromAllGroups(
-        participant.id!, organizerSessionState, libraryState);
+    _removeParticipantFromAllGroups(
+        participant.id!, organizerSessionState, libraryState, batch);
     _dumpGroups(1);
 
     // Update the lesson.
@@ -490,26 +492,22 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     if (groupId == null) {
       String? mentorUserId = organizerSessionState.getUser(participant)?.id;
 
-      await organizerSessionState
-          .addPairing(SessionPairing(
+      selectedGroup.id = organizerSessionState.addPairing(
+          SessionPairing(
               null,
               docRef('sessions', organizerSessionState.currentSession!.id!),
               selectedGroup.round,
               docRef('users', mentorUserId!),
               null,
-              docRef('lessons', lesson.id!), []))
-          .then((String pairingId) {
-        selectedGroup.id = pairingId;
-        _StudentGroup? reconstitutedGroup = _groups
-            .firstWhereOrNull((group) => group.round == selectedGroup.round);
-        reconstitutedGroup?.isSelected = true;
-      });
+              docRef('lessons', lesson.id!), []),
+          batch);
     } else if (selectedGroup.memberParticipantIds.isEmpty) {
       print('The group should already have been deleted.');
       setState(() {});
+      batch.commit();
       return;
     } else {
-      await _updateStudentsAndLesson(selectedGroup, organizerSessionState);
+      _updateStudentsAndLesson(selectedGroup, organizerSessionState, batch);
     }
     _dumpGroups(4);
 
@@ -521,6 +519,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     }
 
     setState(() {});
+    batch.commit();
   }
 
   int _getSelectedGroup() {
@@ -535,10 +534,11 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return selectedIndex;
   }
 
-  Future<void> _removeParticipantFromAllGroups(
+  void _removeParticipantFromAllGroups(
       String participantId,
       OrganizerSessionState organizerSessionState,
-      LibraryState libraryState) async {
+      LibraryState libraryState,
+      WriteBatch batch) {
     for (_StudentGroup group in _groups) {
       if (group.memberParticipantIds.contains(participantId)) {
         // Rebuild the group.
@@ -551,17 +551,18 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         // Remove unnecessary empty groups.
         int emptyGroupCount =
             _groups.where((group) => group.memberParticipantIds.isEmpty).length;
-        if (emptyGroupCount > 1) { // Implies that the current group is empty.
+        if (emptyGroupCount > 1) {
+          // Implies that the current group is empty.
           _groups.remove(group);
 
           // Persist to Firebase.
           String? groupId = group.id;
           if (groupId != null) {
-            await organizerSessionState.removePairing(groupId);
+            organizerSessionState.removePairing(groupId, batch);
           }
         } else {
           // Persist to Firebase.
-          await _updateStudentsAndLesson(group, organizerSessionState);
+          _updateStudentsAndLesson(group, organizerSessionState, batch);
         }
       }
     }
@@ -570,8 +571,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     _ensureSelectedGroup();
   }
 
-  Future<void> _updateStudentsAndLesson(
-      _StudentGroup group, OrganizerSessionState organizerSessionState) async {
+  void _updateStudentsAndLesson(_StudentGroup group,
+      OrganizerSessionState organizerSessionState, WriteBatch batch) {
     String? mentorUserId = organizerSessionState
         .getUserByParticipantId(group.mentorParticipantId)
         ?.id;
@@ -583,8 +584,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         .map((id) => organizerSessionState.getUserByParticipantId(id)?.id)
         .whereType<String>()
         .toList();
-    await organizerSessionState.updateStudentsAndLesson(group.id!, mentorUserId,
-        menteeUserId, additionalStudentUserIds, group.lessonId);
+    organizerSessionState.updateStudentsAndLesson(group.id!, mentorUserId,
+        menteeUserId, additionalStudentUserIds, group.lessonId, batch);
   }
 
   bool _hasGraduatedLesson(

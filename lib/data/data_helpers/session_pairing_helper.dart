@@ -7,9 +7,10 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_pairing.dart';
 
 class SessionPairingHelper {
-  static Future<String> addPairing(SessionPairing pairing) async {
-    var newDoc =
-        await FirestoreService.instance.collection('sessionPairings').add({
+  static String addPairing(SessionPairing pairing, WriteBatch batch) {
+    DocumentReference newDoc =
+        FirestoreService.instance.collection('sessionPairings').doc();
+    batch.set(newDoc, {
       'sessionId': pairing.sessionId,
       'roundNumber': pairing.roundNumber,
       'mentorId': pairing.mentorId,
@@ -41,12 +42,13 @@ class SessionPairingHelper {
     });
   }
 
-  static Future<void> updateStudentsAndLesson(
+  static void updateStudentsAndLesson(
       String pairingId,
       String? mentorUserId,
       String? menteeUserId,
       List<String>? additionalStudentUserIds,
-      String? lessonId) async {
+      String? lessonId,
+      WriteBatch batch) {
     DocumentReference? mentorRef =
         mentorUserId != null ? docRef('users', mentorUserId) : null;
     DocumentReference? menteeRef =
@@ -62,13 +64,14 @@ class SessionPairingHelper {
         lessonId != null ? docRef('lessons', lessonId) : null;
 
     try {
-      await docRef('sessionPairings', pairingId).update({
+      batch.update(docRef('sessionPairings', pairingId), {
         'mentorId': mentorRef,
         'menteeId': menteeRef,
         'lessonId': lessonRef,
         'additionalStudentIds': additionalStudentRefs,
       });
-      print('Persisted to Firebase: Pairing (id = $pairingId) for mentor $mentorUserId and mentee $menteeUserId.');
+      print(
+          'Persisted to Firebase: Pairing (id = $pairingId) for mentor $mentorUserId and mentee $menteeUserId.');
     } on FirebaseException catch (exception, stackTrace) {
       debugPrint('FirebaseException: ${exception.code} – ${exception.message}');
       debugPrint('Stack trace: $stackTrace');
@@ -76,10 +79,10 @@ class SessionPairingHelper {
     }
   }
 
-  static Future<void> removePairing(String pairingId) async {
+  static void removePairing(String pairingId, WriteBatch batch) {
     print('Delete session pairing $pairingId.');
     try {
-      await docRef('sessionPairings', pairingId).delete();
+      batch.delete(docRef('sessionPairings', pairingId));
     } on FirebaseException catch (exception, stackTrace) {
       print('Failed to remove session pairing $pairingId.');
       debugPrint('FirebaseException: ${exception.code} – ${exception.message}');
