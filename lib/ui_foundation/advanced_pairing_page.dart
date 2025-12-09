@@ -16,6 +16,7 @@ import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/circled_letter_widget.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/sticky_header_table.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
@@ -404,29 +405,49 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     SessionParticipant participant,
     Lesson lesson,
   ) {
-    final isSelected = _isParticipantSelectedForLesson(participant, lesson);
-    final iconColor = isSelected ? Colors.black : Colors.grey.shade400;
-    final hasCompletedLesson = lesson.id != null &&
+    _StudentGroup? group = _groups.firstWhereOrNull((group) =>
+        group.memberParticipantIds.contains(participant.id) &&
+        group.lessonId == lesson.id);
+    Color iconColor = Colors.grey.shade400;
+    bool hasCompletedLesson = lesson.id != null &&
         _hasGraduatedLesson(participant, lesson.id!, organizerSessionState);
-    final Color backgroundColor = (hasCompletedLesson)
+    Color backgroundColor = (hasCompletedLesson)
         ? CustomTextStyles.fullyLearnedColor
         : Colors.white;
 
-    return Container(
-        color: backgroundColor,
-        child: Center(
-          child: IconButton(
-            onPressed: () => _handleToggleParticipant(lesson, participant),
-            padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(),
-            icon: Icon(
-              Icons.how_to_reg,
-              color: iconColor,
-              size: 22,
-            ),
-            tooltip: 'Toggle pairing for this lesson',
+    if (group != null) {
+      bool isSelected = _groups.any((group) =>
+          group.isSelected &&
+          group.lessonId == lesson.id &&
+          group.memberParticipantIds.contains(participant.id));
+      bool isMentor = group.mentorParticipantId == participant.id;
+      int groupIndex = _groups.indexOf(group);
+      String groupLetter = String.fromCharCode('A'.codeUnitAt(0) + groupIndex);
+      iconColor = isSelected ? Colors.black : Colors.grey.shade400;
+
+      return InkWell(
+        onTap: () => _handleToggleParticipant(lesson, participant),
+        child: Container(
+          color: backgroundColor,
+          alignment: Alignment.center,
+          child: CircledLetterWidget(
+            letter: groupLetter,
+            textStyle: CustomTextStyles.getBodySmall(context)
+                ?.copyWith(fontWeight: FontWeight.bold),
+            borderWidth: isMentor ? 2 : 1,
+            color: iconColor,
           ),
-        ));
+        ),
+      );
+    } else {
+      return Material(
+        color: backgroundColor, // cell background
+        child: InkWell(
+          onTap: () => _handleToggleParticipant(lesson, participant),
+          child: const SizedBox.expand(), // fills all available space
+        ),
+      );
+    }
   }
 
   bool _isParticipantSelectedForLesson(
@@ -539,6 +560,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       OrganizerSessionState organizerSessionState,
       LibraryState libraryState,
       WriteBatch batch) {
+    // TODO: Fix that this is not working consistently.
     for (_StudentGroup group in _groups) {
       if (group.memberParticipantIds.contains(participantId)) {
         // Rebuild the group.
