@@ -447,26 +447,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     }
   }
 
-  bool _isParticipantSelectedForLesson(
-    SessionParticipant participant,
-    Lesson lesson,
-  ) {
-    if (participant.id == null || lesson.id == null) {
-      return false;
-    }
-
-    final selectedIndex = _groups.indexWhere((group) => group.isSelected);
-    if (selectedIndex == -1) {
-      return false;
-    }
-    _StudentGroup selectedGroup = _groups[selectedIndex];
-    if (selectedGroup.lessonId != lesson.id) {
-      return false;
-    }
-
-    return selectedGroup.memberParticipantIds.contains(participant.id);
-  }
-
   void _handleToggleParticipant(Lesson lesson, SessionParticipant participant) {
     if (lesson.id == null || participant.id == null) {
       return;
@@ -1068,8 +1048,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
 
     return organizerSessionState.hasUserGraduatedLesson(user, lesson);
   }
-
-  String _graduationKey(String userId, String lessonId) => '$userId::$lessonId';
 
   void _handleGraduationToggle(
     User user,
