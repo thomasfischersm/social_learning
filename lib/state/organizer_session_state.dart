@@ -246,6 +246,13 @@ class OrganizerSessionState extends ChangeNotifier {
     }
   }
 
+  SessionParticipant? getParticipantByUserId(String? userId) {
+    if (userId == null) {
+      return null;
+    }
+    return _sessionParticipantsSubscription.getParticipantByUserId(userId);
+  }
+
   void signOut() {
     _disconnectFromSession();
   }

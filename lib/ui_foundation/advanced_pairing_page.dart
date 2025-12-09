@@ -23,6 +23,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/util/text_width_util.dart';
+import 'package:collection/collection.dart';
 
 class AdvancedPairingPage extends StatefulWidget {
   const AdvancedPairingPage({super.key});
@@ -39,17 +40,9 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   static const double _bottomPanelHeight = 96;
 
   bool _isHorizontalScrolled = false;
-  int _groupCounter = 1;
-  late List<_StudentGroup> _groups;
-  int _loadedRoundNumber = -1;
-
-  @override
-  void initState() {
-    super.initState();
-    _groups = [
-      _StudentGroup(round: _groupCounter++, isSelected: true),
-    ];
-  }
+  int _roundCounter = 1;
+  late List<_StudentGroup> _groups = [];
+  List<_StudentGroup> _lastLoadedGroups = [];
 
   @override
   Widget build(BuildContext context) {
@@ -454,7 +447,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return selectedGroup.memberParticipantIds.contains(participant.id);
   }
 
-  void _handleToggleParticipant(Lesson lesson, SessionParticipant participant) async {
+  void _handleToggleParticipant(
+      Lesson lesson, SessionParticipant participant) async {
     if (lesson.id == null || participant.id == null) {
       return;
     }
@@ -463,76 +457,75 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         Provider.of<OrganizerSessionState>(context, listen: false);
     final libraryState = Provider.of<LibraryState>(context, listen: false);
 
-      int selectedGroupIndex = _ensureSelectedGroup();
-      _StudentGroup selectedGroup = _groups[selectedGroupIndex];
-      bool wasInSelected =
-          selectedGroup.memberParticipantIds.contains(participant.id);
+    int selectedGroupIndex = _getSelectedGroup();
+    _StudentGroup selectedGroup = _groups[selectedGroupIndex];
+    bool wasInSelected =
+        selectedGroup.memberParticipantIds.contains(participant.id);
 
-      // Possibly remove the participant from another group.
-      _dumpGroups(0);
-      await _removeParticipantFromAllGroups(
-          participant.id!, organizerSessionState, libraryState);
-      _dumpGroups(1);
+    // Possibly remove the participant from another group.
+    _dumpGroups(0);
+    await _removeParticipantFromAllGroups(
+        participant.id!, organizerSessionState, libraryState);
+    _dumpGroups(1);
 
-      // Update the lesson.
-      selectedGroup.lessonId = lesson.id;
+    // Update the lesson.
+    selectedGroup.lessonId = lesson.id;
 
-      // Add the participant and rebuild the participants.
-      if (wasInSelected) {
-        selectedGroup.removeParticipant(participant);
-      } else {
-        selectedGroup.additionalLearnerParticipantIds.add(participant.id!);
-      }
-      _dumpGroups(2);
-      _rebuildParticipants(
-          selectedGroup,
-          selectedGroup.memberParticipantIds.toList(),
-          organizerSessionState,
-          libraryState);
-      _dumpGroups(3);
+    // Add the participant and rebuild the participants.
+    if (wasInSelected) {
+      // Should already have been removed by _removeParticipantFromAllGroups.
+    } else {
+      selectedGroup.additionalLearnerParticipantIds.add(participant.id!);
+    }
+    _dumpGroups(2);
+    _rebuildParticipants(
+        selectedGroup,
+        selectedGroup.memberParticipantIds.toList(),
+        organizerSessionState,
+        libraryState);
+    _dumpGroups(3);
 
-      // Persist the changes to Firebase.
-      String? groupId = selectedGroup.id;
-      if (groupId == null) {
-        String? mentorUserId = organizerSessionState.getUser(participant)?.id;
+    // Persist the changes to Firebase.
+    String? groupId = selectedGroup.id;
+    if (groupId == null) {
+      String? mentorUserId = organizerSessionState.getUser(participant)?.id;
 
-        await organizerSessionState
-            .addPairing(SessionPairing(
-                null,
-                docRef('sessions', organizerSessionState.currentSession!.id!),
-                selectedGroup.round,
-                docRef('users', mentorUserId!),
-                null,
-                docRef('lessons', lesson.id!), []))
-            .then((String pairingId) {
-          selectedGroup.id = pairingId;
-        });
-      } else if (selectedGroup.memberParticipantIds.isEmpty) {
-        print('The group should already have been deleted.');
-      } else {
-        await organizerSessionState.updateStudentsAndLesson(
-            groupId,
-            selectedGroup.mentorParticipantId,
-            selectedGroup.learnerParticipantId,
-            selectedGroup.additionalLearnerParticipantIds.toList(),
-            selectedGroup.lessonId);
-      }
+      await organizerSessionState
+          .addPairing(SessionPairing(
+              null,
+              docRef('sessions', organizerSessionState.currentSession!.id!),
+              selectedGroup.round,
+              docRef('users', mentorUserId!),
+              null,
+              docRef('lessons', lesson.id!), []))
+          .then((String pairingId) {
+        selectedGroup.id = pairingId;
+        _StudentGroup? reconstitutedGroup = _groups
+            .firstWhereOrNull((group) => group.round == selectedGroup.round);
+        reconstitutedGroup?.isSelected = true;
+      });
+    } else if (selectedGroup.memberParticipantIds.isEmpty) {
+      print('The group should already have been deleted.');
+      setState(() {});
+      return;
+    } else {
+      await _updateStudentsAndLesson(selectedGroup, organizerSessionState);
+    }
+    _dumpGroups(4);
 
-      // Add an empty group if necessary.
-      bool hasEmptyGroup =
-          _groups.any((group) => group.memberParticipantIds.isEmpty);
-      if (!hasEmptyGroup) {
-        _groups.add(_StudentGroup(round: _groupCounter++));
-      }
+    // Add an empty group if necessary.
+    bool hasEmptyGroup =
+        _groups.any((group) => group.memberParticipantIds.isEmpty);
+    if (!hasEmptyGroup) {
+      _groups.add(_StudentGroup(round: _roundCounter++));
+    }
 
-    setState(() {
-    });
+    setState(() {});
   }
 
-  int _ensureSelectedGroup() {
+  int _getSelectedGroup() {
     if (_groups.isEmpty) {
-      _groupCounter++;
-      _groups.add(_StudentGroup(round: _groupCounter++, isSelected: true));
+      _groups.add(_StudentGroup(round: _roundCounter++));
     }
     var selectedIndex = _groups.indexWhere((group) => group.isSelected);
     if (selectedIndex == -1) {
@@ -542,8 +535,10 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return selectedIndex;
   }
 
-  Future<void> _removeParticipantFromAllGroups(String participantId,
-      OrganizerSessionState organizerSessionState, LibraryState libraryState) async {
+  Future<void> _removeParticipantFromAllGroups(
+      String participantId,
+      OrganizerSessionState organizerSessionState,
+      LibraryState libraryState) async {
     for (_StudentGroup group in _groups) {
       if (group.memberParticipantIds.contains(participantId)) {
         // Rebuild the group.
@@ -568,79 +563,29 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         }
 
         // Persist to Firebase.
-        String? mentorUserId = organizerSessionState
-            .getUserByParticipantId(group.mentorParticipantId)
-            ?.id;
-        String? menteeUserId = organizerSessionState
-            .getUserByParticipantId(group.learnerParticipantId)
-            ?.id;
-        List<String>? additionalStudentUserIds = group.additionalLearnerParticipantIds
-            .map((id) => organizerSessionState.getUserByParticipantId(id)?.id)
-            .whereType<String>()
-            .toList();
-        organizerSessionState.updateStudentsAndLesson(group.id!, mentorUserId,
-            menteeUserId, additionalStudentUserIds, group.lessonId);
-        break;
+        await _updateStudentsAndLesson(group, organizerSessionState);
       }
     }
+
+    // Ensure that a group is selected.
+    _ensureSelectedGroup();
   }
 
-  SessionParticipant? _selectLearner(
-    List<SessionParticipant> members,
-    OrganizerSessionState organizerSessionState,
-    Map<String, int> lessonIndexById,
-  ) {
-    if (members.isEmpty) {
-      return null;
-    }
-
-    final sorted = [...members]..sort((a, b) => _compareParticipants(
-          a,
-          b,
-          organizerSessionState,
-          lessonIndexById,
-        ));
-    return sorted.first;
-  }
-
-  int _compareParticipants(
-    SessionParticipant a,
-    SessionParticipant b,
-    OrganizerSessionState organizerSessionState,
-    Map<String, int> lessonIndexById,
-  ) {
-    final highestA =
-        _highestGraduatedIndex(a, organizerSessionState, lessonIndexById);
-    final highestB =
-        _highestGraduatedIndex(b, organizerSessionState, lessonIndexById);
-    if (highestA != highestB) {
-      return highestB.compareTo(highestA);
-    }
-
-    final countA = organizerSessionState.getGraduatedLessons(a).length;
-    final countB = organizerSessionState.getGraduatedLessons(b).length;
-    if (countA != countB) {
-      return countB.compareTo(countA);
-    }
-
-    final createdA =
-        organizerSessionState.getUser(a)?.created.toDate() ?? DateTime.now();
-    final createdB =
-        organizerSessionState.getUser(b)?.created.toDate() ?? DateTime.now();
-    return createdA.compareTo(createdB);
-  }
-
-  int _highestGraduatedIndex(
-    SessionParticipant participant,
-    OrganizerSessionState organizerSessionState,
-    Map<String, int> lessonIndexById,
-  ) {
-    final graduated = organizerSessionState.getGraduatedLessons(participant);
-    if (graduated.isEmpty) {
-      return -1;
-    }
-    final indexes = graduated.map((lesson) => lessonIndexById[lesson.id] ?? -1);
-    return indexes.reduce(max);
+  Future<void> _updateStudentsAndLesson(
+      _StudentGroup group, OrganizerSessionState organizerSessionState) async {
+    String? mentorUserId = organizerSessionState
+        .getUserByParticipantId(group.mentorParticipantId)
+        ?.id;
+    String? menteeUserId = organizerSessionState
+        .getUserByParticipantId(group.learnerParticipantId)
+        ?.id;
+    List<String>? additionalStudentUserIds = group
+        .additionalLearnerParticipantIds
+        .map((id) => organizerSessionState.getUserByParticipantId(id)?.id)
+        .whereType<String>()
+        .toList();
+    await organizerSessionState.updateStudentsAndLesson(group.id!, mentorUserId,
+        menteeUserId, additionalStudentUserIds, group.lessonId);
   }
 
   bool _hasGraduatedLesson(
@@ -762,91 +707,95 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     Map<String, int> lessonIndexById,
   ) {
     print(
-        'Trying to rebuild groupings. Got pairings ${organizerSessionState.allPairings.length}');
-    final existingPairings = organizerSessionState.lastRound;
-    if (existingPairings == null || existingPairings.isEmpty) {
-      return;
-    }
+        'Trying to load groupings. Got pairings ${organizerSessionState.allPairings.length}');
+    Stopwatch stopWatch = Stopwatch()..start();
+    List<SessionPairing> allPairings =
+        List.from(organizerSessionState.allPairings);
+    // TODO: Filter out rounds that have been closed.
+    allPairings.sort((a, b) => a.roundNumber.compareTo(b.roundNumber));
 
-    final latestRoundNumber = existingPairings.first.roundNumber;
-    if (_loadedRoundNumber == latestRoundNumber) {
-      return;
-    }
+    // Update the round counter to be at least as much as is in the data store.
+    _roundCounter = allPairings.fold<int>(_roundCounter, (prev, curr) {
+      return max(prev, curr.roundNumber + 1);
+    });
 
-    final participantByUserId = {
-      for (final participant in organizerSessionState.sessionParticipants)
-        participant.participantId.id: participant,
-    };
+    // Find the currently select group.
+    String? selectedGroupId =
+        _groups.firstWhereOrNull((group) => group.isSelected)?.id;
 
-    final groups = <_StudentGroup>[];
-    var nextGroupId = 1;
+    List<_StudentGroup> groups = [];
 
-    for (final pairing in existingPairings) {
+    for (final pairing in allPairings) {
       final group = _buildGroupFromPairing(
         pairing,
-        participantByUserId,
-        nextGroupId,
+        organizerSessionState,
       );
       if (group != null) {
-        groups.add(group.copyWith(isSelected: groups.isEmpty));
-        nextGroupId++;
+        group.isSelected = group.id == selectedGroupId;
+        groups.add(group);
       }
     }
 
-    if (groups.isEmpty) {
+    bool hasEmptyGroup =
+        groups.any((group) => group.memberParticipantIds.isEmpty);
+    if (!hasEmptyGroup) {
+      groups.add(_StudentGroup(round: _roundCounter++));
+
+      bool hasSelectedGroup = _groups.any((group) => group.isSelected);
+      if (!hasSelectedGroup) {
+        groups.last.isSelected = true;
+      }
+    }
+
+    if (_StudentGroup.deepEquals(groups, _lastLoadedGroups)) {
+      print('No new data from Firebase => Updating groups.');
       return;
     }
+    _lastLoadedGroups = groups;
+
+    stopWatch.stop();
+    print(
+        'Rebuilt ${groups.length} groups in ${stopWatch.elapsedMilliseconds}ms.');
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        _groupCounter = max(_groupCounter, nextGroupId - 1);
-        _loadedRoundNumber = latestRoundNumber;
-        _groups = groups.toList();
+        _groups = groups;
       });
     });
   }
 
   _StudentGroup? _buildGroupFromPairing(
-    SessionPairing pairing,
-    Map<String, SessionParticipant> participantByUserId,
-    int groupNumber,
-  ) {
-    final memberParticipantIds = <String>{};
-    String? mentorParticipantId;
-    String? learnerParticipantId;
-
-    final mentorParticipant = participantByUserId[pairing.mentorId?.id];
-    final learnerParticipant = participantByUserId[pairing.menteeId?.id];
-
-    if (mentorParticipant?.id != null) {
-      memberParticipantIds.add(mentorParticipant!.id!);
-      mentorParticipantId = mentorParticipant.id;
-    }
-
-    if (learnerParticipant?.id != null) {
-      memberParticipantIds.add(learnerParticipant!.id!);
-      learnerParticipantId = learnerParticipant.id;
-    }
+      SessionPairing pairing, OrganizerSessionState organizerSessionState) {
+    SessionParticipant? mentorParticipant =
+        organizerSessionState.getParticipantByUserId(pairing.mentorId?.id);
+    SessionParticipant? learnerParticipant =
+        organizerSessionState.getParticipantByUserId(pairing.menteeId?.id);
+    print('Mentor lookup: pairing.mentorId = ${pairing.mentorId?.id}, '
+        'mentorParticipant = $mentorParticipant');
 
     List<String> additionalLearners = [];
     for (final additionalStudent in pairing.additionalStudentIds) {
-      final participant = participantByUserId[additionalStudent.id];
+      SessionParticipant? participant =
+          organizerSessionState.getParticipantByUserId(additionalStudent.id);
       if (participant?.id != null) {
         additionalLearners.add(participant!.id!);
-        memberParticipantIds.add(participant.id!);
       }
     }
 
-    if (memberParticipantIds.isEmpty && pairing.lessonId == null) {
-      return null;
-    }
+    print('Created a group from Firebase: '
+        'id = ${pairing.id}, '
+        'round = ${pairing.roundNumber}, '
+        'lessonId = ${pairing.lessonId?.id}, '
+        'mentorParticipantId = ${mentorParticipant?.id}, '
+        'learnerParticipantId = ${learnerParticipant?.id}, '
+        'additionalLearners = $additionalLearners');
 
     return _StudentGroup(
       id: pairing.id,
       round: pairing.roundNumber,
       lessonId: pairing.lessonId?.id,
-      mentorParticipantId: mentorParticipantId,
-      learnerParticipantId: learnerParticipantId,
+      mentorParticipantId: mentorParticipant?.id,
+      learnerParticipantId: learnerParticipant?.id,
       additionalLearnerIds: additionalLearners,
     );
   }
@@ -1155,14 +1104,19 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
 
   void _selectGroup(String? groupId) {
     if (groupId == null) {
-      return;
+      // Select the last group.
+      setState(() {
+        for (int i = 0; i < _groups.length; i++) {
+          _groups[i].isSelected = i == _groups.length - 1;
+        }
+      });
+    } else {
+      setState(() {
+        for (_StudentGroup group in _groups) {
+          group.isSelected = group.id == groupId;
+        }
+      });
     }
-
-    setState(() {
-      _groups = _groups
-          .map((g) => g.copyWith(isSelected: g.id == groupId))
-          .toList(growable: false);
-    });
   }
 
   String? _findMentor(List<String> participantIds, String? lessonId,
@@ -1184,9 +1138,12 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
 
       if (user == null) {
         print('User not found for participantId $participantId.');
-        print('Organizer Session State contains user Ids: ${organizerSessionState.participantUsers.map((user) => user.id)}');
-        print('Organizer Session State contains participant Ids: ${organizerSessionState.sessionParticipants.map((participant) => participant.id)}');
-        print('Organizer Session State contains participant Uids: ${organizerSessionState.sessionParticipants.map((participant) => participant.participantUid)}');
+        print(
+            'Organizer Session State contains user Ids: ${organizerSessionState.participantUsers.map((user) => user.id)}');
+        print(
+            'Organizer Session State contains participant Ids: ${organizerSessionState.sessionParticipants.map((participant) => participant.id)}');
+        print(
+            'Organizer Session State contains participant Uids: ${organizerSessionState.sessionParticipants.map((participant) => participant.participantUid)}');
         continue;
       }
 
@@ -1194,7 +1151,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         qualifyingParticipantIds.add(participantId);
       }
     }
-    print('_findMentor: The following users have graduated the selected lesson ($lessonId): $qualifyingParticipantIds');
+    print(
+        '_findMentor: The following users have graduated the selected lesson ($lessonId): $qualifyingParticipantIds');
 
     if (qualifyingParticipantIds.length == 1) {
       return qualifyingParticipantIds.first;
@@ -1219,10 +1177,12 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
 
       List<String> candidateParticipantIds = [];
       for (String participantId in qualifyingParticipantIds) {
-        User? user = organizerSessionState.getUserByParticipantId(participantId)!;
+        User? user =
+            organizerSessionState.getUserByParticipantId(participantId)!;
         if (organizerSessionState.hasUserGraduatedLesson(user, lesson)) {
           candidateParticipantIds.add(participantId);
-          print('Found that participant $participantId has learned lesson ${lesson.title}');
+          print(
+              'Found that participant $participantId has learned lesson ${lesson.title}');
         }
       }
 
@@ -1271,11 +1231,11 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       group.learnerParticipantId = participantIdsCopy.first;
       participantIdsCopy.remove(group.learnerParticipantId);
       group.additionalLearnerParticipantIds = List.from(participantIdsCopy);
-      print('Set learner to ${group.learnerParticipantId} and additional: ${group.additionalLearnerParticipantIds}');
+      print(
+          'Set learner to ${group.learnerParticipantId} and additional: ${group.additionalLearnerParticipantIds}');
     } else {
       group.additionalLearnerParticipantIds = [];
     }
-
   }
 
   void _dumpGroups(int step) {
@@ -1284,7 +1244,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       String msg = '- Group: ';
       if (group.mentorParticipantId != null) {
         msg += 'Mentor: ${group.mentorParticipantId}';
-       }
+      }
       if (group.learnerParticipantId != null) {
         msg += ' Learner: ${group.learnerParticipantId}';
       }
@@ -1292,6 +1252,13 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
         msg += ' Additional: ${group.additionalLearnerParticipantIds}';
       }
       print(msg);
+    }
+  }
+
+  void _ensureSelectedGroup() {
+    bool hasSelectedGroup = _groups.any((group) => group.isSelected);
+    if (!hasSelectedGroup) {
+      _groups.last.isSelected = true;
     }
   }
 }
@@ -1365,6 +1332,34 @@ class _StudentGroup {
     } else {
       additionalLearnerParticipantIds.remove(participant.id);
     }
+  }
+
+  static bool deepEquals(
+      List<_StudentGroup> groupA, List<_StudentGroup> groupB) {
+    if (groupA.length != groupB.length) {
+      return false;
+    }
+
+    for (int i = 0; i < groupA.length; i++) {
+      if (groupA[i].id != groupB[i].id ||
+          // groupA[i].round != groupB[i].round ||
+          groupA[i].lessonId != groupB[i].lessonId ||
+          // groupA[i].isSelected != groupB[i].isSelected ||
+          groupA[i].mentorParticipantId != groupB[i].mentorParticipantId ||
+          groupA[i].learnerParticipantId != groupB[i].learnerParticipantId) {
+        return false;
+      }
+
+      for (int j = 0;
+          j < groupA[i].additionalLearnerParticipantIds.length;
+          j++) {
+        if (groupA[i].additionalLearnerParticipantIds[j] !=
+            groupB[i].additionalLearnerParticipantIds[j]) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }
 

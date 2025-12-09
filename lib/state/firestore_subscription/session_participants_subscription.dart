@@ -55,8 +55,7 @@ class SessionParticipantsSubscription
 
   void _updateParticipantCount(
       session, List<SessionParticipant> sessionParticipants) {
-    final activeCount =
-        sessionParticipants.where((p) => p.isActive).length;
+    final activeCount = sessionParticipants.where((p) => p.isActive).length;
     if ((session != null) && (activeCount != session?.participantCount)) {
       // Update the session participant count.
       FirebaseFirestore.instance
@@ -89,7 +88,8 @@ class SessionParticipantsSubscription
     final matching = sessionParticipants
         .where((p) => p.participantUid == currentUser.uid)
         .toList();
-    print('Found ${matching.length} matching participants for ${currentUser.uid}');
+    print(
+        'Found ${matching.length} matching participants for ${currentUser.uid}');
 
     if (matching.isEmpty) {
       if (!_isJoinPending) {
@@ -101,8 +101,7 @@ class SessionParticipantsSubscription
           userUid: currentUser.uid,
           courseId: session.courseId.id,
           isInstructor: currentUser.isAdmin,
-        )
-            .then((documentReference) {
+        ).then((documentReference) {
           print(
               'Participant document created for ${currentUser.uid}: ${documentReference.id}');
         }).catchError((error, stackTrace) {
@@ -133,7 +132,18 @@ class SessionParticipantsSubscription
   }
 
   SessionParticipant? getParticipantByParticipantId(String participantId) {
-    print('getParticipantByParticipantId for $participantId to look through ${items.map((participant) => participant.id)}');
-    return items.firstWhereOrNull((participant) => participant.id == participantId);
+    print('getParticipantByParticipantId for $participantId to look through '
+        '${items.map((participant) => participant.id)}');
+    return items
+        .firstWhereOrNull((participant) => participant.id == participantId);
+  }
+
+  SessionParticipant? getParticipantByUserId(String userId) {
+    print('getParticipantByUserId for $userId to look through '
+        '${items.map((participant) => participant.participantId.id)}');
+    print('Participant.id = ${items.map((participant) => participant.id)}');
+    print('user.uid = ${items.map((participant) => participant.participantUid)}');
+    return items.firstWhereOrNull(
+        (participant) => participant.participantId.id == userId);
   }
 }

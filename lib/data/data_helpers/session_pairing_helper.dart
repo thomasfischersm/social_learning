@@ -68,6 +68,7 @@ class SessionPairingHelper {
         'lessonId': lessonRef,
         'additionalStudentIds': additionalStudentRefs,
       });
+      print('Persisted to Firebase: Pairing (id = $pairingId) for mentor $mentorUserId and mentee $menteeUserId.');
     } on FirebaseException catch (exception, stackTrace) {
       debugPrint('FirebaseException: ${exception.code} – ${exception.message}');
       debugPrint('Stack trace: $stackTrace');
