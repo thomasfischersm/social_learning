@@ -563,7 +563,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       LibraryState libraryState,
       WriteBatch batch) {
     // TODO: Fix that this is not working consistently.
-    for (_StudentGroup group in _groups) {
+    for (_StudentGroup group in List.from(_groups)) {
       if (group.memberParticipantIds.contains(participantId)) {
         // Rebuild the group.
         List<String> participantIds = group.memberParticipantIds
@@ -1254,6 +1254,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       print(
           'Set learner to ${group.learnerParticipantId} and additional: ${group.additionalLearnerParticipantIds}');
     } else {
+      group.learnerParticipantId = null;
       group.additionalLearnerParticipantIds = [];
     }
   }
