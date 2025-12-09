@@ -17,6 +17,7 @@ class SessionPairingHelper {
       'menteeId': pairing.menteeId,
       'lessonId': pairing.lessonId,
       'additionalStudentIds': pairing.additionalStudentIds,
+      'isCompleted': pairing.isCompleted,
     });
     print('Added session pairing ${newDoc.id}.');
     return newDoc.id;
