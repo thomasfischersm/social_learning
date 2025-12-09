@@ -48,6 +48,24 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   List<_StudentGroup> _lastLoadedGroups = [];
 
   @override
+  void initState() {
+    super.initState();
+    OrganizerSessionState organizerSessionState =
+        context.read<OrganizerSessionState>();
+    organizerSessionState.addListener(_maybeLoadExistingPairings);
+
+    _maybeLoadExistingPairings();
+  }
+
+  @override
+  void dispose() {
+    OrganizerSessionState organizerSessionState =
+        context.read<OrganizerSessionState>();
+    organizerSessionState.removeListener(_maybeLoadExistingPairings);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const LearningLabAppBar(),
@@ -65,8 +83,6 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
               final lesson2IndexById = {
                 for (int i = 0; i < lessons.length; i++) lessons[i].id!: i
               };
-
-              _maybeLoadExistingPairings(organizerSessionState);
 
               return Stack(
                 children: [
@@ -461,6 +477,15 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     _StudentGroup selectedGroup = _groups[selectedGroupIndex];
     bool wasInSelected =
         selectedGroup.memberParticipantIds.contains(participant.id);
+    bool isSameLevel =
+        selectedGroup.lessonId != null && selectedGroup.lessonId == lesson.id;
+
+    // Only change the lesson, not the participant.
+    if (wasInSelected && !isSameLevel) {
+      selectedGroup.lessonId = lesson.id;
+      setState(() {});
+      return;
+    }
 
     // Possibly remove the participant from another group.
     _dumpGroups(0);
@@ -701,7 +726,10 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return participants;
   }
 
-  void _maybeLoadExistingPairings(OrganizerSessionState organizerSessionState) {
+  void _maybeLoadExistingPairings() {
+    OrganizerSessionState organizerSessionState =
+        context.read<OrganizerSessionState>();
+
     print(
         'Trying to load groupings. Got pairings ${organizerSessionState.allPairings.length}');
     Stopwatch stopWatch = Stopwatch()..start();
@@ -920,16 +948,15 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                             ? '$lessonLabel • ${lesson.title}'
                             : 'No lesson selected',
                         style: CustomTextStyles.getBody(context)?.copyWith(
-                          color: lesson?.id != null
-                              ? Theme.of(context).colorScheme.primary
-                              : null,
-                          decoration: lesson?.id != null
-                              ? TextDecoration.underline
-                              : null,
-                          decorationColor: lesson?.id != null
-                              ? Theme.of(context).colorScheme.primary
-                              : null
-                        ),
+                            color: lesson?.id != null
+                                ? Theme.of(context).colorScheme.primary
+                                : null,
+                            decoration: lesson?.id != null
+                                ? TextDecoration.underline
+                                : null,
+                            decorationColor: lesson?.id != null
+                                ? Theme.of(context).colorScheme.primary
+                                : null),
                       ),
                     ),
                   ],
