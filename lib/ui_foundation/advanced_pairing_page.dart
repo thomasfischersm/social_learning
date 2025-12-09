@@ -62,14 +62,11 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                   _buildLevelGroups(lessons, libraryState.levels);
               final participants =
                   _sortedParticipants(organizerSessionState, lessons);
-              final lessonIndexById = {
+              final lesson2IndexById = {
                 for (int i = 0; i < lessons.length; i++) lessons[i].id!: i
               };
 
-              _maybeLoadExistingPairings(
-                organizerSessionState,
-                lessonIndexById,
-              );
+              _maybeLoadExistingPairings(organizerSessionState);
 
               return Stack(
                 children: [
@@ -239,7 +236,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                       ],
                     ),
                   ),
-                  _buildGroupPanel(context, lessonIndexById),
+                  _buildGroupPanel(context, libraryState),
                 ],
               );
             },
@@ -724,10 +721,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return participants;
   }
 
-  void _maybeLoadExistingPairings(
-    OrganizerSessionState organizerSessionState,
-    Map<String, int> lessonIndexById,
-  ) {
+  void _maybeLoadExistingPairings(OrganizerSessionState organizerSessionState) {
     print(
         'Trying to load groupings. Got pairings ${organizerSessionState.allPairings.length}');
     Stopwatch stopWatch = Stopwatch()..start();
@@ -822,12 +816,17 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     );
   }
 
-  Widget _buildGroupPanel(
-      BuildContext context, Map<String, int> lessonIndexById) {
-    final lessonLabelById = {
-      for (final entry in lessonIndexById.entries)
-        entry.key: 'L${entry.value + 1}'
-    };
+  Widget _buildGroupPanel(BuildContext context, LibraryState libraryState) {
+    Map<String, String> lessonLabelById = {};
+    List<Lesson>? lessons = libraryState.lessons;
+    if (lessons != null) {
+      for (int i = 0; i < lessons.length; i++) {
+        String? lessonId = lessons[i].id;
+        if (lessonId != null) {
+          lessonLabelById[lessonId] = 'L${i + 1}';
+        }
+      }
+    }
 
     return Align(
       alignment: Alignment.bottomCenter,
@@ -865,7 +864,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                 deleteButtonTooltipMessage: 'Group info',
                 onDeleted: () => _showGroupInfoDialog(
                   group,
-                  lessonIndexById,
+                  libraryState,
                 ),
               ),
           ],
@@ -876,7 +875,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
 
   void _showGroupInfoDialog(
     _StudentGroup group,
-    Map<String, int> lessonIndexById,
+    LibraryState libraryState,
   ) {
     final organizerSessionState =
         Provider.of<OrganizerSessionState>(context, listen: false);
@@ -903,9 +902,10 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       return a.user.displayName.compareTo(b.user.displayName);
     });
 
-    final lessonIndex = lesson?.id != null ? lessonIndexById[lesson!.id] : null;
-    final lessonLabel = lessonIndex != null ? 'L${lessonIndex + 1}' : '--';
-    final canGraduate = _canCurrentUserGraduate(applicationState, libraryState);
+    int? lessonIndex =
+        lesson != null ? libraryState.lessons?.indexOf(lesson) : null;
+    String lessonLabel = lessonIndex != null ? 'L${lessonIndex + 1}' : '--';
+    bool canGraduate = _canCurrentUserGraduate(applicationState, libraryState);
 
     DialogUtils.showInfoDialogWithContent(
       context,
@@ -946,6 +946,9 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
                           decoration: lesson?.id != null
                               ? TextDecoration.underline
                               : null,
+                          decorationColor: lesson?.id != null
+                              ? Theme.of(context).colorScheme.primary
+                              : null
                         ),
                       ),
                     ),
