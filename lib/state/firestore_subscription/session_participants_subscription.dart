@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
@@ -70,7 +71,7 @@ class SessionParticipantsSubscription
     List<String> userIds = [];
     for (SessionParticipant participant in items) {
       var participantId = participant.participantId;
-      var rawUserId = UserFunctions.extractNumberId(participantId);
+      String? rawUserId = UserFunctions.extractNumberId(participantId);
       if (rawUserId != null) {
         userIds.add(rawUserId);
       }
@@ -131,7 +132,8 @@ class SessionParticipantsSubscription
     SessionParticipantFunctions.updateIsActive(existing.id!, true);
   }
 
-  SessionParticipant getParticipantByParticipantId(String participantId) {
-    return items.firstWhere((participant) => participant.participantId.id == participantId);
+  SessionParticipant? getParticipantByParticipantId(String participantId) {
+    print('getParticipantByParticipantId for $participantId to look through ${items.map((participant) => participant.id)}');
+    return items.firstWhereOrNull((participant) => participant.id == participantId);
   }
 }

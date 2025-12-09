@@ -224,10 +224,14 @@ class OrganizerSessionState extends ChangeNotifier {
     if (participantId == null) {
       return null;
     }
-
-    SessionParticipant participant = _sessionParticipantsSubscription
+    SessionParticipant? participant = _sessionParticipantsSubscription
         .getParticipantByParticipantId(participantId);
-    _participantUsersSubscription.getUser(participant);
+
+    if (participant == null) {
+      print('Participant not found for participantId $participantId');
+      return null;
+    }
+    return _participantUsersSubscription.getUser(participant);
   }
 
   User? getUserById(String? id) =>
@@ -369,13 +373,13 @@ class OrganizerSessionState extends ChangeNotifier {
     SessionPairingHelper.addLesson(sessionPairing, lesson);
   }
 
-  void updateStudentsAndLesson(
+  Future<void> updateStudentsAndLesson(
       String pairingId,
       String? mentorUserId,
       String? menteeUserId,
       List<String>? additionalStudentUserIds,
-      String? lessonId) {
-    SessionPairingHelper.updateStudentsAndLesson(pairingId, mentorUserId,
+      String? lessonId) async {
+    await SessionPairingHelper.updateStudentsAndLesson(pairingId, mentorUserId,
         menteeUserId, additionalStudentUserIds, lessonId);
   }
 
@@ -383,8 +387,8 @@ class OrganizerSessionState extends ChangeNotifier {
     return await SessionPairingHelper.addPairing(pairing);
   }
 
-  void removePairing(String pairingId) {
-    SessionPairingHelper.removePairing(pairingId);
+  Future<void> removePairing(String pairingId) async {
+    await SessionPairingHelper.removePairing(pairingId);
   }
 
   void _handleCourseChange(ApplicationState applicationState) {
