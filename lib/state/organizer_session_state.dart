@@ -405,6 +405,10 @@ class OrganizerSessionState extends ChangeNotifier {
       _connectToActiveSession(applicationState);
     }
   }
+
+  Future<void> completePairing(String pairingId) async {
+    await SessionPairingHelper.completePairing(pairingId);
+  }
 }
 
 // TODO: about the teach and learn count on participants.

@@ -731,9 +731,9 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     print(
         'Trying to load groupings. Got pairings ${organizerSessionState.allPairings.length}');
     Stopwatch stopWatch = Stopwatch()..start();
-    List<SessionPairing> allPairings =
-        List.from(organizerSessionState.allPairings);
-    // TODO: Filter out rounds that have been closed.
+    List<SessionPairing> allPairings = organizerSessionState.allPairings
+        .where((pairing) => !pairing.isCompleted)
+        .toList();
     allPairings.sort((a, b) => a.roundNumber.compareTo(b.roundNumber));
 
     // Update the round counter to be at least as much as is in the data store.
@@ -910,9 +910,11 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     String lessonLabel = lessonIndex != null ? 'L${lessonIndex + 1}' : '--';
     bool canGraduate = _canCurrentUserGraduate(applicationState, libraryState);
 
-    DialogUtils.showInfoDialogWithContent(
+    DialogUtils.showOptionalActionDialogWithContent(
       context,
       'Group Details',
+      'Complete Group',
+      () => _completeGroup(group),
       SingleChildScrollView(
         child: Consumer<OrganizerSessionState>(builder: (context, _, __) {
           return Column(
@@ -1276,6 +1278,17 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     if (!hasSelectedGroup) {
       _groups.last.isSelected = true;
     }
+  }
+
+  void _completeGroup(_StudentGroup group) {
+    // Update in app.
+    _groups.remove(group);
+    setState(() {});
+
+    // Update in Firebase.
+    OrganizerSessionState organizerSessionState =
+        context.read<OrganizerSessionState>();
+    organizerSessionState.completePairing(group.id!);
   }
 }
 

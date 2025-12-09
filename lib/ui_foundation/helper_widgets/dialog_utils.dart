@@ -87,4 +87,37 @@ class DialogUtils {
     );
   }
 
+  // This static method shows a confirmation dialog
+  static Future<void> showOptionalActionDialogWithContent(
+      BuildContext context,
+      String title,
+      String actionLabel,
+      VoidCallback onAction,
+      Widget content,
+      ) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: content,
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Dismiss'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            ElevatedButton(
+              child: Text(actionLabel),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                onAction();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

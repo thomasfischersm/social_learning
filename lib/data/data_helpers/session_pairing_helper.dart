@@ -92,4 +92,12 @@ class SessionPairingHelper {
     }
     print('Removed session pairing $pairingId.');
   }
+
+  static Future<void> completePairing(String pairingId) async {
+    print('Completing session pairing $pairingId.');
+    await docRef('sessionPairings', pairingId).update({
+      'isCompleted': true,
+    });
+
+  }
 }
