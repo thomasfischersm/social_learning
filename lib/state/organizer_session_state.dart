@@ -373,7 +373,7 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void removeLesson(SessionPairing sessionPairing) {
-    removeLesson(sessionPairing);
+    SessionPairingHelper.removeLesson(sessionPairing);
   }
 
   void addLesson(Lesson lesson, SessionPairing sessionPairing) {
