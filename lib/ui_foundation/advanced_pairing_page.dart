@@ -353,9 +353,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     return Material(
       color: rowColor,
       child: InkWell(
-        onTap: user == null
-            ? null
-            : () => _handleProfileTap(context, user),
+        onTap: user == null ? null : () => _handleProfileTap(context, user),
         child: Container(
           width: width,
           height: _rowHeight,
@@ -379,8 +377,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     );
   }
 
-  void _handleProfileTap(
-      BuildContext context, User user) {
+  void _handleProfileTap(BuildContext context, User user) {
     StudentSessionHistoryDialog.show(context, user);
   }
 
@@ -728,7 +725,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
     allPairings.sort((a, b) => a.roundNumber.compareTo(b.roundNumber));
 
     // Update the round counter to be at least as much as is in the data store.
-    _roundCounter = allPairings.fold<int>(_roundCounter, (prev, curr) {
+    _roundCounter = organizerSessionState.allPairings.fold<int>(_roundCounter,
+        (prev, curr) {
       return max(prev, curr.roundNumber + 1);
     });
 
