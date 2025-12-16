@@ -45,8 +45,10 @@ class StudentSessionHistoryDialog {
   }
 
   static Widget _buildHeaderRow(BuildContext context, User user) {
-    return ListTile(
+    return Padding( padding: const EdgeInsets.only(bottom: 12), child:ListTile(
         contentPadding: EdgeInsets.zero,
+        minLeadingWidth: 0,
+        horizontalTitleGap: 12,
         leading: SizedBox.square(
             dimension: 64,
             child: ProfileImageWidgetV2.fromUser(
@@ -56,10 +58,14 @@ class StudentSessionHistoryDialog {
         title: Text(user.displayName, style: CustomTextStyles.subHeadline),
         subtitle: InkWell(
             onTap: () => _navigateToClipboard(context, user),
-            child: Text(
+            child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                const Icon(Icons.content_paste_rounded, size: 16),
+            const SizedBox(width: 6),Text(
               'View clipboard',
               style: CustomTextStyles.getLink(context),
-            )));
+            )]))));
   }
 
   static void _navigateToClipboard(BuildContext context, User user) {
@@ -94,14 +100,25 @@ class StudentSessionHistoryDialog {
     print('learnerUsers: $learnerUsers');
 
     return [
-      InkWell(
+    Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Theme.of(context).dividerColor.withOpacity(0.6)),
+        ),
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [InkWell(
           onTap: () => _navigateToLesson(context, lesson),
           child: Text(lesson?.title ?? 'Lesson not found',
               style: CustomTextStyles.getBody(context))),
       Row(children: [
         _frameProfilePhoto(context, dialogUser, mentorUser),
         const SizedBox(width: 4),
-        Icon(Icons.arrow_forward),
+        Icon(Icons.arrow_right_alt_rounded,
+          size: 22,
+          color: CustomTextStyles.getBody(context)?.color,),
         const SizedBox(width: 4),
         ...learnerUsers.expand((learnerUser) => [
               _frameProfilePhoto(context, dialogUser, learnerUser),
@@ -109,13 +126,13 @@ class StudentSessionHistoryDialog {
             ]),
       ]),
       SizedBox(height: 8),
-    ];
+    ]))];
   }
 
   static Widget _frameProfilePhoto(
       BuildContext context, User dialogUser, User? profilePhotoUser) {
     if (profilePhotoUser == null) {
-      return SizedBox(width: 0);
+      return SizedBox.shrink();
     }
 
     return SizedBox.square(
