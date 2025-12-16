@@ -14,6 +14,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/advanced_pairing/student_session_history_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/circled_letter_widget.dart';
@@ -354,7 +355,7 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
       child: InkWell(
         onTap: user == null
             ? null
-            : () => _handleProfileTap(context, libraryState, user),
+            : () => _handleProfileTap(context, user),
         child: Container(
           width: width,
           height: _rowHeight,
@@ -379,18 +380,8 @@ class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
   }
 
   void _handleProfileTap(
-      BuildContext context, LibraryState libraryState, User user) {
-    final currentUser =
-        Provider.of<ApplicationState>(context, listen: false).currentUser;
-    final selectedCourse = libraryState.selectedCourse;
-    final isCourseCreator = selectedCourse?.creatorId == currentUser?.uid;
-    final isAdmin = currentUser?.isAdmin ?? false;
-
-    if (isCourseCreator || isAdmin) {
-      InstructorClipboardArgument.navigateTo(context, user.id, user.uid);
-    } else {
-      OtherProfileArgument.goToOtherProfile(context, user.id, user.uid);
-    }
+      BuildContext context, User user) {
+    StudentSessionHistoryDialog.show(context, user);
   }
 
   Widget _buildProfileImage(User? user, double fontSize) {
