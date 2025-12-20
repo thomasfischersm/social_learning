@@ -149,6 +149,7 @@ class OrganizerSessionState extends ChangeNotifier {
       'participantCount': 1,
       'startTime': FieldValue.serverTimestamp(),
       'isActive': true,
+      'sessionType': SessionType.automaticManual.toInt(),
     });
     String sessionId = sessionDoc.id;
 
