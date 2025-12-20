@@ -24,6 +24,8 @@ Students can find other students to learn from, teach to, and track their progre
 ## Coding Style
 - When structuring methods, break them into units that do one logical thing. Prefer to make a sub-method for each logical unit. For example, instead of one giant method that does everything, break it down. Concrete example: To join a session has these steps: (1) load the session info. (2) If the user is already an inactive participant, reactivate the user. (3) Otherwise, add the user to the session. If all of this is three lines of code, leave it as a single method. However, if each step requires doing work, create sub-methods for each. That way the high level idea is clearly captured in the top level method.
 - Prefer using types for references over using var.
+- Prefer using types for references in methods over final.
+- Prefer one class per file with exceptions for stateful widgets where it makes sense to combine the widget and state class. Also page arguments are fine in the same page. However, especially of a page has classes for widgets, the pattern is to create a subdirectory for each page under helper_widgets. (If the page is called CourseHomePage, it would have a subdirectory called course_home where all its classes for widgets go.)
 
 ## Build & Test Commands
 ```bash
