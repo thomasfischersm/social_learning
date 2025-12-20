@@ -56,7 +56,7 @@ class TeachableItem {
       lessonRefs: (data['lessonRefs'] as List<dynamic>?)
           ?.map((ref) => ref as DocumentReference)
           .toList(),
-      inclusionStatus: TeachableItemInclusionStatusX.fromInt(
+      inclusionStatus: TeachableItemInclusionStatus.fromInt(
         data['inclusionStatus'] as int? ?? 0,
       ),
       createdAt: data['createdAt'] as Timestamp,
