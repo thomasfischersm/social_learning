@@ -368,11 +368,11 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void removeLesson(SessionPairing sessionPairing) {
-    SessionPairingHelper.removeLesson(sessionPairing);
+    SessionPairingFunctions.removeLesson(sessionPairing);
   }
 
   void addLesson(Lesson lesson, SessionPairing sessionPairing) {
-    SessionPairingHelper.addLesson(sessionPairing, lesson);
+    SessionPairingFunctions.addLesson(sessionPairing, lesson);
   }
 
   void updateStudentsAndLesson(
@@ -381,16 +381,16 @@ class OrganizerSessionState extends ChangeNotifier {
       String? menteeUserId,
       List<String>? additionalStudentUserIds,
       String? lessonId, WriteBatch batch) {
-    SessionPairingHelper.updateStudentsAndLesson(pairingId, mentorUserId,
+    SessionPairingFunctions.updateStudentsAndLesson(pairingId, mentorUserId,
         menteeUserId, additionalStudentUserIds, lessonId, batch);
   }
 
   String addPairing(SessionPairing pairing, WriteBatch batch) {
-    return SessionPairingHelper.addPairing(pairing, batch);
+    return SessionPairingFunctions.addPairing(pairing, batch);
   }
 
   void removePairing(String pairingId, WriteBatch batch) {
-    SessionPairingHelper.removePairing(pairingId, batch);
+    SessionPairingFunctions.removePairing(pairingId, batch);
   }
 
   void _handleCourseChange(ApplicationState applicationState) {
@@ -402,7 +402,7 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   Future<void> completePairing(String pairingId) async {
-    await SessionPairingHelper.completePairing(pairingId);
+    await SessionPairingFunctions.completePairing(pairingId);
   }
 }
 
