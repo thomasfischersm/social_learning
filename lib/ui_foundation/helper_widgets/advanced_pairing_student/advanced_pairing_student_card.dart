@@ -24,10 +24,10 @@ class AdvancedPairingStudentCard extends StatefulWidget {
 
   @override
   State<AdvancedPairingStudentCard> createState() =>
-      _AdvancedPairingCardState();
+      _AdvancedPairingStudentCardState();
 }
 
-class _AdvancedPairingCardState extends State<AdvancedPairingStudentCard> {
+class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard> {
   String? _coverPhotoUrl;
 
   @override
