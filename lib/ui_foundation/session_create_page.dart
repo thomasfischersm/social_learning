@@ -63,7 +63,7 @@ class SessionCreateState extends State<SessionCreatePage> {
                   TableRow(children: <Widget>[
                     CustomUiConstants.getTextPadding(
                         const Text('Session type:')),
-                    CustomUiConstants.getTextPadding(Column(
+                    CustomUiConstants.getIndentationTextPadding(Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ..._buildSessionTypeOptions(context),
@@ -127,17 +127,17 @@ class SessionCreateState extends State<SessionCreatePage> {
       _SessionTypeOption(
         SessionType.automaticManual,
         'Automatic pairing with manual override',
-        'Info text coming soon for automatic/manual.',
+        'As an instructor, you start each session. A smart algorithm will pair students. You have the option to change partners and assigned lessons.\n\nNote: The smart algorithm considers many factors that would make for the best pairings. For example, it\'ll look into the future to detect any lesson that might become a bottleneck with not enough mentors.',
       ),
       _SessionTypeOption(
         SessionType.powerMode,
         'Power mode for advanced control',
-        'Info text coming soon for power mode.',
+        'The power mode allows you to extremely quickly pair students with minimal clicks. There is a learning curve to understanding this powerful user interface.',
       ),
       _SessionTypeOption(
         SessionType.partyMode,
         'Party mode for mingling',
-        'Info text coming soon for party mode.',
+        'This mode is optimal for social events where the focus is on mingling. Students can request to be paired. They will be paired with available students or soon-to-be-available students. This works great for where lessons take a variable amount of time and students may come in and out of wanting to learn.',
       ),
     ];
 
