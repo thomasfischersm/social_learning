@@ -15,6 +15,7 @@ class AdvancedPairingStudentCard extends StatefulWidget {
   final List<User?> learners;
 
   const AdvancedPairingStudentCard({
+    super.key,
     required this.roundNumber,
     required this.lesson,
     required this.mentor,
@@ -22,7 +23,8 @@ class AdvancedPairingStudentCard extends StatefulWidget {
   });
 
   @override
-  State<AdvancedPairingStudentCard> createState() => _AdvancedPairingCardState();
+  State<AdvancedPairingStudentCard> createState() =>
+      _AdvancedPairingCardState();
 }
 
 class _AdvancedPairingCardState extends State<AdvancedPairingStudentCard> {
@@ -46,7 +48,7 @@ class _AdvancedPairingCardState extends State<AdvancedPairingStudentCard> {
   @override
   Widget build(BuildContext context) {
     final image =
-    (_coverPhotoUrl == null) ? null : NetworkImage(_coverPhotoUrl!);
+        (_coverPhotoUrl == null) ? null : NetworkImage(_coverPhotoUrl!);
 
     return BackgroundImageCard(
       image: image,
@@ -88,7 +90,8 @@ class _AdvancedPairingCardState extends State<AdvancedPairingStudentCard> {
     }
 
     return InkWell(
-      onTap: () => LessonDetailArgument.goToLessonDetailPage(context, lesson.id!),
+      onTap: () =>
+          LessonDetailArgument.goToLessonDetailPage(context, lesson.id!),
       child: Text(
         lesson.title,
         style: CustomTextStyles.headline,
