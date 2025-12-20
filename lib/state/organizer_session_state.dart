@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/data/data_helpers/session_functions.dart';
 import 'package:social_learning/data/data_helpers/session_pairing_helper.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session.dart';
@@ -137,20 +138,13 @@ class OrganizerSessionState extends ChangeNotifier {
       return;
     }
 
-    // Create session.
-    DocumentReference<Map<String, dynamic>> sessionDoc = await FirebaseFirestore
-        .instance
-        .collection('sessions')
-        .add(<String, dynamic>{
-      'courseId': FirebaseFirestore.instance.doc('/courses/${course.id}'),
-      'name': sessionName,
-      'organizerUid': organizer.uid,
-      'organizerName': organizer.displayName,
-      'participantCount': 1,
-      'startTime': FieldValue.serverTimestamp(),
-      'isActive': true,
-      'sessionType': SessionType.automaticManual.toInt(),
-    });
+    DocumentReference<Map<String, dynamic>> sessionDoc =
+        await SessionFunctions.createSession(
+      courseId: course.id!,
+      sessionName: sessionName,
+      organizerUid: organizer.uid,
+      organizerName: organizer.displayName,
+    );
     String sessionId = sessionDoc.id;
 
     // Create organizer participant.
