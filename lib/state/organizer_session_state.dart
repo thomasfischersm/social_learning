@@ -8,6 +8,7 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
+import 'package:social_learning/data/session_type.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/globals.dart';
 import 'package:social_learning/session_pairing/learner_pair.dart';
@@ -118,7 +119,7 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   createSession(String sessionName, ApplicationState applicationState,
-      LibraryState libraryState) async {
+      LibraryState libraryState, SessionType sessionType) async {
     User? organizer = applicationState.currentUser;
     Course? course = libraryState.selectedCourse;
 
@@ -144,6 +145,7 @@ class OrganizerSessionState extends ChangeNotifier {
       sessionName: sessionName,
       organizerUid: organizer.uid,
       organizerName: organizer.displayName,
+      sessionType: sessionType,
     );
     String sessionId = sessionDoc.id;
 
