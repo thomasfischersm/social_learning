@@ -58,7 +58,10 @@ class SessionStudentState extends State<SessionStudentPage> {
               Provider.of<StudentSessionState>(context, listen: false)
                   .leaveSession()
                   .then((_) {
-                Navigator.of(context).pushReplacementNamed('/session_home');
+                    if (mounted) {
+                      Navigator.of(context).pushReplacementNamed(
+                          '/session_home');
+                    }
               });
             },
           );
