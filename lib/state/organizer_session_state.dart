@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/data/data_helpers/session_functions.dart';
 import 'package:social_learning/data/data_helpers/session_pairing_helper.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session.dart';
@@ -138,20 +139,14 @@ class OrganizerSessionState extends ChangeNotifier {
       return;
     }
 
-    // Create session.
-    DocumentReference<Map<String, dynamic>> sessionDoc = await FirebaseFirestore
-        .instance
-        .collection('sessions')
-        .add(<String, dynamic>{
-      'courseId': FirebaseFirestore.instance.doc('/courses/${course.id}'),
-      'name': sessionName,
-      'organizerUid': organizer.uid,
-      'organizerName': organizer.displayName,
-      'participantCount': 1,
-      'startTime': FieldValue.serverTimestamp(),
-      'isActive': true,
-      'sessionType': sessionType.toInt(),
-    });
+    DocumentReference<Map<String, dynamic>> sessionDoc =
+        await SessionFunctions.createSession(
+      courseId: course.id!,
+      sessionName: sessionName,
+      organizerUid: organizer.uid,
+      organizerName: organizer.displayName,
+      sessionType: sessionType,
+    );
     String sessionId = sessionDoc.id;
 
     // Create organizer participant.
@@ -375,11 +370,11 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void removeLesson(SessionPairing sessionPairing) {
-    SessionPairingHelper.removeLesson(sessionPairing);
+    SessionPairingFunctions.removeLesson(sessionPairing);
   }
 
   void addLesson(Lesson lesson, SessionPairing sessionPairing) {
-    SessionPairingHelper.addLesson(sessionPairing, lesson);
+    SessionPairingFunctions.addLesson(sessionPairing, lesson);
   }
 
   void updateStudentsAndLesson(
@@ -388,16 +383,16 @@ class OrganizerSessionState extends ChangeNotifier {
       String? menteeUserId,
       List<String>? additionalStudentUserIds,
       String? lessonId, WriteBatch batch) {
-    SessionPairingHelper.updateStudentsAndLesson(pairingId, mentorUserId,
+    SessionPairingFunctions.updateStudentsAndLesson(pairingId, mentorUserId,
         menteeUserId, additionalStudentUserIds, lessonId, batch);
   }
 
   String addPairing(SessionPairing pairing, WriteBatch batch) {
-    return SessionPairingHelper.addPairing(pairing, batch);
+    return SessionPairingFunctions.addPairing(pairing, batch);
   }
 
   void removePairing(String pairingId, WriteBatch batch) {
-    SessionPairingHelper.removePairing(pairingId, batch);
+    SessionPairingFunctions.removePairing(pairingId, batch);
   }
 
   void _handleCourseChange(ApplicationState applicationState) {
@@ -409,7 +404,7 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   Future<void> completePairing(String pairingId) async {
-    await SessionPairingHelper.completePairing(pairingId);
+    await SessionPairingFunctions.completePairing(pairingId);
   }
 }
 

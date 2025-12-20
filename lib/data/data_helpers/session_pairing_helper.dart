@@ -6,7 +6,7 @@ import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_pairing.dart';
 
-class SessionPairingHelper {
+class SessionPairingFunctions {
   static String addPairing(SessionPairing pairing, WriteBatch batch) {
     DocumentReference newDoc =
         FirestoreService.instance.collection('sessionPairings').doc();
