@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'session_type.dart';
+export 'session_type.dart';
+
 class Session {
   String? id;
   DocumentReference courseId;
@@ -9,9 +12,18 @@ class Session {
   int participantCount;
   Timestamp? startTime;
   bool isActive;
+  SessionType sessionType;
 
-  Session(this.id, this.courseId, this.name, this.organizerUid, this.organizerName,
-      this.participantCount, this.startTime, this.isActive);
+  Session(
+      this.id,
+      this.courseId,
+      this.name,
+      this.organizerUid,
+      this.organizerName,
+      this.participantCount,
+      this.startTime,
+      this.isActive,
+      this.sessionType);
 
   Session.fromQuerySnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -21,7 +33,8 @@ class Session {
         organizerName = e.data()['organizerName'] as String,
         participantCount = e.data()['participantCount'] as int,
         startTime = e.data()['startTime'] as Timestamp?,
-        isActive = e.data()['isActive'] as bool;
+        isActive = e.data()['isActive'] as bool,
+        sessionType = SessionType.fromInt(e.data()['sessionType'] as int?);
 
   Session.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -31,5 +44,6 @@ class Session {
         organizerName = e.data()?['organizerName'] as String,
         participantCount = e.data()?['participantCount'] as int,
         startTime = e.data()?['startTime'] as Timestamp?,
-        isActive = e.data()?['isActive'] as bool;
+        isActive = e.data()?['isActive'] as bool,
+        sessionType = SessionType.fromInt(e.data()?['sessionType'] as int?);
 }
