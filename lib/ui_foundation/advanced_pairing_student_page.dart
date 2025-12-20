@@ -18,7 +18,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class AdvancedPairingStudentArgument {
-  String sessionId;
+  final String sessionId;
 
   AdvancedPairingStudentArgument(this.sessionId);
 }
@@ -118,8 +118,8 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
     LibraryState libraryState,
     ApplicationState applicationState,
   ) {
-    final currentUserId = applicationState.currentUser?.id;
-    final allPairings = studentSessionState.allPairings;
+    String? currentUserId = applicationState.currentUser?.id;
+    List<SessionPairing> allPairings = studentSessionState.allPairings;
 
     if (currentUserId == null || allPairings.isEmpty) {
       return Column(
@@ -135,9 +135,9 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
       );
     }
 
-    final relevantPairings = <SessionPairing>[];
-    for (final pairing in allPairings) {
-      final isCurrentUser = (pairing.mentorId?.id == currentUserId) ||
+    List<SessionPairing> relevantPairings = [];
+    for (SessionPairing pairing in allPairings) {
+      bool isCurrentUser = (pairing.mentorId?.id == currentUserId) ||
           (pairing.menteeId?.id == currentUserId) ||
           pairing.additionalStudentIds.any((ref) => ref.id == currentUserId);
       if (isCurrentUser) {
@@ -162,14 +162,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
     relevantPairings.sort(
         (a, b) => b.roundNumber.compareTo(a.roundNumber)); // Latest first.
 
-    final relativeRounds = <SessionPairing, int>{};
-    final chronologicalPairings = List<SessionPairing>.from(relevantPairings)
-      ..sort((a, b) => a.roundNumber.compareTo(b.roundNumber));
-    for (var i = 0; i < chronologicalPairings.length; i++) {
-      relativeRounds[chronologicalPairings[i]] = i + 1;
-    }
-
-    final cards = <Widget>[];
+    List<Widget> cards = [];
     for (final pairing in relevantPairings) {
       final lessonId = pairing.lessonId?.id;
       final lesson = (lessonId == null)
@@ -188,7 +181,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: _AdvancedPairingCard(
-            roundNumber: relativeRounds[pairing] ?? 1,
+            roundNumber: relevantPairings.indexOf(pairing) + 1,
             lesson: lesson,
             mentor: mentor,
             learners: learners,
@@ -300,7 +293,7 @@ class _AdvancedPairingCardState extends State<_AdvancedPairingCard> {
               children: [
                 ProfileImageWidgetV2.fromUser(
                   user,
-                  radius: 18,
+                  maxRadius: 18,
                   linkToOtherProfile: true,
                 ),
                 const SizedBox(width: 8),
