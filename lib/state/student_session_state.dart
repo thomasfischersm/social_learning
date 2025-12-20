@@ -9,6 +9,7 @@ import 'package:social_learning/state/firestore_subscription/session_pairings_su
 import 'package:social_learning/state/firestore_subscription/session_participants_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
 
@@ -23,6 +24,8 @@ class StudentSessionState extends ChangeNotifier {
   get currentSession => _sessionSubscription.item;
 
   get sessionParticipants => _sessionParticipantsSubscription.items;
+
+  List<SessionPairing> get allPairings => _sessionPairingSubscription.items;
 
   final ApplicationState _applicationState;
   final LibraryState _libraryState;
