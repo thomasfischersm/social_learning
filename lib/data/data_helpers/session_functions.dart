@@ -11,7 +11,7 @@ class SessionFunctions {
     required String organizerName,
     SessionType sessionType = SessionType.automaticManual,
     int participantCount = 1,
-  }) {
+  }) async {
     return FirestoreService.instance.collection('sessions').add({
       'courseId': docRef('courses', courseId),
       'name': sessionName,
