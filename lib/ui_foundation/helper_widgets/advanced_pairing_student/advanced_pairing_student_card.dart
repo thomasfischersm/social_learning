@@ -92,9 +92,7 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
             const SizedBox(height: 8),
             _buildLessonTitle(context),
             const SizedBox(height: 12),
-            _buildUserRow(context, 'Mentor', widget.mentor),
-            const SizedBox(height: 12),
-            ..._buildLearnerRows(context),
+            _buildUserTable(context),
           ],
         ),
       ),
@@ -120,71 +118,95 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
     );
   }
 
-  Widget _buildUserRow(
-    BuildContext context,
-    String label,
-    User? user, {
-    Widget? trailing,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+  Widget _buildUserTable(BuildContext context) {
+    final learnerRows = _buildLearnerRows(context);
+    return Table(
+      columnWidths: const {0: IntrinsicColumnWidth()},
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
       children: [
-        Expanded(
-          child: Row(
-            children: [
-              Text('$label:', style: CustomTextStyles.getBodyNote(context)),
-              const SizedBox(width: 12),
-              if (user != null)
-                Flexible(
-                  child: Row(
-                    children: [
-                      ProfileImageWidgetV2.fromUser(
-                        user,
-                        maxRadius: 18,
-                        linkToOtherProfile: true,
-                      ),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          user.displayName,
-                          style: CustomTextStyles.getBody(context),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              else
-                Text('<Not assigned>', style: CustomTextStyles.getBody(context)),
-            ],
-          ),
+        _buildUserTableRow(
+          context: context,
+          label: 'Mentor:',
+          user: widget.mentor,
+          bottomPadding: learnerRows.isEmpty ? 0 : 12,
         ),
-        if (trailing != null) ...[
-          const SizedBox(width: 12),
-          trailing,
-        ],
+        ...learnerRows,
       ],
     );
   }
 
-  List<Widget> _buildLearnerRows(BuildContext context) {
+  TableRow _buildUserTableRow({
+    required BuildContext context,
+    required String label,
+    required User? user,
+    Widget? trailing,
+    double bottomPadding = 0,
+  }) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(bottom: bottomPadding),
+          child: Text(label, style: CustomTextStyles.getBodyNote(context)),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 12, bottom: bottomPadding),
+          child: _buildUserContent(context, user),
+        ),
+        Padding(
+          padding: EdgeInsets.only(left: 12, bottom: bottomPadding),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: trailing ?? const SizedBox(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUserContent(BuildContext context, User? user) {
+    if (user == null) {
+      return Text('<Not assigned>', style: CustomTextStyles.getBody(context));
+    }
+
+    return Row(
+      children: [
+        ProfileImageWidgetV2.fromUser(
+          user,
+          maxRadius: 18,
+          linkToOtherProfile: true,
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            user.displayName,
+            style: CustomTextStyles.getBody(context),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<TableRow> _buildLearnerRows(BuildContext context) {
     final learners = widget.learners;
     if (learners.isEmpty) {
       return [
-        _buildUserRow(context, 'Learner', null),
+        _buildUserTableRow(
+          context: context,
+          label: 'Learners:',
+          user: null,
+        ),
       ];
     }
 
     return [
-      for (final learner in learners)
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: _buildUserRow(
-            context,
-            'Learner',
-            learner,
-            trailing: _buildLearnerProgress(learner),
-          ),
+      for (var i = 0; i < learners.length; i++)
+        _buildUserTableRow(
+          context: context,
+          label: i == 0 ? 'Learners:' : '',
+          user: learners[i],
+          trailing: _buildLearnerProgress(learners[i]),
+          bottomPadding: i == learners.length - 1 ? 0 : 8,
         ),
     ];
   }
