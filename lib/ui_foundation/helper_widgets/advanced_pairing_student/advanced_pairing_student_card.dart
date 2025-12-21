@@ -6,6 +6,7 @@ import 'package:social_learning/data/data_helpers/practice_record_functions.dart
 import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/advanced_pairing_student/record_pairing_practice_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/background_image_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/background_image_style.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/progress_checkbox.dart';
@@ -19,7 +20,6 @@ class AdvancedPairingStudentCard extends StatefulWidget {
   final User? mentor;
   final List<User?> learners;
   final bool showLearnerProgress;
-  final String? currentUserId;
 
   const AdvancedPairingStudentCard({
     super.key,
@@ -28,7 +28,6 @@ class AdvancedPairingStudentCard extends StatefulWidget {
     required this.mentor,
     required this.learners,
     required this.showLearnerProgress,
-    required this.currentUserId,
   });
 
   @override
@@ -201,8 +200,10 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
     }
 
     final progressValue = _learnerProgress[learner.uid] ?? 0.0;
-
-    return ProgressCheckbox(value: progressValue);
+    return ProgressCheckbox(
+      value: progressValue,
+      onTap: () => _openRecordDialog(lesson, learner),
+    );
   }
 
   Future<void> _loadCoverPhoto() async {
@@ -281,7 +282,6 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
     final didChangeLessonId = oldWidget.lesson?.id != widget.lesson?.id;
     final didChangeShowProgress =
         oldWidget.showLearnerProgress != widget.showLearnerProgress;
-    final didChangeUserId = oldWidget.currentUserId != widget.currentUserId;
 
     final oldLearnerIds = oldWidget.learners
         .whereType<User>()
@@ -297,7 +297,10 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
 
     return didChangeLessonId ||
         didChangeShowProgress ||
-        didChangeLearners ||
-        didChangeUserId;
+        didChangeLearners;
+  }
+
+  void _openRecordDialog(Lesson lesson, User learner) {
+    RecordPairingPracticeDialog.show(context, lesson, learner);
   }
 }
