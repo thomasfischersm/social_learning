@@ -12,9 +12,9 @@ class FirestoreDocumentSubscription<T> {
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>?
       _streamSubscription;
 
-  get isInitialized => _isInitialized;
+  bool get isInitialized => _isInitialized;
 
-  get item => _item;
+  T? get item => _item;
 
   FirestoreDocumentSubscription(this._convertSnapshot, this._notifyChange);
 

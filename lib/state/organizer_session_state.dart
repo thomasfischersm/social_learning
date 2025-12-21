@@ -26,7 +26,7 @@ import 'package:social_learning/data/data_helpers/session_participant_functions.
 class OrganizerSessionState extends ChangeNotifier {
   final LibraryState _libraryState;
 
-  get isInitialized => _sessionSubscription.isInitialized;
+  bool get isInitialized => _sessionSubscription.isInitialized;
 
   // new subscriptions
   late SessionSubscription _sessionSubscription;
@@ -409,8 +409,8 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   Future<void> _handleSessionPairingsUpdated() async {
-    await _updateTeachAndLearnCountsFromPairings();
     notifyListeners();
+    await _updateTeachAndLearnCountsFromPairings();
   }
 
   Future<void> _updateTeachAndLearnCountsFromPairings() async {
@@ -420,7 +420,6 @@ class OrganizerSessionState extends ChangeNotifier {
 
     final teachCounts = <String, int>{};
     final learnCounts = <String, int>{};
-    final updatedParticipantCounts = <String, TeachLearnCounts>{};
 
     for (final pairing
         in _sessionPairingSubscription.items.where((pairing) => pairing.isCompleted)) {
@@ -440,7 +439,8 @@ class OrganizerSessionState extends ChangeNotifier {
       }
     }
 
-    for (final participant in _sessionParticipantsSubscription.items) {
+    List<SessionParticipant> dirtyParticipants = [];
+    for (final participant in sessionParticipants) {
       if (participant.id == null) {
         continue;
       }
@@ -451,16 +451,15 @@ class OrganizerSessionState extends ChangeNotifier {
 
       if (participant.teachCount != newTeachCount ||
           participant.learnCount != newLearnCount) {
-        updatedParticipantCounts[participant.id!] = TeachLearnCounts(
-          teachCount: newTeachCount,
-          learnCount: newLearnCount,
-        );
+        participant.teachCount = newTeachCount;
+        participant.learnCount = newLearnCount;
+        dirtyParticipants.add(participant);
       }
     }
 
-    if (updatedParticipantCounts.isNotEmpty) {
+    if (dirtyParticipants.isNotEmpty) {
       await SessionParticipantFunctions.updateTeachAndLearnCounts(
-          updatedParticipantCounts);
+          dirtyParticipants);
     }
   }
 
