@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/firestore_service.dart';
+import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/practice_record.dart';
 
 class PracticeRecordFunctions {
@@ -68,5 +69,65 @@ class PracticeRecordFunctions {
     return practiceRecordsCollection
         .where('courseId', isEqualTo: course.docRef)
         .where('menteeUid', whereIn: menteeUids);
+  }
+
+  static Stream<List<PracticeRecord>> listenLessonPracticeRecords({
+    required String lessonId,
+    required List<String> menteeUids,
+  }) {
+    if (menteeUids.isEmpty) {
+      return const Stream<List<PracticeRecord>>.empty();
+    }
+
+    final lessonRef = FirestoreService.instance.doc('lessons/$lessonId');
+
+    return FirestoreService.instance
+        .collection('practiceRecords')
+        .where('menteeUid', whereIn: menteeUids)
+        .where('lessonId', isEqualTo: lessonRef)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => PracticeRecord.fromSnapshot(doc))
+              .toList(),
+        );
+  }
+
+  static double getLearnerLessonProgress({
+    required Lesson lesson,
+    required Iterable<PracticeRecord> practiceRecords,
+  }) {
+    if (practiceRecords.isEmpty) {
+      return 0.0;
+    }
+
+    if (practiceRecords.any((record) => record.isGraduation)) {
+      return 1.0;
+    }
+
+    final PracticeRecord latestRecord = practiceRecords.reduce((a, b) {
+      final aTime = a.timestamp?.toDate();
+      final bTime = b.timestamp?.toDate();
+
+      if (aTime == null) {
+        return b;
+      }
+      if (bTime == null) {
+        return a;
+      }
+
+      return aTime.isAfter(bTime) ? a : b;
+    });
+
+    final int requirementCount = lesson.graduationRequirements?.length ?? 0;
+    if (requirementCount == 0) {
+      return 0.5;
+    }
+
+    final int metCount = latestRecord.graduationRequirementsMet
+            ?.fold<int>(0, (total, met) => total + (met ? 1 : 0)) ??
+        0;
+
+    return (metCount / requirementCount).clamp(0.05, 0.95);
   }
 }

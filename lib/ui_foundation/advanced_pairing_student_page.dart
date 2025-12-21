@@ -7,6 +7,7 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
+import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/advanced_pairing_student/advanced_pairing_student_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
@@ -78,38 +79,39 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
       body: Align(
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
-          Consumer3<ApplicationState, LibraryState, StudentSessionState>(
-            builder: (context, applicationState, libraryState,
-                studentSessionState, child) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (studentSessionState.currentSession?.isActive == false)
-                    CustomUiConstants.getTextPadding(
-                      Text('The session has ended!',
-                          style: CustomTextStyles.subHeadline),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'Session: ${studentSessionState.currentSession?.name ?? ''}',
-                        style: CustomTextStyles.headline,
-                        textAlign: TextAlign.center,
-                      ),
+          Consumer4<ApplicationState, LibraryState, StudentSessionState,
+              StudentState>(builder: (context, applicationState, libraryState,
+                  studentSessionState, studentState, child) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (studentSessionState.currentSession?.isActive == false)
+                  CustomUiConstants.getTextPadding(
+                    Text('The session has ended!',
+                        style: CustomTextStyles.subHeadline),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Session: ${studentSessionState.currentSession?.name ?? ''}',
+                      style: CustomTextStyles.headline,
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                  _buildPairingCards(
-                    studentSessionState,
-                    libraryState,
-                    applicationState,
-                  ),
-                ],
-              );
-            },
-          ),
+                ),
+                _buildPairingCards(
+                  studentSessionState,
+                  libraryState,
+                  applicationState,
+                  studentState,
+                ),
+              ],
+            );
+          },
         ),
+      ),
       ),
     );
   }
@@ -118,6 +120,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
     StudentSessionState studentSessionState,
     LibraryState libraryState,
     ApplicationState applicationState,
+    StudentState studentState,
   ) {
     String? currentUserId = applicationState.currentUser?.id;
     List<SessionPairing> allPairings = studentSessionState.allPairings;
@@ -178,6 +181,12 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
         learners.add(studentSessionState.getUserById(additionalStudentId.id));
       }
 
+      final bool isCurrentRound = pairing == relevantPairings.first;
+      final bool showLearnerProgress = isCurrentRound &&
+          (studentSessionState.currentSession?.isActive ?? false) &&
+          lesson != null &&
+          studentState.hasGraduated(lesson);
+
       cards.add(
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -186,6 +195,8 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
             lesson: lesson,
             mentor: mentor,
             learners: learners,
+            showLearnerProgress: showLearnerProgress,
+            currentUserId: applicationState.currentUser?.id,
           ),
         ),
       );
