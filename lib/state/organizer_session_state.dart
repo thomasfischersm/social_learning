@@ -75,7 +75,7 @@ class OrganizerSessionState extends ChangeNotifier {
         null);
 
     _sessionPairingSubscription =
-        SessionPairingsSubscription(() => notifyListeners());
+        SessionPairingsSubscription(() => _handleSessionPairingsUpdated());
 
     // Check if the user logged back into the app with a running session.
     _connectToActiveSession(applicationState);
@@ -406,6 +406,71 @@ class OrganizerSessionState extends ChangeNotifier {
 
   Future<void> completePairing(String pairingId) async {
     await SessionPairingFunctions.completePairing(pairingId);
+  }
+
+  Future<void> _handleSessionPairingsUpdated() async {
+    await _updateTeachAndLearnCountsFromPairings();
+    notifyListeners();
+  }
+
+  Future<void> _updateTeachAndLearnCountsFromPairings() async {
+    if (!_shouldUpdateTeachAndLearnCounts()) {
+      return;
+    }
+
+    final teachCounts = <String, int>{};
+    final learnCounts = <String, int>{};
+    final updatedParticipantCounts = <String, TeachLearnCounts>{};
+
+    for (final pairing
+        in _sessionPairingSubscription.items.where((pairing) => pairing.isCompleted)) {
+      final mentorId = pairing.mentorId?.id;
+      if (mentorId != null) {
+        teachCounts[mentorId] = (teachCounts[mentorId] ?? 0) + 1;
+      }
+
+      final menteeId = pairing.menteeId?.id;
+      if (menteeId != null) {
+        learnCounts[menteeId] = (learnCounts[menteeId] ?? 0) + 1;
+      }
+
+      for (final additionalStudent in pairing.additionalStudentIds) {
+        learnCounts[additionalStudent.id] =
+            (learnCounts[additionalStudent.id] ?? 0) + 1;
+      }
+    }
+
+    for (final participant in _sessionParticipantsSubscription.items) {
+      if (participant.id == null) {
+        continue;
+      }
+
+      final userId = participant.participantId.id;
+      final newTeachCount = teachCounts[userId] ?? 0;
+      final newLearnCount = learnCounts[userId] ?? 0;
+
+      if (participant.teachCount != newTeachCount ||
+          participant.learnCount != newLearnCount) {
+        updatedParticipantCounts[participant.id!] = TeachLearnCounts(
+          teachCount: newTeachCount,
+          learnCount: newLearnCount,
+        );
+      }
+    }
+
+    if (updatedParticipantCounts.isNotEmpty) {
+      await SessionParticipantFunctions.updateTeachAndLearnCounts(
+          updatedParticipantCounts);
+    }
+  }
+
+  bool _shouldUpdateTeachAndLearnCounts() {
+    final session = currentSession;
+    return session != null &&
+        _sessionPairingSubscription.isInitialized &&
+        _sessionParticipantsSubscription.isInitialized &&
+        (session.sessionType == SessionType.powerMode ||
+            session.sessionType == SessionType.partyMode);
   }
 }
 

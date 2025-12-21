@@ -3,6 +3,13 @@ import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/session_participant.dart';
 
+class TeachLearnCounts {
+  final int teachCount;
+  final int learnCount;
+
+  const TeachLearnCounts({required this.teachCount, required this.learnCount});
+}
+
 class SessionParticipantFunctions {
   static Query<Map<String, dynamic>> queryBySessionId(
       CollectionReference<Map<String, dynamic>> collectionReference,
@@ -50,6 +57,23 @@ class SessionParticipantFunctions {
     return FirestoreService.instance
         .doc('/sessionParticipants/$participantId')
         .update({'isActive': isActive});
+  }
+
+  static Future<void> updateTeachAndLearnCounts(
+      Map<String, TeachLearnCounts> participantCounts) async {
+    if (participantCounts.isEmpty) {
+      return;
+    }
+
+    final WriteBatch batch = FirestoreService.instance.batch();
+    participantCounts.forEach((participantId, counts) {
+      batch.update(docRef('sessionParticipants', participantId), {
+        'teachCount': counts.teachCount,
+        'learnCount': counts.learnCount,
+      });
+    });
+
+    await batch.commit();
   }
 }
 
