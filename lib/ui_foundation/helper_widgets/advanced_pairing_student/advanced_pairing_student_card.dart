@@ -12,6 +12,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/general/background_
 import 'package:social_learning/ui_foundation/helper_widgets/general/progress_checkbox.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
+import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 
 class AdvancedPairingStudentCard extends StatefulWidget {
@@ -35,7 +36,8 @@ class AdvancedPairingStudentCard extends StatefulWidget {
       _AdvancedPairingStudentCardState();
 }
 
-class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard> {
+class _AdvancedPairingStudentCardState
+    extends State<AdvancedPairingStudentCard> {
   String? _coverPhotoUrl;
   StreamSubscription? _graduationSubscription;
   Map<String, double> _learnerProgress = {};
@@ -184,10 +186,14 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
         ),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(
-            user.displayName,
-            style: CustomTextStyles.getBody(context),
-            overflow: TextOverflow.ellipsis,
+          child: InkWell(
+            onTap: () => OtherProfileArgument.goToOtherProfile(
+                context, user.id, user.uid),
+            child: Text(
+              user.displayName,
+              style: CustomTextStyles.getBody(context),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ),
       ],
@@ -267,8 +273,10 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
 
     final bool canShowProgress = widget.showGraduationCheckboxes;
     final lessonId = widget.lesson?.id;
-    final learnerUids =
-        widget.learners.whereType<User>().map((learner) => learner.uid).toList();
+    final learnerUids = widget.learners
+        .whereType<User>()
+        .map((learner) => learner.uid)
+        .toList();
 
     if (!canShowProgress || lessonId == null || learnerUids.isEmpty) {
       setState(() {
@@ -277,7 +285,8 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
       return;
     }
 
-    _graduationSubscription = PracticeRecordFunctions.listenLessonPracticeRecords(
+    _graduationSubscription =
+        PracticeRecordFunctions.listenLessonPracticeRecords(
       lessonId: lessonId,
       menteeUids: learnerUids,
     ).listen((records) {
@@ -324,9 +333,7 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
     final didChangeLearners = oldLearnerIds.length != newLearnerIds.length ||
         !oldLearnerIds.every(newLearnerIds.contains);
 
-    return didChangeLessonId ||
-        didChangeShowProgress ||
-        didChangeLearners;
+    return didChangeLessonId || didChangeShowProgress || didChangeLearners;
   }
 
   void _openRecordDialog(Lesson lesson, User learner) {
