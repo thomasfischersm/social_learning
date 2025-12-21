@@ -29,14 +29,14 @@ import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/util/text_width_util.dart';
 import 'package:collection/collection.dart';
 
-class AdvancedPairingPage extends StatefulWidget {
-  const AdvancedPairingPage({super.key});
+class AdvancedPairingHostPage extends StatefulWidget {
+  const AdvancedPairingHostPage({super.key});
 
   @override
-  State<AdvancedPairingPage> createState() => _AdvancedPairingPageState();
+  State<AdvancedPairingHostPage> createState() => _AdvancedPairingHostPageState();
 }
 
-class _AdvancedPairingPageState extends State<AdvancedPairingPage> {
+class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
   static const double _lessonCellWidth = 44;
   static const double _rowHeight = 44;
   static const double _levelHeaderHeight = 32;

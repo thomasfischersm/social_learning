@@ -22,6 +22,7 @@ enum NavigationEnum {
   sessionCreate('/session_create'),
   sessionHost('/session_host'),
   sessionStudent('/session_student'),
+  advancedPairingHost('/advanced_pairing_host'),
   onlineSessionWaitingRoom('/online_session_waiting_room'),
   onlineSessionActive('/online_session_active'),
   createCourse('/create_course'),
@@ -45,7 +46,6 @@ enum NavigationEnum {
   courseDesignerSkillRubric('/course_designer_skill_rubric'),
   courseDesignerLearningObjectives('/course_designer_learning_objectives'),
   courseDesignerSessionPlan('/course_designer_session_plan'),
-  advancedPairing('/advanced_pairing'),
   ;
 
   final String route;

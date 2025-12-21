@@ -179,6 +179,7 @@ class SocialLearningApp extends StatelessWidget {
         '/session_create': (context) => const SessionCreatePage(),
         '/session_host': (context) => const SessionHostPage(),
         '/session_student': (context) => const SessionStudentPage(),
+        '/advanced_pairing_host': (context) => const AdvancedPairingHostPage(),
         '/online_session_waiting_room': (context) =>
             const OnlineSessionWaitingRoomPage(),
         '/online_session_active': (context) => const OnlineSessionActivePage(),
@@ -213,7 +214,6 @@ class SocialLearningApp extends StatelessWidget {
             const CourseDesignerLearningObjectivesPage(),
         '/course_designer_session_plan': (context) =>
             const CourseDesignerSessionPlanPage(),
-        '/advanced_pairing': (context) => const AdvancedPairingPage(),
         '/playground': (context) => const PlaygroundPage(),
       },
     );
