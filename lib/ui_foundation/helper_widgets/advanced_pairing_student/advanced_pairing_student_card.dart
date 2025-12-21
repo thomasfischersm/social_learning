@@ -85,12 +85,7 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Round ${widget.roundNumber}',
-              style: CustomTextStyles.subHeadline,
-            ),
-            const SizedBox(height: 8),
-            _buildLessonTitle(context),
+            _buildRoundAndLessonRow(context),
             const SizedBox(height: 12),
             _buildUserRow(context, 'Mentor', widget.mentor),
             const SizedBox(height: 12),
@@ -101,22 +96,34 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
     );
   }
 
-  Widget _buildLessonTitle(BuildContext context) {
+  Widget _buildRoundAndLessonRow(BuildContext context) {
     final lesson = widget.lesson;
+    final roundPrefix = 'Round ${widget.roundNumber}';
+
     if (lesson == null) {
       return Text(
-        'Lesson not assigned',
-        style: CustomTextStyles.getBody(context),
+        '$roundPrefix - Lesson not assigned',
+        style: CustomTextStyles.subHeadline,
       );
     }
 
-    return InkWell(
-      onTap: () =>
-          LessonDetailArgument.goToLessonDetailPage(context, lesson.id!),
-      child: Text(
-        lesson.title,
-        style: CustomTextStyles.headline,
-      ),
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text(
+          '$roundPrefix - ',
+          style: CustomTextStyles.subHeadline,
+        ),
+        InkWell(
+          onTap: () =>
+              LessonDetailArgument.goToLessonDetailPage(context, lesson.id!),
+          child: Text(
+            lesson.title,
+            style: CustomTextStyles.subHeadline
+                .copyWith(decoration: TextDecoration.underline),
+          ),
+        ),
+      ],
     );
   }
 
