@@ -247,7 +247,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
       }
 
       final bool isCurrentRound = pairing == relevantPairings.first;
-      final bool showLearnerProgress = isCurrentRound &&
+      final bool showGraduationCheckboxes = isCurrentRound &&
           (studentSessionState.currentSession?.isActive ?? false) &&
           lesson != null &&
           studentState.hasGraduated(lesson);
@@ -260,7 +260,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
             lesson: lesson,
             mentor: mentor,
             learners: learners,
-            showLearnerProgress: showLearnerProgress,
+            showGraduationCheckboxes: showGraduationCheckboxes,
           ),
         ),
       );

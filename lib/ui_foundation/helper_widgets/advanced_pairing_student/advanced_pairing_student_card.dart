@@ -19,7 +19,7 @@ class AdvancedPairingStudentCard extends StatefulWidget {
   final Lesson? lesson;
   final User? mentor;
   final List<User?> learners;
-  final bool showLearnerProgress;
+  final bool showGraduationCheckboxes;
 
   const AdvancedPairingStudentCard({
     super.key,
@@ -27,7 +27,7 @@ class AdvancedPairingStudentCard extends StatefulWidget {
     required this.lesson,
     required this.mentor,
     required this.learners,
-    required this.showLearnerProgress,
+    required this.showGraduationCheckboxes,
   });
 
   @override
@@ -190,7 +190,7 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
   }
 
   Widget? _buildLearnerProgress(User? learner) {
-    if (!widget.showLearnerProgress || learner == null) {
+    if (!widget.showGraduationCheckboxes || learner == null) {
       return null;
     }
 
@@ -236,7 +236,7 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
   void _listenToLearnerProgress() {
     _graduationSubscription?.cancel();
 
-    final bool canShowProgress = widget.showLearnerProgress;
+    final bool canShowProgress = widget.showGraduationCheckboxes;
     final lessonId = widget.lesson?.id;
     final learnerUids =
         widget.learners.whereType<User>().map((learner) => learner.uid).toList();
@@ -281,7 +281,7 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
   ) {
     final didChangeLessonId = oldWidget.lesson?.id != widget.lesson?.id;
     final didChangeShowProgress =
-        oldWidget.showLearnerProgress != widget.showLearnerProgress;
+        oldWidget.showGraduationCheckboxes != widget.showGraduationCheckboxes;
 
     final oldLearnerIds = oldWidget.learners
         .whereType<User>()
