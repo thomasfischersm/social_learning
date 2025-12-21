@@ -256,7 +256,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: AdvancedPairingStudentCard(
-            roundNumber: relevantPairings.indexOf(pairing) + 1,
+            roundNumber: relevantPairings.length - relevantPairings.indexOf(pairing),
             lesson: lesson,
             mentor: mentor,
             learners: learners,

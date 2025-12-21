@@ -74,9 +74,9 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
     return BackgroundImageCard(
       image: image,
       style: const BackgroundImageStyle(
-        washOpacity: 0.75,
+        washOpacity: 0.85,
         washColor: Colors.white,
-        desaturate: 0.2,
+        desaturate: 0.3,
         blurSigma: 1.5,
       ),
       child: Container(
