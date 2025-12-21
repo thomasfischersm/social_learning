@@ -69,7 +69,7 @@ class StudentSessionState extends ChangeNotifier {
     _checkForOngoingSession();
   }
 
-  get roundNumberToSessionPairing =>
+  Map<int, List<SessionPairing>> get roundNumberToSessionPairing =>
       _sessionPairingSubscription.roundNumberToSessionPairings;
 
   User? getUserById(String? id) =>
@@ -173,14 +173,14 @@ class StudentSessionState extends ChangeNotifier {
     _resetSession();
   }
 
-  _resetSession() async {
+  Future<void> _resetSession() async {
     await signOut();
 
     print('StudentSessionState.notifyListeners because the session was reset');
     notifyListeners();
   }
 
-  signOut() async {
+  Future<void> signOut() async {
     await _sessionSubscription.cancel();
     await _sessionParticipantsSubscription.cancel();
     await _participantUsersSubscription.cancel();

@@ -7,7 +7,8 @@ class SessionPairingsSubscription
     extends FirestoreListSubscription<SessionPairing> {
   final Map<int, List<SessionPairing>> _roundNumberToSessionPairings = {};
 
-  get roundNumberToSessionPairings => _roundNumberToSessionPairings;
+  Map<int, List<SessionPairing>> get roundNumberToSessionPairings =>
+      _roundNumberToSessionPairings;
 
   SessionPairingsSubscription(Function() notifyChange)
       : super(

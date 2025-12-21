@@ -20,10 +20,10 @@ class FirestoreListSubscription<T> {
   FirestoreListSubscription(
       this._collectionName, this._convertSnapshot, this._notifyChange);
 
-  resubscribe(
+  Future<void> resubscribe(
       Query<Map<String, dynamic>> Function(
               CollectionReference<Map<String, dynamic>> collectionReference)
-          whereFunction) {
+          whereFunction) async {
     _streamSubscription?.cancel();
 
     _streamSubscription =
@@ -45,12 +45,12 @@ class FirestoreListSubscription<T> {
     });
   }
 
-  cancel() async {
+  Future<void> cancel() async {
     await _streamSubscription?.cancel();
     _streamSubscription = null;
     _items = [];
     _notifyChange();
   }
 
-  postProcess(List<T> items) {}
+  void postProcess(List<T> items) {}
 }

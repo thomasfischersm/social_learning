@@ -5,6 +5,7 @@ import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/data_helpers/session_functions.dart';
 import 'package:social_learning/data/data_helpers/session_pairing_helper.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
@@ -43,11 +44,11 @@ class OrganizerSessionState extends ChangeNotifier {
   List<SessionParticipant> get sessionParticipants =>
       _sessionParticipantsSubscription.items;
 
-  get participantUsers => _participantUsersSubscription.items;
+  List<User> get participantUsers => _participantUsersSubscription.items;
 
-  get practiceRecords => _practiceRecordsSubscription.items;
+  List<PracticeRecord> get practiceRecords => _practiceRecordsSubscription.items;
 
-  get roundNumberToSessionPairing =>
+  Map<int, List<SessionPairing>> get roundNumberToSessionPairing =>
       _sessionPairingSubscription.roundNumberToSessionPairings;
 
   List<SessionPairing>? get lastRound =>
@@ -86,7 +87,7 @@ class OrganizerSessionState extends ChangeNotifier {
     _libraryState.addListener(() => _handleCourseChange(applicationState));
   }
 
-  _connectToActiveSession(ApplicationState applicationState) {
+  void _connectToActiveSession(ApplicationState applicationState) {
     var uid = applicationState.currentUser?.uid;
     var courseId = _libraryState.selectedCourse?.id;
 
@@ -118,7 +119,7 @@ class OrganizerSessionState extends ChangeNotifier {
     }
   }
 
-  createSession(String sessionName, ApplicationState applicationState,
+  Future<void> createSession(String sessionName, ApplicationState applicationState,
       LibraryState libraryState, SessionType sessionType) async {
     User? organizer = applicationState.currentUser;
     Course? course = libraryState.selectedCourse;
@@ -170,7 +171,7 @@ class OrganizerSessionState extends ChangeNotifier {
     ));
   }
 
-  _subscribeToSession(String sessionId) {
+  void _subscribeToSession(String sessionId) {
     _sessionSubscription.resubscribe(() => '/sessions/$sessionId');
 
     _sessionParticipantsSubscription.resubscribe((collectionReference) =>
