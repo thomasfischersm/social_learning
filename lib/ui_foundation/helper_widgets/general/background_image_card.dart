@@ -51,7 +51,7 @@ class BackgroundImageCard extends StatelessWidget {
           ),
 
         // Foreground
-        Positioned.fill(child: child),
+        child,
       ],
     );
 

@@ -256,7 +256,7 @@ class StudentSessionState extends ChangeNotifier {
       {Session? session, String? sessionId, SessionType? sessionType}) {
     Session? targetSession = session ?? currentSession;
     SessionType? targetSessionType = sessionType ?? targetSession?.sessionType;
-    print('Active session ${session?.id} has sessionType $targetSessionType');
+    print('Active session ${targetSession?.id} has sessionType $targetSessionType');
 
     if (targetSessionType == null) {
       return NavigationEnum.sessionHome;
