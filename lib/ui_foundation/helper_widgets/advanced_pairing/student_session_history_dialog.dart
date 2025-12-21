@@ -71,21 +71,20 @@ class StudentSessionHistoryDialog {
                   maxRadius: 32,
                 )),
             title: Row(children: [
-              Expanded(
-                  child: Text(user.displayName,
+              Text(user.displayName,
                       style: CustomTextStyles.subHeadline,
-                      overflow: TextOverflow.ellipsis)),
+                      overflow: TextOverflow.ellipsis),
               IconButton(
                   icon: const Icon(Icons.content_paste_rounded, size: 20),
                   tooltip: 'View clipboard',
                   onPressed: () => _navigateToClipboard(context, user)),
               IconButton(
-                  icon: const Icon(Icons.account_circle_outlined, size: 20),
+                  icon: const Icon(Icons.person, size: 20),
                   tooltip: 'View profile',
                   onPressed: () => _navigateToOtherProfile(context, user))
             ]),
-            subtitle: Text('Learned: $learnCount · Taught: $teachCount',
-                style: CustomTextStyles.getCaption(context))));
+            subtitle: Text('Taught: $teachCount · Learned: $learnCount',
+                style: CustomTextStyles.getBody(context))));
   }
 
   static void _navigateToClipboard(BuildContext context, User user) {
