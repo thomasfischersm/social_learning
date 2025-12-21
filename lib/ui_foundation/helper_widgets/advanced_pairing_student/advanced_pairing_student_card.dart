@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:social_learning/data/data_helpers/practice_record_functions.dart';
+import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/background_image_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/background_image_style.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/general/progress_checkbox.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -13,6 +18,8 @@ class AdvancedPairingStudentCard extends StatefulWidget {
   final Lesson? lesson;
   final User? mentor;
   final List<User?> learners;
+  final bool showLearnerProgress;
+  final String? currentUserId;
 
   const AdvancedPairingStudentCard({
     super.key,
@@ -20,6 +27,8 @@ class AdvancedPairingStudentCard extends StatefulWidget {
     required this.lesson,
     required this.mentor,
     required this.learners,
+    required this.showLearnerProgress,
+    required this.currentUserId,
   });
 
   @override
@@ -29,11 +38,14 @@ class AdvancedPairingStudentCard extends StatefulWidget {
 
 class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard> {
   String? _coverPhotoUrl;
+  StreamSubscription? _graduationSubscription;
+  Map<String, double> _learnerProgress = {};
 
   @override
   void initState() {
     super.initState();
     _loadCoverPhoto();
+    _listenToLearnerProgress();
   }
 
   @override
@@ -43,6 +55,16 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
         widget.lesson?.coverFireStoragePath) {
       _loadCoverPhoto();
     }
+
+    if (_shouldReloadGraduations(oldWidget)) {
+      _listenToLearnerProgress();
+    }
+  }
+
+  @override
+  void dispose() {
+    _graduationSubscription?.cancel();
+    super.dispose();
   }
 
   @override
@@ -99,33 +121,49 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
     );
   }
 
-  Widget _buildUserRow(BuildContext context, String label, User? user) {
+  Widget _buildUserRow(
+    BuildContext context,
+    String label,
+    User? user, {
+    Widget? trailing,
+  }) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text('$label:', style: CustomTextStyles.getBodyNote(context)),
-        const SizedBox(width: 12),
-        if (user != null)
-          Flexible(
-            child: Row(
-              children: [
-                ProfileImageWidgetV2.fromUser(
-                  user,
-                  maxRadius: 18,
-                  linkToOtherProfile: true,
-                ),
-                const SizedBox(width: 8),
+        Expanded(
+          child: Row(
+            children: [
+              Text('$label:', style: CustomTextStyles.getBodyNote(context)),
+              const SizedBox(width: 12),
+              if (user != null)
                 Flexible(
-                  child: Text(
-                    user.displayName,
-                    style: CustomTextStyles.getBody(context),
-                    overflow: TextOverflow.ellipsis,
+                  child: Row(
+                    children: [
+                      ProfileImageWidgetV2.fromUser(
+                        user,
+                        maxRadius: 18,
+                        linkToOtherProfile: true,
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          user.displayName,
+                          style: CustomTextStyles.getBody(context),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
-          )
-        else
-          Text('<Not assigned>', style: CustomTextStyles.getBody(context)),
+                )
+              else
+                Text('<Not assigned>', style: CustomTextStyles.getBody(context)),
+            ],
+          ),
+        ),
+        if (trailing != null) ...[
+          const SizedBox(width: 12),
+          trailing,
+        ],
       ],
     );
   }
@@ -142,9 +180,29 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
       for (final learner in learners)
         Padding(
           padding: const EdgeInsets.only(bottom: 8),
-          child: _buildUserRow(context, 'Learner', learner),
+          child: _buildUserRow(
+            context,
+            'Learner',
+            learner,
+            trailing: _buildLearnerProgress(learner),
+          ),
         ),
     ];
+  }
+
+  Widget? _buildLearnerProgress(User? learner) {
+    if (!widget.showLearnerProgress || learner == null) {
+      return null;
+    }
+
+    final lesson = widget.lesson;
+    if (lesson == null) {
+      return null;
+    }
+
+    final progressValue = _learnerProgress[learner.uid] ?? 0.0;
+
+    return ProgressCheckbox(value: progressValue);
   }
 
   Future<void> _loadCoverPhoto() async {
@@ -172,5 +230,74 @@ class _AdvancedPairingStudentCardState extends State<AdvancedPairingStudentCard>
         _coverPhotoUrl = null;
       });
     }
+  }
+
+  void _listenToLearnerProgress() {
+    _graduationSubscription?.cancel();
+
+    final bool canShowProgress = widget.showLearnerProgress;
+    final lessonId = widget.lesson?.id;
+    final learnerUids =
+        widget.learners.whereType<User>().map((learner) => learner.uid).toList();
+
+    if (!canShowProgress || lessonId == null || learnerUids.isEmpty) {
+      setState(() {
+        _learnerProgress = {};
+      });
+      return;
+    }
+
+    _graduationSubscription = PracticeRecordFunctions.listenLessonPracticeRecords(
+      lessonId: lessonId,
+      menteeUids: learnerUids,
+    ).listen((records) {
+      final lesson = widget.lesson;
+      if (lesson == null) {
+        return;
+      }
+
+      final recordsByLearner = <String, List<PracticeRecord>>{};
+      for (final record in records) {
+        recordsByLearner.putIfAbsent(record.menteeUid, () => []).add(record);
+      }
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _learnerProgress = {
+          for (final learnerId in learnerUids)
+            learnerId: PracticeRecordFunctions.getLearnerLessonProgress(
+              lesson: lesson,
+              practiceRecords: recordsByLearner[learnerId] ?? const [],
+            ),
+        };
+      });
+    });
+  }
+
+  bool _shouldReloadGraduations(
+    AdvancedPairingStudentCard oldWidget,
+  ) {
+    final didChangeLessonId = oldWidget.lesson?.id != widget.lesson?.id;
+    final didChangeShowProgress =
+        oldWidget.showLearnerProgress != widget.showLearnerProgress;
+    final didChangeUserId = oldWidget.currentUserId != widget.currentUserId;
+
+    final oldLearnerIds = oldWidget.learners
+        .whereType<User>()
+        .map((learner) => learner.uid)
+        .toList();
+    final newLearnerIds = widget.learners
+        .whereType<User>()
+        .map((learner) => learner.uid)
+        .toList();
+
+    final didChangeLearners = oldLearnerIds.length != newLearnerIds.length ||
+        !oldLearnerIds.every(newLearnerIds.contains);
+
+    return didChangeLessonId ||
+        didChangeShowProgress ||
+        didChangeLearners ||
+        didChangeUserId;
   }
 }
