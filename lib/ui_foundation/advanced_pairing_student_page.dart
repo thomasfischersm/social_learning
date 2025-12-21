@@ -1,5 +1,5 @@
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_pairing.dart';
@@ -56,25 +56,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
     return Scaffold(
       appBar: const LearningLabAppBar(),
       bottomNavigationBar: BottomBarV2.build(context),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          DialogUtils.showConfirmationDialog(
-            context,
-            'Leave Session',
-            'Are you sure you want to leave the session?',
-            () {
-              Provider.of<StudentSessionState>(context, listen: false)
-                  .leaveSession()
-                  .then((_) {
-                if (mounted) {
-                  Navigator.of(context).pushReplacementNamed('/session_home');
-                }
-              });
-            },
-          );
-        },
-        child: const Icon(Icons.exit_to_app, color: Colors.grey),
-      ),
+      floatingActionButton: _buildFloatingActionButton(context),
       body: Align(
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
@@ -112,6 +94,90 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildFloatingActionButton(BuildContext context) {
+    return Consumer2<ApplicationState, StudentSessionState>(
+      builder: (context, applicationState, studentSessionState, child) {
+        final mentorPairing = studentSessionState.currentPairing;
+        final isMentoringActiveRound = _isMentoringActiveRound(
+          applicationState,
+          studentSessionState,
+        );
+
+        if (!isMentoringActiveRound || mentorPairing == null) {
+          return _buildLeaveSessionButton(context);
+        }
+
+        return SpeedDial(
+          icon: Icons.more_vert,
+          activeIcon: Icons.close,
+          children: [
+            SpeedDialChild(
+              onTap: () => _finishRound(context, studentSessionState),
+              child: const Icon(Icons.flag, color: Colors.grey),
+              label: 'Finish round',
+            ),
+            SpeedDialChild(
+              onTap: () => _confirmLeaveSession(context),
+              child: const Icon(Icons.exit_to_app, color: Colors.grey),
+              label: 'Leave session',
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildLeaveSessionButton(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () => _confirmLeaveSession(context),
+      child: const Icon(Icons.exit_to_app, color: Colors.grey),
+    );
+  }
+
+  void _confirmLeaveSession(BuildContext context) {
+    DialogUtils.showConfirmationDialog(
+      context,
+      'Leave Session',
+      'Are you sure you want to leave the session?',
+      () {
+        Provider.of<StudentSessionState>(context, listen: false)
+            .leaveSession()
+            .then((_) {
+          if (mounted) {
+            Navigator.of(context).pushReplacementNamed('/session_home');
+          }
+        });
+      },
+    );
+  }
+
+  void _finishRound(
+    BuildContext context,
+    StudentSessionState studentSessionState,
+  ) {
+    DialogUtils.showConfirmationDialog(
+      context,
+      'Finish Round',
+      'Are you sure you want to finish this round?',
+      () => studentSessionState.completeCurrentPairing(),
+    );
+  }
+
+  bool _isMentoringActiveRound(
+    ApplicationState applicationState,
+    StudentSessionState studentSessionState,
+  ) {
+    final currentUserId = applicationState.currentUser?.id;
+    final currentPairing = studentSessionState.currentPairing;
+
+    if (currentUserId == null || currentPairing == null) {
+      return false;
+    }
+
+    return currentPairing.mentorId?.id == currentUserId &&
+        !currentPairing.isCompleted;
   }
 
   Widget _buildPairingCards(
