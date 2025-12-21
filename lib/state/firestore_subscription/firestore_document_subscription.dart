@@ -18,7 +18,7 @@ class FirestoreDocumentSubscription<T> {
 
   FirestoreDocumentSubscription(this._convertSnapshot, this._notifyChange);
 
-  resubscribe(String Function() docPath) {
+  void resubscribe(String Function() docPath) {
     print('Attempting to subscribe to ${docPath()}');
     _streamSubscription?.cancel();
 
@@ -41,14 +41,14 @@ class FirestoreDocumentSubscription<T> {
     });
   }
 
-  cancel() async {
+  void cancel() async {
     await _streamSubscription?.cancel();
     _streamSubscription = null;
     _item = null;
     _notifyChange();
   }
 
-  loadItemManually(T item) {
+  void loadItemManually(T item) {
     _item = item;
     _isInitialized = true;
     _notifyChange();
