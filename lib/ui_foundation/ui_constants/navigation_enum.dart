@@ -22,6 +22,7 @@ enum NavigationEnum {
   sessionCreate('/session_create'),
   sessionHost('/session_host'),
   sessionStudent('/session_student'),
+  advancedPairingStudent('/advanced_pairing_student'),
   advancedPairingHost('/advanced_pairing_host'),
   onlineSessionWaitingRoom('/online_session_waiting_room'),
   onlineSessionActive('/online_session_active'),

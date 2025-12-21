@@ -97,9 +97,9 @@ class BottomBarV2 {
         'online session state: waiting session ${onlineSessionState.waitingSession}, active session ${onlineSessionState.activeSession}');
 
     if (organizerSessionState.currentSession != null) {
-      return NavigationEnum.sessionHost;
+      return organizerSessionState.getActiveSessionNavigationEnum();
     } else if (studentSessionState.currentSession != null) {
-      return NavigationEnum.sessionStudent;
+      return studentSessionState.getActiveSessionNavigationEnum();
     } else if (onlineSessionState.isInitialized &&
         onlineSessionState.waitingSession != null) {
       return NavigationEnum.onlineSessionWaitingRoom;
@@ -178,11 +178,12 @@ class BottomBarV2 {
           NavigationEnum.sessionCreateWarning.route,
           NavigationEnum.sessionHost.route,
           NavigationEnum.sessionStudent.route,
+          NavigationEnum.advancedPairingStudent.route,
+          NavigationEnum.advancedPairingHost.route,
           NavigationEnum.onlineSessionWaitingRoom.route,
           NavigationEnum.onlineSessionActive.route,
           NavigationEnum.codeOfConduct.route,
           NavigationEnum.onlineSessionReview.route,
-          NavigationEnum.advancedPairingHost.route,
         }.contains(currentRoute)) {
       return 1 + (isLessonsVisible ? 1 : 0) + (isManageVisible ? 1 : 0);
     } else if (isProfileVisible &&

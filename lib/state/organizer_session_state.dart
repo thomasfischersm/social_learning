@@ -22,6 +22,7 @@ import 'package:social_learning/state/firestore_subscription/session_participant
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 
 class OrganizerSessionState extends ChangeNotifier {
   final LibraryState _libraryState;
@@ -46,7 +47,8 @@ class OrganizerSessionState extends ChangeNotifier {
 
   List<User> get participantUsers => _participantUsersSubscription.items;
 
-  List<PracticeRecord> get practiceRecords => _practiceRecordsSubscription.items;
+  List<PracticeRecord> get practiceRecords =>
+      _practiceRecordsSubscription.items;
 
   Map<int, List<SessionPairing>> get roundNumberToSessionPairing =>
       _sessionPairingSubscription.roundNumberToSessionPairings;
@@ -119,8 +121,11 @@ class OrganizerSessionState extends ChangeNotifier {
     }
   }
 
-  Future<void> createSession(String sessionName, ApplicationState applicationState,
-      LibraryState libraryState, SessionType sessionType) async {
+  Future<void> createSession(
+      String sessionName,
+      ApplicationState applicationState,
+      LibraryState libraryState,
+      SessionType sessionType) async {
     User? organizer = applicationState.currentUser;
     Course? course = libraryState.selectedCourse;
 
@@ -181,6 +186,34 @@ class OrganizerSessionState extends ChangeNotifier {
     _sessionPairingSubscription.resubscribe((collectionReference) =>
         collectionReference.where('sessionId',
             isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
+  }
+
+  NavigationEnum getActiveSessionNavigationEnum({SessionType? sessionType}) {
+    SessionType? targetSessionType = sessionType ?? currentSession?.sessionType;
+
+    if (targetSessionType == null) {
+      return NavigationEnum.sessionHome;
+    }
+
+    switch (targetSessionType) {
+      case SessionType.automaticManual:
+        return NavigationEnum.sessionHost;
+      case SessionType.powerMode:
+        return NavigationEnum.advancedPairingHost;
+      case SessionType.partyMode:
+        // TODO: Put the actual party mode host page here.
+        return NavigationEnum.sessionHost;
+    }
+  }
+
+  void navigateToActiveSessionPage(BuildContext context,
+      {SessionType? sessionType}) {
+    NavigationEnum? destination =
+        getActiveSessionNavigationEnum(sessionType: sessionType);
+
+    if (destination != null) {
+      destination.navigateClean(context);
+    }
   }
 
   void saveNextRound(PairedSession pairedSession) {
@@ -383,7 +416,8 @@ class OrganizerSessionState extends ChangeNotifier {
       String? mentorUserId,
       String? menteeUserId,
       List<String>? additionalStudentUserIds,
-      String? lessonId, WriteBatch batch) {
+      String? lessonId,
+      WriteBatch batch) {
     SessionPairingFunctions.updateStudentsAndLesson(pairingId, mentorUserId,
         menteeUserId, additionalStudentUserIds, lessonId, batch);
   }
@@ -421,8 +455,8 @@ class OrganizerSessionState extends ChangeNotifier {
     final teachCounts = <String, int>{};
     final learnCounts = <String, int>{};
 
-    for (final pairing
-        in _sessionPairingSubscription.items.where((pairing) => pairing.isCompleted)) {
+    for (final pairing in _sessionPairingSubscription.items
+        .where((pairing) => pairing.isCompleted)) {
       final mentorId = pairing.mentorId?.id;
       if (mentorId != null) {
         teachCounts[mentorId] = (teachCounts[mentorId] ?? 0) + 1;

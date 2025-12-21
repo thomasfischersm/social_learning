@@ -14,6 +14,9 @@ import 'package:social_learning/state/firestore_subscription/session_pairings_su
 import 'package:social_learning/state/firestore_subscription/session_participants_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/ui_foundation/advanced_pairing_student_page.dart';
+import 'package:social_learning/ui_foundation/session_student_page.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/util/list_util.dart';
 
 class StudentSessionState extends ChangeNotifier {
@@ -239,4 +242,58 @@ class StudentSessionState extends ChangeNotifier {
 
     return pairing.additionalStudentIds.any((ref) => ref.id == userId);
   }
+
+  NavigationEnum getActiveSessionNavigationEnum(
+      {Session? session, String? sessionId, SessionType? sessionType}) {
+    Session? targetSession = session ?? currentSession;
+    SessionType? targetSessionType = sessionType ?? targetSession?.sessionType;
+
+    if (targetSessionType == null) {
+      return NavigationEnum.sessionHome;
+    }
+
+    switch (targetSessionType) {
+      case SessionType.automaticManual:
+        return NavigationEnum.sessionStudent;
+      case SessionType.powerMode:
+        return NavigationEnum.advancedPairingStudent;
+      case SessionType.partyMode:
+        return NavigationEnum.advancedPairingStudent;
+    }
+  }
+
+  void navigateToActiveSessionPage(BuildContext context,
+      {Session? session, String? sessionId, SessionType? sessionType}) {
+    Session? targetSession = session ?? currentSession;
+    String? targetSessionId = sessionId ?? targetSession?.id;
+    NavigationEnum? navigationEnum = getActiveSessionNavigationEnum(
+      session: targetSession,
+      sessionId: targetSessionId,
+      sessionType: sessionType,
+    );
+
+    if ((navigationEnum == null) || (targetSessionId == null)) {
+      return;
+    }
+
+    final Object arguments;
+    switch (navigationEnum) {
+      case NavigationEnum.sessionStudent:
+        arguments = SessionStudentArgument(targetSessionId);
+        break;
+      case NavigationEnum.advancedPairingStudent:
+        arguments = AdvancedPairingStudentArgument(targetSessionId);
+        break;
+      default:
+        arguments = SessionStudentArgument(targetSessionId);
+        break;
+    }
+
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      navigationEnum.route,
+          (route) => route.settings.name == NavigationEnum.home.route,
+      arguments: arguments,
+    );
+  }
+
 }

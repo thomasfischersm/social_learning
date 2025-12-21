@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/state/available_session_state.dart';
+import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/custom_card.dart';
 import 'package:social_learning/ui_foundation/session_student_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
@@ -71,11 +72,10 @@ class InPersonSessionSection extends StatelessWidget {
 
   void _joinSession(Session session, BuildContext context) {
     if (session.id != null) {
-      Navigator.pushNamed(
-        context,
-        NavigationEnum.sessionStudent.route,
-        arguments: SessionStudentArgument(session.id!),
-      );
+      StudentSessionState studentSessionState =
+          context.read<StudentSessionState>();
+      studentSessionState.navigateToActiveSessionPage(context,
+          session: session);
     }
   }
 }

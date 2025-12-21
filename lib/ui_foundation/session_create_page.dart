@@ -96,8 +96,7 @@ class SessionCreateState extends State<SessionCreatePage> {
                   child: const Text('Cancel')),
                 ElevatedButton(
                     onPressed: () {
-                      _createSession(
-                          context, sessionNameController.text, _sessionType);
+                      _createSession(sessionNameController.text, _sessionType);
                     },
                     child: const Text('Continue')),
               ],
@@ -107,7 +106,7 @@ class SessionCreateState extends State<SessionCreatePage> {
   }
 
   void _createSession(
-      BuildContext context, String sessionName, SessionType sessionType) {
+      String sessionName, SessionType sessionType) async {
     print('Attempting to create session $sessionName');
 
     var applicationState =
@@ -116,10 +115,13 @@ class SessionCreateState extends State<SessionCreatePage> {
     var organizerSessionState =
         Provider.of<OrganizerSessionState>(context, listen: false);
 
-    organizerSessionState
+    await organizerSessionState
         .createSession(sessionName, applicationState, libraryState, sessionType);
 
-    Navigator.pushNamed(context, NavigationEnum.sessionHost.route);
+    if (mounted) {
+      organizerSessionState.navigateToActiveSessionPage(context,
+          sessionType: sessionType);
+    }
   }
 
   List<Widget> _buildSessionTypeOptions(BuildContext context) {
