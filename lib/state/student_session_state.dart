@@ -14,6 +14,7 @@ import 'package:social_learning/state/firestore_subscription/session_pairings_su
 import 'package:social_learning/state/firestore_subscription/session_participants_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/util/list_util.dart';
 
 class StudentSessionState extends ChangeNotifier {
   get isInitialized => _sessionSubscription.isInitialized;
@@ -84,12 +85,12 @@ class StudentSessionState extends ChangeNotifier {
     }
 
     switch (session.sessionType) {
-      case SessionType.partyMode:
-        return _findAdvancedCurrentPairingForUser(currentUserId);
       case SessionType.automaticManual:
+        return _findCurrentPairingForAutomaticSessions(currentUserId);
       case SessionType.powerMode:
+      case SessionType.partyMode:
       default:
-        return _findAutomaticCurrentPairingForUser(currentUserId);
+        return _findCurrentForAdvancedSessions(currentUserId);
     }
   }
 
@@ -198,7 +199,8 @@ class StudentSessionState extends ChangeNotifier {
     await SessionPairingFunctions.completePairing(pairingId);
   }
 
-  SessionPairing? _findAutomaticCurrentPairingForUser(String currentUserId) {
+  SessionPairing? _findCurrentPairingForAutomaticSessions(
+      String currentUserId) {
     final currentRound = _sessionPairingSubscription.getLatestRoundNumber();
     if (currentRound < 0) {
       return null;
@@ -210,7 +212,8 @@ class StudentSessionState extends ChangeNotifier {
     }
 
     for (final pairing in roundPairings) {
-      if (_pairingIncludesUser(pairing, currentUserId) && !pairing.isCompleted) {
+      if (_pairingIncludesUser(pairing, currentUserId) &&
+          !pairing.isCompleted) {
         return pairing;
       }
     }
@@ -218,23 +221,15 @@ class StudentSessionState extends ChangeNotifier {
     return null;
   }
 
-  SessionPairing? _findAdvancedCurrentPairingForUser(String currentUserId) {
-    final relevantPairings = allPairings
+  SessionPairing? _findCurrentForAdvancedSessions(String currentUserId) {
+    List<SessionPairing> relevantPairings = allPairings
         .where((pairing) => _pairingIncludesUser(pairing, currentUserId))
         .toList();
 
-    if (relevantPairings.isEmpty) {
-      return null;
-    }
+    SessionPairing? lastPairing = relevantPairings
+        .maxByOrNull((a, b) => b.roundNumber.compareTo(a.roundNumber));
 
-    relevantPairings.sort((a, b) => b.roundNumber.compareTo(a.roundNumber));
-    final latestPairing = relevantPairings.first;
-
-    if (latestPairing.isCompleted) {
-      return null;
-    }
-
-    return latestPairing;
+    return lastPairing?.isCompleted ?? true ? null : lastPairing;
   }
 
   bool _pairingIncludesUser(SessionPairing pairing, String userId) {

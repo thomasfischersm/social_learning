@@ -99,13 +99,12 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
   Widget _buildFloatingActionButton(BuildContext context) {
     return Consumer2<ApplicationState, StudentSessionState>(
       builder: (context, applicationState, studentSessionState, child) {
-        final mentorPairing = studentSessionState.currentPairing;
         final isMentoringActiveRound = _isMentoringActiveRound(
           applicationState,
           studentSessionState,
         );
 
-        if (!isMentoringActiveRound || mentorPairing == null) {
+        if (!isMentoringActiveRound) {
           return _buildLeaveSessionButton(context);
         }
 
