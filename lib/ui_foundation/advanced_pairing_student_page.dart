@@ -261,7 +261,6 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
             mentor: mentor,
             learners: learners,
             showLearnerProgress: showLearnerProgress,
-            currentUserId: applicationState.currentUser?.id,
           ),
         ),
       );
