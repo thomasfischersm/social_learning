@@ -12,9 +12,12 @@ import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widget
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/ui_foundation/other_profile_page.dart';
 
 class StudentSessionHistoryDialog {
   static void show(BuildContext context, User user) {
+    final sessionPairings = _findSessionPairings(context, user);
+
     DialogUtils.showInfoDialogWithContent(
         context,
         'Session history for ${user.displayName}',
@@ -22,8 +25,8 @@ class StudentSessionHistoryDialog {
             child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeaderRow(context, user),
-            ..._findSessionPairings(context, user)
+            _buildHeaderRow(context, user, sessionPairings),
+            ...sessionPairings
                 .expand((pairing) => _buildPairingRow(context, user, pairing))
           ],
         )),
@@ -44,32 +47,53 @@ class StudentSessionHistoryDialog {
       ..sort((a, b) => b.roundNumber.compareTo(a.roundNumber));
   }
 
-  static Widget _buildHeaderRow(BuildContext context, User user) {
-    return Padding( padding: const EdgeInsets.only(bottom: 12), child:ListTile(
-        contentPadding: EdgeInsets.zero,
-        minLeadingWidth: 0,
-        horizontalTitleGap: 12,
-        leading: SizedBox.square(
-            dimension: 64,
-            child: ProfileImageWidgetV2.fromUser(
-              user,
-              maxRadius: 32,
-            )),
-        title: Text(user.displayName, style: CustomTextStyles.subHeadline),
-        subtitle: InkWell(
-            onTap: () => _navigateToClipboard(context, user),
-            child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                const Icon(Icons.content_paste_rounded, size: 16),
-            const SizedBox(width: 6),Text(
-              'View clipboard',
-              style: CustomTextStyles.getLink(context),
-            )]))));
+  static Widget _buildHeaderRow(
+      BuildContext context, User user, List<SessionPairing> sessionPairings) {
+    final int teachCount = sessionPairings
+        .where((pairing) => pairing.mentorId?.id == user.id)
+        .length;
+    final int learnCount = sessionPairings
+        .where((pairing) =>
+            pairing.menteeId?.id == user.id ||
+            pairing.additionalStudentIds.any((ref) => ref.id == user.id))
+        .length;
+
+    return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            minLeadingWidth: 0,
+            horizontalTitleGap: 12,
+            leading: SizedBox.square(
+                dimension: 64,
+                child: ProfileImageWidgetV2.fromUser(
+                  user,
+                  maxRadius: 32,
+                )),
+            title: Row(children: [
+              Expanded(
+                  child: Text(user.displayName,
+                      style: CustomTextStyles.subHeadline,
+                      overflow: TextOverflow.ellipsis)),
+              IconButton(
+                  icon: const Icon(Icons.content_paste_rounded, size: 20),
+                  tooltip: 'View clipboard',
+                  onPressed: () => _navigateToClipboard(context, user)),
+              IconButton(
+                  icon: const Icon(Icons.account_circle_outlined, size: 20),
+                  tooltip: 'View profile',
+                  onPressed: () => _navigateToOtherProfile(context, user))
+            ]),
+            subtitle: Text('Learned: $learnCount · Taught: $teachCount',
+                style: CustomTextStyles.getCaption(context))));
   }
 
   static void _navigateToClipboard(BuildContext context, User user) {
     InstructorClipboardArgument.navigateTo(context, user.id, user.uid);
+  }
+
+  static void _navigateToOtherProfile(BuildContext context, User user) {
+    OtherProfileArgument.goToOtherProfile(context, user.id, user.uid);
   }
 
   static List<Widget> _buildPairingRow(
