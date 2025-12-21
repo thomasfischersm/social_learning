@@ -2,16 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/data_helpers/session_pairing_helper.dart';
+import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
+import 'package:social_learning/data/session.dart';
+import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
+import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_pairings_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_participants_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
-import 'package:social_learning/data/user.dart';
-import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/state/library_state.dart';
-import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
 
 class StudentSessionState extends ChangeNotifier {
   get isInitialized => _sessionSubscription.isInitialized;
@@ -72,6 +74,24 @@ class StudentSessionState extends ChangeNotifier {
 
   User? getUserById(String? id) =>
       (id == null) ? null : _participantUsersSubscription.getUserById(id);
+
+  SessionPairing? get currentPairing {
+    final currentUserId = _applicationState.currentUser?.id;
+    final session = currentSession;
+
+    if (currentUserId == null || session == null) {
+      return null;
+    }
+
+    switch (session.sessionType) {
+      case SessionType.partyMode:
+        return _findAdvancedCurrentPairingForUser(currentUserId);
+      case SessionType.automaticManual:
+      case SessionType.powerMode:
+      default:
+        return _findAutomaticCurrentPairingForUser(currentUserId);
+    }
+  }
 
   void _checkForOngoingSession() {
     print(
@@ -165,5 +185,63 @@ class StudentSessionState extends ChangeNotifier {
     await _sessionParticipantsSubscription.cancel();
     await _participantUsersSubscription.cancel();
     await _sessionPairingSubscription.cancel();
+  }
+
+  Future<void> completeCurrentPairing() async {
+    final pairing = currentPairing;
+    if (pairing?.id != null) {
+      await completePairing(pairing!.id!);
+    }
+  }
+
+  Future<void> completePairing(String pairingId) async {
+    await SessionPairingFunctions.completePairing(pairingId);
+  }
+
+  SessionPairing? _findAutomaticCurrentPairingForUser(String currentUserId) {
+    final currentRound = _sessionPairingSubscription.getLatestRoundNumber();
+    if (currentRound < 0) {
+      return null;
+    }
+
+    final roundPairings = roundNumberToSessionPairing[currentRound];
+    if (roundPairings == null) {
+      return null;
+    }
+
+    for (final pairing in roundPairings) {
+      if (_pairingIncludesUser(pairing, currentUserId) && !pairing.isCompleted) {
+        return pairing;
+      }
+    }
+
+    return null;
+  }
+
+  SessionPairing? _findAdvancedCurrentPairingForUser(String currentUserId) {
+    final relevantPairings = allPairings
+        .where((pairing) => _pairingIncludesUser(pairing, currentUserId))
+        .toList();
+
+    if (relevantPairings.isEmpty) {
+      return null;
+    }
+
+    relevantPairings.sort((a, b) => b.roundNumber.compareTo(a.roundNumber));
+    final latestPairing = relevantPairings.first;
+
+    if (latestPairing.isCompleted) {
+      return null;
+    }
+
+    return latestPairing;
+  }
+
+  bool _pairingIncludesUser(SessionPairing pairing, String userId) {
+    if ((pairing.mentorId?.id == userId) || (pairing.menteeId?.id == userId)) {
+      return true;
+    }
+
+    return pairing.additionalStudentIds.any((ref) => ref.id == userId);
   }
 }
