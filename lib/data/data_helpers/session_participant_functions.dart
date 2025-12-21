@@ -33,16 +33,17 @@ class SessionParticipantFunctions {
     });
   }
 
-  static Future<SessionParticipant?> findActiveForUser(String userId) async {
-    final userRef = docRef('users', userId);
+  static Future<SessionParticipant?> findActiveForUser(String userId, String courseId) async {
     final snapshot = await FirestoreService.instance
         .collection('sessionParticipants')
-        .where('participantId', isEqualTo: userRef)
+        .where('participantId', isEqualTo: docRef('users', userId))
+        .where('courseId', isEqualTo: docRef('courses', courseId))
         .where('isActive', isEqualTo: true)
         .get();
     if (snapshot.docs.isEmpty) {
       return null;
     }
+    print('findActiveForUser found ${snapshot.docs.length} session participants.');
     return SessionParticipant.fromSnapshot(snapshot.docs.first);
   }
 

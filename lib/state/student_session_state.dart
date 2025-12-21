@@ -119,12 +119,20 @@ class StudentSessionState extends ChangeNotifier {
       return;
     }
 
+    if (currentCourse == null) {
+      print('Trying to check for ongoing session, but no course is selected!');
+      return;
+    }
+
     print('Checking active session for user ${currentUser.id}');
-    SessionParticipantFunctions.findActiveForUser(currentUser.id)
+    SessionParticipantFunctions.findActiveForUser(currentUser.id, currentCourse.id!)
         .then((sessionParticipant) {
       if (sessionParticipant != null) {
         print(
-            'Trying to automatically log into session ${sessionParticipant.sessionId.id}');
+            'Trying to automatically log into session '
+                '${sessionParticipant.sessionId.id} '
+                '(session: ${sessionParticipant.sessionId.id}), '
+                'course: ${sessionParticipant.courseId.id}');
         if (sessionParticipant.courseId.id == currentCourse?.id) {
           attemptToJoin(sessionParticipant.sessionId.id);
         } else {
