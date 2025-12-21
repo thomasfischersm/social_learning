@@ -139,7 +139,7 @@ class StudentSessionState extends ChangeNotifier {
   }
 
   void attemptToJoin(String sessionId) {
-    _sessionSubscription.resubscribe(() => '/sessions/$sessionId');
+    _sessionSubscription.resubscribe(() => 'sessions/$sessionId');
 
     _sessionParticipantsSubscription.resubscribe((collectionReference) =>
         SessionParticipantFunctions.queryBySessionId(
@@ -147,7 +147,7 @@ class StudentSessionState extends ChangeNotifier {
 
     _sessionPairingSubscription.resubscribe((collectionReference) =>
         collectionReference.where('sessionId',
-            isEqualTo: FirebaseFirestore.instance.doc('/sessions/$sessionId')));
+            isEqualTo: FirebaseFirestore.instance.doc('sessions/$sessionId')));
 
     // TODO: Check if organizer and re-direct.
     // TODO: Add self as participant if needed.

@@ -47,8 +47,7 @@ class SessionParticipantFunctions {
   }
 
   static Future<void> updateIsActive(String participantId, bool isActive) {
-    return FirestoreService.instance
-        .doc('/sessionParticipants/$participantId')
+    return docRef('sessionParticipants', participantId)
         .update({'isActive': isActive});
   }
 
@@ -69,4 +68,3 @@ class SessionParticipantFunctions {
     await batch.commit();
   }
 }
-
