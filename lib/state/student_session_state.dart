@@ -20,16 +20,17 @@ import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart'
 import 'package:social_learning/util/list_util.dart';
 
 class StudentSessionState extends ChangeNotifier {
-  get isInitialized => _sessionSubscription.isInitialized;
+  bool get isInitialized => _sessionSubscription.isInitialized;
 
   late SessionSubscription _sessionSubscription;
   late SessionParticipantsSubscription _sessionParticipantsSubscription;
   late ParticipantUsersSubscription _participantUsersSubscription;
   late SessionPairingsSubscription _sessionPairingSubscription;
 
-  get currentSession => _sessionSubscription.item;
+  Session? get currentSession => _sessionSubscription.item;
 
-  get sessionParticipants => _sessionParticipantsSubscription.items;
+  List<SessionParticipant> get sessionParticipants =>
+      _sessionParticipantsSubscription.items;
 
   List<SessionPairing> get allPairings => _sessionPairingSubscription.items;
 
@@ -247,6 +248,7 @@ class StudentSessionState extends ChangeNotifier {
       {Session? session, String? sessionId, SessionType? sessionType}) {
     Session? targetSession = session ?? currentSession;
     SessionType? targetSessionType = sessionType ?? targetSession?.sessionType;
+    print('Active session ${session?.id} has sessionType $targetSessionType');
 
     if (targetSessionType == null) {
       return NavigationEnum.sessionHome;
@@ -291,9 +293,8 @@ class StudentSessionState extends ChangeNotifier {
 
     Navigator.of(context).pushNamedAndRemoveUntil(
       navigationEnum.route,
-          (route) => route.settings.name == NavigationEnum.home.route,
+      (route) => route.settings.name == NavigationEnum.home.route,
       arguments: arguments,
     );
   }
-
 }
