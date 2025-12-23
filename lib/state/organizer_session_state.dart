@@ -20,6 +20,7 @@ import 'package:social_learning/state/firestore_subscription/practice_records_su
 import 'package:social_learning/state/firestore_subscription/session_pairings_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_participants_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
+import 'package:social_learning/state/graduation_status.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
@@ -514,6 +515,32 @@ class OrganizerSessionState extends ChangeNotifier {
     }
 
     return learnCount / teachCount;
+  }
+
+  GraduationStatus getGraduationStatus(
+      SessionParticipant participant, Lesson lesson) {
+    Timestamp? sessionStart = currentSession?.startTime;
+    GraduationStatus status = GraduationStatus.untouched;
+
+    for (PracticeRecord practiceRecord in practiceRecords) {
+      if (practiceRecord.menteeUid == participant.participantUid &&
+          practiceRecord.lessonId.id == lesson.id) {
+        if (practiceRecord.isGraduation) {
+          return GraduationStatus.graduated;
+        } else if (sessionStart != null &&
+            practiceRecord.timestamp != null &&
+            sessionStart
+                .toDate()
+                .isBefore(practiceRecord.timestamp!.toDate())) {
+          status = GraduationStatus.practicedThisSession;
+        }
+        if (status == GraduationStatus.untouched) {
+          status = GraduationStatus.practiced;
+        }
+      }
+    }
+
+    return status;
   }
 }
 

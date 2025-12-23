@@ -11,6 +11,7 @@ import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/graduation_status.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
@@ -411,11 +412,9 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
         group.memberParticipantIds.contains(participant.id) &&
         group.lessonId == lesson.id);
     Color iconColor = Colors.grey.shade400;
-    bool hasCompletedLesson = lesson.id != null &&
-        _hasGraduatedLesson(participant, lesson.id!, organizerSessionState);
-    Color backgroundColor = (hasCompletedLesson)
-        ? CustomTextStyles.fullyLearnedColor
-        : Colors.white;
+    GraduationStatus graduationStatus =
+        organizerSessionState.getGraduationStatus(participant, lesson);
+    Color backgroundColor = _determineCellColor(graduationStatus);
 
     if (group != null) {
       bool isSelected = _groups.any((group) =>
@@ -449,6 +448,19 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
           child: const SizedBox.expand(), // fills all available space
         ),
       );
+    }
+  }
+
+  Color _determineCellColor(GraduationStatus graduationStatus) {
+    switch (graduationStatus) {
+      case GraduationStatus.untouched:
+        return Colors.white;
+      case GraduationStatus.practiced:
+        return CustomTextStyles.partiallyLearnedColor;
+      case GraduationStatus.practicedThisSession:
+        return CustomTextStyles.partiallyLearnedThisSessionColor;
+      case GraduationStatus.graduated:
+        return CustomTextStyles.fullyLearnedColor;
     }
   }
 
@@ -599,16 +611,6 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
         .toList();
     organizerSessionState.updateStudentsAndLesson(group.id!, mentorUserId,
         menteeUserId, additionalStudentUserIds, group.lessonId, batch);
-  }
-
-  bool _hasGraduatedLesson(
-    SessionParticipant participant,
-    String lessonId,
-    OrganizerSessionState organizerSessionState,
-  ) {
-    return organizerSessionState
-        .getGraduatedLessons(participant)
-        .any((lesson) => lesson.id == lessonId);
   }
 
   SessionParticipant? _findParticipantById(

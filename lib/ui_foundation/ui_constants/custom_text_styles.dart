@@ -8,6 +8,8 @@ class CustomTextStyles {
       const TextStyle(fontSize: 20, color: Colors.black);
 
   static Color partiallyLearnedColor = const Color.fromRGBO(16, 68, 54, 1);
+  static Color partiallyLearnedThisSessionColor =
+      const Color.fromRGBO(130, 140, 138, 1);
   static Color fullyLearnedColor = const Color.fromRGBO(31, 138, 112, 1);
 
   static TextStyle? getBody(BuildContext context) =>

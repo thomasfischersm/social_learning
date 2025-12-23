@@ -30,7 +30,7 @@ class PracticeRecordsSubscription
     List<Lesson> graduatedLessons = [];
 
     for (PracticeRecord practiceRecord in items) {
-      if (practiceRecord.menteeUid == user.uid) {
+      if (practiceRecord.menteeUid == user.uid && practiceRecord.isGraduation) {
         Lesson? lesson = _libraryState.findLesson(practiceRecord.lessonId.id);
         if (lesson != null) {
           graduatedLessons.add(lesson);

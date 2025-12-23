@@ -29,7 +29,7 @@ class ParticipantUsersSubscription extends FirestoreListSubscription<User> {
 
     _practiceRecordSubscription?.resubscribe((collectionReference) =>
         collectionReference
-            .where('isGraduation', isEqualTo: true)
+            // .where('isGraduation', isEqualTo: true)
             .where('menteeUid', whereIn: getUserUids()));
   }
 
