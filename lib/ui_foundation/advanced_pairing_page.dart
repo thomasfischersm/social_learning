@@ -317,8 +317,8 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
     return InkWell(
       onTap: () => DialogUtils.showInfoDialog(
         context,
-        'Lesson $label',
-        lesson.title,
+        'Lesson $label - ${lesson.title}',
+        lesson.synopsis ?? '',
         () {},
       ),
       child: Container(
