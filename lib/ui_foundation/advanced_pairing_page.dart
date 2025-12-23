@@ -210,6 +210,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
                                   return _buildNameCell(
                                     context,
                                     participant,
+                                    learnToTeachRatio,
                                     organizerSessionState,
                                     libraryState,
                                     nameColumnWidth,
