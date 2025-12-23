@@ -288,7 +288,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
       visibleNames.add(visibleName);
 
       if (user?.profileFireStoragePath != null) {
-        maxIconWidth = max(maxIconWidth, fontSize + 8.0);
+        maxIconWidth = max(maxIconWidth, fontSize * 2 + 8.0);
       }
     }
 
@@ -364,7 +364,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Row(
             children: [
-              _buildProfileImage(user, fontSize),
+              _buildProfileImage(user, fontSize * 2),
               if (user?.profileFireStoragePath != null)
                 const SizedBox(width: 8),
               Expanded(
