@@ -200,7 +200,8 @@ class OrganizerSessionState extends ChangeNotifier {
         return NavigationEnum.sessionHost;
       case SessionType.powerMode:
         return NavigationEnum.advancedPairingHost;
-      case SessionType.partyMode:
+      case SessionType.partyModeDuo:
+      case SessionType.partyModeTrio:
         // TODO: Put the actual party mode host page here.
         return NavigationEnum.sessionHost;
     }
@@ -489,7 +490,8 @@ class OrganizerSessionState extends ChangeNotifier {
         _sessionPairingSubscription.isInitialized &&
         _sessionParticipantsSubscription.isInitialized &&
         (session.sessionType == SessionType.powerMode ||
-            session.sessionType == SessionType.partyMode);
+            session.sessionType == SessionType.partyModeDuo ||
+            session.sessionType == SessionType.partyModeTrio);
   }
 }
 

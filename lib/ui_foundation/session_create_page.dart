@@ -137,9 +137,14 @@ class SessionCreateState extends State<SessionCreatePage> {
         'The power mode allows you to extremely quickly pair students with minimal clicks. There is a learning curve to understanding this powerful user interface.',
       ),
       _SessionTypeOption(
-        SessionType.partyMode,
-        'Party mode for mingling',
+        SessionType.partyModeDuo,
+        'Party mode for mingling: duo (coming soon)',
         'This mode is optimal for social events where the focus is on mingling. Students can request to be paired. They will be paired with available students or soon-to-be-available students. This works great for where lessons take a variable amount of time and students may come in and out of wanting to learn.',
+      ),
+      _SessionTypeOption(
+        SessionType.partyModeTrio,
+        'Party mode for mingling: trio (coming soon)',
+        'The same thing as party mode duo, but with a third person.',
       ),
     ];
 

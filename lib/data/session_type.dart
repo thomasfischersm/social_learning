@@ -1,7 +1,8 @@
 enum SessionType {
   automaticManual(1),
   powerMode(2),
-  partyMode(3);
+  partyModeDuo(3),
+  partyModeTrio(4);
 
   const SessionType(this.value);
 
@@ -16,7 +17,9 @@ enum SessionType {
       case 2:
         return SessionType.powerMode;
       case 3:
-        return SessionType.partyMode;
+        return SessionType.partyModeDuo;
+      case 4:
+        return SessionType.partyModeTrio;
       default:
         return SessionType.automaticManual;
     }

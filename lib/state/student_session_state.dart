@@ -92,7 +92,8 @@ class StudentSessionState extends ChangeNotifier {
       case SessionType.automaticManual:
         return _findCurrentPairingForAutomaticSessions(currentUserId);
       case SessionType.powerMode:
-      case SessionType.partyMode:
+      case SessionType.partyModeDuo:
+      case SessionType.partyModeTrio:
       default:
         return _findCurrentForAdvancedSessions(currentUserId);
     }
@@ -267,7 +268,8 @@ class StudentSessionState extends ChangeNotifier {
         return NavigationEnum.sessionStudent;
       case SessionType.powerMode:
         return NavigationEnum.advancedPairingStudent;
-      case SessionType.partyMode:
+      case SessionType.partyModeDuo:
+      case SessionType.partyModeTrio:
         return NavigationEnum.advancedPairingStudent;
     }
   }
