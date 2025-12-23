@@ -33,7 +33,8 @@ class AdvancedPairingHostPage extends StatefulWidget {
   const AdvancedPairingHostPage({super.key});
 
   @override
-  State<AdvancedPairingHostPage> createState() => _AdvancedPairingHostPageState();
+  State<AdvancedPairingHostPage> createState() =>
+      _AdvancedPairingHostPageState();
 }
 
 class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
@@ -81,6 +82,8 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
                   _buildLevelGroups(lessons, libraryState.levels);
               final participants =
                   _sortedParticipants(organizerSessionState, lessons);
+              double learnToTeachRatio =
+                  organizerSessionState.getLearnTeachRatio();
 
               return Column(
                 children: [
@@ -215,13 +218,10 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
                                 buildCell: (context, rowIndex, columnIndex) {
                                   final participant = participants[rowIndex];
                                   final lesson = lessons[columnIndex];
-                                  final rowColor = _rowColor(context,
-                                      participant, organizerSessionState);
 
                                   return Container(
                                     alignment: Alignment.center,
                                     decoration: BoxDecoration(
-                                      color: rowColor,
                                       border: Border(
                                         right: BorderSide(
                                           color: Theme.of(context).dividerColor,
@@ -336,12 +336,14 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
   Widget _buildNameCell(
     BuildContext context,
     SessionParticipant participant,
+    double learnToTeachRatio,
     OrganizerSessionState organizerSessionState,
     LibraryState libraryState,
     double width,
   ) {
     final user = organizerSessionState.getUser(participant);
-    final rowColor = _rowColor(context, participant, organizerSessionState);
+    final rowColor = _rowColor(
+        context, participant, learnToTeachRatio, organizerSessionState);
     final textStyle = CustomTextStyles.getBodyNote(context);
     final fontSize = textStyle?.fontSize ?? 14;
     final displayName = user?.displayName ?? 'Unknown';
@@ -621,10 +623,11 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
   }
 
   Color _rowColor(BuildContext context, SessionParticipant participant,
-      OrganizerSessionState organizerSessionState) {
+      double learnToTeachRatio, OrganizerSessionState organizerSessionState) {
     final isInGroup = _groups
         .any((group) => group.memberParticipantIds.contains(participant.id));
-    final teachDeficit = participant.teachCount - participant.learnCount;
+    final teachDeficit =
+        participant.teachCount * learnToTeachRatio - participant.learnCount;
     final intensity = min(teachDeficit.abs() / 5.0, 1.0);
     Color base = Theme.of(context).colorScheme.surfaceVariant;
     if (teachDeficit > 0) {

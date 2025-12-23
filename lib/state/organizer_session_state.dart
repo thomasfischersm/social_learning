@@ -493,6 +493,28 @@ class OrganizerSessionState extends ChangeNotifier {
             session.sessionType == SessionType.partyModeDuo ||
             session.sessionType == SessionType.partyModeTrio);
   }
+
+  /// The learn to teach ratio is useful to calculate the teaching deficit. In
+  /// some sessions, more than one student learn from a mentor. So to balance
+  /// out learning and teaching, students have to teach less.
+  double getLearnTeachRatio() {
+    int teachCount = 0;
+    int learnCount = 0;
+
+    for (SessionPairing pairing in allPairings) {
+      if (pairing.isCompleted) {
+        if (pairing.mentorId != null) {
+          teachCount++;
+        }
+        if (pairing.menteeId != null) {
+          learnCount++;
+        }
+        learnCount += pairing.additionalStudentIds.length;
+      }
+    }
+
+    return learnCount / teachCount;
+  }
 }
 
 // TODO: about the teach and learn count on participants.
