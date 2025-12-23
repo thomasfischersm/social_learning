@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
@@ -395,8 +396,8 @@ class OrganizerSessionState extends ChangeNotifier {
     SessionPairingFunctions.removeLesson(sessionPairing);
   }
 
-  void addLesson(Lesson lesson, SessionPairing sessionPairing) {
-    SessionPairingFunctions.addLesson(sessionPairing, lesson);
+  void updateLesson(Lesson lesson, SessionPairing sessionPairing) {
+    SessionPairingFunctions.updateLesson(sessionPairing, lesson);
   }
 
   void updateStudentsAndLesson(
@@ -541,6 +542,10 @@ class OrganizerSessionState extends ChangeNotifier {
     }
 
     return status;
+  }
+
+  SessionPairing? getPairingById(String pairingId) {
+    return allPairings.firstWhereOrNull((pairing) => pairing.id == pairingId);
   }
 }
 

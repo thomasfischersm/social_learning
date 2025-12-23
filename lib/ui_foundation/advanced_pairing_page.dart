@@ -483,8 +483,18 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
 
     // Only change the lesson, not the participant.
     if (wasInSelected && !isSameLevel) {
+      // Update the lesson locally.
       selectedGroup.lessonId = lesson.id;
       setState(() {});
+
+      // Update the lesson in the cloud.
+      String? groupId = selectedGroup.id;
+      if (groupId != null) {
+        SessionPairing? pairing = organizerSessionState.getPairingById(groupId);
+        if (pairing != null) {
+          organizerSessionState.updateLesson(lesson, pairing);
+        }
+      }
       return;
     }
 

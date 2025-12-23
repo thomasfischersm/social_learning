@@ -23,7 +23,7 @@ class SessionPairingFunctions {
     return newDoc.id;
   }
 
-  static void addLesson(SessionPairing sessionPairing, Lesson lesson) {
+  static void updateLesson(SessionPairing sessionPairing, Lesson lesson) {
     docRef('sessionPairings', sessionPairing.id!).update({
       'lessonId': docRef('lessons', lesson.id!),
     }).then((value) {

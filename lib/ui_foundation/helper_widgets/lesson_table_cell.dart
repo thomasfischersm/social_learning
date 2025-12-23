@@ -106,7 +106,7 @@ class LessonTableCellState extends State<LessonTableCell> {
   void selectLesson(Lesson? selectedLesson) {
     if (selectedLesson != null) {
       widget.organizerSessionState
-          .addLesson(selectedLesson, widget.sessionPairing);
+          .updateLesson(selectedLesson, widget.sessionPairing);
     }
   }
 
