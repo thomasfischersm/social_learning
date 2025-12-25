@@ -334,14 +334,29 @@ class ProfilePageState extends State<ProfilePage> {
       //     '/profilePhoto');
       // var uploadTask = await storageRef.putFile(File(file.path));
       Uint8List imageData = await file.readAsBytes();
-      Uint8List thumbnailData = await _buildResizedImageBytes(imageData, 320);
-      Uint8List tinyData = await _buildResizedImageBytes(imageData, 80);
-      await storageRef.putData(
-          imageData, SettableMetadata(contentType: file.mimeType));
-      await thumbnailRef.putData(
-          thumbnailData, SettableMetadata(contentType: 'image/jpeg'));
-      await tinyRef.putData(
-          tinyData, SettableMetadata(contentType: 'image/jpeg'));
+      await Future.wait(<Future>[
+        // Upload full size immediately
+        storageRef.putData(
+          imageData,
+          SettableMetadata(contentType: file.mimeType),
+        ),
+
+        // Thumbnail: resize then upload
+        Future(() async {
+          await thumbnailRef.putData(
+            await _buildResizedImageBytes(imageData, 320),
+            SettableMetadata(contentType: 'image/jpeg'),
+          );
+        }),
+
+        // Tiny: resize then upload
+        Future(() async {
+          await tinyRef.putData(
+            await _buildResizedImageBytes(imageData, 80),
+            SettableMetadata(contentType: 'image/jpeg'),
+          );
+        }),
+      ]);
       UserFunctions.updateProfilePhotoPaths(
           fireStoragePath, thumbnailFireStoragePath, tinyFireStoragePath);
 
