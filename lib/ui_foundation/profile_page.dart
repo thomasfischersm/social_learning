@@ -323,8 +323,7 @@ class ProfilePageState extends State<ProfilePage> {
     if (file != null) {
       String userId = auth.FirebaseAuth.instance.currentUser?.uid ?? '';
       String fireStoragePath = '/users/$userId/profilePhoto';
-      String thumbnailFireStoragePath =
-          '/users/$userId/profilePhotoThumbnail';
+      String thumbnailFireStoragePath = '/users/$userId/profilePhotoThumbnail';
       Reference storageRef = FirebaseStorage.instance.ref(fireStoragePath);
       Reference thumbnailRef =
           FirebaseStorage.instance.ref(thumbnailFireStoragePath);
@@ -337,10 +336,7 @@ class ProfilePageState extends State<ProfilePage> {
       await storageRef.putData(
           imageData, SettableMetadata(contentType: file.mimeType));
       await thumbnailRef.putData(
-          thumbnailData,
-          SettableMetadata(
-              contentType: 'image/jpeg',
-              cacheControl: 'public,max-age=604800'));
+          thumbnailData, SettableMetadata(contentType: 'image/jpeg'));
       UserFunctions.updateProfilePhotoPaths(
           fireStoragePath, thumbnailFireStoragePath);
 
@@ -440,7 +436,8 @@ class ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  void _editCalendlyUrl(BuildContext context, ApplicationState applicationState) {
+  void _editCalendlyUrl(
+      BuildContext context, ApplicationState applicationState) {
     TextEditingController textFieldController =
         TextEditingController(text: applicationState.currentUser?.calendlyUrl);
 
