@@ -45,6 +45,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
   static const double _levelHeaderHeight = 32;
   static const double _lessonHeaderHeight = 36;
   static const double _bottomPanelHeight = 96;
+  static const double _groupRowOverlayOpacity = 0.12;
 
   bool _isHorizontalScrolled = false;
   int _roundCounter = 1;
@@ -215,6 +216,8 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
                                 ),
                                 buildRowHeader: (context, rowIndex) {
                                   final participant = participants[rowIndex];
+                                  final isInGroup =
+                                      _isParticipantInGroup(participant);
                                   return _buildNameCell(
                                     context,
                                     participant,
@@ -222,11 +225,14 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
                                     organizerSessionState,
                                     libraryState,
                                     nameColumnWidth,
+                                    isInGroup,
                                   );
                                 },
                                 buildCell: (context, rowIndex, columnIndex) {
                                   final participant = participants[rowIndex];
                                   final lesson = lessons[columnIndex];
+                                  final isInGroup =
+                                      _isParticipantInGroup(participant);
 
                                   return Container(
                                     alignment: Alignment.center,
@@ -242,11 +248,20 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
                                         ),
                                       ),
                                     ),
-                                    child: _buildLessonCellContent(
-                                      context,
-                                      organizerSessionState,
-                                      participant,
-                                      lesson,
+                                    child: Container(
+                                      foregroundDecoration: isInGroup
+                                          ? BoxDecoration(
+                                              color: _groupRowOverlayColor(
+                                                context,
+                                              ),
+                                            )
+                                          : null,
+                                      child: _buildLessonCellContent(
+                                        context,
+                                        organizerSessionState,
+                                        participant,
+                                        lesson,
+                                      ),
                                     ),
                                   );
                                 },
@@ -349,6 +364,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
     OrganizerSessionState organizerSessionState,
     LibraryState libraryState,
     double width,
+    bool isInGroup,
   ) {
     final user = organizerSessionState.getUser(participant);
     final rowColor = _rowColor(
@@ -366,6 +382,11 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
       child: InkWell(
         onTap: user == null ? null : () => _handleProfileTap(context, user),
         child: Container(
+          foregroundDecoration: isInGroup
+              ? BoxDecoration(
+                  color: _groupRowOverlayColor(context),
+                )
+              : null,
           width: width,
           height: _rowHeight,
           padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -645,8 +666,6 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
 
   Color _rowColor(BuildContext context, SessionParticipant participant,
       double learnToTeachRatio, OrganizerSessionState organizerSessionState) {
-    final isInGroup = _groups
-        .any((group) => group.memberParticipantIds.contains(participant.id));
     final teachDeficit =
         participant.teachCount * learnToTeachRatio - participant.learnCount;
     final intensity = min(teachDeficit.abs() / 5.0, 1.0);
@@ -656,10 +675,19 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
     } else if (teachDeficit < 0) {
       base = Color.lerp(base, Colors.red.shade200, intensity) ?? base;
     }
-    if (isInGroup) {
-      base = Color.lerp(base, Colors.black, 0.08) ?? base;
-    }
     return base;
+  }
+
+  bool _isParticipantInGroup(SessionParticipant participant) {
+    return _groups.any(
+        (group) => group.memberParticipantIds.contains(participant.id));
+  }
+
+  Color _groupRowOverlayColor(BuildContext context) {
+    return Theme.of(context)
+        .colorScheme
+        .scrim
+        .withOpacity(_groupRowOverlayOpacity);
   }
 
   List<_LevelGroup> _buildLevelGroups(
