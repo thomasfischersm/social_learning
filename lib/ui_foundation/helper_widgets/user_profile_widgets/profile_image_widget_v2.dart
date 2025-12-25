@@ -152,18 +152,20 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
     if (_user == null) {
       return;
     }
-    String? url = await UserFunctions.getProfilePhotoUrl(_user!);
-    String? thumbnailUrl =
-        await UserFunctions.getProfileThumbnailPhotoUrl(_user!);
-    String? tinyUrl = await UserFunctions.getProfileTinyPhotoUrl(_user!);
 
-    if (mounted) {
-      setState(() {
-        _profilePhotoUrl = url;
-        _profileThumbnailPhotoUrl = thumbnailUrl;
-        _profileTinyPhotoUrl = tinyUrl;
-      });
-    }
+    final results = await Future.wait<String?>([
+      UserFunctions.getProfilePhotoUrl(_user!),
+      UserFunctions.getProfileThumbnailPhotoUrl(_user!),
+      UserFunctions.getProfileTinyPhotoUrl(_user!),
+    ]);
+
+    if (!mounted) return;
+
+    setState(() {
+      _profilePhotoUrl = results[0];
+      _profileThumbnailPhotoUrl = results[1];
+      _profileTinyPhotoUrl = results[2];
+    });
   }
 
   Future<void> _checkSkillRubric(Course? course) async {
