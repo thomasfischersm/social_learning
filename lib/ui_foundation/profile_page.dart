@@ -324,27 +324,34 @@ class ProfilePageState extends State<ProfilePage> {
       String userId = auth.FirebaseAuth.instance.currentUser?.uid ?? '';
       String fireStoragePath = '/users/$userId/profilePhoto';
       String thumbnailFireStoragePath = '/users/$userId/profilePhotoThumbnail';
+      String tinyFireStoragePath = '/users/$userId/profilePhotoTiny';
       Reference storageRef = FirebaseStorage.instance.ref(fireStoragePath);
       Reference thumbnailRef =
           FirebaseStorage.instance.ref(thumbnailFireStoragePath);
+      Reference tinyRef = FirebaseStorage.instance.ref(tinyFireStoragePath);
       // var storageRef = FirebaseStorage.instance.ref().child(
       //     '/profilePhoto');
       // var uploadTask = await storageRef.putFile(File(file.path));
       Uint8List imageData = await file.readAsBytes();
-      Uint8List thumbnailData = _buildThumbnailBytes(imageData);
-      await _deleteExistingThumbnail(thumbnailRef);
+      Uint8List thumbnailData = _buildResizedImageBytes(imageData, 320);
+      Uint8List tinyData = _buildResizedImageBytes(imageData, 80);
+      await _deleteExistingImage(thumbnailRef);
+      await _deleteExistingImage(tinyRef);
       await storageRef.putData(
           imageData, SettableMetadata(contentType: file.mimeType));
       await thumbnailRef.putData(
           thumbnailData, SettableMetadata(contentType: 'image/jpeg'));
+      await tinyRef.putData(
+          tinyData, SettableMetadata(contentType: 'image/jpeg'));
       UserFunctions.updateProfilePhotoPaths(
-          fireStoragePath, thumbnailFireStoragePath);
+          fireStoragePath, thumbnailFireStoragePath, tinyFireStoragePath);
 
       if (mounted) {
         DownloadUrlCacheState cacheState =
             context.read<DownloadUrlCacheState>();
         cacheState.invalidate(fireStoragePath);
         cacheState.invalidate(thumbnailFireStoragePath);
+        cacheState.invalidate(tinyFireStoragePath);
       }
 
       applicationState.invalidateProfilePhoto();
@@ -354,22 +361,21 @@ class ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Uint8List _buildThumbnailBytes(Uint8List imageData) {
+  Uint8List _buildResizedImageBytes(Uint8List imageData, int targetDimension) {
     img.Image? decoded = img.decodeImage(imageData);
     if (decoded == null) {
       return imageData;
     }
-    int targetMinDimension = 340;
     int targetWidth;
     int targetHeight;
     if (decoded.width <= decoded.height) {
-      targetWidth = targetMinDimension;
+      targetWidth = targetDimension;
       targetHeight =
-          (decoded.height * targetMinDimension / decoded.width).round();
+          (decoded.height * targetDimension / decoded.width).round();
     } else {
-      targetHeight = targetMinDimension;
+      targetHeight = targetDimension;
       targetWidth =
-          (decoded.width * targetMinDimension / decoded.height).round();
+          (decoded.width * targetDimension / decoded.height).round();
     }
     if (targetWidth >= decoded.width || targetHeight >= decoded.height) {
       return img.encodeJpg(decoded, quality: 100);
@@ -381,9 +387,9 @@ class ProfilePageState extends State<ProfilePage> {
     return img.encodeJpg(resized, quality: 100);
   }
 
-  Future<void> _deleteExistingThumbnail(Reference thumbnailRef) async {
+  Future<void> _deleteExistingImage(Reference imageRef) async {
     try {
-      await thumbnailRef.delete();
+      await imageRef.delete();
     } catch (error) {
       if (error is FirebaseException && error.code == 'object-not-found') {
         return;
