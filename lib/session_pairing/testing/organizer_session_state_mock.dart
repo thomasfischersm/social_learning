@@ -56,6 +56,7 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
         null,
         null,
         null,
+        null,
         false,
         null,
         null,

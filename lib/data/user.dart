@@ -13,6 +13,7 @@ class User {
   bool isAdmin;
   String? profileFireStoragePath;
   String? profileThumbnailFireStoragePath;
+  String? profileTinyFireStoragePath;
   List<DocumentReference>? enrolledCourseIds;
   DocumentReference? currentCourseId;
   bool isProfilePrivate;
@@ -38,6 +39,7 @@ class User {
       this.isAdmin,
       this.profileFireStoragePath,
       this.profileThumbnailFireStoragePath,
+      this.profileTinyFireStoragePath,
       this.enrolledCourseIds,
       this.currentCourseId,
       this.isProfilePrivate,
@@ -62,6 +64,7 @@ class User {
         profileFireStoragePath = e.data()?['profileFireStoragePath'],
         profileThumbnailFireStoragePath =
             e.data()?['profileThumbnailFireStoragePath'],
+        profileTinyFireStoragePath = e.data()?['profileTinyFireStoragePath'],
         enrolledCourseIds = (e.data()?['enrolledCourseIds']) != null
             ? [
                 for (var doc in e.data()?['enrolledCourseIds'])

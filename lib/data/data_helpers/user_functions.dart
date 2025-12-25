@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
@@ -45,8 +44,8 @@ class UserFunctions {
     });
   }
 
-  static void updateProfilePhotoPaths(
-      String profileFireStoragePath, String thumbnailFireStoragePath) async {
+  static void updateProfilePhotoPaths(String profileFireStoragePath,
+      String thumbnailFireStoragePath, String tinyFireStoragePath) async {
     String uid = auth.FirebaseAuth.instance.currentUser!.uid;
     var querySnapshot = await FirestoreService.instance
         .collection('users')
@@ -59,6 +58,7 @@ class UserFunctions {
       'uid': auth.FirebaseAuth.instance.currentUser!.uid,
       'profileFireStoragePath': profileFireStoragePath,
       'profileThumbnailFireStoragePath': thumbnailFireStoragePath,
+      'profileTinyFireStoragePath': tinyFireStoragePath,
     });
   }
 
@@ -159,11 +159,22 @@ class UserFunctions {
     if (user.profileThumbnailFireStoragePath == null) {
       return null;
     }
-    String downloadURL = await FirebaseStorage.instance
-        .ref(user.profileThumbnailFireStoragePath)
-        .getDownloadURL();
+    String downloadURL = await StorageFunctions.getDownloadUrl(
+        user.profileThumbnailFireStoragePath!);
     print(
         'Got thumbnail URL from Firebase storage for user ${user.id}: $downloadURL');
+    return downloadURL;
+  }
+
+  /// Fetches the download URL for the user's tiny profile photo if available.
+  static Future<String?> getProfileTinyPhotoUrl(User user) async {
+    if (user.profileTinyFireStoragePath == null) {
+      return null;
+    }
+    String downloadURL =
+        await StorageFunctions.getDownloadUrl(user.profileTinyFireStoragePath!);
+    print(
+        'Got tiny URL from Firebase storage for user ${user.id}: $downloadURL');
     return downloadURL;
   }
 

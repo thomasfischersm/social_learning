@@ -95,6 +95,7 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
   User? _user;
   String? _profilePhotoUrl;
   String? _profileThumbnailPhotoUrl;
+  String? _profileTinyPhotoUrl;
   StreamSubscription<User>? _userSubscription;
   bool _showRadar = false;
   bool _hasSkillRubric = false;
@@ -154,11 +155,13 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
     String? url = await UserFunctions.getProfilePhotoUrl(_user!);
     String? thumbnailUrl =
         await UserFunctions.getProfileThumbnailPhotoUrl(_user!);
+    String? tinyUrl = await UserFunctions.getProfileTinyPhotoUrl(_user!);
 
     if (mounted) {
       setState(() {
         _profilePhotoUrl = url;
         _profileThumbnailPhotoUrl = thumbnailUrl;
+        _profileTinyPhotoUrl = tinyUrl;
       });
     }
   }
@@ -296,7 +299,11 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
 
   String _selectProfileImageUrl(double resizeWidth) {
     String? thumbnailUrl = _profileThumbnailPhotoUrl;
-    if (thumbnailUrl != null && resizeWidth <= 340) {
+    String? tinyUrl = _profileTinyPhotoUrl;
+    if (tinyUrl != null && resizeWidth <= 80) {
+      return tinyUrl;
+    }
+    if (thumbnailUrl != null && resizeWidth <= 320) {
       return thumbnailUrl;
     }
     return _profilePhotoUrl!;
