@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/state/download_url_cache_state.dart';
 import 'package:social_learning/state/library_state.dart';
 
 /// A widget that shows the cover photo for a lesson. The user can tap to
@@ -32,9 +33,12 @@ class UploadLessonCoverWidgetState extends State<UploadLessonCoverWidget> {
   Future<void> init() async {
     _lastCoverFireStoragePath = widget.lesson?.coverFireStoragePath;
     if (_lastCoverFireStoragePath != null) {
-      String url = await FirebaseStorage.instance
-          .ref(_lastCoverFireStoragePath)
-          .getDownloadURL();
+      DownloadUrlCacheState cacheState =
+          Provider.of<DownloadUrlCacheState>(context, listen: false);
+      String? url = await cacheState.getDownloadUrl(_lastCoverFireStoragePath);
+      if (!mounted) {
+        return;
+      }
       setState(() {
         _coverPhotoUrl = url;
       });
@@ -132,11 +136,14 @@ class UploadLessonCoverWidgetState extends State<UploadLessonCoverWidget> {
             imageData, SettableMetadata(contentType: file.mimeType));
 
         // Save the path to the lesson.
-        lesson.coverFireStoragePath = fireStoragePath;
-        libraryState.updateLesson(lesson);
-      } catch (e) {
-        print('Error uploading photo: $e');
-      }
+      lesson.coverFireStoragePath = fireStoragePath;
+      libraryState.updateLesson(lesson);
+      DownloadUrlCacheState cacheState =
+          Provider.of<DownloadUrlCacheState>(context, listen: false);
+      cacheState.invalidate(fireStoragePath);
+    } catch (e) {
+      print('Error uploading photo: $e');
+    }
 
       // Cause the photo to be re-rendered.
       setState(() {

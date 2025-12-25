@@ -4,10 +4,10 @@ import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/foundation.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:social_learning/data/course.dart';
+import 'package:social_learning/data/data_helpers/storage_functions.dart';
 import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
@@ -147,9 +147,8 @@ class UserFunctions {
     if (user.profileFireStoragePath == null) {
       return null;
     }
-    String downloadURL = await FirebaseStorage.instance
-        .ref(user.profileFireStoragePath)
-        .getDownloadURL();
+    String downloadURL =
+        await StorageFunctions.getDownloadUrl(user.profileFireStoragePath!);
     print('Got downlaod URL from Firebase storage for user ${user.id}: $downloadURL');
     return downloadURL;
   }
