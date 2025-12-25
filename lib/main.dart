@@ -14,6 +14,7 @@ import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/state/course_designer_state.dart';
 import 'package:social_learning/state/course_analytics_state.dart';
+import 'package:social_learning/state/download_url_cache_state.dart';
 import 'package:social_learning/ui_foundation/advanced_pairing_student_page.dart';
 import 'package:social_learning/ui_foundation/cms_detail_page.dart';
 import 'package:social_learning/ui_foundation/cms_home_page.dart';
@@ -99,6 +100,7 @@ void main() async {
       ChangeNotifierProvider(create: (context) => libraryState),
       ChangeNotifierProvider(create: (context) => courseDesignerState),
       ChangeNotifierProvider(create: (context) => courseAnalyticsState),
+      ChangeNotifierProvider(create: (context) => DownloadUrlCacheState()),
       ChangeNotifierProvider(
           create: (context) => StudentState(applicationState, libraryState)),
       ChangeNotifierProvider(

@@ -25,6 +25,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/download_url_cache_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/radar_widget.dart';
 import 'package:social_learning/ui_foundation/view_skill_assessment_page.dart';
 
@@ -344,6 +345,10 @@ class ProfilePageState extends State<ProfilePage> {
           fireStoragePath, thumbnailFireStoragePath);
 
       applicationState.invalidateProfilePhoto();
+      DownloadUrlCacheState cacheState =
+          Provider.of<DownloadUrlCacheState>(context, listen: false);
+      cacheState.invalidate(fireStoragePath);
+      cacheState.invalidate(thumbnailFireStoragePath);
 
       // Note: Old photos don't have to be deleted because the new photo is
       // saved to the same cloud storage path.

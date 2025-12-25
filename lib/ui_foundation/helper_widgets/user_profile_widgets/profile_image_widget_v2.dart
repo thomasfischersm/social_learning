@@ -10,6 +10,7 @@ import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/download_url_cache_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
@@ -146,8 +147,13 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
   }
 
   Future<void> _loadProfilePhoto() async {
-    if (_user == null) return;
-    String? url = await UserFunctions.getProfilePhotoUrl(_user!);
+    if (_user == null) {
+      return;
+    }
+    DownloadUrlCacheState cacheState =
+        Provider.of<DownloadUrlCacheState>(context, listen: false);
+    String? url =
+        await cacheState.getDownloadUrl(_user?.profileFireStoragePath);
     if (mounted) {
       setState(() {
         _profilePhotoUrl = url;

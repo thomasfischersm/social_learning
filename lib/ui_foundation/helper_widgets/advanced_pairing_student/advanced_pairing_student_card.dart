@@ -1,11 +1,12 @@
 import 'dart:async';
 
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/practice_record_functions.dart';
 import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/state/download_url_cache_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/advanced_pairing_student/record_pairing_practice_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/background_image_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/background_image_style.dart';
@@ -252,7 +253,9 @@ class _AdvancedPairingStudentCardState
     }
 
     try {
-      final url = await FirebaseStorage.instance.ref(path).getDownloadURL();
+      DownloadUrlCacheState cacheState =
+          Provider.of<DownloadUrlCacheState>(context, listen: false);
+      String? url = await cacheState.getDownloadUrl(path);
       if (!mounted) {
         return;
       }
