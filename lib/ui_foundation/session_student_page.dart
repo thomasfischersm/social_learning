@@ -58,10 +58,9 @@ class SessionStudentState extends State<SessionStudentPage> {
               Provider.of<StudentSessionState>(context, listen: false)
                   .leaveSession()
                   .then((_) {
-                    if (mounted) {
-                      Navigator.of(context).pushReplacementNamed(
-                          '/session_home');
-                    }
+                if (mounted) {
+                  Navigator.of(context).pushReplacementNamed('/session_home');
+                }
               });
             },
           );
@@ -77,7 +76,8 @@ class SessionStudentState extends State<SessionStudentPage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (studentSessionState.currentSession?.isActive == false)
+                  if (studentSessionState.currentSession?.isActive == false ||
+                      studentSessionState.currentSession == null)
                     CustomUiConstants.getTextPadding(
                       Text('The session has ended!',
                           style: CustomTextStyles.subHeadline),

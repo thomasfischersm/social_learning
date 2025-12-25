@@ -190,6 +190,19 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
     String? currentUserId = applicationState.currentUser?.id;
     List<SessionPairing> allPairings = studentSessionState.allPairings;
 
+    if (studentSessionState.currentSession == null) {
+      return Column(
+        children: [
+          CustomUiConstants.getTextPadding(
+            Text(
+              'The session has ended.',
+              style: CustomTextStyles.getBody(context),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      );
+    }
     if (currentUserId == null || allPairings.isEmpty) {
       return Column(
         children: [

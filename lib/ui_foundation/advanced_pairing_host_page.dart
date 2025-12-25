@@ -27,6 +27,7 @@ import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
+import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/util/text_width_util.dart';
 import 'package:collection/collection.dart';
 
@@ -73,6 +74,12 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
     return Scaffold(
       appBar: const LearningLabAppBar(),
       bottomNavigationBar: BottomBarV2.build(context),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _endSession(context),
+        tooltip: 'End Session',
+        foregroundColor: Colors.grey,
+        child: const Icon(Icons.exit_to_app),
+      ),
       body: Align(
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
@@ -1295,6 +1302,19 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
     OrganizerSessionState organizerSessionState =
         context.read<OrganizerSessionState>();
     organizerSessionState.completePairing(group.id!);
+  }
+
+  void _endSession(BuildContext context) {
+    DialogUtils.showConfirmationDialog(
+        context, 'End Session', 'Are you sure you want to end the session?',
+            () {
+          OrganizerSessionState organizerSessionState =
+          Provider.of<OrganizerSessionState>(context, listen: false);
+          organizerSessionState.endSession();
+
+          print('The session has ended. Going to the level list page.');
+          Navigator.pushNamed(context, NavigationEnum.sessionHome.route);
+        });
   }
 }
 
