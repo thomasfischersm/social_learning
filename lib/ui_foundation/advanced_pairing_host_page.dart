@@ -1158,10 +1158,13 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
       return null;
     } else if (participantIds.length == 1) {
       return participantIds.first;
+    } else if (lessonId == null) {
+      // This should never happen. However, let's guard defensively against it.
+      return participantIds.first;
     }
 
     // Find the student who graduated the lesson.
-    Lesson lesson = libraryState.findLesson(lessonId!)!;
+    Lesson lesson = libraryState.findLesson(lessonId)!;
     List<String> qualifyingParticipantIds = [];
     for (String participantId in participantIds) {
       User? user = organizerSessionState.getUserByParticipantId(participantId);
