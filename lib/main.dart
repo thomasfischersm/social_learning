@@ -35,7 +35,7 @@ import 'package:social_learning/ui_foundation/comment_review_page.dart';
 import 'package:social_learning/ui_foundation/home_page.dart';
 import 'package:social_learning/ui_foundation/course_home_page.dart';
 import 'package:social_learning/ui_foundation/instructor_dashboard_page.dart';
-import 'package:social_learning/ui_foundation/advanced_pairing_page.dart';
+import 'package:social_learning/ui_foundation/advanced_pairing_host_page.dart';
 import 'package:social_learning/ui_foundation/landing_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
