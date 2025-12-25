@@ -44,7 +44,8 @@ class UserFunctions {
     });
   }
 
-  static void updateProfilePhoto(String profileFireStoragePath) async {
+  static void updateProfilePhotoPaths(
+      String profileFireStoragePath, String thumbnailFireStoragePath) async {
     String uid = auth.FirebaseAuth.instance.currentUser!.uid;
     var querySnapshot = await FirestoreService.instance
         .collection('users')
@@ -56,6 +57,7 @@ class UserFunctions {
         .update({
       'uid': auth.FirebaseAuth.instance.currentUser!.uid,
       'profileFireStoragePath': profileFireStoragePath,
+      'profileThumbnailFireStoragePath': thumbnailFireStoragePath,
     });
   }
 
