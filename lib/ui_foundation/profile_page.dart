@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -315,6 +316,7 @@ class ProfilePageState extends State<ProfilePage> {
     // Pick the photo from the user.
     final ImagePicker picker = ImagePicker();
     XFile? file = await picker.pickImage(source: ImageSource.gallery);
+    int length = await file?.length() ?? -1;
 
     // Upload the photo to Firebase.
     if (file != null) {
@@ -328,8 +330,8 @@ class ProfilePageState extends State<ProfilePage> {
       // var storageRef = FirebaseStorage.instance.ref().child(
       //     '/profilePhoto');
       // var uploadTask = await storageRef.putFile(File(file.path));
-      List<int> imageData = await file.readAsBytes();
-      List<int> thumbnailData = _buildThumbnailBytes(imageData);
+      Uint8List imageData = await file.readAsBytes();
+      Uint8List thumbnailData = _buildThumbnailBytes(imageData);
       await _deleteExistingThumbnail(thumbnailRef);
       await storageRef.putData(
           imageData, SettableMetadata(contentType: file.mimeType));
@@ -348,7 +350,7 @@ class ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  List<int> _buildThumbnailBytes(List<int> imageData) {
+  Uint8List _buildThumbnailBytes(Uint8List imageData) {
     img.Image? decoded = img.decodeImage(imageData);
     if (decoded == null) {
       return imageData;
@@ -383,13 +385,13 @@ class ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  _toogleIsPrivateProfile(
+  void _toogleIsPrivateProfile(
       BuildContext context, ApplicationState applicationState) {
     applicationState.setIsProfilePrivate(
         !applicationState.currentUser!.isProfilePrivate, applicationState);
   }
 
-  _editInstagramHandle(
+  void _editInstagramHandle(
       BuildContext context, ApplicationState applicationState) {
     TextEditingController textFieldController = TextEditingController(
         text: applicationState.currentUser?.instagramHandle);
@@ -433,7 +435,7 @@ class ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  _editCalendlyUrl(BuildContext context, ApplicationState applicationState) {
+  void _editCalendlyUrl(BuildContext context, ApplicationState applicationState) {
     TextEditingController textFieldController =
         TextEditingController(text: applicationState.currentUser?.calendlyUrl);
 
@@ -476,14 +478,14 @@ class ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  _openInstagram(
+  void _openInstagram(
       BuildContext context, ApplicationState applicationState) async {
     User? currentUser = applicationState.currentUser;
 
     await UserFunctions.openInstaProfile(currentUser);
   }
 
-  _openCalendlyUrl(
+  void _openCalendlyUrl(
       BuildContext context, ApplicationState applicationState) async {
     User? currentUser = applicationState.currentUser;
 

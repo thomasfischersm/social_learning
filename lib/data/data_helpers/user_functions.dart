@@ -147,9 +147,11 @@ class UserFunctions {
     if (user.profileFireStoragePath == null) {
       return null;
     }
-    return FirebaseStorage.instance
+    String downloadURL = await FirebaseStorage.instance
         .ref(user.profileFireStoragePath)
         .getDownloadURL();
+    print('Got downlaod URL from Firebase storage for user ${user.id}: $downloadURL');
+    return downloadURL;
   }
 
   static bool get isFirebaseAuthLoggedOut =>
