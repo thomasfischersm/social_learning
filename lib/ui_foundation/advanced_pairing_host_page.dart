@@ -51,22 +51,21 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
   int _roundCounter = 1;
   late List<_StudentGroup> _groups = [];
   List<_StudentGroup> _lastLoadedGroups = [];
+  OrganizerSessionState _organizerSessionState;
 
   @override
   void initState() {
     super.initState();
-    OrganizerSessionState organizerSessionState =
+    _organizerSessionState =
         context.read<OrganizerSessionState>();
-    organizerSessionState.addListener(_maybeLoadExistingPairings);
+    _organizerSessionState.addListener(_maybeLoadExistingPairings);
 
     _maybeLoadExistingPairings();
   }
 
   @override
   void dispose() {
-    OrganizerSessionState organizerSessionState =
-        context.read<OrganizerSessionState>();
-    organizerSessionState.removeListener(_maybeLoadExistingPairings);
+    _organizerSessionState.removeListener(_maybeLoadExistingPairings);
     super.dispose();
   }
 
