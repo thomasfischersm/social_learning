@@ -100,7 +100,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomUiConstants.getTextPadding(Text(
-                          'Advanced Pairing',
+                          'Advanced Pairing: ${_organizerSessionState.currentSession?.name ?? ""}',
                           style: CustomTextStyles.headline,
                         )),
                         const SizedBox(height: 8),
