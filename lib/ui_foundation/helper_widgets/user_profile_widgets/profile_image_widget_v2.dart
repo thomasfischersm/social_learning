@@ -150,8 +150,7 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
     if (_user == null) {
       return;
     }
-    DownloadUrlCacheState cacheState =
-        Provider.of<DownloadUrlCacheState>(context, listen: false);
+    DownloadUrlCacheState cacheState = context.read<DownloadUrlCacheState>();
     String? url =
         await cacheState.getDownloadUrl(_user?.profileFireStoragePath);
     if (mounted) {
@@ -217,8 +216,9 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
       }
 
       return GestureDetector(
-        onDoubleTap:
-            widget.enableDoubleTapSwitch && _hasSkillRubric ? _toggleRadar : null,
+        onDoubleTap: widget.enableDoubleTapSwitch && _hasSkillRubric
+            ? _toggleRadar
+            : null,
         onTap: widget.linkToOtherProfile ? _goToOtherProfile : null,
         child: avatar,
       );
@@ -259,10 +259,7 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
     Widget radar = SizedBox(
       width: diameter,
       height: diameter,
-      child: RadarWidget(
-          user: _user!,
-          size: diameter,
-          showLabels: false),
+      child: RadarWidget(user: _user!, size: diameter, showLabels: false),
     );
     radar = ClipOval(child: radar);
     if (borderColor != null) {

@@ -108,7 +108,7 @@ class ProfilePageState extends State<ProfilePage> {
                         child: Padding(
                             padding: const EdgeInsets.only(right: 4),
                             child: InkWell(
-                              onTap: () => _pickProfileImage(context),
+                              onTap: _pickProfileImage,
                               child: Stack(children: [
                                 ProfileImageWidgetV2.fromUser(currentUser,
                                     enableDoubleTapSwitch: false),
@@ -310,7 +310,7 @@ class ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  void _pickProfileImage(BuildContext context) async {
+  void _pickProfileImage() async {
     ApplicationState applicationState =
         Provider.of<ApplicationState>(context, listen: false);
 
@@ -340,11 +340,14 @@ class ProfilePageState extends State<ProfilePage> {
       UserFunctions.updateProfilePhotoPaths(
           fireStoragePath, thumbnailFireStoragePath);
 
+      if (mounted) {
+        DownloadUrlCacheState cacheState =
+            context.read<DownloadUrlCacheState>();
+        cacheState.invalidate(fireStoragePath);
+        cacheState.invalidate(thumbnailFireStoragePath);
+      }
+
       applicationState.invalidateProfilePhoto();
-      DownloadUrlCacheState cacheState =
-          Provider.of<DownloadUrlCacheState>(context, listen: false);
-      cacheState.invalidate(fireStoragePath);
-      cacheState.invalidate(thumbnailFireStoragePath);
 
       // Note: Old photos don't have to be deleted because the new photo is
       // saved to the same cloud storage path.

@@ -3,14 +3,14 @@ import 'package:social_learning/data/data_helpers/storage_functions.dart';
 
 class DownloadUrlCacheState extends ChangeNotifier {
   static const Duration cacheTtl = Duration(hours: 1);
-  Map<String, CachedDownloadUrl> _cache = {};
+  Map<String, _CachedDownloadUrl> _cache = {};
 
   Future<String?> getDownloadUrl(String? storagePath) async {
     if (storagePath == null) {
       return null;
     }
 
-    CachedDownloadUrl? cachedEntry = _cache[storagePath];
+    _CachedDownloadUrl? cachedEntry = _cache[storagePath];
     DateTime now = DateTime.now();
     if (cachedEntry != null && cachedEntry.expiresAt.isAfter(now)) {
       return cachedEntry.url;
@@ -19,7 +19,7 @@ class DownloadUrlCacheState extends ChangeNotifier {
     try {
       String url = await StorageFunctions.getDownloadUrl(storagePath);
       DateTime expiresAt = now.add(cacheTtl);
-      _cache[storagePath] = CachedDownloadUrl(url, expiresAt);
+      _cache[storagePath] = _CachedDownloadUrl(url, expiresAt);
       return url;
     } catch (_) {
       _cache.remove(storagePath);
@@ -39,9 +39,9 @@ class DownloadUrlCacheState extends ChangeNotifier {
   }
 }
 
-class CachedDownloadUrl {
+class _CachedDownloadUrl {
   String url;
   DateTime expiresAt;
 
-  CachedDownloadUrl(this.url, this.expiresAt);
+  _CachedDownloadUrl(this.url, this.expiresAt);
 }

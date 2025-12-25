@@ -43,23 +43,21 @@ class LessonCoverImageWidgetState extends State<LessonCoverImageWidget> {
     if (widget.coverFireStoragePath != null) {
       try {
         DownloadUrlCacheState cacheState =
-            Provider.of<DownloadUrlCacheState>(context, listen: false);
+            context.read<DownloadUrlCacheState>();
         String? url = await cacheState.getDownloadUrl(
           widget.coverFireStoragePath,
         );
-        if (!mounted) {
-          return;
+        if (mounted) {
+          setState(() {
+            _coverPhotoUrl = url;
+          });
         }
-        setState(() {
-          _coverPhotoUrl = url;
-        });
       } catch (_) {
-        if (!mounted) {
-          return;
+        if (mounted) {
+          setState(() {
+            _coverPhotoUrl = null;
+          });
         }
-        setState(() {
-          _coverPhotoUrl = null;
-        });
       }
     } else {
       setState(() {

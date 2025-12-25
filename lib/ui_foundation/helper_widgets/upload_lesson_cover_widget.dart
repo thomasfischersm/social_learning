@@ -33,15 +33,13 @@ class UploadLessonCoverWidgetState extends State<UploadLessonCoverWidget> {
   Future<void> init() async {
     _lastCoverFireStoragePath = widget.lesson?.coverFireStoragePath;
     if (_lastCoverFireStoragePath != null) {
-      DownloadUrlCacheState cacheState =
-          Provider.of<DownloadUrlCacheState>(context, listen: false);
+      DownloadUrlCacheState cacheState = context.read<DownloadUrlCacheState>();
       String? url = await cacheState.getDownloadUrl(_lastCoverFireStoragePath);
-      if (!mounted) {
-        return;
+      if (mounted) {
+        setState(() {
+          _coverPhotoUrl = url;
+        });
       }
-      setState(() {
-        _coverPhotoUrl = url;
-      });
     }
   }
 
@@ -104,7 +102,8 @@ class UploadLessonCoverWidgetState extends State<UploadLessonCoverWidget> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Not yet...'),
-          content: const Text('Please, save the lesson before uploading a photo.'),
+          content:
+              const Text('Please, save the lesson before uploading a photo.'),
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
@@ -136,14 +135,14 @@ class UploadLessonCoverWidgetState extends State<UploadLessonCoverWidget> {
             imageData, SettableMetadata(contentType: file.mimeType));
 
         // Save the path to the lesson.
-      lesson.coverFireStoragePath = fireStoragePath;
-      libraryState.updateLesson(lesson);
-      DownloadUrlCacheState cacheState =
-          Provider.of<DownloadUrlCacheState>(context, listen: false);
-      cacheState.invalidate(fireStoragePath);
-    } catch (e) {
-      print('Error uploading photo: $e');
-    }
+        lesson.coverFireStoragePath = fireStoragePath;
+        libraryState.updateLesson(lesson);
+        DownloadUrlCacheState cacheState =
+            context.read<DownloadUrlCacheState>();
+        cacheState.invalidate(fireStoragePath);
+      } catch (e) {
+        print('Error uploading photo: $e');
+      }
 
       // Cause the photo to be re-rendered.
       setState(() {

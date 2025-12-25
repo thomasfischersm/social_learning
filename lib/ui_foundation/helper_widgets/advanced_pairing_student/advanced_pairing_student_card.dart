@@ -253,22 +253,19 @@ class _AdvancedPairingStudentCardState
     }
 
     try {
-      DownloadUrlCacheState cacheState =
-          Provider.of<DownloadUrlCacheState>(context, listen: false);
+      DownloadUrlCacheState cacheState = context.read<DownloadUrlCacheState>();
       String? url = await cacheState.getDownloadUrl(path);
-      if (!mounted) {
-        return;
+      if (mounted) {
+        setState(() {
+          _coverPhotoUrl = url;
+        });
       }
-      setState(() {
-        _coverPhotoUrl = url;
-      });
     } catch (_) {
-      if (!mounted) {
-        return;
+      if (mounted) {
+        setState(() {
+          _coverPhotoUrl = null;
+        });
       }
-      setState(() {
-        _coverPhotoUrl = null;
-      });
     }
   }
 
