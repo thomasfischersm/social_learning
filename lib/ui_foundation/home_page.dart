@@ -141,10 +141,10 @@ class HomePageState extends State<HomePage> {
         tilePadding: EdgeInsets.only(left: 8),
         childrenPadding: EdgeInsets.only(left: 8),
         title: Row(children: [
-          Text(
+          Flexible(child:Text(
             '${course.title} ',
             style: CustomTextStyles.subHeadline,
-          ),
+          ),),
           Icon(Icons.info_outline)
         ]),
         children: [
