@@ -154,6 +154,19 @@ class UserFunctions {
     return downloadURL;
   }
 
+  /// Fetches the download URL for the user's profile thumbnail if available.
+  static Future<String?> getProfileThumbnailPhotoUrl(User user) async {
+    if (user.profileThumbnailFireStoragePath == null) {
+      return null;
+    }
+    String downloadURL = await FirebaseStorage.instance
+        .ref(user.profileThumbnailFireStoragePath)
+        .getDownloadURL();
+    print(
+        'Got thumbnail URL from Firebase storage for user ${user.id}: $downloadURL');
+    return downloadURL;
+  }
+
   static bool get isFirebaseAuthLoggedOut =>
       auth.FirebaseAuth.instance.currentUser == null;
 
