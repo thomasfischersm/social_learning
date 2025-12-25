@@ -8,6 +8,7 @@ import 'package:image/image.dart' as img;
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'dart:ui' as ui;
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
@@ -333,10 +334,8 @@ class ProfilePageState extends State<ProfilePage> {
       //     '/profilePhoto');
       // var uploadTask = await storageRef.putFile(File(file.path));
       Uint8List imageData = await file.readAsBytes();
-      Uint8List thumbnailData = _buildResizedImageBytes(imageData, 320);
-      Uint8List tinyData = _buildResizedImageBytes(imageData, 80);
-      await _deleteExistingImage(thumbnailRef);
-      await _deleteExistingImage(tinyRef);
+      Uint8List thumbnailData = await _buildResizedImageBytes(imageData, 320);
+      Uint8List tinyData = await _buildResizedImageBytes(imageData, 80);
       await storageRef.putData(
           imageData, SettableMetadata(contentType: file.mimeType));
       await thumbnailRef.putData(
@@ -361,7 +360,8 @@ class ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Uint8List _buildResizedImageBytes(Uint8List imageData, int targetDimension) {
+  Future<Uint8List> _buildResizedImageBytes(
+      Uint8List imageData, int targetDimension) async {
     img.Image? decoded = img.decodeImage(imageData);
     if (decoded == null) {
       return imageData;
@@ -370,12 +370,10 @@ class ProfilePageState extends State<ProfilePage> {
     int targetHeight;
     if (decoded.width <= decoded.height) {
       targetWidth = targetDimension;
-      targetHeight =
-          (decoded.height * targetDimension / decoded.width).round();
+      targetHeight = (decoded.height * targetDimension / decoded.width).round();
     } else {
       targetHeight = targetDimension;
-      targetWidth =
-          (decoded.width * targetDimension / decoded.height).round();
+      targetWidth = (decoded.width * targetDimension / decoded.height).round();
     }
     if (targetWidth >= decoded.width || targetHeight >= decoded.height) {
       return img.encodeJpg(decoded, quality: 100);
@@ -385,6 +383,72 @@ class ProfilePageState extends State<ProfilePage> {
         height: targetHeight,
         interpolation: img.Interpolation.cubic);
     return img.encodeJpg(resized, quality: 100);
+  }
+
+  Future<Uint8List> _buildResizedImageBytesSkia(
+    Uint8List imageData,
+    int targetDimension,
+  ) async {
+    // Decode via Skia
+    final ui.Codec codec = await ui.instantiateImageCodec(imageData);
+    final ui.FrameInfo frame = await codec.getNextFrame();
+    final ui.Image src = frame.image;
+
+    // Compute aspect-correct target size (match your logic)
+    int targetWidth;
+    int targetHeight;
+    if (src.width <= src.height) {
+      targetWidth = targetDimension;
+      targetHeight = (src.height * targetDimension / src.width).round();
+    } else {
+      targetHeight = targetDimension;
+      targetWidth = (src.width * targetDimension / src.height).round();
+    }
+
+    // Avoid upscaling (match your behavior)
+    if (targetWidth >= src.width || targetHeight >= src.height) {
+      // Your code re-encodes to JPEG(100) even if no resize.
+      // If you *really* want that, do it here:
+      final byteData = await src.toByteData(format: ui.ImageByteFormat.png);
+      if (byteData == null) return imageData;
+
+      final pngBytes = byteData.buffer.asUint8List();
+      final decoded = img.decodeImage(pngBytes);
+      if (decoded == null) return imageData;
+
+      return Uint8List.fromList(img.encodeJpg(decoded, quality: 100));
+      // Better option (usually): return imageData;
+    }
+
+    // Draw scaled using Skia
+    final recorder = ui.PictureRecorder();
+    final canvas = ui.Canvas(recorder);
+
+    final paint = ui.Paint()
+      ..isAntiAlias = true
+      ..filterQuality = ui.FilterQuality.high;
+
+    final srcRect =
+        ui.Rect.fromLTWH(0, 0, src.width.toDouble(), src.height.toDouble());
+    final dstRect =
+        ui.Rect.fromLTWH(0, 0, targetWidth.toDouble(), targetHeight.toDouble());
+
+    canvas.drawImageRect(src, srcRect, dstRect, paint);
+
+    final picture = recorder.endRecording();
+    final ui.Image dst = await picture.toImage(targetWidth, targetHeight);
+
+    // Extract bytes. Use PNG as an intermediate (Skia can encode PNG).
+    final dstByteData = await dst.toByteData(format: ui.ImageByteFormat.png);
+    if (dstByteData == null) return imageData;
+
+    final Uint8List dstPngBytes = dstByteData.buffer.asUint8List();
+
+    // Convert PNG -> JPEG using `image` package
+    final img.Image? decodedDst = img.decodeImage(dstPngBytes);
+    if (decodedDst == null) return imageData;
+
+    return Uint8List.fromList(img.encodeJpg(decodedDst, quality: 100));
   }
 
   Future<void> _deleteExistingImage(Reference imageRef) async {
