@@ -51,7 +51,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
   int _roundCounter = 1;
   late List<_StudentGroup> _groups = [];
   List<_StudentGroup> _lastLoadedGroups = [];
-  OrganizerSessionState _organizerSessionState;
+  late OrganizerSessionState _organizerSessionState;
 
   @override
   void initState() {
