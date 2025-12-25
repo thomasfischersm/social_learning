@@ -894,9 +894,11 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
           for (final group in _groups)
             InputChip(
               label: Text(
+                '${String.fromCharCode("A".codeUnitAt(0) + _groups.indexOf(group))}: '
                 '${group.memberParticipantIds.length}ppl: '
                 '${group.lessonId != null ? lessonLabelById[group.lessonId] ?? '--' : '--'}',
               ),
+              labelStyle: CustomTextStyles.getBodySmall(context),
               selected: group.isSelected,
               showCheckmark: false,
               onSelected: (_) => _selectGroup(group.id),
