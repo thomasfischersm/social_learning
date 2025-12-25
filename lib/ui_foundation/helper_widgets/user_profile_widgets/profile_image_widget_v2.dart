@@ -94,6 +94,7 @@ class ProfileImageWidgetV2 extends StatefulWidget {
 class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
   User? _user;
   String? _profilePhotoUrl;
+  String? _profileThumbnailPhotoUrl;
   StreamSubscription<User>? _userSubscription;
   bool _showRadar = false;
   bool _hasSkillRubric = false;
@@ -150,12 +151,14 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
     if (_user == null) {
       return;
     }
-    DownloadUrlCacheState cacheState = context.read<DownloadUrlCacheState>();
-    String? url =
-        await cacheState.getDownloadUrl(_user?.profileFireStoragePath);
+    String? url = await UserFunctions.getProfilePhotoUrl(_user!);
+    String? thumbnailUrl =
+        await UserFunctions.getProfileThumbnailPhotoUrl(_user!);
+
     if (mounted) {
       setState(() {
         _profilePhotoUrl = url;
+        _profileThumbnailPhotoUrl = thumbnailUrl;
       });
     }
   }
@@ -282,12 +285,21 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
     final resizeWidth = physicalWidth < screenPhysicalWidth
         ? physicalWidth
         : screenPhysicalWidth;
+    String imageUrl = _selectProfileImageUrl(resizeWidth);
 
     return CircleAvatar(
-      backgroundImage: ResizeImage(NetworkImage(_profilePhotoUrl!),
+      backgroundImage: ResizeImage(NetworkImage(imageUrl),
           width: resizeWidth.toInt(), policy: ResizeImagePolicy.fit),
       maxRadius: maxDisplayRadius,
     );
+  }
+
+  String _selectProfileImageUrl(double resizeWidth) {
+    String? thumbnailUrl = _profileThumbnailPhotoUrl;
+    if (thumbnailUrl != null && resizeWidth <= 340) {
+      return thumbnailUrl;
+    }
+    return _profilePhotoUrl!;
   }
 
   Color? _computeBorderColor(LibraryState libraryState) {
