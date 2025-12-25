@@ -44,7 +44,7 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
 
   addTestUser(String name, bool isAdmin, List<Lesson> graduatedLessons,
       {bool isActive = true, int teachCount = 0, int learnCount = 0}) {
-    var user = User(
+    User user = User(
         nextId,
         nextId,
         name,
@@ -53,6 +53,7 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
         'profile text',
         isAdmin,
         'n/a',
+        null,
         null,
         null,
         false,

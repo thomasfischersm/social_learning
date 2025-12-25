@@ -12,6 +12,7 @@ class User {
   String profileText;
   bool isAdmin;
   String? profileFireStoragePath;
+  String? profileThumbnailFireStoragePath;
   List<DocumentReference>? enrolledCourseIds;
   DocumentReference? currentCourseId;
   bool isProfilePrivate;
@@ -36,6 +37,7 @@ class User {
       this.profileText,
       this.isAdmin,
       this.profileFireStoragePath,
+      this.profileThumbnailFireStoragePath,
       this.enrolledCourseIds,
       this.currentCourseId,
       this.isProfilePrivate,
@@ -58,6 +60,8 @@ class User {
         profileText = e.data()?['profileText'] ?? '',
         isAdmin = e.data()?['isAdmin'] ?? false,
         profileFireStoragePath = e.data()?['profileFireStoragePath'],
+        profileThumbnailFireStoragePath =
+            e.data()?['profileThumbnailFireStoragePath'],
         enrolledCourseIds = (e.data()?['enrolledCourseIds']) != null
             ? [
                 for (var doc in e.data()?['enrolledCourseIds'])

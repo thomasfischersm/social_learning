@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart' as img;
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -307,31 +309,77 @@ class ProfilePageState extends State<ProfilePage> {
   }
 
   void _pickProfileImage(BuildContext context) async {
-    var applicationState =
+    ApplicationState applicationState =
         Provider.of<ApplicationState>(context, listen: false);
 
     // Pick the photo from the user.
     final ImagePicker picker = ImagePicker();
     XFile? file = await picker.pickImage(source: ImageSource.gallery);
-    int length = await file?.length() ?? -1;
 
     // Upload the photo to Firebase.
     if (file != null) {
-      var fireStoragePath =
-          '/users/${auth.FirebaseAuth.instance.currentUser?.uid}/profilePhoto';
-      var storageRef = FirebaseStorage.instance.ref(fireStoragePath);
+      String userId = auth.FirebaseAuth.instance.currentUser?.uid ?? '';
+      String fireStoragePath = '/users/$userId/profilePhoto';
+      String thumbnailFireStoragePath =
+          '/users/$userId/profilePhotoThumbnail';
+      Reference storageRef = FirebaseStorage.instance.ref(fireStoragePath);
+      Reference thumbnailRef =
+          FirebaseStorage.instance.ref(thumbnailFireStoragePath);
       // var storageRef = FirebaseStorage.instance.ref().child(
       //     '/profilePhoto');
       // var uploadTask = await storageRef.putFile(File(file.path));
-      var imageData = await file.readAsBytes();
+      List<int> imageData = await file.readAsBytes();
+      List<int> thumbnailData = _buildThumbnailBytes(imageData);
+      await _deleteExistingThumbnail(thumbnailRef);
       await storageRef.putData(
           imageData, SettableMetadata(contentType: file.mimeType));
-      UserFunctions.updateProfilePhoto(fireStoragePath);
+      await thumbnailRef.putData(
+          thumbnailData,
+          SettableMetadata(
+              contentType: 'image/jpeg',
+              cacheControl: 'public,max-age=604800'));
+      UserFunctions.updateProfilePhotoPaths(
+          fireStoragePath, thumbnailFireStoragePath);
 
       applicationState.invalidateProfilePhoto();
 
       // Note: Old photos don't have to be deleted because the new photo is
       // saved to the same cloud storage path.
+    }
+  }
+
+  List<int> _buildThumbnailBytes(List<int> imageData) {
+    img.Image? decoded = img.decodeImage(imageData);
+    if (decoded == null) {
+      return imageData;
+    }
+    int targetMinDimension = 340;
+    int targetWidth;
+    int targetHeight;
+    if (decoded.width <= decoded.height) {
+      targetWidth = targetMinDimension;
+      targetHeight =
+          (decoded.height * targetMinDimension / decoded.width).round();
+    } else {
+      targetHeight = targetMinDimension;
+      targetWidth =
+          (decoded.width * targetMinDimension / decoded.height).round();
+    }
+    img.Image resized = img.copyResize(decoded,
+        width: targetWidth,
+        height: targetHeight,
+        interpolation: img.Interpolation.cubic);
+    return img.encodeJpg(resized, quality: 100);
+  }
+
+  Future<void> _deleteExistingThumbnail(Reference thumbnailRef) async {
+    try {
+      await thumbnailRef.delete();
+    } catch (error) {
+      if (error is FirebaseException && error.code == 'object-not-found') {
+        return;
+      }
+      rethrow;
     }
   }
 
