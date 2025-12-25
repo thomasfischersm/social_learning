@@ -395,6 +395,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
       height: fontSize,
       child: ProfileImageWidgetV2.fromUser(
         user!,
+        key: ValueKey(user.id),
         maxRadius: fontSize / 2,
         enableDoubleTapSwitch: false,
         linkToOtherProfile: false,

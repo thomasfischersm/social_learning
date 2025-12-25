@@ -181,6 +181,7 @@ class _AdvancedPairingStudentCardState
       children: [
         ProfileImageWidgetV2.fromUser(
           user,
+          key: ValueKey(user.id),
           maxRadius: 18,
           linkToOtherProfile: true,
         ),
