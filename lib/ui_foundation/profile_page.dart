@@ -371,6 +371,9 @@ class ProfilePageState extends State<ProfilePage> {
       targetWidth =
           (decoded.width * targetMinDimension / decoded.height).round();
     }
+    if (targetWidth > decoded.width || targetHeight > decoded.height) {
+      return img.encodeJpg(decoded, quality: 100);
+    }
     img.Image resized = img.copyResize(decoded,
         width: targetWidth,
         height: targetHeight,
