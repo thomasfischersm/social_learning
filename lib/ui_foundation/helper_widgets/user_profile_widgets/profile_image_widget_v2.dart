@@ -10,6 +10,7 @@ import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/state/download_url_cache_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
@@ -147,10 +148,13 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
   }
 
   Future<void> _loadProfilePhoto() async {
-    if (_user == null) return;
+    if (_user == null) {
+      return;
+    }
     String? url = await UserFunctions.getProfilePhotoUrl(_user!);
     String? thumbnailUrl =
         await UserFunctions.getProfileThumbnailPhotoUrl(_user!);
+
     if (mounted) {
       setState(() {
         _profilePhotoUrl = url;
@@ -215,8 +219,9 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
       }
 
       return GestureDetector(
-        onDoubleTap:
-            widget.enableDoubleTapSwitch && _hasSkillRubric ? _toggleRadar : null,
+        onDoubleTap: widget.enableDoubleTapSwitch && _hasSkillRubric
+            ? _toggleRadar
+            : null,
         onTap: widget.linkToOtherProfile ? _goToOtherProfile : null,
         child: avatar,
       );
@@ -257,10 +262,7 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
     Widget radar = SizedBox(
       width: diameter,
       height: diameter,
-      child: RadarWidget(
-          user: _user!,
-          size: diameter,
-          showLabels: false),
+      child: RadarWidget(user: _user!, size: diameter, showLabels: false),
     );
     radar = ClipOval(child: radar);
     if (borderColor != null) {

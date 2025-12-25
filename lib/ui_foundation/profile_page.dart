@@ -25,6 +25,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/state/download_url_cache_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/radar_widget.dart';
 import 'package:social_learning/ui_foundation/view_skill_assessment_page.dart';
 
@@ -107,7 +108,7 @@ class ProfilePageState extends State<ProfilePage> {
                         child: Padding(
                             padding: const EdgeInsets.only(right: 4),
                             child: InkWell(
-                              onTap: () => _pickProfileImage(context),
+                              onTap: _pickProfileImage,
                               child: Stack(children: [
                                 ProfileImageWidgetV2.fromUser(currentUser,
                                     enableDoubleTapSwitch: false),
@@ -309,7 +310,7 @@ class ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  void _pickProfileImage(BuildContext context) async {
+  void _pickProfileImage() async {
     ApplicationState applicationState =
         Provider.of<ApplicationState>(context, listen: false);
 
@@ -322,8 +323,7 @@ class ProfilePageState extends State<ProfilePage> {
     if (file != null) {
       String userId = auth.FirebaseAuth.instance.currentUser?.uid ?? '';
       String fireStoragePath = '/users/$userId/profilePhoto';
-      String thumbnailFireStoragePath =
-          '/users/$userId/profilePhotoThumbnail';
+      String thumbnailFireStoragePath = '/users/$userId/profilePhotoThumbnail';
       Reference storageRef = FirebaseStorage.instance.ref(fireStoragePath);
       Reference thumbnailRef =
           FirebaseStorage.instance.ref(thumbnailFireStoragePath);
@@ -336,12 +336,16 @@ class ProfilePageState extends State<ProfilePage> {
       await storageRef.putData(
           imageData, SettableMetadata(contentType: file.mimeType));
       await thumbnailRef.putData(
-          thumbnailData,
-          SettableMetadata(
-              contentType: 'image/jpeg',
-              cacheControl: 'public,max-age=604800'));
+          thumbnailData, SettableMetadata(contentType: 'image/jpeg'));
       UserFunctions.updateProfilePhotoPaths(
           fireStoragePath, thumbnailFireStoragePath);
+
+      if (mounted) {
+        DownloadUrlCacheState cacheState =
+            context.read<DownloadUrlCacheState>();
+        cacheState.invalidate(fireStoragePath);
+        cacheState.invalidate(thumbnailFireStoragePath);
+      }
 
       applicationState.invalidateProfilePhoto();
 
@@ -366,6 +370,9 @@ class ProfilePageState extends State<ProfilePage> {
       targetHeight = targetMinDimension;
       targetWidth =
           (decoded.width * targetMinDimension / decoded.height).round();
+    }
+    if (targetWidth >= decoded.width || targetHeight >= decoded.height) {
+      return img.encodeJpg(decoded, quality: 100);
     }
     img.Image resized = img.copyResize(decoded,
         width: targetWidth,
@@ -435,7 +442,8 @@ class ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  void _editCalendlyUrl(BuildContext context, ApplicationState applicationState) {
+  void _editCalendlyUrl(
+      BuildContext context, ApplicationState applicationState) {
     TextEditingController textFieldController =
         TextEditingController(text: applicationState.currentUser?.calendlyUrl);
 

@@ -1,5 +1,6 @@
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:social_learning/state/download_url_cache_state.dart';
 
 class LessonCoverImageWidget extends StatefulWidget {
   final String? coverFireStoragePath;
@@ -41,16 +42,22 @@ class LessonCoverImageWidgetState extends State<LessonCoverImageWidget> {
     _lastCoverFireStoragePath = widget.coverFireStoragePath;
     if (widget.coverFireStoragePath != null) {
       try {
-        String url = await FirebaseStorage.instance
-            .ref(widget.coverFireStoragePath)
-            .getDownloadURL();
-        setState(() {
-          _coverPhotoUrl = url;
-        });
+        DownloadUrlCacheState cacheState =
+            context.read<DownloadUrlCacheState>();
+        String? url = await cacheState.getDownloadUrl(
+          widget.coverFireStoragePath,
+        );
+        if (mounted) {
+          setState(() {
+            _coverPhotoUrl = url;
+          });
+        }
       } catch (_) {
-        setState(() {
-          _coverPhotoUrl = null;
-        });
+        if (mounted) {
+          setState(() {
+            _coverPhotoUrl = null;
+          });
+        }
       }
     } else {
       setState(() {

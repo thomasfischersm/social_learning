@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/state/download_url_cache_state.dart';
 import 'package:social_learning/state/library_state.dart';
 
 /// A widget that shows the cover photo for a lesson. The user can tap to
@@ -32,12 +33,13 @@ class UploadLessonCoverWidgetState extends State<UploadLessonCoverWidget> {
   Future<void> init() async {
     _lastCoverFireStoragePath = widget.lesson?.coverFireStoragePath;
     if (_lastCoverFireStoragePath != null) {
-      String url = await FirebaseStorage.instance
-          .ref(_lastCoverFireStoragePath)
-          .getDownloadURL();
-      setState(() {
-        _coverPhotoUrl = url;
-      });
+      DownloadUrlCacheState cacheState = context.read<DownloadUrlCacheState>();
+      String? url = await cacheState.getDownloadUrl(_lastCoverFireStoragePath);
+      if (mounted) {
+        setState(() {
+          _coverPhotoUrl = url;
+        });
+      }
     }
   }
 
@@ -100,7 +102,8 @@ class UploadLessonCoverWidgetState extends State<UploadLessonCoverWidget> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Not yet...'),
-          content: const Text('Please, save the lesson before uploading a photo.'),
+          content:
+              const Text('Please, save the lesson before uploading a photo.'),
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
@@ -134,6 +137,9 @@ class UploadLessonCoverWidgetState extends State<UploadLessonCoverWidget> {
         // Save the path to the lesson.
         lesson.coverFireStoragePath = fireStoragePath;
         libraryState.updateLesson(lesson);
+        DownloadUrlCacheState cacheState =
+            context.read<DownloadUrlCacheState>();
+        cacheState.invalidate(fireStoragePath);
       } catch (e) {
         print('Error uploading photo: $e');
       }
