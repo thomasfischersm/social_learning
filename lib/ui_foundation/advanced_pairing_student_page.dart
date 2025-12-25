@@ -260,6 +260,8 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
       }
 
       final bool isCurrentRound = pairing == relevantPairings.first;
+      // Note: Any student, not only the mentor can graduate students (if they
+      // have graduated the lesson themselves).
       final bool showGraduationCheckboxes = isCurrentRound &&
           (studentSessionState.currentSession?.isActive ?? false) &&
           lesson != null &&
@@ -269,6 +271,8 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: AdvancedPairingStudentCard(
+            // Show rounds relative to how they appear to the user because the
+            // absolute round numbers make no sense from a student perspective.
             roundNumber: relevantPairings.length - relevantPairings.indexOf(pairing),
             lesson: lesson,
             mentor: mentor,
