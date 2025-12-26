@@ -10,6 +10,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/double_util.dart';
 
 import 'helper_widgets/general/lesson_graduation_requirements_dialog.dart';
 import 'helper_widgets/general/progress_checkbox.dart';
@@ -186,16 +187,20 @@ class LevelDetailState extends State<LevelDetailPage> {
       columnChildren.add(Text('${lesson.synopsis}\n'));
       // }
 
+      double lessonCompletionPercent =
+          studentState.getLessonCompletionPercent(lesson);
       children.add(Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Padding(
             padding: EdgeInsets.only(top: 2),
             child: ProgressCheckbox(
-              value: studentState.getLessonCompletionPercent(lesson),
+              value: lessonCompletionPercent,
               onTap: () {
-                showLessonGraduationRequirementsDialog(
-                  context,
-                  lesson,
-                );
+                if (lessonCompletionPercent.between(0, 1)) {
+                  showLessonGraduationRequirementsDialog(
+                    context,
+                    lesson,
+                  );
+                }
               },
             )),
         SizedBox(width: 8),

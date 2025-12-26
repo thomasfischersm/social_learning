@@ -138,8 +138,7 @@ class ProgressCheckbox extends StatelessWidget {
       displayInactiveSide = inactiveSide;
     }
     final bool hasProgress = clampedValue > 0.0;
-    final bool isPartial = !isComplete && hasProgress;
-    final bool isInteractive = isPartial && onTap != null;
+    final bool isInteractive = onTap != null;
 
     Widget checkbox = SizedBox.square(
       dimension: _kBoxSize,
