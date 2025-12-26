@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/data_helpers/session_functions.dart';
-import 'package:social_learning/data/data_helpers/session_pairing_helper.dart';
+import 'package:social_learning/data/data_helpers/session_pairing_functions.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/session.dart';

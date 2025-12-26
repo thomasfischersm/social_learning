@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:social_learning/data/course.dart';
-import 'package:social_learning/data/data_helpers/session_pairing_helper.dart';
+import 'package:social_learning/data/data_helpers/session_pairing_functions.dart';
 import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_pairing.dart';

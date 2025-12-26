@@ -18,6 +18,7 @@ class SessionPairingFunctions {
       'lessonId': pairing.lessonId,
       'additionalStudentIds': pairing.additionalStudentIds,
       'isCompleted': pairing.isCompleted,
+      if (pairing.isCompleted) 'completeAt': FieldValue.serverTimestamp(),
     });
     print('Added session pairing ${newDoc.id}.');
     return newDoc.id;
@@ -97,7 +98,7 @@ class SessionPairingFunctions {
     print('Completing session pairing $pairingId.');
     await docRef('sessionPairings', pairingId).update({
       'isCompleted': true,
+      'completedAt': FieldValue.serverTimestamp(),
     });
-
   }
 }

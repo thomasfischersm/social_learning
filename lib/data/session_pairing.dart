@@ -9,13 +9,12 @@ class SessionPairing {
   DocumentReference? lessonId;
   List<DocumentReference> additionalStudentIds;
   bool isCompleted;
+  Timestamp? completeAt;
 
   SessionPairing(this.id, this.sessionId, this.roundNumber, this.mentorId,
       this.menteeId, this.lessonId,
-      [List<DocumentReference> additionalStudentIds = const [],
-      bool isCompleted = false])
-      : additionalStudentIds = additionalStudentIds,
-        isCompleted = isCompleted;
+      [this.additionalStudentIds = const [],
+      this.isCompleted = false]);
 
   SessionPairing.fromSnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -28,5 +27,6 @@ class SessionPairing {
             ? List<DocumentReference>.from(
                 e.data()['additionalStudentIds'] as List<dynamic>)
             : [],
-        isCompleted = e.data()['isCompleted'] as bool? ?? false;
+        isCompleted = e.data()['isCompleted'] as bool? ?? false,
+        completeAt = e.data()['completeAt'] as Timestamp?;
 }
