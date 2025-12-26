@@ -262,8 +262,9 @@ class HomePageState extends State<HomePage> {
     // Join the private course.
     LibraryState libraryState =
         Provider.of<LibraryState>(context, listen: false);
+    String invitationCode = _invitationCodeController.text.toLowerCase();
     Course? course =
-        await libraryState.joinPrivateCourse(_invitationCodeController.text);
+        await libraryState.joinPrivateCourse(invitationCode);
     print('Joined course: ${course?.title}');
 
     if (course == null) {

@@ -470,6 +470,9 @@ class LibraryState extends ChangeNotifier {
       String whatsappLink,
       ApplicationState applicationState,
       LibraryState libraryState) async {
+
+    invitationCode = invitationCode.toLowerCase();
+
     DocumentReference<Map<String, dynamic>> docRef =
         await CourseFunctions.createPrivateCourse(
             title: courseName,
