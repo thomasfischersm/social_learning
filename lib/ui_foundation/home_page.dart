@@ -201,6 +201,8 @@ class HomePageState extends State<HomePage> {
               Expanded(
                 child: TextField(
                   controller: _invitationCodeController,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _joinPrivateCourse(context),
                   decoration:
                       const InputDecoration(hintText: 'Invitation code'),
                 ),
