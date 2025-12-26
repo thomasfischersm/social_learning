@@ -42,6 +42,7 @@ import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
 import 'package:social_learning/ui_foundation/level_list_page.dart';
 import 'package:social_learning/ui_foundation/online_session_active_page.dart';
+import 'package:social_learning/ui_foundation/party_pairing_host_page.dart';
 import 'package:social_learning/ui_foundation/online_session_review_page.dart';
 import 'package:social_learning/ui_foundation/online_session_waiting_room_page.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
@@ -185,6 +186,7 @@ class SocialLearningApp extends StatelessWidget {
         '/advanced_pairing_student': (context) =>
             const AdvancedPairingStudentPage(),
         '/advanced_pairing_host': (context) => const AdvancedPairingHostPage(),
+        '/party_pairing_host': (context) => const PartyPairingHostPage(),
         '/online_session_waiting_room': (context) =>
             const OnlineSessionWaitingRoomPage(),
         '/online_session_active': (context) => const OnlineSessionActivePage(),
