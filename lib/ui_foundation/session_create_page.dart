@@ -34,79 +34,82 @@ class SessionCreateState extends State<SessionCreatePage> {
             child: CustomUiConstants.framePage(
                 enableCourseLoadingGuard: true,
                 Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomUiConstants.getTextPadding(
-                Text('Create Session', style: CustomTextStyles.headline)),
-            Consumer2<LibraryState, ApplicationState>(
-              builder: (context, libraryState, applicationState, child) {
-                return Table(columnWidths: const <int, TableColumnWidth>{
-                  0: IntrinsicColumnWidth(),
-                  1: FlexColumnWidth(),
-                }, children: <TableRow>[
-                  TableRow(children: <Widget>[
-                    CustomUiConstants.getTextPadding(
-                        const Text('Session name:')),
-                    TextField(controller: sessionNameController),
-                  ]),
-                  TableRow(children: <Widget>[
-                    CustomUiConstants.getTextPadding(
-                        const Text('Organizer:')),
-                    CustomUiConstants.getTextPadding(Text(
-                        '${applicationState.currentUser?.displayName} (you)')),
-                  ]),
-                  TableRow(children: <Widget>[
-                    CustomUiConstants.getTextPadding(const Text('Course')),
-                    CustomUiConstants.getTextPadding(
-                        Text('${libraryState.selectedCourse?.title}')),
-                  ]),
-                  TableRow(children: <Widget>[
-                    CustomUiConstants.getTextPadding(
-                        const Text('Session type:')),
-                    CustomUiConstants.getIndentationTextPadding(Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomUiConstants.getTextPadding(Text('Create Session',
+                        style: CustomTextStyles.headline)),
+                    Consumer2<LibraryState, ApplicationState>(
+                      builder:
+                          (context, libraryState, applicationState, child) {
+                        return Table(columnWidths: const <int,
+                            TableColumnWidth>{
+                          0: IntrinsicColumnWidth(),
+                          1: FlexColumnWidth(),
+                        }, children: <TableRow>[
+                          TableRow(children: <Widget>[
+                            CustomUiConstants.getTextPadding(
+                                const Text('Session name:')),
+                            TextField(controller: sessionNameController),
+                          ]),
+                          TableRow(children: <Widget>[
+                            CustomUiConstants.getTextPadding(
+                                const Text('Organizer:')),
+                            CustomUiConstants.getTextPadding(Text(
+                                '${applicationState.currentUser?.displayName} (you)')),
+                          ]),
+                          TableRow(children: <Widget>[
+                            CustomUiConstants.getTextPadding(
+                                const Text('Course')),
+                            CustomUiConstants.getTextPadding(
+                                Text('${libraryState.selectedCourse?.title}')),
+                          ]),
+                          TableRow(children: <Widget>[
+                            CustomUiConstants.getTextPadding(
+                                const Text('Session type:')),
+                            CustomUiConstants.getIndentationTextPadding(Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ..._buildSessionTypeOptions(context),
+                              ],
+                            )),
+                          ]),
+                        ]);
+                        // return GridView.count(
+                        //   crossAxisCount: 2, shrinkWrap: true,
+                        //   children: [
+                        //     const Text('Session name:'),
+                        //     TextField(
+                        //       controller: sessionNameController,
+                        //     ),
+                        //     const Text('Organizer:'),
+                        //     Text(
+                        //         '${applicationState.currentUser?.displayName} (you)'),
+                        //     const Text('Course'),
+                        //     Text('${libraryState.selectedCourse?.title}'),
+                        //   ],
+                        // );
+                      },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        ..._buildSessionTypeOptions(context),
+                        TextButton(
+                            onPressed: () => Navigator.pushNamed(
+                                context, NavigationEnum.sessionHome.route),
+                            child: const Text('Cancel')),
+                        ElevatedButton(
+                            onPressed: () {
+                              _createSession(
+                                  sessionNameController.text, _sessionType);
+                            },
+                            child: const Text('Continue')),
                       ],
-                    )),
-                  ]),
-                ]);
-                // return GridView.count(
-                //   crossAxisCount: 2, shrinkWrap: true,
-                //   children: [
-                //     const Text('Session name:'),
-                //     TextField(
-                //       controller: sessionNameController,
-                //     ),
-                //     const Text('Organizer:'),
-                //     Text(
-                //         '${applicationState.currentUser?.displayName} (you)'),
-                //     const Text('Course'),
-                //     Text('${libraryState.selectedCourse?.title}'),
-                //   ],
-                // );
-              },
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                    onPressed: () => Navigator.pushNamed(
-                        context, NavigationEnum.sessionHome.route),
-                  child: const Text('Cancel')),
-                ElevatedButton(
-                    onPressed: () {
-                      _createSession(sessionNameController.text, _sessionType);
-                    },
-                    child: const Text('Continue')),
-              ],
-            )
-          ],
-        ))));
+                    )
+                  ],
+                ))));
   }
 
-  void _createSession(
-      String sessionName, SessionType sessionType) async {
+  void _createSession(String sessionName, SessionType sessionType) async {
     print('Attempting to create session $sessionName');
 
     var applicationState =
@@ -115,8 +118,8 @@ class SessionCreateState extends State<SessionCreatePage> {
     var organizerSessionState =
         Provider.of<OrganizerSessionState>(context, listen: false);
 
-    await organizerSessionState
-        .createSession(sessionName, applicationState, libraryState, sessionType);
+    await organizerSessionState.createSession(
+        sessionName, applicationState, libraryState, sessionType);
 
     if (mounted) {
       organizerSessionState.navigateToActiveSessionPage(context,
@@ -149,13 +152,13 @@ class SessionCreateState extends State<SessionCreatePage> {
     ];
 
     return sessionTypeOptions
-        .map((option) =>
-            _buildSessionTypeOption(option.type, option.label, option.infoText, context))
+        .map((option) => _buildSessionTypeOption(
+            option.type, option.label, option.infoText, context))
         .toList();
   }
 
-  Widget _buildSessionTypeOption(SessionType value, String label,
-      String infoText, BuildContext context) {
+  Widget _buildSessionTypeOption(
+      SessionType value, String label, String infoText, BuildContext context) {
     return RadioListTile<SessionType>(
       value: value,
       groupValue: _sessionType,
@@ -166,7 +169,10 @@ class SessionCreateState extends State<SessionCreatePage> {
           });
         }
       },
-      title: Text(label),
+      title: Text(
+        label,
+        style: CustomTextStyles.getBodyNote(context),
+      ),
       controlAffinity: ListTileControlAffinity.leading,
       contentPadding: EdgeInsets.zero,
       secondary: IconButton(
