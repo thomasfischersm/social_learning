@@ -156,25 +156,25 @@ class SessionCreateState extends State<SessionCreatePage> {
 
   Widget _buildSessionTypeOption(SessionType value, String label,
       String infoText, BuildContext context) {
-    return Row(
-      children: [
-        Radio<SessionType>(
-            value: value,
-            groupValue: _sessionType,
-            onChanged: (newValue) {
-              if (newValue != null) {
-                setState(() {
-                  _sessionType = newValue;
-                });
-              }
-            }),
-        Expanded(child: Text(label)),
-        IconButton(
-            onPressed: () {
-              DialogUtils.showInfoDialog(context, label, infoText, () {});
-            },
-            icon: const Icon(Icons.info_outline, color: Colors.grey)),
-      ],
+    return RadioListTile<SessionType>(
+      value: value,
+      groupValue: _sessionType,
+      onChanged: (SessionType? newValue) {
+        if (newValue != null) {
+          setState(() {
+            _sessionType = newValue;
+          });
+        }
+      },
+      title: Text(label),
+      controlAffinity: ListTileControlAffinity.leading,
+      contentPadding: EdgeInsets.zero,
+      secondary: IconButton(
+        onPressed: () {
+          DialogUtils.showInfoDialog(context, label, infoText, () {});
+        },
+        icon: const Icon(Icons.info_outline, color: Colors.grey),
+      ),
     );
   }
 }
