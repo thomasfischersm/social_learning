@@ -68,12 +68,7 @@ class LessonDetailState extends State<LessonDetailPage> {
         Lesson? lesson = _getLesson(null, context);
         if (lesson != null) {
           setState(() {
-            var sectionCount = lesson.instructions.split('---').length;
-            if (!lesson.instructions
-                .toLowerCase()
-                .startsWith('instructions---')) {
-              sectionCount++;
-            }
+            int sectionCount = _countInstructionSections(lesson);
             print(
                 'LessonDetailState.initState Future.microtask setState $sectionCount');
             _isSectionExpanded = List.filled(max(1, sectionCount), false);
@@ -289,12 +284,7 @@ class LessonDetailState extends State<LessonDetailPage> {
   Widget _generateInstructionText(Lesson lesson, BuildContext context) {
     List<InlineSpan> textSpans = [];
 
-    List<String> instructions =
-        lesson.instructions.replaceAll('\r', '').split('\n');
-
-    if (!instructions[0].toLowerCase().startsWith('instructions---')) {
-      instructions.insert(0, 'Instructions---');
-    }
+    List<String> instructions = _buildInstructionLines(lesson);
 
     int sectionIndex = -1;
     bool isExpanded =
@@ -334,6 +324,44 @@ class LessonDetailState extends State<LessonDetailPage> {
     return Padding(
         padding: const EdgeInsets.only(top: 8),
         child: SelectableText.rich(TextSpan(children: textSpans)));
+  }
+
+  int _countInstructionSections(Lesson lesson) {
+    List<String> instructions = _buildInstructionLines(lesson);
+    int sectionCount = 0;
+    for (String line in instructions) {
+      if (line.trim().endsWith('---')) {
+        sectionCount++;
+      }
+    }
+    return sectionCount;
+  }
+
+  List<String> _buildInstructionLines(Lesson lesson) {
+    List<String> instructions =
+        lesson.instructions.replaceAll('\r', '').split('\n');
+    if (instructions.isEmpty ||
+        !instructions[0].toLowerCase().startsWith('instructions---')) {
+      instructions.insert(0, 'Instructions---');
+    }
+
+    instructions.add('Graduation requirements---');
+    List<String> graduationRequirements =
+        lesson.graduationRequirements ?? <String>[];
+    List<String> cleanedRequirements = graduationRequirements
+        .map((requirement) => requirement.trim())
+        .where((requirement) => requirement.isNotEmpty)
+        .toList();
+
+    if (cleanedRequirements.isEmpty) {
+      instructions.add('None');
+    } else {
+      for (String requirement in cleanedRequirements) {
+        instructions.add('• $requirement');
+      }
+    }
+
+    return instructions;
   }
 
   TextSpan _generateTextSpanWithLinks(String paragraph) {
