@@ -90,8 +90,11 @@ class PartyPairingRosterCard extends StatelessWidget {
     double learnToTeachRatio,
     Set<String> pairedParticipantIds,
   ) {
-    User? user = organizerSessionState.getUser(participant);
-    String displayName = user?.displayName ?? 'Unknown';
+    String displayName = _buildParticipantDisplayName(
+      organizerSessionState,
+      libraryState,
+      participant,
+    );
     String userId = participant.participantId.id;
     int teachCount = organizerSessionState.getTeachCountForUser(userId);
     int learnCount = organizerSessionState.getLearnCountForUser(userId);
@@ -144,6 +147,52 @@ class PartyPairingRosterCard extends StatelessWidget {
         _buildLessonLink(context, nextLesson),
       ),
     ]);
+  }
+
+  String _buildParticipantDisplayName(
+    OrganizerSessionState organizerSessionState,
+    LibraryState libraryState,
+    SessionParticipant participant,
+  ) {
+    User? user = organizerSessionState.getUser(participant);
+    String displayName = user?.displayName ?? 'Unknown';
+    String? roleLabel = _participantRoleLabel(
+      organizerSessionState,
+      libraryState,
+      user,
+    );
+
+    if (roleLabel == null) {
+      return displayName;
+    }
+
+    return '$displayName ($roleLabel)';
+  }
+
+  String? _participantRoleLabel(
+    OrganizerSessionState organizerSessionState,
+    LibraryState libraryState,
+    User? user,
+  ) {
+    if (user == null) {
+      return null;
+    }
+
+    if (user.isAdmin) {
+      return 'admin';
+    }
+
+    String? creatorId = libraryState.selectedCourse?.creatorId;
+    if (creatorId != null && creatorId == user.uid) {
+      return 'instructor';
+    }
+
+    String? organizerUid = organizerSessionState.currentSession?.organizerUid;
+    if (organizerUid != null && organizerUid == user.uid) {
+      return 'session host';
+    }
+
+    return null;
   }
 
   Widget _buildHeaderCell(
