@@ -24,7 +24,7 @@ class StudyHistoryAnlyticsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const InstructorDashboardAppBar(
-        currentNav: NavigationEnum.studyHistoryAnlytics,
+        currentNav: NavigationEnum.studyHistoryAnalytics,
       ),
       bottomNavigationBar: BottomBarV2.build(context),
       body: Align(
