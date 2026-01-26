@@ -204,8 +204,7 @@ class OrganizerSessionState extends ChangeNotifier {
         return NavigationEnum.advancedPairingHost;
       case SessionType.partyModeDuo:
       case SessionType.partyModeTrio:
-        // TODO: Put the actual party mode host page here.
-        return NavigationEnum.sessionHost;
+        return NavigationEnum.partyPairingHost;
     }
   }
 

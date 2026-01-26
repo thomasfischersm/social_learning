@@ -180,6 +180,7 @@ class BottomBarV2 {
           NavigationEnum.sessionStudent.route,
           NavigationEnum.advancedPairingStudent.route,
           NavigationEnum.advancedPairingHost.route,
+          NavigationEnum.partyPairingHost.route,
           NavigationEnum.onlineSessionWaitingRoom.route,
           NavigationEnum.onlineSessionActive.route,
           NavigationEnum.codeOfConduct.route,

@@ -104,7 +104,7 @@ class _PartyPairingInstructorPairingCardState
           child: Text(
             lesson.title,
             style: CustomTextStyles.getBody(context)
-                .copyWith(decoration: TextDecoration.underline),
+                ?.copyWith(decoration: TextDecoration.underline),
           ),
         ),
       ],
