@@ -119,7 +119,8 @@ class SessionCreateState extends State<SessionCreatePage> {
         Provider.of<OrganizerSessionState>(context, listen: false);
 
     await organizerSessionState.createSession(
-        sessionName, applicationState, libraryState, sessionType);
+        sessionName, applicationState, libraryState, sessionType,
+        includeHostInPairing: true);
 
     if (mounted) {
       organizerSessionState.navigateToActiveSessionPage(context,

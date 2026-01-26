@@ -13,6 +13,7 @@ class Session {
   Timestamp? startTime;
   bool isActive;
   SessionType sessionType;
+  bool includeHostInPairing;
 
   Session(
       this.id,
@@ -23,7 +24,8 @@ class Session {
       this.participantCount,
       this.startTime,
       this.isActive,
-      this.sessionType);
+      this.sessionType,
+      this.includeHostInPairing);
 
   Session.fromQuerySnapshot(QueryDocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -34,7 +36,9 @@ class Session {
         participantCount = e.data()['participantCount'] as int,
         startTime = e.data()['startTime'] as Timestamp?,
         isActive = e.data()['isActive'] as bool,
-        sessionType = SessionType.fromInt(e.data()['sessionType'] as int?);
+        sessionType = SessionType.fromInt(e.data()['sessionType'] as int?),
+        includeHostInPairing =
+            (e.data()['includeHostInPairing'] as bool?) ?? true;
 
   Session.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> e)
       : id = e.id,
@@ -45,5 +49,7 @@ class Session {
         participantCount = e.data()?['participantCount'] as int,
         startTime = e.data()?['startTime'] as Timestamp?,
         isActive = e.data()?['isActive'] as bool,
-        sessionType = SessionType.fromInt(e.data()?['sessionType'] as int?);
+        sessionType = SessionType.fromInt(e.data()?['sessionType'] as int?),
+        includeHostInPairing =
+            (e.data()?['includeHostInPairing'] as bool?) ?? true;
 }

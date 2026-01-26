@@ -127,7 +127,8 @@ class OrganizerSessionState extends ChangeNotifier {
       String sessionName,
       ApplicationState applicationState,
       LibraryState libraryState,
-      SessionType sessionType) async {
+      SessionType sessionType,
+      {bool includeHostInPairing = true}) async {
     User? organizer = applicationState.currentUser;
     Course? course = libraryState.selectedCourse;
 
@@ -154,6 +155,7 @@ class OrganizerSessionState extends ChangeNotifier {
       organizerUid: organizer.uid,
       organizerName: organizer.displayName,
       sessionType: sessionType,
+      includeHostInPairing: includeHostInPairing,
     );
     String sessionId = sessionDoc.id;
 
