@@ -11,6 +11,7 @@ class SessionFunctions {
     required String organizerName,
     SessionType sessionType = SessionType.automaticManual,
     int participantCount = 1,
+    bool includeHostInPairing = true,
   }) async {
     return FirestoreService.instance.collection('sessions').add({
       'courseId': docRef('courses', courseId),
@@ -21,6 +22,7 @@ class SessionFunctions {
       'startTime': FieldValue.serverTimestamp(),
       'isActive': true,
       'sessionType': sessionType.toInt(),
+      'includeHostInPairing': includeHostInPairing,
     });
   }
 }
