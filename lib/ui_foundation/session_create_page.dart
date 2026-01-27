@@ -112,15 +112,20 @@ class SessionCreateState extends State<SessionCreatePage> {
   void _createSession(String sessionName, SessionType sessionType) async {
     print('Attempting to create session $sessionName');
 
-    var applicationState =
+    ApplicationState applicationState =
         Provider.of<ApplicationState>(context, listen: false);
-    var libraryState = Provider.of<LibraryState>(context, listen: false);
-    var organizerSessionState =
+    LibraryState libraryState =
+        Provider.of<LibraryState>(context, listen: false);
+    OrganizerSessionState organizerSessionState =
         Provider.of<OrganizerSessionState>(context, listen: false);
+
+    bool includerHostInPairing = sessionType != SessionType.partyModeDuo &&
+        sessionType != SessionType.partyModeTrio;
+    ;
 
     await organizerSessionState.createSession(
         sessionName, applicationState, libraryState, sessionType,
-        includeHostInPairing: true);
+        includeHostInPairing: includerHostInPairing);
 
     if (mounted) {
       organizerSessionState.navigateToActiveSessionPage(context,

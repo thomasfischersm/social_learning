@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.10.0 <4.0.0'
   flutter: ">=3.10.0"
 
 # Dependencies specify other packages that your package needs in order to work.
@@ -70,7 +70,7 @@ dependencies:
   flutter_svg: any
   fl_chart: ^1.1.1
   vector_math: ^2.1.4
-  flutter_graph_view: ^1.2.0
+  flutter_graph_view: ^2.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
