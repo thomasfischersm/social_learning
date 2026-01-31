@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -64,22 +66,28 @@ class OrganizerSessionState extends ChangeNotifier {
     // Start subscriptions.
     _sessionSubscription = SessionSubscription(() => notifyListeners());
 
-    _practiceRecordsSubscription =
-        PracticeRecordsSubscription(() => notifyListeners(), _libraryState);
+    _practiceRecordsSubscription = PracticeRecordsSubscription(
+      () => notifyListeners(),
+      _libraryState,
+    );
 
     _participantUsersSubscription = ParticipantUsersSubscription(
-        () => notifyListeners(), _practiceRecordsSubscription);
+      () => notifyListeners(),
+      _practiceRecordsSubscription,
+    );
 
     _sessionParticipantsSubscription = SessionParticipantsSubscription(
-        true,
-        false,
-        () => notifyListeners(),
-        _sessionSubscription,
-        _participantUsersSubscription,
-        null);
+      true,
+      false,
+      () => notifyListeners(),
+      _sessionSubscription,
+      _participantUsersSubscription,
+      null,
+    );
 
-    _sessionPairingSubscription =
-        SessionPairingsSubscription(() => _handleSessionPairingsUpdated());
+    _sessionPairingSubscription = SessionPairingsSubscription(
+      () => _handleSessionPairingsUpdated(),
+    );
 
     // Check if the user logged back into the app with a running session.
     _connectToActiveSession(applicationState);
@@ -90,6 +98,9 @@ class OrganizerSessionState extends ChangeNotifier {
 
     _libraryState.addListener(() => _handleCourseChange(applicationState));
   }
+
+  int get maxRoundNumber => allPairings
+      .fold(0, (maxSoFar, pairing) => max(maxSoFar, pairing.roundNumber));
 
   void _connectToActiveSession(ApplicationState applicationState) {
     var uid = applicationState.currentUser?.uid;
@@ -103,60 +114,69 @@ class OrganizerSessionState extends ChangeNotifier {
           .where('courseId', isEqualTo: docRef('courses', courseId))
           .get()
           .then((snapshot) {
-        print(
-            'Got active session where this user is the organiser: ${snapshot.docs.length}, incomplete: ${snapshot.metadata.hasPendingWrites}');
-        if ((snapshot.size > 0) && !snapshot.metadata.hasPendingWrites) {
-          var session = Session.fromQuerySnapshot(snapshot.docs.first);
-          // Only enter the session if it belongs to the currently selected course.
-          var selectedCourseId = _libraryState.selectedCourse?.id;
-          if (selectedCourseId == session.courseId.id) {
-            String sessionId = session.id!;
-            _subscribeToSession(sessionId);
-            _sessionSubscription.loadItemManually(session);
-          } else {
-            print('Active session found for a different course; ignoring.');
-          }
-        }
-      }).onError((error, stackTrace) {
-        print('Failed to get active session from Firestore: $error');
-      });
+            print(
+              'Got active session where this user is the organiser: ${snapshot.docs.length}, incomplete: ${snapshot.metadata.hasPendingWrites}',
+            );
+            if ((snapshot.size > 0) && !snapshot.metadata.hasPendingWrites) {
+              var session = Session.fromQuerySnapshot(snapshot.docs.first);
+              // Only enter the session if it belongs to the currently selected course.
+              var selectedCourseId = _libraryState.selectedCourse?.id;
+              if (selectedCourseId == session.courseId.id) {
+                String sessionId = session.id!;
+                _subscribeToSession(sessionId);
+                _sessionSubscription.loadItemManually(session);
+              } else {
+                print('Active session found for a different course; ignoring.');
+              }
+            }
+          })
+          .onError((error, stackTrace) {
+            print('Failed to get active session from Firestore: $error');
+          });
     }
   }
 
   Future<void> createSession(
-      String sessionName,
-      ApplicationState applicationState,
-      LibraryState libraryState,
-      SessionType sessionType,
-      {bool includeHostInPairing = true}) async {
+    String sessionName,
+    ApplicationState applicationState,
+    LibraryState libraryState,
+    SessionType sessionType, {
+    bool includeHostInPairing = true,
+  }) async {
     User? organizer = applicationState.currentUser;
     Course? course = libraryState.selectedCourse;
 
     if (organizer == null) {
-      snackbarKey.currentState?.showSnackBar(const SnackBar(
-        content:
-            Text("Failed to create session because you are not logged in."),
-      ));
+      snackbarKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Failed to create session because you are not logged in.",
+          ),
+        ),
+      );
       return;
     }
 
     if (course == null) {
-      snackbarKey.currentState?.showSnackBar(const SnackBar(
-        content:
-            Text("Failed to create session because no course is selected."),
-      ));
+      snackbarKey.currentState?.showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Failed to create session because no course is selected.",
+          ),
+        ),
+      );
       return;
     }
 
     DocumentReference<Map<String, dynamic>> sessionDoc =
         await SessionFunctions.createSession(
-      courseId: course.id!,
-      sessionName: sessionName,
-      organizerUid: organizer.uid,
-      organizerName: organizer.displayName,
-      sessionType: sessionType,
-      includeHostInPairing: includeHostInPairing,
-    );
+          courseId: course.id!,
+          sessionName: sessionName,
+          organizerUid: organizer.uid,
+          organizerName: organizer.displayName,
+          sessionType: sessionType,
+          includeHostInPairing: includeHostInPairing,
+        );
     String sessionId = sessionDoc.id;
 
     // Create organizer participant.
@@ -175,21 +195,27 @@ class OrganizerSessionState extends ChangeNotifier {
 
     notifyListeners();
 
-    snackbarKey.currentState?.showSnackBar(SnackBar(
-      content: Text('Successfully created session $sessionId'),
-    ));
+    snackbarKey.currentState?.showSnackBar(
+      SnackBar(content: Text('Successfully created session $sessionId')),
+    );
   }
 
   void _subscribeToSession(String sessionId) {
     _sessionSubscription.resubscribe(() => '/sessions/$sessionId');
 
-    _sessionParticipantsSubscription.resubscribe((collectionReference) =>
-        SessionParticipantFunctions.queryBySessionId(
-            collectionReference, sessionId));
+    _sessionParticipantsSubscription.resubscribe(
+      (collectionReference) => SessionParticipantFunctions.queryBySessionId(
+        collectionReference,
+        sessionId,
+      ),
+    );
 
-    _sessionPairingSubscription.resubscribe((collectionReference) =>
-        collectionReference.where('sessionId',
-            isEqualTo: docRef('sessions', sessionId)));
+    _sessionPairingSubscription.resubscribe(
+      (collectionReference) => collectionReference.where(
+        'sessionId',
+        isEqualTo: docRef('sessions', sessionId),
+      ),
+    );
   }
 
   NavigationEnum getActiveSessionNavigationEnum({SessionType? sessionType}) {
@@ -210,10 +236,13 @@ class OrganizerSessionState extends ChangeNotifier {
     }
   }
 
-  void navigateToActiveSessionPage(BuildContext context,
-      {SessionType? sessionType}) {
-    NavigationEnum? destination =
-        getActiveSessionNavigationEnum(sessionType: sessionType);
+  void navigateToActiveSessionPage(
+    BuildContext context, {
+    SessionType? sessionType,
+  }) {
+    NavigationEnum? destination = getActiveSessionNavigationEnum(
+      sessionType: sessionType,
+    );
 
     if (destination != null) {
       destination.navigateClean(context);
@@ -232,15 +261,22 @@ class OrganizerSessionState extends ChangeNotifier {
       FirebaseFirestore.instance
           .collection('sessionPairings')
           .add(<String, dynamic>{
-        'sessionId': docRef('sessions', currentSession!.id!),
-        'roundNumber': currentRound,
-        'mentorId': docRef('users', pair.teachingParticipant.participantId.id),
-        'menteeId': docRef('users', pair.learningParticipant.participantId.id),
-        'lessonId': docRef('lessons', pair.lesson!.id!),
-        'additionalStudentIds': [],
-      }).catchError((error) {
-        print('Failed to save session pairing: $error');
-      });
+            'sessionId': docRef('sessions', currentSession!.id!),
+            'roundNumber': currentRound,
+            'mentorId': docRef(
+              'users',
+              pair.teachingParticipant.participantId.id,
+            ),
+            'menteeId': docRef(
+              'users',
+              pair.learningParticipant.participantId.id,
+            ),
+            'lessonId': docRef('lessons', pair.lesson!.id!),
+            'additionalStudentIds': [],
+          })
+          .catchError((error) {
+            print('Failed to save session pairing: $error');
+          });
       print('Saved session pair.');
     }
 
@@ -350,43 +386,55 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void removeMentor(SessionPairing sessionPairing) {
-    docRef('sessionPairings', sessionPairing.id!).update({
-      'mentorId': null,
-    }).then((value) {
-      print('Removed mentor from session pairing.');
-    }).catchError((error) {
-      print('Failed to remove mentor from session pairing: $error');
-    });
+    docRef('sessionPairings', sessionPairing.id!)
+        .update({'mentorId': null})
+        .then((value) {
+          print('Removed mentor from session pairing.');
+        })
+        .catchError((error) {
+          print('Failed to remove mentor from session pairing: $error');
+        });
   }
 
   void removeMentee(SessionPairing sessionPairing) {
-    docRef('sessionPairings', sessionPairing.id!).update({
-      'menteeId': null,
-    }).then((value) {
-      print('Removed mentee from session pairing.');
-    }).catchError((error) {
-      print('Failed to remove mentee from session pairing: $error');
-    });
+    docRef('sessionPairings', sessionPairing.id!)
+        .update({'menteeId': null})
+        .then((value) {
+          print('Removed mentee from session pairing.');
+        })
+        .catchError((error) {
+          print('Failed to remove mentee from session pairing: $error');
+        });
   }
 
   void addMentor(User selectedUser, SessionPairing sessionPairing) {
-    docRef('sessionPairings', sessionPairing.id!).update({
-      'mentorId': FirebaseFirestore.instance.doc('/users/${selectedUser.id}'),
-    }).then((value) {
-      print('Added mentor to session pairing.');
-    }).catchError((error) {
-      print('Failed to add mentor to session pairing: $error');
-    });
+    docRef('sessionPairings', sessionPairing.id!)
+        .update({
+          'mentorId': FirebaseFirestore.instance.doc(
+            '/users/${selectedUser.id}',
+          ),
+        })
+        .then((value) {
+          print('Added mentor to session pairing.');
+        })
+        .catchError((error) {
+          print('Failed to add mentor to session pairing: $error');
+        });
   }
 
   void addMentee(User selectedUser, SessionPairing sessionPairing) {
-    docRef('sessionPairings', sessionPairing.id!).update({
-      'menteeId': FirebaseFirestore.instance.doc('/users/${selectedUser.id}'),
-    }).then((value) {
-      print('Added mentee to session pairing.');
-    }).catchError((error) {
-      print('Failed to add mentee to session pairing: $error');
-    });
+    docRef('sessionPairings', sessionPairing.id!)
+        .update({
+          'menteeId': FirebaseFirestore.instance.doc(
+            '/users/${selectedUser.id}',
+          ),
+        })
+        .then((value) {
+          print('Added mentee to session pairing.');
+        })
+        .catchError((error) {
+          print('Failed to add mentee to session pairing: $error');
+        });
   }
 
   bool hasUserGraduatedLesson(User user, Lesson lesson) {
@@ -402,14 +450,21 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   void updateStudentsAndLesson(
-      String pairingId,
-      String? mentorUserId,
-      String? menteeUserId,
-      List<String>? additionalStudentUserIds,
-      String? lessonId,
-      WriteBatch batch) {
-    SessionPairingFunctions.updateStudentsAndLesson(pairingId, mentorUserId,
-        menteeUserId, additionalStudentUserIds, lessonId, batch);
+    String pairingId,
+    String? mentorUserId,
+    String? menteeUserId,
+    List<String>? additionalStudentUserIds,
+    String? lessonId,
+    WriteBatch batch,
+  ) {
+    SessionPairingFunctions.updateStudentsAndLesson(
+      pairingId,
+      mentorUserId,
+      menteeUserId,
+      additionalStudentUserIds,
+      lessonId,
+      batch,
+    );
   }
 
   String addPairing(SessionPairing pairing, WriteBatch batch) {
@@ -445,8 +500,9 @@ class OrganizerSessionState extends ChangeNotifier {
     final teachCounts = <String, int>{};
     final learnCounts = <String, int>{};
 
-    for (final pairing in _sessionPairingSubscription.items
-        .where((pairing) => pairing.isCompleted)) {
+    for (final pairing in _sessionPairingSubscription.items.where(
+      (pairing) => pairing.isCompleted,
+    )) {
       final mentorId = pairing.mentorId?.id;
       if (mentorId != null) {
         teachCounts[mentorId] = (teachCounts[mentorId] ?? 0) + 1;
@@ -483,7 +539,8 @@ class OrganizerSessionState extends ChangeNotifier {
 
     if (dirtyParticipants.isNotEmpty) {
       await SessionParticipantFunctions.updateTeachAndLearnCounts(
-          dirtyParticipants);
+        dirtyParticipants,
+      );
     }
   }
 
@@ -520,7 +577,9 @@ class OrganizerSessionState extends ChangeNotifier {
   }
 
   GraduationStatus getGraduationStatus(
-      SessionParticipant participant, Lesson lesson) {
+    SessionParticipant participant,
+    Lesson lesson,
+  ) {
     Timestamp? sessionStart = currentSession?.startTime;
     GraduationStatus status = GraduationStatus.untouched;
 
@@ -531,9 +590,9 @@ class OrganizerSessionState extends ChangeNotifier {
           return GraduationStatus.graduated;
         } else if (sessionStart != null &&
             practiceRecord.timestamp != null &&
-            sessionStart
-                .toDate()
-                .isBefore(practiceRecord.timestamp!.toDate())) {
+            sessionStart.toDate().isBefore(
+              practiceRecord.timestamp!.toDate(),
+            )) {
           status = GraduationStatus.practicedThisSession;
         }
         if (status == GraduationStatus.untouched) {

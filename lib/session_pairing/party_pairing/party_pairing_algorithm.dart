@@ -1,13 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/session_pairing/party_pairing/pairing_scorer.dart';
 import 'package:social_learning/session_pairing/party_pairing/pairing_unit.dart';
 import 'package:social_learning/session_pairing/party_pairing/pairing_unit_set.dart';
 import 'package:social_learning/session_pairing/party_pairing/party_pairing_context.dart';
 import 'package:social_learning/session_pairing/party_pairing/scored_participant.dart';
+import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/util/list_util.dart';
 
-import 'lesson_picker.dart';
+import 'package:social_learning/data/session_pairing.dart';
+import 'package:social_learning/session_pairing/party_pairing/lesson_picker.dart';
 
 class PartyPairingAlgorithm {
   final int unitSize;
@@ -17,9 +22,18 @@ class PartyPairingAlgorithm {
 
   PartyPairingAlgorithm(this.unitSize);
 
-  PairingUnitSet? pairAvailableStudents(BuildContext context) {
-    Stopwatch stopwatch = Stopwatch()..start();
+  void pairAvailableStudentsAndPersist(BuildContext context) {
     PartyPairingContext pairingContext = PartyPairingContext(context);
+
+    PairingUnitSet? pairingUnitSet = pairAvailableStudents(pairingContext);
+
+    if (pairingUnitSet != null) {
+      persist(pairingUnitSet, pairingContext);
+    }
+  }
+
+  PairingUnitSet? pairAvailableStudents(PartyPairingContext pairingContext) {
+    Stopwatch stopwatch = Stopwatch()..start();
 
     if (pairingContext.unpairedScoredParticipants.length < unitSize) {
       return null;
@@ -342,5 +356,46 @@ class PartyPairingAlgorithm {
     });
 
     return resultSets;
+  }
+
+  void persist(
+    PairingUnitSet pairingUnitSet,
+    PartyPairingContext pairingContext,
+  ) {
+    OrganizerSessionState organizerSessionState =
+        pairingContext.organizerSessionState;
+    WriteBatch batch = FirestoreService.instance.batch();
+
+    for (PairingUnit unit in pairingUnitSet.pairingUnits) {
+      DocumentReference sessionId = docRef(
+        'sessions',
+        organizerSessionState.currentSession!.id!,
+      );
+      int nextRoundNumber = organizerSessionState.maxRoundNumber + 1;
+      DocumentReference mentorId = unit.mentor.participant.participantId;
+      DocumentReference menteeId =
+          unit.learners.first.participant.participantId;
+      List<DocumentReference> additionalStudentIds = unit.learners
+          .skip(1)
+          .map(
+            (scoredParticipant) => scoredParticipant.participant.participantId,
+          )
+          .toList();
+      DocumentReference lessonId = docRef('lessons', unit.lesson.id!);
+
+      SessionPairing sessionPairing = SessionPairing(
+        null,
+        sessionId,
+        nextRoundNumber,
+        mentorId,
+        menteeId,
+        lessonId,
+        additionalStudentIds = additionalStudentIds,
+      );
+
+      organizerSessionState.addPairing(sessionPairing, batch);
+    }
+
+    batch.commit();
   }
 }
