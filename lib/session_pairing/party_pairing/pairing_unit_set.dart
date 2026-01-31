@@ -6,9 +6,11 @@ class PairingUnitSet {
   final List<PairingUnit> pairingUnits;
   final List<ScoredParticipant> leftOverParticipants;
 
-  PairingScore? score;
+  late final PairingScore score;
 
-  PairingUnitSet(this.pairingUnits, this.leftOverParticipants);
+  PairingUnitSet(this.pairingUnits, this.leftOverParticipants) {
+    computeRawScore();
+  }
 
   String createUniqueString() {
     // Make sure that all units and learners have a consistent sort order!!!

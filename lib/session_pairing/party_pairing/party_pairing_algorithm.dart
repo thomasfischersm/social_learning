@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/session_pairing/party_pairing/pairing_scorer.dart';
 import 'package:social_learning/session_pairing/party_pairing/pairing_unit.dart';
 import 'package:social_learning/session_pairing/party_pairing/pairing_unit_set.dart';
 import 'package:social_learning/session_pairing/party_pairing/party_pairing_context.dart';
 import 'package:social_learning/session_pairing/party_pairing/scored_participant.dart';
+import 'package:social_learning/util/list_util.dart';
+
+import 'lesson_picker.dart';
 
 class PartyPairingAlgorithm {
   final int unitSize;
 
   PairingUnitSet? candidatePairingUnitSet;
-  Map<String, PairingUnitSet> _uniqueToPairingUnitSet = {};
+  final Map<String, PairingUnitSet> _uniqueToPairingUnitSet = {};
 
   PartyPairingAlgorithm(this.unitSize);
 
   PairingUnitSet? pairAvailableStudents(BuildContext context) {
+    Stopwatch stopwatch = Stopwatch()..start();
     PartyPairingContext pairingContext = PartyPairingContext(context);
 
     if (pairingContext.unpairedScoredParticipants.length < unitSize) {
@@ -28,7 +33,17 @@ class PartyPairingAlgorithm {
         initialPairingUnitSet;
     candidatePairingUnitSet = initialPairingUnitSet;
 
-    // TODO: Try other pairings.
+    // Try other pairings by breaking two units and recombining them.
+    PairingUnitSet lastCandidate = candidatePairingUnitSet!;
+    do {
+      lastCandidate = candidatePairingUnitSet!;
+      breakAndRepair(candidatePairingUnitSet!, 2, pairingContext);
+    } while (candidatePairingUnitSet != lastCandidate);
+
+    stopwatch.stop();
+    print('Pairing algorithm took ${stopwatch.elapsed}');
+
+    return candidatePairingUnitSet;
   }
 
   PairingUnitSet _createInitialPairingCandidate(
@@ -243,5 +258,89 @@ class PartyPairingAlgorithm {
     }
 
     return pairings;
+  }
+
+  /// Takes a set of pairings and breaks n pairings to see in how many ways
+  /// it can recombine the available students.
+  void breakAndRepair(
+    PairingUnitSet originalSet,
+    int breakCount,
+    PartyPairingContext pairingContext,
+  ) {
+    if (originalSet.pairingUnits.length < breakCount) {
+      return;
+    }
+
+    originalSet.pairingUnits.forEachCombination(breakCount, (brokenUnits) {
+      List<PairingUnitSet> newSets = breakAndRepairTuples(
+        originalSet,
+        brokenUnits,
+        pairingContext,
+      );
+
+      // Evaluate new sets.
+      for (PairingUnitSet newSet in newSets) {
+        _uniqueToPairingUnitSet[newSet.createUniqueString()] = newSet;
+
+        PairingScorer.score(candidatePairingUnitSet!.score, newSet.score);
+
+        if ((newSet.score.totalScore ?? 0) >
+            (candidatePairingUnitSet!.score.totalScore ?? 0)) {
+          candidatePairingUnitSet = newSet;
+        }
+      }
+    });
+  }
+
+  List<PairingUnitSet> breakAndRepairTuples(
+    PairingUnitSet originalSet,
+    List<PairingUnit> brokenUnits,
+    PartyPairingContext pairingContext,
+  ) {
+    // Prepare.
+    List<PairingUnit> basePairingUnits = originalSet.pairingUnits.minus(
+      brokenUnits,
+    );
+    List<ScoredParticipant> availableParticipants =
+        brokenUnits.expand((u) => [u.mentor, ...u.learners]).toSet().toList()
+          ..addAll(originalSet.leftOverParticipants);
+
+    // Evaluate every possible recombination.
+    List<PairingUnitSet> resultSets = [];
+    availableParticipants.forEachMaxGroupings(unitSize, (
+      listOfListOfParticipants,
+      newLeftOvers,
+    ) {
+      // Create the new PairingUnitSet.
+      List<PairingUnit> newlyFormedUnits = listOfListOfParticipants
+          .map(
+            (participants) => LessonPicker.chooseBestGroupLesson(
+              participants,
+              pairingContext,
+            ),
+          )
+          .whereType<PairingUnit>()
+          .toList();
+      PairingUnitSet newSet = PairingUnitSet([
+        ...basePairingUnits,
+        ...newlyFormedUnits,
+      ], newLeftOvers);
+
+      // Skip already evaluated sets.
+      var uniqueString = newSet.createUniqueString();
+      if (!_uniqueToPairingUnitSet.containsKey(uniqueString)) {
+        _uniqueToPairingUnitSet[uniqueString] = newSet;
+        resultSets.add(newSet);
+      }
+
+      // // Evaluate the new PairingUnitSet.
+      // PairingScorer.score(candidatePairingUnitSet!.score, newSet.score);
+      // if ((newSet.score.totalScore ?? 0) >
+      //     (candidatePairingUnitSet?.score.totalScore ?? 0)) {
+      //   candidatePairingUnitSet = newSet;
+      // }
+    });
+
+    return resultSets;
   }
 }
