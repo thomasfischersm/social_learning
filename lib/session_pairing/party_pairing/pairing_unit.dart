@@ -58,6 +58,7 @@ class PairingUnit {
     _computeNearestLessonScore(score);
     _computeBalanceStudentDistance(score);
     _computeRareLessonScore(score);
+    _computeNewLessonScore(score);
 
     for (ScoredParticipant participant in [mentor, ...learners]) {
       participant.computeRawScore(score);
@@ -164,4 +165,19 @@ class PairingUnit {
     score.addRawScore(.prioritizeRareLessons, rareLessonScore);
   }
 
+  void _computeNewLessonScore(PairingScore score) {
+    double newLessonCount = 0;
+
+    for (ScoredParticipant participant in learners) {
+      if (participant.isHost) {
+        continue;
+      }
+
+      if (!participant.graduatedLessons.contains(lesson)) {
+        newLessonCount++;
+      }
+    }
+
+    score.addRawScore(.learnNewLessonCount, newLessonCount);
+  }
 }

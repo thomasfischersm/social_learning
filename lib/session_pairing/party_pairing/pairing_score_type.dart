@@ -12,6 +12,7 @@ enum PairingScoreType {
   finishLevelBeforeMovingOn(.group, .fineTune, .minimize)
   balanceStudentDistance(.group, .fineTune, .minimizeDispersion),
   learnNearestLesson(.group, .medium, .minimize),
+  learnNewLessonCount(.group, .important, .maximize),
 
   // Set scope
   prioritizeRareLessons(.set, .important, ..maximize),

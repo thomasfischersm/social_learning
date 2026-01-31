@@ -21,8 +21,9 @@ class PartyPairingAlgorithm {
     }
 
     // Create the initial PairingUnitSet.
-    PairingUnitSet initialPairingUnitSet =
-        _createInitialPairingCandidate(pairingContext);
+    PairingUnitSet initialPairingUnitSet = _createInitialPairingCandidate(
+      pairingContext,
+    );
     _uniqueToPairingUnitSet[initialPairingUnitSet.createUniqueString()] =
         initialPairingUnitSet;
     candidatePairingUnitSet = initialPairingUnitSet;
@@ -31,10 +32,11 @@ class PartyPairingAlgorithm {
   }
 
   PairingUnitSet _createInitialPairingCandidate(
-      // TODO: Ensure that only groups of 2 or 3 are formed.
-      PartyPairingContext pairingContext) {
-    List<ScoredParticipant> unpairedParticipants =
-        List.of(pairingContext.mostConstrainedParticipantsFirst);
+    PartyPairingContext pairingContext,
+  ) {
+    List<ScoredParticipant> unpairedParticipants = List.of(
+      pairingContext.mostConstrainedParticipantsFirst,
+    );
     List<ScoredParticipant> leftOverParticipants = [];
     List<PairingUnit> pairingUnits = [];
 
@@ -55,9 +57,14 @@ class PartyPairingAlgorithm {
 
       // Find a mentor.
       Lesson lesson = learnerCandidate.prioritizedLessons.first;
-      ScoredParticipant? mentorCandidate =
-          _findAndRemoveMentor(leftOverParticipants, lesson) ??
-              _findAndRemoveMentor(unpairedParticipants, lesson);
+      List<ScoredParticipant> combinedParticipantPool = [
+        ...leftOverParticipants,
+        ...unpairedParticipants,
+      ];
+      ScoredParticipant? mentorCandidate = _findMentor(
+        combinedParticipantPool,
+        lesson,
+      );
 
       // Couldn't find a mentor.
       if (mentorCandidate == null) {
@@ -66,44 +73,175 @@ class PartyPairingAlgorithm {
       }
 
       // Find additional learners.
-      List<ScoredParticipant> learnerCandidates = [learnerCandidate];
-      _findAndRemoveAdditionalLearners(
-          leftOverParticipants, lesson, learnerCandidates);
-      _findAndRemoveAdditionalLearners(
-          unpairedParticipants, lesson, learnerCandidates);
+      List<ScoredParticipant> learnerCandidates = [
+        learnerCandidate,
+        ..._findAdditionalLearners(combinedParticipantPool, lesson),
+      ];
 
       // Create the PairingUnit.
-      pairingUnits.add(PairingUnit(mentorCandidate, learnerCandidates, lesson, pairingContext));
+      if (learnerCandidates.length + 1 /* mentor */ == unitSize) {
+        // Remove the mentor and additional learners from the students
+        // available for pairing.
+        unpairedParticipants.remove(mentorCandidate);
+        leftOverParticipants.remove(mentorCandidate);
+        unpairedParticipants.removeWhere((p) => learnerCandidates.contains(p));
+        leftOverParticipants.removeWhere((p) => learnerCandidates.contains(p));
+
+        pairingUnits.add(
+          PairingUnit(
+            mentorCandidate,
+            learnerCandidates,
+            lesson,
+            pairingContext,
+          ),
+        );
+      } else {
+        // Couldn't find enough additional learners to meet the unit size.
+        // We'll try to do desperate pairings later.
+        leftOverParticipants.add(learnerCandidate);
+      }
     }
+
+    // Use the left over participants to create any kind of pairing that get
+    // a student to progress. We assume that the trio size or whatever the unit
+    // size is has to be reached. E.g., in acroyoga we need three people
+    // (a flyer, base, and a spotter).
+    pairingUnits.addAll(
+      createDesperatePairings(leftOverParticipants, pairingContext),
+    );
 
     return PairingUnitSet(pairingUnits, leftOverParticipants);
   }
 
-  ScoredParticipant? _findAndRemoveMentor(
-      List<ScoredParticipant> participants, Lesson lessonCandidate) {
+  ScoredParticipant? _findMentor(
+    List<ScoredParticipant> participants,
+    Lesson lessonCandidate,
+  ) {
     for (ScoredParticipant participant in participants) {
       if (participant.graduatedLessons.contains(lessonCandidate)) {
-        participants.remove(participant);
+        // participants.remove(participant);
         return participant;
       }
     }
     return null;
   }
 
-  void _findAndRemoveAdditionalLearners(List<ScoredParticipant> participants,
-      Lesson lessonCandidate, List<ScoredParticipant> learnerCandidates) {
+  List<ScoredParticipant> _findAdditionalLearners(
+    List<ScoredParticipant> participants,
+    Lesson lessonCandidate,
+  ) {
+    List<ScoredParticipant> learnerCandidates = [];
     int i = 0;
 
-    while (i < participants.length && learnerCandidates.length + 1 < unitSize) {
+    while (i < participants.length &&
+        learnerCandidates.length + 1 /* initial learner */ + 1 /* mentor */ <
+            unitSize) {
       final participant = participants[i];
 
       if (participant.prioritizedLessons.contains(lessonCandidate)) {
-        participants.removeAt(i);
+        // participants.removeAt(i);
         learnerCandidates.add(participant);
         // do NOT increment i — next element shifts into this index
       } else {
         i++;
       }
     }
+
+    return learnerCandidates;
+  }
+
+  /// Create desperate pairings. There may be some students left unpaired after
+  /// any good pairings have been found. We'll try to pair them because doing
+  /// something is better than nothing. Specifically, we may have cases where
+  /// a mentor could teach a single student a lesson. However, there aren't
+  /// enough learners to create a trio. So we look for someone who could repeat
+  /// the lesson simply for practice.
+  List<PairingUnit> createDesperatePairings(
+    List<ScoredParticipant> leftOverParticipants,
+    PartyPairingContext pairingContext,
+  ) {
+    // Start with participants who have already learned the most because they
+    // are hardest to pair.
+    leftOverParticipants.sort(
+      (a, b) => b.graduatedLessons.length.compareTo(a.graduatedLessons.length),
+    );
+
+    List<ScoredParticipant> hardLeftOverParticipants = [];
+    List<PairingUnit> pairings = [];
+    nextLearnerCandidate:
+    while (leftOverParticipants.isNotEmpty &&
+        (leftOverParticipants.length + hardLeftOverParticipants.length >
+            unitSize)) {
+      ScoredParticipant learnerCandidate = leftOverParticipants.removeAt(0);
+
+      // Try for each prioritized lesson.
+      for (Lesson lessonCandidate in learnerCandidate.prioritizedLessons) {
+        // Find a mentor.
+        var combinedParticipants = [
+          ...hardLeftOverParticipants,
+          ...leftOverParticipants,
+        ];
+        for (ScoredParticipant mentorCandidate in combinedParticipants) {
+          if (!mentorCandidate.graduatedLessons.contains(lessonCandidate)) {
+            continue;
+          }
+
+          List<ScoredParticipant> additionalLearnerCandidates = [];
+          for (ScoredParticipant additionalLearnerCandidate
+              in combinedParticipants) {
+            if (additionalLearnerCandidates.length +
+                    1 /* mentor candidate */ +
+                    1 /* learner candidate */ ==
+                unitSize) {
+              break;
+            }
+
+            if (additionalLearnerCandidate == mentorCandidate) {
+              continue;
+            }
+
+            if (additionalLearnerCandidate.prioritizedLessons.contains(
+                  lessonCandidate,
+                ) ||
+                additionalLearnerCandidate.graduatedLessons.contains(
+                  lessonCandidate,
+                )) {
+              additionalLearnerCandidates.add(additionalLearnerCandidate);
+            }
+          }
+
+          // If we have enough students, create a pairing unit.
+          if (additionalLearnerCandidates.length +
+                  1 /* mentor candidate */ +
+                  1 /* learner candidate */ ==
+              unitSize) {
+            pairings.add(
+              PairingUnit(
+                mentorCandidate,
+                [learnerCandidate, ...additionalLearnerCandidates],
+                lessonCandidate,
+                pairingContext,
+              ),
+            );
+
+            // Remove the mentor and learning candidates from the list of
+            // available students.
+            leftOverParticipants.remove(mentorCandidate);
+            hardLeftOverParticipants.remove(mentorCandidate);
+            leftOverParticipants.removeWhere(
+              (p) => additionalLearnerCandidates.contains(p),
+            );
+            hardLeftOverParticipants.removeWhere(
+              (p) => additionalLearnerCandidates.contains(p),
+            );
+            continue nextLearnerCandidate;
+          }
+        }
+      }
+
+      hardLeftOverParticipants.add(learnerCandidate);
+    }
+
+    return pairings;
   }
 }
