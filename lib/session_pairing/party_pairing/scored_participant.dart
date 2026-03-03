@@ -95,6 +95,8 @@ class ScoredParticipant {
   }
 
   void _initLearnTeachCounts() {
+    teachingDeficit = 0;
+
     for (SessionPairing pairing in pairingContext.organizerSessionState
         .allPairings) {
       if (!pairing.isCompleted) {
