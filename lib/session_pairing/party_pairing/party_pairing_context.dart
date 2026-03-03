@@ -21,10 +21,11 @@ class PartyPairingContext {
   final Map<Lesson, int> lessonsToFrequency = {};
   final Map<int, List<Lesson>> frequenciesToLesson = {};
 
-  PartyPairingContext(BuildContext context)
-      : applicationState = context.read<ApplicationState>(),
-        libraryState = context.read<LibraryState>(),
-        organizerSessionState = context.read<OrganizerSessionState>() {
+  PartyPairingContext(
+    this.applicationState,
+    this.libraryState,
+    this.organizerSessionState,
+  ) {
     _initUnpairedParticipants();
     _initMostConstrainedParticipantsFirst();
     _initLessonFrequency();
@@ -38,7 +39,8 @@ class PartyPairingContext {
     if (organizerSessionState.currentSession?.includeHostInPairing ?? false) {
       User hostUser = applicationState.currentUser!;
       allParticipants.removeWhere(
-          (participant) => participant.participantId.id == hostUser.id);
+        (participant) => participant.participantId.id == hostUser.id,
+      );
     }
 
     Iterable<SessionPairing> activePairings = organizerSessionState.allPairings
@@ -48,18 +50,21 @@ class PartyPairingContext {
     for (SessionPairing pairing in activePairings) {
       if (pairing.mentorId != null) {
         unpairedParticipants.removeWhere(
-            (participant) => participant.participantId == pairing.mentorId);
+          (participant) => participant.participantId == pairing.mentorId,
+        );
       }
 
       if (pairing.menteeId != null) {
         unpairedParticipants.removeWhere(
-            (participant) => participant.participantId == pairing.menteeId);
+          (participant) => participant.participantId == pairing.menteeId,
+        );
       }
 
       for (DocumentReference additionalStudent
           in pairing.additionalStudentIds) {
         unpairedParticipants.removeWhere(
-            (participant) => participant.participantId == additionalStudent);
+          (participant) => participant.participantId == additionalStudent,
+        );
       }
     }
 
@@ -96,23 +101,24 @@ class PartyPairingContext {
     // The host is always last by convention because the host doesn't want to
     // learn.
     List<MapEntry<ScoredParticipant, int>> sortedEntries =
-        constraintCountByParticipant.entries.toList()
-          ..sort((a, b) {
-            if (a.key.isHost) return 1;
-            if (b.key.isHost) return -1;
+        constraintCountByParticipant.entries.toList()..sort((a, b) {
+          if (a.key.isHost) return 1;
+          if (b.key.isHost) return -1;
 
-            return a.value.compareTo(b.value);
-          });
+          return a.value.compareTo(b.value);
+        });
 
-    mostConstrainedParticipantsFirst =
-        sortedEntries.map((entry) => entry.key).toList();
+    mostConstrainedParticipantsFirst = sortedEntries
+        .map((entry) => entry.key)
+        .toList();
   }
 
   void _initLessonFrequency() {
     // Initialize all lessons to make sure to get zero count lessons.
     for (Lesson lesson in libraryState.lessons!) {
       lessonsToFrequency[lesson] = 0;
-    };
+    }
+    ;
 
     // Add how often lessons are known among participants.
     for (ScoredParticipant participant in unpairedScoredParticipants) {

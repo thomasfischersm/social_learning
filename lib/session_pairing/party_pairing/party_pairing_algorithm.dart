@@ -22,9 +22,7 @@ class PartyPairingAlgorithm {
 
   PartyPairingAlgorithm(this.unitSize);
 
-  void pairAvailableStudentsAndPersist(BuildContext context) {
-    PartyPairingContext pairingContext = PartyPairingContext(context);
-
+  void pairAvailableStudentsAndPersist(PartyPairingContext pairingContext) {
     PairingUnitSet? pairingUnitSet = pairAvailableStudents(pairingContext);
 
     if (pairingUnitSet != null) {

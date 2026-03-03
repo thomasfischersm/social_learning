@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/globals.dart';
+import 'package:social_learning/session_pairing/party_pairing_service/in_process_party_pairing_service.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/available_session_state.dart';
 import 'package:social_learning/state/library_state.dart';
@@ -72,13 +73,12 @@ import 'ui_foundation/sign_out_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Test if enabling persistence caching is a good thing.
-  FirebaseFirestore.instance.settings =
-      const Settings(persistenceEnabled: true);
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+  );
 
   // CustomFirebase.init();
   // FirebaseFirestore.instance.settings = const Settings(host: '127.0.0.1:8080', sslEnabled: false, persistenceEnabled: false);
@@ -86,8 +86,20 @@ void main() async {
   ApplicationState applicationState = ApplicationState();
   LibraryState libraryState = LibraryState(applicationState);
   CourseDesignerState courseDesignerState = CourseDesignerState(libraryState);
-  CourseAnalyticsState courseAnalyticsState =
-      CourseAnalyticsState(applicationState, libraryState);
+  CourseAnalyticsState courseAnalyticsState = CourseAnalyticsState(
+    applicationState,
+    libraryState,
+  );
+  OrganizerSessionState organizerSessionState = OrganizerSessionState(
+    applicationState,
+    libraryState,
+  );
+  InProcessPartyPairingService inProcessPartyPairingService =
+      InProcessPartyPairingService(
+        applicationState,
+        libraryState,
+        organizerSessionState,
+      );
 
   unawaited(libraryState.initialize());
 
@@ -95,29 +107,33 @@ void main() async {
     FlutterError.dumpErrorToConsole(details);
   };
 
-  runApp(MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (context) => applicationState),
-      ChangeNotifierProvider(create: (context) => libraryState),
-      ChangeNotifierProvider(create: (context) => courseDesignerState),
-      ChangeNotifierProvider(create: (context) => courseAnalyticsState),
-      ChangeNotifierProvider(create: (context) => DownloadUrlCacheState()),
-      ChangeNotifierProvider(
-          create: (context) => StudentState(applicationState, libraryState)),
-      ChangeNotifierProvider(
-          create: (context) => AvailableSessionState(libraryState)),
-      ChangeNotifierProvider(
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => applicationState),
+        ChangeNotifierProvider(create: (context) => libraryState),
+        ChangeNotifierProvider(create: (context) => courseDesignerState),
+        ChangeNotifierProvider(create: (context) => courseAnalyticsState),
+        ChangeNotifierProvider(create: (context) => DownloadUrlCacheState()),
+        ChangeNotifierProvider(
+          create: (context) => StudentState(applicationState, libraryState),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => AvailableSessionState(libraryState),
+        ),
+        ChangeNotifierProvider(create: (context) => organizerSessionState),
+        ChangeNotifierProvider(
           create: (context) =>
-              OrganizerSessionState(applicationState, libraryState)),
-      ChangeNotifierProvider(
+              StudentSessionState(applicationState, libraryState),
+        ),
+        ChangeNotifierProvider(
           create: (context) =>
-              StudentSessionState(applicationState, libraryState)),
-      ChangeNotifierProvider(
-          create: (context) =>
-              OnlineSessionState(applicationState, libraryState)),
-    ],
-    builder: ((context, child) => const SocialLearningApp()),
-  ));
+              OnlineSessionState(applicationState, libraryState),
+        ),
+      ],
+      builder: ((context, child) => const SocialLearningApp()),
+    ),
+  );
 }
 
 class DebugObserver extends NavigatorObserver {
@@ -154,10 +170,7 @@ class SocialLearningApp extends StatelessWidget {
       navigatorObservers: [DebugObserver()],
       title: 'Learning Lab',
       scaffoldMessengerKey: snackbarKey,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'Ovo',
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Ovo'),
       debugShowCheckedModeBanner: false,
       initialRoute: '/landing',
       routes: {
