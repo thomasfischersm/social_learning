@@ -12,7 +12,7 @@ class PartyPairingClient {
 
     bool isRunningService = await FlutterForegroundTask.isRunningService;
     if (isRunningService) {
-      return ServiceRequestResult.success;
+      return ServiceRequestSuccess();
     }
 
     return FlutterForegroundTask.startService(
@@ -26,7 +26,7 @@ class PartyPairingClient {
   Future<ServiceRequestResult> stopService() async {
     bool isRunningService = await FlutterForegroundTask.isRunningService;
     if (!isRunningService) {
-      return ServiceRequestResult.success;
+      return ServiceRequestSuccess();
     }
 
     return FlutterForegroundTask.stopService();
@@ -49,8 +49,8 @@ class PartyPairingClient {
         showNotification: false,
         playSound: false,
       ),
-      foregroundTaskOptions: const ForegroundTaskOptions(
-        eventAction: ForegroundTaskEventAction.repeat(15000),
+      foregroundTaskOptions: ForegroundTaskOptions(
+        eventAction: ForegroundTaskEventAction.once(),
         autoRunOnBoot: false,
         autoRunOnMyPackageReplaced: false,
         allowWakeLock: true,
