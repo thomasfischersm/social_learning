@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
+import 'package:social_learning/session_pairing/party_pairing_service/in_process_party_pairing_service.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
@@ -16,8 +17,7 @@ class PartyPairingHostPage extends StatefulWidget {
   const PartyPairingHostPage({super.key});
 
   @override
-  State<PartyPairingHostPage> createState() =>
-      _PartyPairingHostPageState();
+  State<PartyPairingHostPage> createState() => _PartyPairingHostPageState();
 }
 
 class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
@@ -25,8 +25,8 @@ class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
 
   @override
   Widget build(BuildContext context) {
-    OrganizerSessionState organizerSessionState =
-        context.watch<OrganizerSessionState>();
+    OrganizerSessionState organizerSessionState = context
+        .watch<OrganizerSessionState>();
     String sessionName = organizerSessionState.currentSession?.name ?? '';
 
     return Scaffold(
@@ -40,10 +40,12 @@ class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomUiConstants.getTextPadding(Text(
-                  'Party Pairing: $sessionName',
-                  style: CustomTextStyles.headline,
-                )),
+                CustomUiConstants.getTextPadding(
+                  Text(
+                    'Party Pairing: $sessionName',
+                    style: CustomTextStyles.headline,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 const PartyPairingRosterCard(),
                 const SizedBox(height: 12),
@@ -59,10 +61,8 @@ class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
   }
 
   Widget _buildFloatingActionButton(BuildContext context) {
-    IconData pairingIcon =
-        _isPairingPaused ? Icons.play_arrow : Icons.pause;
-    String pairingLabel =
-        _isPairingPaused ? 'Start pairing' : 'Pause pairing';
+    IconData pairingIcon = _isPairingPaused ? Icons.play_arrow : Icons.pause;
+    String pairingLabel = _isPairingPaused ? 'Start pairing' : 'Pause pairing';
 
     return SpeedDial(
       icon: Icons.more_vert,
@@ -87,18 +87,28 @@ class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
       _isPairingPaused = !_isPairingPaused;
     });
 
-    // TODO: Start/stop pairing students.
+    InProcessPartyPairingService inProcessPartyPairingService = context
+        .read<InProcessPartyPairingService>();
+
+    if (_isPairingPaused) {
+      inProcessPartyPairingService.stopService();
+    } else {
+      inProcessPartyPairingService.startService();
+    }
   }
 
   void _endSession(BuildContext context) {
     DialogUtils.showConfirmationDialog(
-        context, 'End Session', 'Are you sure you want to end the session?',
-        () {
-      OrganizerSessionState organizerSessionState =
-          Provider.of<OrganizerSessionState>(context, listen: false);
-      organizerSessionState.endSession();
+      context,
+      'End Session',
+      'Are you sure you want to end the session?',
+      () {
+        OrganizerSessionState organizerSessionState =
+            Provider.of<OrganizerSessionState>(context, listen: false);
+        organizerSessionState.endSession();
 
-      Navigator.pushNamed(context, NavigationEnum.sessionHome.route);
-    });
+        Navigator.pushNamed(context, NavigationEnum.sessionHome.route);
+      },
+    );
   }
 }

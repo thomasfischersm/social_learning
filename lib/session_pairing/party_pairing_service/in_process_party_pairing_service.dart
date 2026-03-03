@@ -32,14 +32,20 @@ class InProcessPartyPairingService {
     _organizerSessionState.addListener(_doIncrementalPairingGuard);
 
     _doIncrementalPairingGuard();
+
+    print('Started InProcessPartyPairingService.');
   }
 
   void stopService() {
     _organizerSessionState.removeListener(_doIncrementalPairingGuard);
     _isRunning = false;
+
+    print('Stopped InProcessPartyPairingService.');
   }
 
   void _doIncrementalPairingGuard() {
+    print('Triggered incremental pairing.');
+
     if (!_isRunning) {
       return;
     }
@@ -79,7 +85,10 @@ class InProcessPartyPairingService {
     );
     int unpairedCount = pairingContext.unpairedScoredParticipants.length;
 
+    // TODO: Handle the special case where the session size is 3 and the
+    // pairing size is 3. (And 2 respectively.)
     if (unpairedCount >= unitSize + 1) {
+      print('Actually doing the incremental pairing');
       PartyPairingAlgorithm(
         unitSize,
       ).pairAvailableStudentsAndPersist(pairingContext);

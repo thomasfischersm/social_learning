@@ -5,18 +5,18 @@ import 'package:social_learning/session_pairing/party_pairing/pairing_score_weig
 enum PairingScoreType {
   // Unit scope
   diversePartners(.unit, .fineTune, .maximize),
-  balanceHostAccess(.unit, .fineTune, ..minimizeDispersion),
+  balanceHostAccess(.unit, .fineTune, .minimizeDispersion),
   reduceTeachingDeficit(.unit, .important, .minimizeDispersion),
 
   // Group scope
-  finishLevelBeforeMovingOn(.group, .fineTune, .minimize)
+  finishLevelBeforeMovingOn(.group, .fineTune, .minimize),
   balanceStudentDistance(.group, .fineTune, .minimizeDispersion),
   learnNearestLesson(.group, .medium, .minimize),
   learnNewLessonCount(.group, .important, .maximize),
 
   // Set scope
-  prioritizeRareLessons(.set, .important, ..maximize),
-  minimizeUnpairedStudents(.set, .critical, ..minimize),
+  prioritizeRareLessons(.set, .important, .maximize),
+  minimizeUnpairedStudents(.set, .critical, .minimize),
   ;
 
   final PairingScoreScope scope;
