@@ -76,8 +76,11 @@ class PartyPairingContext {
   void _initMostConstrainedParticipantsFirst() {
     Map<ScoredParticipant, int> constraintCountByParticipant = {};
     for (ScoredParticipant participant in unpairedScoredParticipants!) {
-      if (participant.prioritizedLessons.isEmpty) {
-        constraintCountByParticipant[participant] = 0;
+      if (participant.isHost) {
+        constraintCountByParticipant[participant] = 9999;
+        continue;
+      } else if (participant.prioritizedLessons.isEmpty) {
+        constraintCountByParticipant[participant] = 9998;
         continue;
       }
 
@@ -102,9 +105,6 @@ class PartyPairingContext {
     // learn.
     List<MapEntry<ScoredParticipant, int>> sortedEntries =
         constraintCountByParticipant.entries.toList()..sort((a, b) {
-          if (a.key.isHost) return 1;
-          if (b.key.isHost) return -1;
-
           return a.value.compareTo(b.value);
         });
 
