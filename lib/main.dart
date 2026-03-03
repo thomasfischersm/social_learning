@@ -130,6 +130,9 @@ void main() async {
           create: (context) =>
               OnlineSessionState(applicationState, libraryState),
         ),
+        ChangeNotifierProvider(
+          create: (context) => inProcessPartyPairingService,
+        ),
       ],
       builder: ((context, child) => const SocialLearningApp()),
     ),

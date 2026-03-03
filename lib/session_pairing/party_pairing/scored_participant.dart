@@ -25,8 +25,8 @@ class ScoredParticipant {
   List<PracticeRecord> learnPracticeRecords = [];
   List<PracticeRecord> teachPracticeRecords = [];
   late final List<Lesson> graduatedLessons;
-  late final List<Lesson> learnedLessonsInCurrentSession;
-  late final List<Lesson> prioritizedLessons;
+  final List<Lesson> learnedLessonsInCurrentSession = [];
+  final List<Lesson> prioritizedLessons = [];
 
   ScoredParticipant(this.participant, this.pairingContext)
       : user = pairingContext.organizerSessionState.getUser(participant)! {

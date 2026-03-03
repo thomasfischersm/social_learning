@@ -7,7 +7,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 
-class InProcessPartyPairingService {
+class InProcessPartyPairingService extends ChangeNotifier {
   final ApplicationState _applicationState;
   final LibraryState _libraryState;
   final OrganizerSessionState _organizerSessionState;
