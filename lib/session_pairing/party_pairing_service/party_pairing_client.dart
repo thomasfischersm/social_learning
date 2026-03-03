@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:social_learning/session_pairing/party_pairing_service/party_pairing_foreground_task.dart';
 
 class PartyPairingClient {
   PartyPairingClient();
@@ -64,27 +65,5 @@ class PartyPairingClient {
 
 @pragma('vm:entry-point')
 void _startPartyPairingIsolate() {
-  FlutterForegroundTask.setTaskHandler(_PartyPairingTaskHandler());
-}
-
-class _PartyPairingTaskHandler extends TaskHandler {
-  @override
-  Future<void> onStart(DateTime timestamp, TaskStarter starter) async {}
-
-  @override
-  void onRepeatEvent(DateTime timestamp) {}
-
-  @override
-  Future<void> onDestroy(DateTime timestamp, bool isTimeout) async {}
-
-  @override
-  void onNotificationButtonPressed(String id) {}
-
-  @override
-  void onNotificationPressed() {
-    FlutterForegroundTask.launchApp('/');
-  }
-
-  @override
-  void onNotificationDismissed() {}
+  FlutterForegroundTask.setTaskHandler(PartyPairingForegroundTask());
 }
