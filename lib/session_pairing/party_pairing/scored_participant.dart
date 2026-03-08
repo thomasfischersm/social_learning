@@ -19,7 +19,7 @@ class ScoredParticipant {
   final User user;
   late final bool isHost;
   late final double learnCount;
-  late final int teachCount;
+  late final double teachCount;
   late final double teachingDeficit; // teachCount - learnCount
   final SessionParticipant participant;
   List<PracticeRecord> learnPracticeRecords = [];
@@ -95,7 +95,9 @@ class ScoredParticipant {
   }
 
   void _initLearnTeachCounts() {
-    teachingDeficit = 0;
+    double teachCount = 0;
+    double learnCount = 0;
+    double teachingDeficit = 0;
 
     for (SessionPairing pairing in pairingContext.organizerSessionState
         .allPairings) {
@@ -118,6 +120,10 @@ class ScoredParticipant {
         learnCount++;
       }
     }
+
+    this.teachCount = teachCount;
+    this.learnCount = learnCount;
+    this.teachingDeficit = teachingDeficit;
   }
 
   void computeRawScore(PairingScore score) {
