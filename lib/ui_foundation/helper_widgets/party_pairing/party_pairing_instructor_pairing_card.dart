@@ -8,6 +8,7 @@ import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/advanced_pairing_student/record_pairing_practice_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/custom_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/progress_checkbox.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
@@ -29,16 +30,21 @@ class _PartyPairingInstructorPairingCardState
 
   @override
   Widget build(BuildContext context) {
-    OrganizerSessionState organizerSessionState =
-        context.watch<OrganizerSessionState>();
+    OrganizerSessionState organizerSessionState = context
+        .watch<OrganizerSessionState>();
     LibraryState libraryState = context.watch<LibraryState>();
 
     User? instructorUser = _findInstructorUser(organizerSessionState);
-    SessionPairing? instructorPairing =
-        _findInstructorPairing(organizerSessionState, instructorUser);
+    SessionPairing? instructorPairing = _findInstructorPairing(
+      organizerSessionState,
+      instructorUser,
+    );
     Lesson? lesson = _getLessonForPairing(libraryState, instructorPairing);
     List<User?> learners = _getLearnersForPairing(
-        organizerSessionState, instructorUser, instructorPairing);
+      organizerSessionState,
+      instructorUser,
+      instructorPairing,
+    );
 
     return CustomCard(
       title: 'Instructor Pairing',
@@ -94,17 +100,15 @@ class _PartyPairingInstructorPairingCardState
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Text(
-          'Lesson: ',
-          style: CustomTextStyles.getBody(context),
-        ),
+        Text('Lesson: ', style: CustomTextStyles.getBody(context)),
         InkWell(
           onTap: () =>
               LessonDetailArgument.goToLessonDetailPage(context, lesson.id!),
           child: Text(
             lesson.title,
-            style: CustomTextStyles.getBody(context)
-                ?.copyWith(decoration: TextDecoration.underline),
+            style: CustomTextStyles.getBody(
+              context,
+            )?.copyWith(decoration: TextDecoration.underline),
           ),
         ),
       ],
@@ -188,11 +192,8 @@ class _PartyPairingInstructorPairingCardState
           padding: EdgeInsets.only(left: 12, bottom: bottomPadding),
           child: Align(
             alignment: Alignment.centerRight,
-            child: _buildLearnerProgress(
-                  learner,
-                  lesson,
-                  organizerSessionState,
-                ) ??
+            child:
+                _buildLearnerProgress(learner, lesson, organizerSessionState) ??
                 const SizedBox(),
           ),
         ),
@@ -246,7 +247,14 @@ class _PartyPairingInstructorPairingCardState
       lesson,
       learner,
     );
-    return ProgressCheckbox(value: progressValue);
+    return ProgressCheckbox(
+      value: progressValue,
+      onTap: () => _openRecordDialog(lesson, learner),
+    );
+  }
+
+  void _openRecordDialog(Lesson lesson, User learner) {
+    RecordPairingPracticeDialog.show(context, lesson, learner);
   }
 
   Widget _buildCompleteButton(
@@ -286,8 +294,9 @@ class _PartyPairingInstructorPairingCardState
 
       bool isMentor = pairing.mentorId?.id == instructorId;
       bool isMentee = pairing.menteeId?.id == instructorId;
-      bool isAdditional = pairing.additionalStudentIds
-          .any((studentId) => studentId.id == instructorId);
+      bool isAdditional = pairing.additionalStudentIds.any(
+        (studentId) => studentId.id == instructorId,
+      );
       return isMentor || isMentee || isAdditional;
     });
   }
@@ -327,9 +336,11 @@ class _PartyPairingInstructorPairingCardState
   ) {
     Iterable<PracticeRecord> learnerRecords = organizerSessionState
         .practiceRecords
-        .where((record) =>
-            record.menteeUid == learner.uid &&
-            record.lessonId.id == lesson.id);
+        .where(
+          (record) =>
+              record.menteeUid == learner.uid &&
+              record.lessonId.id == lesson.id,
+        );
 
     return PracticeRecordFunctions.getLearnerLessonProgress(
       lesson: lesson,
