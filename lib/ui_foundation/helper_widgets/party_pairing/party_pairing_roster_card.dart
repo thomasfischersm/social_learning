@@ -305,6 +305,7 @@ class PartyPairingRosterCard extends StatelessWidget {
     List<SessionParticipant> participants = List<SessionParticipant>.from(
       organizerSessionState.sessionParticipants,
     );
+    print('Building student roster with ${organizerSessionState.sessionParticipants.length} participants. ${identityHashCode(organizerSessionState)}');
     Map<String, int> lessonIndexById = <String, int>{
       for (int i = 0; i < orderedLessons.length; i++) orderedLessons[i].id!: i
     };

@@ -47,7 +47,7 @@ class OrganizerSessionState extends ChangeNotifier {
   Session? get currentSession => _sessionSubscription.item;
 
   List<SessionParticipant> get sessionParticipants =>
-      _sessionParticipantsSubscription.items;
+      List.of(_sessionParticipantsSubscription.items);
 
   List<User> get participantUsers => _participantUsersSubscription.items;
 
@@ -606,6 +606,15 @@ class OrganizerSessionState extends ChangeNotifier {
 
   SessionPairing? getPairingById(String pairingId) {
     return allPairings.firstWhereOrNull((pairing) => pairing.id == pairingId);
+  }
+
+  void setIncludeHostInPairing(bool includeHostInPairing) {
+    if (currentSession != null) {
+      SessionFunctions.setIncludeHostInPairing(
+        currentSession!,
+        includeHostInPairing,
+      );
+    }
   }
 }
 

@@ -353,6 +353,9 @@ class _PartyPairingInstructorPairingCardState
     setState(() {
       _isInstructorParticipating = isSelected;
     });
+
+    OrganizerSessionState organizerSessionState = context.read<OrganizerSessionState>();
+    organizerSessionState.setIncludeHostInPairing(isSelected);
   }
 
   Future<void> _completePairing(

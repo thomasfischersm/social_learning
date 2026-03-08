@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/firestore_service.dart';
+import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_type.dart';
 
 class SessionFunctions {
@@ -24,5 +25,10 @@ class SessionFunctions {
       'sessionType': sessionType.toInt(),
       'includeHostInPairing': includeHostInPairing,
     });
+  }
+
+  static void setIncludeHostInPairing(Session currentSession, bool includeHostInPairing) async {
+    await FirestoreService.instance.collection('sessions').doc(currentSession.id).update({
+      'includeHostInPairing': includeHostInPairing});
   }
 }

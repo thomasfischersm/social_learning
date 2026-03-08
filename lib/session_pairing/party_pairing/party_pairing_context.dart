@@ -32,11 +32,13 @@ class PartyPairingContext {
   }
 
   void _initUnpairedParticipants() {
-    List<SessionParticipant> allParticipants =
-        organizerSessionState.sessionParticipants;
+    List<SessionParticipant> allParticipants = organizerSessionState
+        .sessionParticipants
+        .where((participant) => participant.isActive)
+        .toList();
 
     // Remove the session host if configured.
-    if (organizerSessionState.currentSession?.includeHostInPairing ?? false) {
+    if (!(organizerSessionState.currentSession?.includeHostInPairing ?? false)) {
       User hostUser = applicationState.currentUser!;
       allParticipants.removeWhere(
         (participant) => participant.participantId.id == hostUser.id,

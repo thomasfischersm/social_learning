@@ -94,15 +94,29 @@ class InProcessPartyPairingService extends ChangeNotifier {
     int unpairedCount = pairingContext.unpairedScoredParticipants.length;
     int activeParticipantCount = _organizerSessionState.sessionParticipants
         .where(
-          (participant) =>
-              participant.isActive &&
+          (participant) {
+            print('Participant: '
+                'userId: ${participant.participantId.id}, '
+                'active: ${participant.isActive}, '
+                'instructor: ${participant.isInstructor}');
+              return participant.isActive &&
               (!participant.isInstructor ||
-                  currentSession.includeHostInPairing),
+                  currentSession.includeHostInPairing);}
         )
         .length;
 
-    // TODO: Handle the special case where the session size is 3 and the
+    // Handle the special case where the session size is 3 and the
     // pairing size is 3. (And 2 respectively.)
+    print('Copy of Building student roster with ${_organizerSessionState.sessionParticipants.length} participants. ${identityHashCode(_organizerSessionState)}');
+    print('currentSession.includeHostInPairing = ${currentSession.includeHostInPairing}');
+    print(
+      'Considering starting the pairing algorithm: '
+      'unitSize: $unitSize, '
+      'allParticipantCount: ${_organizerSessionState.sessionParticipants.length}, '
+      'allParticipantUsersCount: ${_organizerSessionState.participantUsers.length}, '
+      'unpairedCount: $unpairedCount, '
+      'activeParticipantCount: $activeParticipantCount',
+    );
     if (unpairedCount >= unitSize + 1 || (activeParticipantCount == unitSize)) {
       print('Actually doing the incremental pairing');
       PartyPairingAlgorithm(
