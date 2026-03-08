@@ -44,7 +44,12 @@ class InProcessPartyPairingService extends ChangeNotifier {
   }
 
   void _doIncrementalPairingGuard() {
-    print('Triggered incremental pairing.');
+    print(
+      'Triggered incremental pairing. ('
+      'isRunning: $_isRunning, '
+      'isPairing: $_isPairing, '
+      'hasPendingPairingRequest: $_hasPendingPairingRequest)',
+    );
 
     if (!_isRunning) {
       return;
@@ -68,12 +73,15 @@ class InProcessPartyPairingService extends ChangeNotifier {
   }
 
   void _doIncrementalPairing() {
+    print('_doIncrementalPairing is called');
     Session? currentSession = _organizerSessionState.currentSession;
     if (currentSession == null || !currentSession.isActive) {
+      print('The current session is not active.');
       return;
     }
 
     int? unitSize = _getUnitSize(currentSession);
+    print('Got unit size: $unitSize');
     if (unitSize == null) {
       return;
     }
@@ -84,10 +92,18 @@ class InProcessPartyPairingService extends ChangeNotifier {
       _organizerSessionState,
     );
     int unpairedCount = pairingContext.unpairedScoredParticipants.length;
+    int activeParticipantCount = _organizerSessionState.sessionParticipants
+        .where(
+          (participant) =>
+              participant.isActive &&
+              (!participant.isInstructor ||
+                  currentSession.includeHostInPairing),
+        )
+        .length;
 
     // TODO: Handle the special case where the session size is 3 and the
     // pairing size is 3. (And 2 respectively.)
-    if (unpairedCount >= unitSize + 1) {
+    if (unpairedCount >= unitSize + 1 || (activeParticipantCount == unitSize)) {
       print('Actually doing the incremental pairing');
       PartyPairingAlgorithm(
         unitSize,
