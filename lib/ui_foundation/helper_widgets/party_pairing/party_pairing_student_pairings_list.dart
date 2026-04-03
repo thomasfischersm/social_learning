@@ -33,8 +33,9 @@ class _PartyPairingStudentPairingsListState
   Widget build(BuildContext context) {
     return Consumer2<OrganizerSessionState, LibraryState>(
       builder: (context, organizerSessionState, libraryState, child) {
-        List<SessionPairing> pairings =
-            _getStudentPairings(organizerSessionState);
+        List<SessionPairing> pairings = _getStudentPairings(
+          organizerSessionState,
+        );
         List<Lesson> orderedLessons = libraryState.lessons ?? [];
         List<Widget> pairingCards = [];
 
@@ -43,9 +44,10 @@ class _PartyPairingStudentPairingsListState
           String pairingId =
               pairing.id ?? 'pairing-${pairing.roundNumber}-$index';
           Lesson? lesson = libraryState.findLesson(pairing.lessonId?.id);
-          User? mentor = organizerSessionState.getUserById(pairing.mentorId?.id);
-          List<User?> learners =
-              _buildLearners(pairing, organizerSessionState);
+          User? mentor = organizerSessionState.getUserById(
+            pairing.mentorId?.id,
+          );
+          List<User?> learners = _buildLearners(pairing, organizerSessionState);
           List<User?> sortedLearners = _sortedLearners(
             organizerSessionState: organizerSessionState,
             orderedLessons: orderedLessons,
@@ -90,8 +92,9 @@ class _PartyPairingStudentPairingsListState
   List<SessionPairing> _getStudentPairings(
     OrganizerSessionState organizerSessionState,
   ) {
-    List<SessionPairing> pairings =
-        List<SessionPairing>.from(organizerSessionState.lastRound ?? []);
+    List<SessionPairing> pairings = List<SessionPairing>.from(
+      organizerSessionState.lastRound ?? [],
+    );
     List<String> instructorIds = organizerSessionState.sessionParticipants
         .where((participant) => participant.isInstructor)
         .map((participant) => participant.participantId.id)
@@ -102,10 +105,7 @@ class _PartyPairingStudentPairingsListState
         .toList();
   }
 
-  bool _includesInstructor(
-    SessionPairing pairing,
-    List<String> instructorIds,
-  ) {
+  bool _includesInstructor(SessionPairing pairing, List<String> instructorIds) {
     List<String?> pairingIds = [
       pairing.mentorId?.id,
       pairing.menteeId?.id,
@@ -137,16 +137,18 @@ class _PartyPairingStudentPairingsListState
     required List<User?> learners,
   }) {
     Map<String, int> lessonIndexById = {
-      for (int i = 0; i < orderedLessons.length; i++) orderedLessons[i].id!: i
+      for (int i = 0; i < orderedLessons.length; i++) orderedLessons[i].id!: i,
     };
 
     List<User?> sortedLearners = List<User?>.from(learners);
-    sortedLearners.sort((a, b) => _compareLearners(
-          userA: a,
-          userB: b,
-          organizerSessionState: organizerSessionState,
-          lessonIndexById: lessonIndexById,
-        ));
+    sortedLearners.sort(
+      (a, b) => _compareLearners(
+        userA: a,
+        userB: b,
+        organizerSessionState: organizerSessionState,
+        lessonIndexById: lessonIndexById,
+      ),
+    );
     return sortedLearners;
   }
 
@@ -166,10 +168,10 @@ class _PartyPairingStudentPairingsListState
       return -1;
     }
 
-    SessionParticipant? participantA =
-        organizerSessionState.getParticipantByUserId(userA.id);
-    SessionParticipant? participantB =
-        organizerSessionState.getParticipantByUserId(userB.id);
+    SessionParticipant? participantA = organizerSessionState
+        .getParticipantByUserId(userA.id);
+    SessionParticipant? participantB = organizerSessionState
+        .getParticipantByUserId(userB.id);
     List<int> graduatedA = _graduatedLessonIndexes(
       participantA,
       organizerSessionState,
@@ -256,8 +258,9 @@ class _PartyPairingStudentPairingCardState
 
   @override
   Widget build(BuildContext context) {
-    ImageProvider? image =
-        (_coverPhotoUrl == null) ? null : NetworkImage(_coverPhotoUrl!);
+    ImageProvider? image = (_coverPhotoUrl == null)
+        ? null
+        : NetworkImage(_coverPhotoUrl!);
     Widget content = Padding(
       padding: const EdgeInsets.all(16),
       child: widget.isExpanded
@@ -317,9 +320,17 @@ class _PartyPairingStudentPairingCardState
   Widget _buildExpandButton() {
     return IconButton(
       onPressed: widget.onToggle,
-      icon: Icon(widget.isExpanded
-          ? Icons.arrow_drop_up
-          : Icons.arrow_drop_down),
+      icon: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            widget.isExpanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+          ),
+        ),
+      ),
       color: Colors.grey,
       tooltip: widget.isExpanded ? 'Collapse pairing' : 'Expand pairing',
     );
@@ -341,14 +352,13 @@ class _PartyPairingStudentPairingCardState
       children: [
         Text('$roundPrefix - ', style: CustomTextStyles.subHeadline),
         InkWell(
-          onTap: () => LessonDetailArgument.goToLessonDetailPage(
-            context,
-            lesson.id!,
-          ),
+          onTap: () =>
+              LessonDetailArgument.goToLessonDetailPage(context, lesson.id!),
           child: Text(
             lesson.title,
-            style: CustomTextStyles.subHeadline
-                .copyWith(decoration: TextDecoration.underline),
+            style: CustomTextStyles.subHeadline.copyWith(
+              decoration: TextDecoration.underline,
+            ),
           ),
         ),
       ],
@@ -361,7 +371,10 @@ class _PartyPairingStudentPairingCardState
       children: [
         _buildStudentColumn(context, widget.mentor),
         const SizedBox(width: 8),
-        Icon(Icons.arrow_right_alt_rounded, color: Colors.grey),
+        Padding(
+          padding: EdgeInsets.only(top: 20 - 16 / 2),
+          child: Icon(Icons.arrow_right_alt_rounded, color: Colors.grey),
+        ),
         const SizedBox(width: 8),
         Expanded(
           child: Row(
@@ -380,7 +393,10 @@ class _PartyPairingStudentPairingCardState
                 flex: 2,
                 child: Align(
                   alignment: Alignment.topLeft,
-                  child: _buildLessonLink(context),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 20 - 16 / 2),
+                    child: _buildLessonLink(context),
+                  ),
                 ),
               ),
             ],
@@ -397,7 +413,7 @@ class _PartyPairingStudentPairingCardState
 
     return [
       for (User? learner in widget.learners)
-        _buildStudentColumn(context, learner)
+        _buildStudentColumn(context, learner),
     ];
   }
 
@@ -417,8 +433,9 @@ class _PartyPairingStudentPairingCardState
           LessonDetailArgument.goToLessonDetailPage(context, lesson.id!),
       child: Text(
         lesson.title,
-        style: CustomTextStyles.getBody(context)
-            ?.copyWith(decoration: TextDecoration.underline),
+        style: CustomTextStyles.getBody(
+          context,
+        )?.copyWith(decoration: TextDecoration.underline),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
@@ -446,11 +463,7 @@ class _PartyPairingStudentPairingCardState
   List<TableRow> _buildLearnerRows(BuildContext context) {
     if (widget.learners.isEmpty) {
       return [
-        _buildUserTableRow(
-          context: context,
-          label: 'Learners:',
-          user: null,
-        ),
+        _buildUserTableRow(context: context, label: 'Learners:', user: null),
       ];
     }
 
