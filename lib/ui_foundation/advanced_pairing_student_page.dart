@@ -114,15 +114,16 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
           icon: Icons.more_vert,
           activeIcon: Icons.close,
           children: [
-            SpeedDialChild(
-              onTap: () => _finishRound(context, studentSessionState),
-              child: const Icon(Icons.flag, color: Colors.grey),
-              label: 'Finish round',
-            ),
+            // Shows up in inverted order.
             SpeedDialChild(
               onTap: () => _confirmLeaveSession(context),
               child: const Icon(Icons.exit_to_app, color: Colors.grey),
               label: 'Leave session',
+            ),
+            SpeedDialChild(
+              onTap: () => _finishRound(context, studentSessionState),
+              child: const Icon(Icons.flag, color: Colors.grey),
+              label: 'Finish round',
             ),
           ],
         );
