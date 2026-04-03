@@ -153,10 +153,11 @@ class _ProfileImageWidgetV2State extends State<ProfileImageWidgetV2> {
       return;
     }
 
+    DownloadUrlCacheState cacheState = context.read<DownloadUrlCacheState>();
     final results = await Future.wait<String?>([
-      UserFunctions.getProfilePhotoUrl(_user!),
-      UserFunctions.getProfileThumbnailPhotoUrl(_user!),
-      UserFunctions.getProfileTinyPhotoUrl(_user!),
+      cacheState.getDownloadUrl(_user!.profileFireStoragePath),
+      cacheState.getDownloadUrl(_user!.profileThumbnailFireStoragePath),
+      cacheState.getDownloadUrl(_user!.profileTinyFireStoragePath),
     ]);
 
     if (!mounted) return;
