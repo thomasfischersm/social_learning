@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/practice_record_functions.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/practice_record.dart';
+import 'package:social_learning/data/session.dart';
 import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/library_state.dart';
@@ -27,6 +28,18 @@ class PartyPairingInstructorPairingCard extends StatefulWidget {
 class _PartyPairingInstructorPairingCardState
     extends State<PartyPairingInstructorPairingCard> {
   bool _isInstructorParticipating = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    OrganizerSessionState organizerSessionState = context
+        .read<OrganizerSessionState>();
+    Session? session = organizerSessionState.currentSession;
+    if (session != null) {
+      _isInstructorParticipating = session.includeHostInPairing;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

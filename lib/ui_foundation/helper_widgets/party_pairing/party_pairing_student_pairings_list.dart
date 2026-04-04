@@ -41,6 +41,10 @@ class _PartyPairingStudentPairingsListState
 
         for (int index = 0; index < pairings.length; index++) {
           SessionPairing pairing = pairings[index];
+          if (pairing.isCompleted) {
+            continue;
+          }
+
           String pairingId =
               pairing.id ?? 'pairing-${pairing.roundNumber}-$index';
           Lesson? lesson = libraryState.findLesson(pairing.lessonId?.id);

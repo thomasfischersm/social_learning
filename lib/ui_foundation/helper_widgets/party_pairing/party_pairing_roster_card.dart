@@ -162,6 +162,10 @@ class PartyPairingRosterCard extends StatelessWidget {
       user,
     );
 
+    if (!participant.isActive) {
+      displayName += ' (inactive)';
+    }
+
     if (roleLabel == null) {
       return displayName;
     }

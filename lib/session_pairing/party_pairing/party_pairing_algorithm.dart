@@ -100,6 +100,7 @@ class PartyPairingAlgorithm {
       }
 
       // Find additional learners.
+      combinedParticipantPool.remove(mentorCandidate);
       List<ScoredParticipant> learnerCandidates = [
         learnerCandidate,
         ..._findAdditionalLearners(combinedParticipantPool, lesson),
@@ -137,7 +138,10 @@ class PartyPairingAlgorithm {
       createDesperatePairings(leftOverParticipants, pairingContext),
     );
 
-    return PairingUnitSet(pairingUnits, leftOverParticipants);
+    PairingUnitSet result =  PairingUnitSet(pairingUnits, leftOverParticipants);
+    print('Created the initial pairing candidate.');
+    result.debugPrint();
+    return result;
   }
 
   ScoredParticipant? _findMentor(
@@ -187,6 +191,9 @@ class PartyPairingAlgorithm {
     List<ScoredParticipant> leftOverParticipants,
     PartyPairingContext pairingContext,
   ) {
+    print(
+      'Creating desperate pairings for ${leftOverParticipants.length} participants.',
+    );
     // Start with participants who have already learned the most because they
     // are hardest to pair.
     leftOverParticipants.sort(
@@ -224,6 +231,10 @@ class PartyPairingAlgorithm {
             }
 
             if (additionalLearnerCandidate == mentorCandidate) {
+              continue;
+            }
+
+            if (additionalLearnerCandidate.isHost) {
               continue;
             }
 
@@ -354,6 +365,14 @@ class PartyPairingAlgorithm {
     });
 
     return resultSets;
+  }
+
+  bool _hasHostLearner(List<PairingUnit> units) {
+    return units.any(
+      (PairingUnit pairingUnit) => pairingUnit.learners.any(
+        (ScoredParticipant learner) => learner.isHost,
+      ),
+    );
   }
 
   void persist(

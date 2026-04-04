@@ -29,13 +29,15 @@ class ScoredParticipant {
   final List<Lesson> prioritizedLessons = [];
 
   ScoredParticipant(this.participant, this.pairingContext)
-      : user = pairingContext.organizerSessionState.getUser(participant)! {
+    : user = pairingContext.organizerSessionState.getUser(participant)! {
+    print('Initializing scored participant ${user.displayName}');
     _initIsHost();
     _initPracticeRecords();
     _initGraduatedLessons();
     _initLearnedLessonsInCurrentSession();
     _initPrioritizedLessons();
     _initLearnTeachCounts();
+    print('Finished initializing scored participant ${user.displayName}');
   }
 
   void _initIsHost() {
@@ -44,7 +46,7 @@ class ScoredParticipant {
 
   void _initPracticeRecords() {
     for (PracticeRecord practiceRecord
-    in pairingContext.organizerSessionState.practiceRecords) {
+        in pairingContext.organizerSessionState.practiceRecords) {
       if (practiceRecord.menteeUid == participant.participantUid) {
         learnPracticeRecords.add(practiceRecord);
       } else if (practiceRecord.mentorUid == participant.participantUid) {
@@ -54,8 +56,10 @@ class ScoredParticipant {
   }
 
   void _initGraduatedLessons() {
-    graduatedLessons =
-        pairingContext.organizerSessionState.getGraduatedLessons(participant);
+    graduatedLessons = pairingContext.organizerSessionState.getGraduatedLessons(
+      participant,
+    );
+    print('Initializing graduated lessons for ${user.displayName} with ${graduatedLessons.length} lessons:');
   }
 
   void _initLearnedLessonsInCurrentSession() {
@@ -63,11 +67,12 @@ class ScoredParticipant {
 
     for (PracticeRecord practiceRecord in learnPracticeRecords) {
       if (practiceRecord.timestamp != null &&
-          practiceRecord.timestamp!
-              .toDate()
-              .isAfter(session.startTime!.toDate())) {
-        Lesson? lesson =
-        pairingContext.libraryState.findLesson(practiceRecord.lessonId.id);
+          practiceRecord.timestamp!.toDate().isAfter(
+            session.startTime!.toDate(),
+          )) {
+        Lesson? lesson = pairingContext.libraryState.findLesson(
+          practiceRecord.lessonId.id,
+        );
         if (lesson != null) {
           learnedLessonsInCurrentSession.add(lesson);
         }
@@ -76,20 +81,27 @@ class ScoredParticipant {
   }
 
   void _initPrioritizedLessons() {
-    List<Lesson>? allLessons = pairingContext.libraryState.lessons;
+    try {
+      List<Lesson>? allLessons = pairingContext.libraryState.lessons;
 
-    if (allLessons != null) {
-      for (Lesson lesson in allLessons) {
-        if (prioritizedLessons.length >= maxPrioritizedLessons) {
-          return;
+      if (allLessons != null) {
+        for (Lesson lesson in allLessons) {
+          if (prioritizedLessons.length >= maxPrioritizedLessons) {
+            return;
+          }
+
+          if (graduatedLessons.contains(lesson) ||
+              learnedLessonsInCurrentSession.contains(lesson)) {
+            continue;
+          }
+
+          prioritizedLessons.add(lesson);
         }
-
-        if (graduatedLessons.contains(lesson) &&
-            learnedLessonsInCurrentSession.contains(lesson)) {
-          continue;
-        }
-
-        prioritizedLessons.add(lesson);
+      }
+    } finally {
+      print('Prioritized lessons for ${user.displayName}:');
+      for (Lesson lesson in prioritizedLessons) {
+        print('- ${lesson.title}');
       }
     }
   }
@@ -99,8 +111,8 @@ class ScoredParticipant {
     double learnCount = 0;
     double teachingDeficit = 0;
 
-    for (SessionPairing pairing in pairingContext.organizerSessionState
-        .allPairings) {
+    for (SessionPairing pairing
+        in pairingContext.organizerSessionState.allPairings) {
       if (!pairing.isCompleted) {
         continue;
       }
@@ -136,8 +148,8 @@ class ScoredParticipant {
 
   double _countPartners() {
     Set<String> partnerUserIds = {};
-    for (SessionPairing pairing in pairingContext.organizerSessionState
-        .allPairings) {
+    for (SessionPairing pairing
+        in pairingContext.organizerSessionState.allPairings) {
       if (pairing.mentorId == participant.participantId ||
           pairing.menteeId == participant.participantId ||
           pairing.additionalStudentIds.contains(participant.participantId)) {
@@ -151,7 +163,8 @@ class ScoredParticipant {
 
         if (pairing.additionalStudentIds.isNotEmpty) {
           partnerUserIds.addAll(
-              pairing.additionalStudentIds.map((docRef) => docRef.id));
+            pairing.additionalStudentIds.map((docRef) => docRef.id),
+          );
         }
       }
     }
@@ -170,20 +183,20 @@ class ScoredParticipant {
 
     int hostAccessCount = 0;
 
-    for (SessionPairing pairing in pairingContext.organizerSessionState
-        .allPairings) {
+    for (SessionPairing pairing
+        in pairingContext.organizerSessionState.allPairings) {
       if (pairing.mentorId == participant.participantId ||
           pairing.menteeId == participant.participantId ||
           pairing.additionalStudentIds.contains(participant.participantId)) {
         if (pairing.mentorId != null && pairing.mentorId!.id == hostUserId) {
           hostAccessCount++;
-        } else
-        if (pairing.menteeId != null && pairing.menteeId!.id == hostUserId) {
+        } else if (pairing.menteeId != null &&
+            pairing.menteeId!.id == hostUserId) {
           hostAccessCount++;
         } else if (pairing.additionalStudentIds.isNotEmpty &&
-            pairing.additionalStudentIds.any((docRef) =>
-            docRef.id ==
-                hostUserId)) {
+            pairing.additionalStudentIds.any(
+              (docRef) => docRef.id == hostUserId,
+            )) {
           hostAccessCount++;
         }
       }

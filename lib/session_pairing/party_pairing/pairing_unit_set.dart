@@ -39,4 +39,27 @@ class PairingUnitSet {
 
     return score!;
   }
+
+  void debugPrint() {
+    print('----- start pairing unit set ----');
+
+    for (int i = 0; i < pairingUnits.length; i++) {
+      print('$i. PairingUnit');
+      PairingUnit pairingUnit = pairingUnits[i];
+      print('Lesson: ${pairingUnit.lesson.title}');
+      print('Mentor: ${pairingUnit.mentor.user.displayName}');
+
+      for (ScoredParticipant scoredParticipant in pairingUnit.learners) {
+        print('Learner: ${scoredParticipant.user.displayName}');
+      }
+      print('');
+    }
+
+    print('Leftover participants');
+    for (ScoredParticipant scoredParticipant in leftOverParticipants) {
+      print('- ${scoredParticipant.user.displayName}');
+    }
+
+    print('----- end pairing unit set ----');
+  }
 }

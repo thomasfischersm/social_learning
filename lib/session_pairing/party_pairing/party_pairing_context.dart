@@ -113,6 +113,11 @@ class PartyPairingContext {
     mostConstrainedParticipantsFirst = sortedEntries
         .map((entry) => entry.key)
         .toList();
+
+    print('Most constraint participants (${mostConstrainedParticipantsFirst.length}):');
+    for (ScoredParticipant participant in mostConstrainedParticipantsFirst) {
+      print('-${participant.user.displayName}');
+    }
   }
 
   void _initLessonFrequency() {

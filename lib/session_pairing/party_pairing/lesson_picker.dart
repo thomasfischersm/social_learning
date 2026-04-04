@@ -32,6 +32,19 @@ class LessonPicker {
     final k = participants.length;
     if (k == 0) return null;
 
+    // ----- Step -1: Sort participants by graduation count. -----
+    // This should make sure that if there are multiple participants who can
+    // teach that the host will be picked first.
+    participants.sort((a, b) {
+      // 1. Hosts first
+      if (a.isHost != b.isHost) {
+        return a.isHost ? -1 : 1;
+      }
+
+      // 2. More graduated lessons first
+      return b.graduatedLessons.length.compareTo(a.graduatedLessons.length);
+    });
+
     // ----- Step 0: Precompute per-student lookup tables -----
 
     // prioritized rank: lesson -> index
@@ -63,7 +76,7 @@ class LessonPicker {
     if (teachersByLesson.isEmpty) return null;
 
     _LessonChoice? evaluateLesson(Lesson lesson) {
-      final teachers = teachersByLesson[lesson];
+      final List<int>? teachers = teachersByLesson[lesson];
       if (teachers == null || teachers.isEmpty) return null; // not teachable
 
       final learners = <int>[];
@@ -130,9 +143,13 @@ class LessonPicker {
       // 2nd most graduated = "frontier" (your heuristic)
       final frontierIdx = indicesByGrad[1];
       for (final lesson in participants[frontierIdx].prioritizedLessons) {
-        final c = evaluateLesson(lesson);
-        if (c == null) continue;
-        if (isPerfect(c)) return c.toPairingUnit(participants, pairingContext);
+        _LessonChoice? c = evaluateLesson(lesson);
+        if (c == null) {
+          continue;
+        }
+        if (isPerfect(c)) {
+          return c.toPairingUnit(participants, pairingContext);
+        }
       }
 
       if (alsoProbeLeastGraduated) {
@@ -140,7 +157,8 @@ class LessonPicker {
         for (final lesson in participants[leastIdx].prioritizedLessons) {
           final c = evaluateLesson(lesson);
           if (c == null) continue;
-          if (isPerfect(c)) return c.toPairingUnit(participants, pairingContext);
+          if (isPerfect(c))
+            return c.toPairingUnit(participants, pairingContext);
         }
       }
     }
@@ -194,7 +212,18 @@ class _LessonChoice {
         .minus([teacherIndices[0]])
         .map((i) => participants[i])
         .toList();
-    return PairingUnit(mentor, learners, lesson, pairingContext);
+
+    List<ScoredParticipant> reviewers = reviewerIndices
+        .minus([teacherIndices[0]])
+        .map((i) => participants[i])
+        .toList();
+
+    return PairingUnit(
+      mentor,
+      [...learners, ...reviewers],
+      lesson,
+      pairingContext,
+    );
   }
 
   @override
