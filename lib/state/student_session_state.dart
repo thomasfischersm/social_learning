@@ -202,6 +202,7 @@ class StudentSessionState extends ChangeNotifier {
   }
 
   Future<void> completeCurrentPairing() async {
+    print('Attempting to complete pairing by id ${_applicationState.currentUser?.id} and uid ${_applicationState.currentUser?.uid}');
     final pairing = currentPairing;
     if (pairing?.id != null) {
       await completePairing(pairing!.id!);

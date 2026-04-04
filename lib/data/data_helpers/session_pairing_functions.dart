@@ -96,9 +96,15 @@ class SessionPairingFunctions {
 
   static Future<void> completePairing(String pairingId) async {
     print('Completing session pairing $pairingId.');
-    await docRef('sessionPairings', pairingId).update({
-      'isCompleted': true,
-      'completedAt': FieldValue.serverTimestamp(),
-    });
+    try {
+      await docRef('sessionPairings', pairingId).update({
+        'isCompleted': true,
+        'completedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e, stack) {
+      print('Failed tup mark session pairing as completed: $e');
+      print(stack);
+      rethrow;
+    }
   }
 }
