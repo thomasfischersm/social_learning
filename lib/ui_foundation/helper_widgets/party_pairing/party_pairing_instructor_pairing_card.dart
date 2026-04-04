@@ -63,7 +63,13 @@ class _PartyPairingInstructorPairingCardState
               organizerSessionState: organizerSessionState,
             ),
             const SizedBox(height: 12),
-            _buildCompleteButton(organizerSessionState, instructorPairing),
+            Align(
+              alignment: Alignment.centerRight,
+              child: _buildCompleteButton(
+                organizerSessionState,
+                instructorPairing,
+              ),
+            ),
           ] else ...[
             const SizedBox(height: 8),
             Text(
@@ -354,7 +360,8 @@ class _PartyPairingInstructorPairingCardState
       _isInstructorParticipating = isSelected;
     });
 
-    OrganizerSessionState organizerSessionState = context.read<OrganizerSessionState>();
+    OrganizerSessionState organizerSessionState = context
+        .read<OrganizerSessionState>();
     organizerSessionState.setIncludeHostInPairing(isSelected);
   }
 
