@@ -134,11 +134,11 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
               child: const Icon(Icons.exit_to_app, color: Colors.grey),
               label: 'Leave session',
             ),
-            SpeedDialChild(
-              onTap: () => _finishRound(context, studentSessionState),
-              child: const Icon(Icons.flag, color: Colors.grey),
-              label: 'Finish round',
-            ),
+            // SpeedDialChild(
+            //   onTap: () => _finishRound(context, studentSessionState),
+            //   child: const Icon(Icons.flag, color: Colors.grey),
+            //   label: 'Finish round',
+            // ),
           ],
         );
       },
@@ -291,6 +291,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
             // absolute round numbers make no sense from a student perspective.
             roundNumber:
                 relevantPairings.length - relevantPairings.indexOf(pairing),
+            pairingId: pairing.id,
             lesson: lesson,
             mentor: mentor,
             learners: learners,

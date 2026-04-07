@@ -11,6 +11,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/advanced_pairing_student/record_pairing_practice_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/custom_card.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/progress_checkbox.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
@@ -281,7 +282,7 @@ class _PartyPairingInstructorPairingCardState
     SessionPairing pairing,
   ) {
     return ElevatedButton(
-      onPressed: () => _completePairing(organizerSessionState, pairing),
+      onPressed: () => _confirmCompletePairing(organizerSessionState, pairing),
       child: const Text('Complete pairing'),
     );
   }
@@ -376,6 +377,20 @@ class _PartyPairingInstructorPairingCardState
     OrganizerSessionState organizerSessionState = context
         .read<OrganizerSessionState>();
     organizerSessionState.setIncludeHostInPairing(isSelected);
+  }
+
+  void _confirmCompletePairing(
+    OrganizerSessionState organizerSessionState,
+    SessionPairing pairing,
+  ) {
+    DialogUtils.showConfirmationDialog(
+      context,
+      'Complete pairing?',
+      'Are you sure that you want to complete the pairing?\n\nThis will free everyone to join their next group.',
+      () async {
+        await _completePairing(organizerSessionState, pairing);
+      },
+    );
   }
 
   Future<void> _completePairing(

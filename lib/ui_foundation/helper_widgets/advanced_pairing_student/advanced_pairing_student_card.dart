@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/data_helpers/practice_record_functions.dart';
-import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/data/practice_record.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/download_url_cache_state.dart';
+import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/advanced_pairing_student/record_pairing_practice_dialog.dart';
+import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/background_image_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/background_image_style.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/progress_checkbox.dart';
@@ -18,6 +20,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 
 class AdvancedPairingStudentCard extends StatefulWidget {
   final int roundNumber;
+  final String? pairingId;
   final Lesson? lesson;
   final User? mentor;
   final List<User?> learners;
@@ -27,6 +30,7 @@ class AdvancedPairingStudentCard extends StatefulWidget {
   const AdvancedPairingStudentCard({
     super.key,
     required this.roundNumber,
+    required this.pairingId,
     required this.lesson,
     required this.mentor,
     required this.learners,
@@ -73,8 +77,9 @@ class _AdvancedPairingStudentCardState
 
   @override
   Widget build(BuildContext context) {
-    final image =
-        (_coverPhotoUrl == null) ? null : NetworkImage(_coverPhotoUrl!);
+    final image = (_coverPhotoUrl == null)
+        ? null
+        : NetworkImage(_coverPhotoUrl!);
 
     return BackgroundImageCard(
       image: image,
@@ -94,6 +99,14 @@ class _AdvancedPairingStudentCardState
             _buildRoundAndLessonRow(context),
             const SizedBox(height: 12),
             _buildUserTable(context),
+            if (widget.showGraduationCheckboxes)
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  onPressed: () => _confirmCompletePairing(),
+                  child: const Text('Complete'),
+                ),
+              ),
           ],
         ),
       ),
@@ -114,17 +127,15 @@ class _AdvancedPairingStudentCardState
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Text(
-          '$roundPrefix - ',
-          style: CustomTextStyles.subHeadline,
-        ),
+        Text('$roundPrefix - ', style: CustomTextStyles.subHeadline),
         InkWell(
           onTap: () =>
               LessonDetailArgument.goToLessonDetailPage(context, lesson.id!),
           child: Text(
             lesson.title,
-            style: CustomTextStyles.subHeadline
-                .copyWith(decoration: TextDecoration.underline),
+            style: CustomTextStyles.subHeadline.copyWith(
+              decoration: TextDecoration.underline,
+            ),
           ),
         ),
       ],
@@ -193,7 +204,10 @@ class _AdvancedPairingStudentCardState
         Expanded(
           child: InkWell(
             onTap: () => OtherProfileArgument.goToOtherProfile(
-                context, user.id, user.uid),
+              context,
+              user.id,
+              user.uid,
+            ),
             child: Text(
               user.displayName,
               style: CustomTextStyles.getBody(context),
@@ -209,11 +223,7 @@ class _AdvancedPairingStudentCardState
     final learners = widget.learners;
     if (learners.isEmpty) {
       return [
-        _buildUserTableRow(
-          context: context,
-          label: 'Learners:',
-          user: null,
-        ),
+        _buildUserTableRow(context: context, label: 'Learners:', user: null),
       ];
     }
 
@@ -291,36 +301,36 @@ class _AdvancedPairingStudentCardState
 
     _graduationSubscription =
         PracticeRecordFunctions.listenLessonPracticeRecords(
-      lessonId: lessonId,
-      menteeUids: learnerUids,
-    ).listen((records) {
-      final lesson = widget.lesson;
-      if (lesson == null) {
-        return;
-      }
+          lessonId: lessonId,
+          menteeUids: learnerUids,
+        ).listen((records) {
+          final lesson = widget.lesson;
+          if (lesson == null) {
+            return;
+          }
 
-      final recordsByLearner = <String, List<PracticeRecord>>{};
-      for (final record in records) {
-        recordsByLearner.putIfAbsent(record.menteeUid, () => []).add(record);
-      }
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        _learnerProgress = {
-          for (final learnerId in learnerUids)
-            learnerId: PracticeRecordFunctions.getLearnerLessonProgress(
-              lesson: lesson,
-              practiceRecords: recordsByLearner[learnerId] ?? const [],
-            ),
-        };
-      });
-    });
+          final recordsByLearner = <String, List<PracticeRecord>>{};
+          for (final record in records) {
+            recordsByLearner
+                .putIfAbsent(record.menteeUid, () => [])
+                .add(record);
+          }
+          if (!mounted) {
+            return;
+          }
+          setState(() {
+            _learnerProgress = {
+              for (final learnerId in learnerUids)
+                learnerId: PracticeRecordFunctions.getLearnerLessonProgress(
+                  lesson: lesson,
+                  practiceRecords: recordsByLearner[learnerId] ?? const [],
+                ),
+            };
+          });
+        });
   }
 
-  bool _shouldReloadGraduations(
-    AdvancedPairingStudentCard oldWidget,
-  ) {
+  bool _shouldReloadGraduations(AdvancedPairingStudentCard oldWidget) {
     final didChangeLessonId = oldWidget.lesson?.id != widget.lesson?.id;
     final didChangeShowProgress =
         oldWidget.showGraduationCheckboxes != widget.showGraduationCheckboxes;
@@ -334,7 +344,8 @@ class _AdvancedPairingStudentCardState
         .map((learner) => learner.uid)
         .toList();
 
-    final didChangeLearners = oldLearnerIds.length != newLearnerIds.length ||
+    final didChangeLearners =
+        oldLearnerIds.length != newLearnerIds.length ||
         !oldLearnerIds.every(newLearnerIds.contains);
 
     return didChangeLessonId || didChangeShowProgress || didChangeLearners;
@@ -342,5 +353,30 @@ class _AdvancedPairingStudentCardState
 
   void _openRecordDialog(Lesson lesson, User learner) {
     RecordPairingPracticeDialog.show(context, lesson, learner);
+  }
+
+  void _confirmCompletePairing() {
+    DialogUtils.showConfirmationDialog(
+      context,
+      'Complete pairing?',
+      'Are you sure that you want to complete the pairing?\n\nThis will free everyone to join their next group.',
+      () async {
+        await _completePairing();
+      },
+    );
+  }
+
+  Future<void> _completePairing() async {
+    String? pairingId = widget.pairingId;
+    if (pairingId == null) {
+      return;
+    }
+
+    if (mounted) {
+      StudentSessionState sessionStudentState = context
+          .read<StudentSessionState>();
+
+      await sessionStudentState.completePairing(pairingId);
+    }
   }
 }
