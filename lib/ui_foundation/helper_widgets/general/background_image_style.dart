@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 @immutable
 class BackgroundImageStyle {
-  final double blurSigma;      // 0 = none
-  final double washOpacity;    // 0..1
-  final Color washColor;       // usually white or tint
-  final double desaturate;     // 0..1 (0 = none, 1 = full grayscale)
+  final double blurSigma; // 0 = none
+  final double washOpacity; // 0..1
+  final Color washColor; // usually white or tint
+  final double desaturate; // 0..1 (0 = none, 1 = full grayscale)
   final Gradient? gradientOverlay;
+  final Color? noImageBackgroundColor;
 
   const BackgroundImageStyle({
     this.blurSigma = 2.0,
@@ -14,5 +15,6 @@ class BackgroundImageStyle {
     this.washColor = Colors.white,
     this.desaturate = 0.25,
     this.gradientOverlay,
+    this.noImageBackgroundColor,
   });
 }

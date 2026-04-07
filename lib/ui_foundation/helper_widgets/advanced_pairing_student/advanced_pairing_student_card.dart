@@ -22,6 +22,7 @@ class AdvancedPairingStudentCard extends StatefulWidget {
   final User? mentor;
   final List<User?> learners;
   final bool showGraduationCheckboxes;
+  final bool isActive;
 
   const AdvancedPairingStudentCard({
     super.key,
@@ -30,6 +31,7 @@ class AdvancedPairingStudentCard extends StatefulWidget {
     required this.mentor,
     required this.learners,
     required this.showGraduationCheckboxes,
+    required this.isActive,
   });
 
   @override
@@ -76,11 +78,12 @@ class _AdvancedPairingStudentCardState
 
     return BackgroundImageCard(
       image: image,
-      style: const BackgroundImageStyle(
+      style: BackgroundImageStyle(
         washOpacity: 0.85,
         washColor: Colors.white,
         desaturate: 0.3,
         blurSigma: 1.5,
+        noImageBackgroundColor: widget.isActive ? Colors.white : null,
       ),
       child: Container(
         padding: const EdgeInsets.all(16),

@@ -46,20 +46,31 @@ class StudentSessionState extends ChangeNotifier {
         _resetSession();
       }
       print(
-          'StudentSessionState.notifyListeners because the session subscription changed');
+        'StudentSessionState.notifyListeners because the session subscription changed',
+      );
       notifyListeners();
     });
-    _participantUsersSubscription =
-        ParticipantUsersSubscription(() => notifyListeners(), null);
-    _sessionParticipantsSubscription =
-        SessionParticipantsSubscription(false, true, () {
-      print(
-          'StudentSessionState.notifyListeners because session participants subscription changed');
-      notifyListeners();
-    }, _sessionSubscription, _participantUsersSubscription, _applicationState);
+    _participantUsersSubscription = ParticipantUsersSubscription(
+      () => notifyListeners(),
+      null,
+    );
+    _sessionParticipantsSubscription = SessionParticipantsSubscription(
+      false,
+      true,
+      () {
+        print(
+          'StudentSessionState.notifyListeners because session participants subscription changed',
+        );
+        notifyListeners();
+      },
+      _sessionSubscription,
+      _participantUsersSubscription,
+      _applicationState,
+    );
     _sessionPairingSubscription = SessionPairingsSubscription(() {
       print(
-          'StudentSessionState.notifyListeners because session pairing subscription changed');
+        'StudentSessionState.notifyListeners because session pairing subscription changed',
+      );
       notifyListeners();
     });
 
@@ -101,7 +112,8 @@ class StudentSessionState extends ChangeNotifier {
 
   void _checkForOngoingSession() {
     print(
-        'StudentSessionState._checkForOngoingSession() for user ${_applicationState.currentUser?.id}');
+      'StudentSessionState._checkForOngoingSession() for user ${_applicationState.currentUser?.id}',
+    );
 
     var currentUser = _applicationState.currentUser;
     var currentCourse = _libraryState.selectedCourse;
@@ -126,37 +138,49 @@ class StudentSessionState extends ChangeNotifier {
     }
 
     print('Checking active session for user ${currentUser.id}');
-    SessionParticipantFunctions.findActiveForUser(currentUser.id, currentCourse.id!)
+    SessionParticipantFunctions.findActiveForUser(
+          currentUser.id,
+          currentCourse.id!,
+        )
         .then((sessionParticipant) {
-      if (sessionParticipant != null) {
-        print(
-            'Trying to automatically log into session '
-                '${sessionParticipant.sessionId.id} '
-                '(session: ${sessionParticipant.sessionId.id}), '
-                'course: ${sessionParticipant.courseId.id}');
-        if (sessionParticipant.courseId.id == currentCourse?.id) {
-          attemptToJoin(sessionParticipant.sessionId.id);
-        } else {
+          if (sessionParticipant != null) {
+            print(
+              'Trying to automatically log into session '
+              '${sessionParticipant.sessionId.id} '
+              '(session: ${sessionParticipant.sessionId.id}), '
+              'course: ${sessionParticipant.courseId.id}',
+            );
+            if (sessionParticipant.courseId.id == currentCourse?.id) {
+              attemptToJoin(sessionParticipant.sessionId.id);
+            } else {
+              _resetSession();
+            }
+          }
+        })
+        .catchError((error) {
+          print(
+            'Error getting active participants for the current session: $error',
+          );
           _resetSession();
-        }
-      }
-    }).catchError((error) {
-      print(
-          'Error getting active participants for the current session: $error');
-      _resetSession();
-    });
+        });
   }
 
   void attemptToJoin(String sessionId) {
     _sessionSubscription.resubscribe(() => 'sessions/$sessionId');
 
-    _sessionParticipantsSubscription.resubscribe((collectionReference) =>
-        SessionParticipantFunctions.queryBySessionId(
-            collectionReference, sessionId));
+    _sessionParticipantsSubscription.resubscribe(
+      (collectionReference) => SessionParticipantFunctions.queryBySessionId(
+        collectionReference,
+        sessionId,
+      ),
+    );
 
-    _sessionPairingSubscription.resubscribe((collectionReference) =>
-        collectionReference.where('sessionId',
-            isEqualTo: FirebaseFirestore.instance.doc('sessions/$sessionId')));
+    _sessionPairingSubscription.resubscribe(
+      (collectionReference) => collectionReference.where(
+        'sessionId',
+        isEqualTo: FirebaseFirestore.instance.doc('sessions/$sessionId'),
+      ),
+    );
 
     // TODO: Check if organizer and re-direct.
     // TODO: Add self as participant if needed.
@@ -170,15 +194,18 @@ class StudentSessionState extends ChangeNotifier {
       try {
         SessionParticipant? participant;
         try {
-          participant = sessionParticipants
-              .firstWhere((p) => p.participantId.id == currentUser.id);
+          participant = sessionParticipants.firstWhere(
+            (p) => p.participantId.id == currentUser.id,
+          );
         } catch (_) {
           participant = null;
         }
         if (participant != null && participant.id != null) {
           await _resetSession();
           await SessionParticipantFunctions.updateIsActive(
-              participant.id!, false);
+            participant.id!,
+            false,
+          );
         }
       } catch (e) {
         debugPrint('Error leaving session: $e');
@@ -202,7 +229,9 @@ class StudentSessionState extends ChangeNotifier {
   }
 
   Future<void> completeCurrentPairing() async {
-    print('Attempting to complete pairing by id ${_applicationState.currentUser?.id} and uid ${_applicationState.currentUser?.uid}');
+    print(
+      'Attempting to complete pairing by id ${_applicationState.currentUser?.id} and uid ${_applicationState.currentUser?.uid}',
+    );
     final pairing = currentPairing;
     if (pairing?.id != null) {
       await completePairing(pairing!.id!);
@@ -214,7 +243,8 @@ class StudentSessionState extends ChangeNotifier {
   }
 
   SessionPairing? _findCurrentPairingForAutomaticSessions(
-      String currentUserId) {
+    String currentUserId,
+  ) {
     final currentRound = _sessionPairingSubscription.getLatestRoundNumber();
     if (currentRound < 0) {
       return null;
@@ -237,11 +267,16 @@ class StudentSessionState extends ChangeNotifier {
 
   SessionPairing? _findCurrentForAdvancedSessions(String currentUserId) {
     List<SessionPairing> relevantPairings = allPairings
-        .where((pairing) => _pairingIncludesUser(pairing, currentUserId))
+        .where(
+          (pairing) =>
+              !pairing.isCompleted &&
+              _pairingIncludesUser(pairing, currentUserId),
+        )
         .toList();
 
-    SessionPairing? lastPairing = relevantPairings
-        .maxByOrNull((a, b) => b.roundNumber.compareTo(a.roundNumber));
+    SessionPairing? lastPairing = relevantPairings.maxByOrNull(
+      (a, b) => b.roundNumber.compareTo(a.roundNumber),
+    );
 
     return lastPairing?.isCompleted ?? true ? null : lastPairing;
   }
@@ -254,11 +289,16 @@ class StudentSessionState extends ChangeNotifier {
     return pairing.additionalStudentIds.any((ref) => ref.id == userId);
   }
 
-  NavigationEnum getActiveSessionNavigationEnum(
-      {Session? session, String? sessionId, SessionType? sessionType}) {
+  NavigationEnum getActiveSessionNavigationEnum({
+    Session? session,
+    String? sessionId,
+    SessionType? sessionType,
+  }) {
     Session? targetSession = session ?? currentSession;
     SessionType? targetSessionType = sessionType ?? targetSession?.sessionType;
-    print('Active session ${targetSession?.id} has sessionType $targetSessionType');
+    print(
+      'Active session ${targetSession?.id} has sessionType $targetSessionType',
+    );
 
     if (targetSessionType == null) {
       return NavigationEnum.sessionHome;
@@ -275,8 +315,12 @@ class StudentSessionState extends ChangeNotifier {
     }
   }
 
-  void navigateToActiveSessionPage(BuildContext context,
-      {Session? session, String? sessionId, SessionType? sessionType}) {
+  void navigateToActiveSessionPage(
+    BuildContext context, {
+    Session? session,
+    String? sessionId,
+    SessionType? sessionType,
+  }) {
     Session? targetSession = session ?? currentSession;
     String? targetSessionId = sessionId ?? targetSession?.id;
     NavigationEnum? navigationEnum = getActiveSessionNavigationEnum(

@@ -61,39 +61,53 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
       body: Align(
         alignment: Alignment.topCenter,
         child: CustomUiConstants.framePage(
-          Consumer4<ApplicationState, LibraryState, StudentSessionState,
-              StudentState>(builder: (context, applicationState, libraryState,
-                  studentSessionState, studentState, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (studentSessionState.currentSession?.isActive == false)
-                  CustomUiConstants.getTextPadding(
-                    Text('The session has ended!',
-                        style: CustomTextStyles.subHeadline),
-                  ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Session: ${studentSessionState.currentSession?.name ?? ''}',
-                      style: CustomTextStyles.headline,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-                _buildPairingCards(
-                  studentSessionState,
-                  libraryState,
+          Consumer4<
+            ApplicationState,
+            LibraryState,
+            StudentSessionState,
+            StudentState
+          >(
+            builder:
+                (
+                  context,
                   applicationState,
+                  libraryState,
+                  studentSessionState,
                   studentState,
-                ),
-              ],
-            );
-          },
+                  child,
+                ) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (studentSessionState.currentSession?.isActive == false)
+                        CustomUiConstants.getTextPadding(
+                          Text(
+                            'The session has ended!',
+                            style: CustomTextStyles.subHeadline,
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Session: ${studentSessionState.currentSession?.name ?? ''}',
+                            style: CustomTextStyles.headline,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      _buildPairingCards(
+                        studentSessionState,
+                        libraryState,
+                        applicationState,
+                        studentState,
+                      ),
+                    ],
+                  );
+                },
+          ),
         ),
-      ),
       ),
     );
   }
@@ -144,9 +158,10 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
       'Leave Session',
       'Are you sure you want to leave the session?',
       () {
-        Provider.of<StudentSessionState>(context, listen: false)
-            .leaveSession()
-            .then((_) {
+        Provider.of<StudentSessionState>(
+          context,
+          listen: false,
+        ).leaveSession().then((_) {
           if (mounted) {
             Navigator.of(context).pushReplacementNamed('/session_home');
           }
@@ -175,11 +190,24 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
     final currentPairing = studentSessionState.currentPairing;
 
     if (currentUserId == null || currentPairing == null) {
+      print(
+        '_isMentoringActiveRound: return false because of $currentUserId || $currentPairing',
+      );
       return false;
     }
 
-    return currentPairing.mentorId?.id == currentUserId &&
+    bool result =
+        currentPairing.mentorId?.id == currentUserId &&
         !currentPairing.isCompleted;
+
+    print(
+      'check _isMentoringActiveRound: '
+      '${currentPairing.mentorId?.id == currentUserId} '
+      '&& ${!currentPairing.isCompleted} '
+      '== $result',
+    );
+
+    return result;
   }
 
   Widget _buildPairingCards(
@@ -205,22 +233,13 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
       );
     }
     if (currentUserId == null || allPairings.isEmpty) {
-      return Column(
-        children: [
-          CustomUiConstants.getTextPadding(
-            Text(
-              'Waiting for the instructor to create the first pairing.',
-              style: CustomTextStyles.getBody(context),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      );
+      return Column(children: [_buildWaitingForPairingCard(context)]);
     }
 
     List<SessionPairing> relevantPairings = [];
     for (SessionPairing pairing in allPairings) {
-      bool isCurrentUser = (pairing.mentorId?.id == currentUserId) ||
+      bool isCurrentUser =
+          (pairing.mentorId?.id == currentUserId) ||
           (pairing.menteeId?.id == currentUserId) ||
           pairing.additionalStudentIds.any((ref) => ref.id == currentUserId);
       if (isCurrentUser) {
@@ -229,23 +248,18 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
     }
 
     if (relevantPairings.isEmpty) {
-      return Column(
-        children: [
-          CustomUiConstants.getTextPadding(
-            Text(
-              'Waiting for the instructor to create the first pairing.',
-              style: CustomTextStyles.getBody(context),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      );
+      return Column(children: [_buildWaitingForPairingCard(context)]);
     }
 
     relevantPairings.sort(
-        (a, b) => b.roundNumber.compareTo(a.roundNumber)); // Latest first.
+      (a, b) => b.roundNumber.compareTo(a.roundNumber),
+    ); // Latest first.
 
     List<Widget> cards = [];
+    if (relevantPairings.isEmpty || relevantPairings.first.isCompleted) {
+      cards.add(_buildWaitingForPairingCard(context));
+    }
+
     for (final pairing in relevantPairings) {
       final lessonId = pairing.lessonId?.id;
       final lesson = (lessonId == null)
@@ -263,7 +277,8 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
       final bool isCurrentRound = pairing == relevantPairings.first;
       // Note: Any student, not only the mentor can graduate students (if they
       // have graduated the lesson themselves).
-      final bool showGraduationCheckboxes = isCurrentRound &&
+      final bool showGraduationCheckboxes =
+          isCurrentRound &&
           (studentSessionState.currentSession?.isActive ?? false) &&
           lesson != null &&
           studentState.hasGraduated(lesson);
@@ -274,11 +289,13 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
           child: AdvancedPairingStudentCard(
             // Show rounds relative to how they appear to the user because the
             // absolute round numbers make no sense from a student perspective.
-            roundNumber: relevantPairings.length - relevantPairings.indexOf(pairing),
+            roundNumber:
+                relevantPairings.length - relevantPairings.indexOf(pairing),
             lesson: lesson,
             mentor: mentor,
             learners: learners,
             showGraduationCheckboxes: showGraduationCheckboxes,
+            isActive: !pairing.isCompleted,
           ),
         ),
       );
@@ -286,5 +303,27 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
 
     return Column(children: cards);
   }
-}
 
+  Widget _buildWaitingForPairingCard(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: 3 / 2,
+      child: Card(
+        color: Colors.white,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text(
+                'Please, wait for the next available pairing!',
+                style: CustomTextStyles.subHeadline,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

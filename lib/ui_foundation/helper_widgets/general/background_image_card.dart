@@ -25,8 +25,9 @@ class BackgroundImageCard extends StatelessWidget {
     this.cardBuilder,
   });
 
-  static Widget defaultCardBuilder(BuildContext context, Widget content) {
+  static Widget defaultCardBuilder(BuildContext context, Widget content, Color? noImageBackgroundColor) {
     return Card(
+      color: noImageBackgroundColor,
       clipBehavior: Clip.antiAlias, // important: clip background to shape
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -55,7 +56,7 @@ class BackgroundImageCard extends StatelessWidget {
       ],
     );
 
-    return builder(context, content);
+    return builder(context, content, style.noImageBackgroundColor);
   }
 }
 
