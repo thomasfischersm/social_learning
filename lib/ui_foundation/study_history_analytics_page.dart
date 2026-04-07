@@ -17,8 +17,8 @@ const int _kBottomAxisLabelCount = 4;
 const double _kBarWidth = 2.0;
 const double _kDayGroupSpacing = _kBarWidth * 2;
 
-class StudyHistoryAnlyticsPage extends StatelessWidget {
-  const StudyHistoryAnlyticsPage({super.key});
+class StudyHistoryAnalyticsPage extends StatelessWidget {
+  const StudyHistoryAnalyticsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

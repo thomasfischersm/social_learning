@@ -49,7 +49,7 @@ import 'package:social_learning/ui_foundation/online_session_waiting_room_page.d
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/student_population_analytics_page.dart';
 import 'package:social_learning/ui_foundation/student_network_analytics_page.dart';
-import 'package:social_learning/ui_foundation/study_history_anlytics_page.dart';
+import 'package:social_learning/ui_foundation/study_history_analytics_page.dart';
 import 'package:social_learning/ui_foundation/playground_page.dart';
 import 'package:social_learning/ui_foundation/profile_comparison_page.dart';
 import 'package:social_learning/ui_foundation/session_create_page.dart';
@@ -214,8 +214,8 @@ class SocialLearningApp extends StatelessWidget {
             const StudentPopulationAnalyticsPage(),
         '/student_network_analytics': (context) =>
             const StudentNetworkAnalyticsPage(),
-        '/study_history_anlytics': (context) =>
-            const StudyHistoryAnlyticsPage(),
+        '/study_history_analytics': (context) =>
+            const StudyHistoryAnalyticsPage(),
         '/comment_review': (context) => const CommentReviewPage(),
         '/instructor_clipboard': (context) => const InstructorClipboardPage(),
         '/create_skill_assessment': (context) =>
