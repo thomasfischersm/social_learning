@@ -38,7 +38,8 @@ class PartyPairingContext {
         .toList();
 
     // Remove the session host if configured.
-    if (!(organizerSessionState.currentSession?.includeHostInPairing ?? false)) {
+    if (!(organizerSessionState.currentSession?.includeHostInPairing ??
+        false)) {
       User hostUser = applicationState.currentUser!;
       allParticipants.removeWhere(
         (participant) => participant.participantId.id == hostUser.id,
@@ -69,6 +70,13 @@ class PartyPairingContext {
         );
       }
     }
+
+    // There can be an initialization timing issue where the user hasn't been
+    // loaded yet. E.g., if a new user joins a session, something can trigger
+    // pairing before the data is fully loaded.
+    unpairedParticipants.removeWhere(
+      (participant) => organizerSessionState.getUser(participant) == null,
+    );
 
     unpairedScoredParticipants = unpairedParticipants
         .map((participant) => ScoredParticipant(participant, this))
@@ -114,7 +122,9 @@ class PartyPairingContext {
         .map((entry) => entry.key)
         .toList();
 
-    print('Most constraint participants (${mostConstrainedParticipantsFirst.length}):');
+    print(
+      'Most constraint participants (${mostConstrainedParticipantsFirst.length}):',
+    );
     for (ScoredParticipant participant in mostConstrainedParticipantsFirst) {
       print('-${participant.user.displayName}');
     }
