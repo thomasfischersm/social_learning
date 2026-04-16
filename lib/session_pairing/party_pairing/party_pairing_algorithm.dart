@@ -170,7 +170,7 @@ class PartyPairingAlgorithm {
       final participant = participants[i];
 
       if (participant.prioritizedLessons.contains(lessonCandidate)) {
-        // participants.removeAt(i);
+        participants.removeAt(i);
         learnerCandidates.add(participant);
         // do NOT increment i — next element shifts into this index
       } else {
