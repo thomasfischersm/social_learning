@@ -21,8 +21,6 @@ class PartyPairingHostPage extends StatefulWidget {
 }
 
 class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
-  bool _isPairingPaused = true;
-
   @override
   Widget build(BuildContext context) {
     OrganizerSessionState organizerSessionState = context
@@ -61,8 +59,11 @@ class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
   }
 
   Widget _buildFloatingActionButton(BuildContext context) {
-    IconData pairingIcon = _isPairingPaused ? Icons.play_arrow : Icons.pause;
-    String pairingLabel = _isPairingPaused ? 'Start pairing' : 'Pause pairing';
+    InProcessPartyPairingService inProcessPartyPairingService = context
+        .watch<InProcessPartyPairingService>();
+    bool isPairingPaused = !inProcessPartyPairingService.isRunning;
+    IconData pairingIcon = isPairingPaused ? Icons.play_arrow : Icons.pause;
+    String pairingLabel = isPairingPaused ? 'Start pairing' : 'Pause pairing';
 
     return SpeedDial(
       icon: Icons.more_vert,
@@ -83,14 +84,10 @@ class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
   }
 
   void _togglePairing() {
-    setState(() {
-      _isPairingPaused = !_isPairingPaused;
-    });
-
     InProcessPartyPairingService inProcessPartyPairingService = context
         .read<InProcessPartyPairingService>();
 
-    if (_isPairingPaused) {
+    if (inProcessPartyPairingService.isRunning) {
       inProcessPartyPairingService.stopService();
     } else {
       inProcessPartyPairingService.startService();
@@ -105,6 +102,7 @@ class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
       () {
         OrganizerSessionState organizerSessionState =
             Provider.of<OrganizerSessionState>(context, listen: false);
+        context.read<InProcessPartyPairingService>().stopService();
         organizerSessionState.endSession();
 
         Navigator.pushNamed(context, NavigationEnum.sessionHome.route);
