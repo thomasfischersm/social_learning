@@ -29,6 +29,7 @@ class LessonPicker {
     bool useProbeHeuristic = true,
     bool alsoProbeLeastGraduated = true,
   }) {
+    participants = participants.toList();
     final k = participants.length;
     if (k == 0) return null;
 
