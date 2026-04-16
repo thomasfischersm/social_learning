@@ -78,6 +78,11 @@ class ScoredParticipant {
         }
       }
     }
+
+    print('learned lessons for ${user.displayName} are:');
+    for (Lesson lesson in learnedLessonsInCurrentSession) {
+      print('- ${lesson.title}');
+    }
   }
 
   void _initPrioritizedLessons() {

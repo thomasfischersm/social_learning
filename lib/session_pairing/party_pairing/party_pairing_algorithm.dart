@@ -204,9 +204,10 @@ class PartyPairingAlgorithm {
     List<PairingUnit> pairings = [];
     nextLearnerCandidate:
     while (leftOverParticipants.isNotEmpty &&
-        (leftOverParticipants.length + hardLeftOverParticipants.length >
+        (leftOverParticipants.length + hardLeftOverParticipants.length >=
             unitSize)) {
       ScoredParticipant learnerCandidate = leftOverParticipants.removeAt(0);
+      print('Attempting desperate pairing for ${learnerCandidate.user.displayName}');
 
       // Try for each prioritized lesson.
       for (Lesson lessonCandidate in learnerCandidate.prioritizedLessons) {
