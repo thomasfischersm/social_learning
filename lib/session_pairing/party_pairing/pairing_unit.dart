@@ -131,6 +131,10 @@ class PairingUnit {
         continue;
       }
 
+      if (participant.prioritizedLessons.isEmpty) {
+        continue;
+      }
+
       int lessonIndex = lessons.indexOf(participant.prioritizedLessons.first);
       if (lessonIndex == -1) {
         continue;
@@ -138,6 +142,10 @@ class PairingUnit {
 
       for (ScoredParticipant otherParticipant in [mentor, ...learners]) {
         if (otherParticipant.isHost || otherParticipant == participant) {
+          continue;
+        }
+
+        if (otherParticipant.prioritizedLessons.isEmpty) {
           continue;
         }
 
