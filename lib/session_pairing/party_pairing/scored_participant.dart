@@ -25,7 +25,7 @@ class ScoredParticipant {
   List<PracticeRecord> learnPracticeRecords = [];
   List<PracticeRecord> teachPracticeRecords = [];
   late final List<Lesson> graduatedLessons;
-  final List<Lesson> learnedLessonsInCurrentSession = [];
+  final Set<Lesson> learnedLessonsInCurrentSession = {};
   final List<Lesson> prioritizedLessons = [];
 
   ScoredParticipant(this.participant, this.pairingContext)
