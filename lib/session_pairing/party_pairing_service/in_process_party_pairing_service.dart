@@ -22,6 +22,8 @@ class InProcessPartyPairingService extends ChangeNotifier {
     this._organizerSessionState,
   );
 
+  bool get isRunning => _isRunning;
+
   void startService() {
     if (_isRunning) {
       return;
@@ -34,6 +36,7 @@ class InProcessPartyPairingService extends ChangeNotifier {
     _doIncrementalPairingGuard();
 
     print('Started InProcessPartyPairingService.');
+    notifyListeners();
   }
 
   void stopService() {
@@ -41,6 +44,7 @@ class InProcessPartyPairingService extends ChangeNotifier {
     _isRunning = false;
 
     print('Stopped InProcessPartyPairingService.');
+    notifyListeners();
   }
 
   void _doIncrementalPairingGuard() {
