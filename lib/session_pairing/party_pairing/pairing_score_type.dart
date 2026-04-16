@@ -7,6 +7,7 @@ enum PairingScoreType {
   diversePartners(.unit, .fineTune, .maximize),
   balanceHostAccess(.unit, .fineTune, .minimizeDispersion),
   reduceTeachingDeficit(.unit, .important, .minimizeDispersion),
+  equalizeParticipation(.unit, .important, .minimizeDispersion),
 
   // Group scope
   finishLevelBeforeMovingOn(.group, .fineTune, .minimize),

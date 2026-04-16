@@ -1,4 +1,5 @@
 import 'package:social_learning/session_pairing/party_pairing/pairing_score.dart';
+import 'package:social_learning/session_pairing/party_pairing/pairing_score_type.dart';
 import 'package:social_learning/session_pairing/party_pairing/pairing_unit.dart';
 import 'package:social_learning/session_pairing/party_pairing/scored_participant.dart';
 
@@ -61,5 +62,43 @@ class PairingUnitSet {
     }
 
     print('----- end pairing unit set ----');
+  }
+
+  void debugPrintSingleLine() {
+    StringBuffer sb = StringBuffer();
+    sb.write('PairingUnitSet: ');
+
+    for (PairingUnit pairingUnit in pairingUnits) {
+      sb.write('[${pairingUnit.lesson.title}=');
+      sb.write('${pairingUnit.mentor.user.displayName}; ');
+      for (ScoredParticipant scoredParticipant in pairingUnit.learners) {
+        sb.write('${scoredParticipant.user.displayName}, ');
+      }
+      sb.write('] ');
+    }
+
+    sb.write('[leftover=');
+    for (ScoredParticipant scoredParticipant in leftOverParticipants) {
+      sb.write('${scoredParticipant.user.displayName}, ');
+    }
+    sb.write(']');
+
+    sb.write(' score: ${score.totalScore}, weighted = {');
+    for (MapEntry<PairingScoreType, double> entry in score.weightedScores.entries) {
+      sb.write('${entry.key.name}=${entry.value}, ');
+    }
+    sb.write('}');
+
+    sb.write(', raw = {');
+    for (MapEntry<PairingScoreType, List<double>> entry in score.rawScores.entries) {
+      sb.write('${entry.key.name}=(');
+      for (double value in entry.value) {
+        sb.write('$value, ');
+      }
+      sb.write(') ');
+    }
+    sb.write('}');
+
+    print(sb);
   }
 }

@@ -308,6 +308,10 @@ class PartyPairingAlgorithm {
 
         PairingScorer.score(candidatePairingUnitSet!.score, newSet.score);
 
+        candidatePairingUnitSet?.debugPrintSingleLine();
+        print('vs.');
+        newSet.debugPrintSingleLine();
+
         if ((newSet.score.totalScore ?? 0) >
             (candidatePairingUnitSet!.score.totalScore ?? 0)) {
           candidatePairingUnitSet = newSet;

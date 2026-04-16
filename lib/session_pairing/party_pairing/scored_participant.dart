@@ -149,6 +149,7 @@ class ScoredParticipant {
       score.addRawScore(.balanceHostAccess, _countHostAccess());
     }
     score.addRawScore(.reduceTeachingDeficit, teachingDeficit);
+    score.addRawScore(.equalizeParticipation, learnCount + teachCount);
   }
 
   double _countPartners() {
