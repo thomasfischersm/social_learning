@@ -96,15 +96,12 @@ class _PartyPairingStudentPairingsListState
   List<SessionPairing> _getStudentPairings(
     OrganizerSessionState organizerSessionState,
   ) {
-    List<SessionPairing> pairings = List<SessionPairing>.from(
-      organizerSessionState.lastRound ?? [],
-    );
     List<String> instructorIds = organizerSessionState.sessionParticipants
         .where((participant) => participant.isInstructor)
         .map((participant) => participant.participantId.id)
         .toList();
 
-    return pairings
+    return organizerSessionState.allPairings
         .where((pairing) => !_includesInstructor(pairing, instructorIds))
         .toList();
   }
