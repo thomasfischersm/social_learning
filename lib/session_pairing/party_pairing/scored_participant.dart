@@ -151,22 +151,22 @@ class ScoredParticipant {
 
     if (!isHost) {
       score.addRawScore(.balanceHostAccess, _countHostAccess(pairingUnit));
+
+      score.addRawScore(
+            .reduceTeachingDeficit,
+        _computeTeachingDeficitScore(pairingUnit),
+      );
+
+      score.addRawScore(
+            .equalizeParticipation,
+        _computeEqualizeParticipation(pairingUnit),
+      );
+
+      score.addRawScore(
+            .minimizePracticing,
+        _computeMinimizePracticing(pairingUnit),
+      );
     }
-
-    score.addRawScore(
-      .reduceTeachingDeficit,
-      _computeTeachingDeficitScore(pairingUnit),
-    );
-
-    score.addRawScore(
-      .equalizeParticipation,
-      _computeEqualizeParticipation(pairingUnit),
-    );
-
-    score.addRawScore(
-      .minimizePracticing,
-      _computeMinimizePracticing(pairingUnit),
-    );
   }
 
   /// The goal is to have students partner with as many students as possible.
