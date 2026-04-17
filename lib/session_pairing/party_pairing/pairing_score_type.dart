@@ -8,6 +8,7 @@ enum PairingScoreType {
   balanceHostAccess(.unit, .fineTune, .minimizeDispersion),
   reduceTeachingDeficit(.unit, .important, .minimizeDispersion),
   equalizeParticipation(.unit, .important, .minimizeDispersion),
+  minimizePracticing(.unit, .important, .minimize),
 
   // Group scope
   finishLevelBeforeMovingOn(.group, .fineTune, .minimize),

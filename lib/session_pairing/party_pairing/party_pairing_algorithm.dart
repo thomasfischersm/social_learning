@@ -306,7 +306,7 @@ class PartyPairingAlgorithm {
       for (PairingUnitSet newSet in newSets) {
         _uniqueToPairingUnitSet[newSet.createUniqueString()] = newSet;
 
-        PairingScorer.score(candidatePairingUnitSet!.score, newSet.score);
+        PairingScorer.score(candidatePairingUnitSet!, newSet);
 
         candidatePairingUnitSet?.debugPrintSingleLine();
         print('vs.');

@@ -7,10 +7,10 @@ class PairingUnitSet {
   final List<PairingUnit> pairingUnits;
   final List<ScoredParticipant> leftOverParticipants;
 
-  late final PairingScore score;
+  late PairingScore score;
 
   PairingUnitSet(this.pairingUnits, this.leftOverParticipants) {
-    computeRawScore();
+    score = computeRawScore();
   }
 
   String createUniqueString() {
@@ -24,21 +24,22 @@ class PairingUnitSet {
   }
 
   PairingScore computeRawScore() {
-    score = PairingScore(this);
+    PairingScore score = PairingScore(this);
+    this.score = score;
 
     // Compute set level scores.
-    score!.addRawScore(.minimizeUnpairedStudents, leftOverParticipants.length.toDouble());
+    score.addRawScore(.minimizeUnpairedStudents, leftOverParticipants.length.toDouble());
 
     // Compute score for descendants.
     for (PairingUnit pairingUnit in pairingUnits) {
-      pairingUnit.computeRawScore(score!);
+      pairingUnit.computeRawScore(score);
     }
 
     for (ScoredParticipant participant in leftOverParticipants) {
-      participant.computeRawScore(score!);
+      participant.computeRawScore(score, null);
     };
 
-    return score!;
+    return score;
   }
 
   void debugPrint() {

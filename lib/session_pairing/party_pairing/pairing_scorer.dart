@@ -3,19 +3,24 @@ import 'dart:math';
 import 'package:social_learning/session_pairing/party_pairing/pairing_score.dart';
 import 'package:social_learning/session_pairing/party_pairing/pairing_score_scheme.dart';
 import 'package:social_learning/session_pairing/party_pairing/pairing_score_type.dart';
+import 'package:social_learning/session_pairing/party_pairing/pairing_unit_set.dart';
 
 class PairingScorer {
-  static void score(PairingScore a, PairingScore b) {
+  static void score(PairingUnitSet setA, PairingUnitSet setB) {
+    // Compute raw score.
+    PairingScore scoreA = setA.computeRawScore();
+    PairingScore scoreB = setB.computeRawScore();
+
     // Reset weighted scores.
-    a.weightedScores.clear();
-    b.weightedScores.clear();
+    scoreA.weightedScores.clear();
+    scoreB.weightedScores.clear();
 
     // Calculate weighted scores.
-    _computeWeightedScores(a, b);
+    _computeWeightedScores(scoreA, scoreB);
 
     // Compute the grand score.
-    _computeTotalScore(a);
-    _computeTotalScore(b);
+    _computeTotalScore(scoreA);
+    _computeTotalScore(scoreB);
   }
 
   static void _computeWeightedScores(PairingScore a, PairingScore b) {
@@ -63,14 +68,16 @@ class PairingScorer {
         case PairingScoreScheme.minimizeDispersion:
           // Use standard deviation as the "dispersion" metric:
           // lower stddev => better => higher weight.
-          final sdA = _stdDev(rawScoresA);
-          final sdB = _stdDev(rawScoresB);
+          // final sdA = _stdDev(rawScoresA);
+          // final sdA = _stdDev(rawScoresA);
+          final varianceA = _variance(rawScoresA);
+          final varianceB = _variance(rawScoresB);
 
           // Convert "lower is better" into weights in [0,1] that sum to 1
           // using inverse-normalization.
           const eps = 1e-9;
-          final gA = 1.0 / (sdA + eps);
-          final gB = 1.0 / (sdB + eps);
+          final gA = 1.0 / (varianceA + eps);
+          final gB = 1.0 / (varianceB + eps);
           final total = gA + gB;
 
           final wA = total == 0.0 ? 0.5 : (gA / total);
@@ -84,6 +91,10 @@ class PairingScorer {
   }
 
   static double _stdDev(List<double> xs) {
+    return sqrt(_variance(xs));
+  }
+
+  static double _variance(List<double> xs) {
     if (xs.length <= 1) return 0.0;
 
     final mean = xs.reduce((a, b) => a + b) / xs.length;
@@ -93,7 +104,7 @@ class PairingScorer {
       sumSq += d * d;
     }
     final variance = sumSq / xs.length; // population variance
-    return sqrt(variance);
+    return variance;
   }
 
   static void _computeTotalScore(PairingScore a) {

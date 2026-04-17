@@ -5,6 +5,7 @@ import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/session_pairing/party_pairing/pairing_score.dart';
+import 'package:social_learning/session_pairing/party_pairing/pairing_unit.dart';
 import 'package:social_learning/session_pairing/party_pairing/party_pairing_context.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
@@ -24,7 +25,7 @@ class ScoredParticipant {
   final SessionParticipant participant;
   List<PracticeRecord> learnPracticeRecords = [];
   List<PracticeRecord> teachPracticeRecords = [];
-  late final List<Lesson> graduatedLessons;
+  late final Set<Lesson> graduatedLessons;
   final Set<Lesson> learnedLessonsInCurrentSession = {};
   final List<Lesson> prioritizedLessons = [];
 
@@ -56,10 +57,12 @@ class ScoredParticipant {
   }
 
   void _initGraduatedLessons() {
-    graduatedLessons = pairingContext.organizerSessionState.getGraduatedLessons(
-      participant,
+    graduatedLessons = pairingContext.organizerSessionState
+        .getGraduatedLessons(participant)
+        .toSet();
+    print(
+      'Initializing graduated lessons for ${user.displayName} with ${graduatedLessons.length} lessons:',
     );
-    print('Initializing graduated lessons for ${user.displayName} with ${graduatedLessons.length} lessons:');
   }
 
   void _initLearnedLessonsInCurrentSession() {
@@ -143,16 +146,34 @@ class ScoredParticipant {
     this.teachingDeficit = teachingDeficit;
   }
 
-  void computeRawScore(PairingScore score) {
-    score.addRawScore(.diversePartners, _countPartners());
+  void computeRawScore(PairingScore score, PairingUnit? pairingUnit) {
+    score.addRawScore(.diversePartners, _countPartners(pairingUnit));
+
     if (!isHost) {
-      score.addRawScore(.balanceHostAccess, _countHostAccess());
+      score.addRawScore(.balanceHostAccess, _countHostAccess(pairingUnit));
     }
-    score.addRawScore(.reduceTeachingDeficit, teachingDeficit);
-    score.addRawScore(.equalizeParticipation, learnCount + teachCount);
+
+    score.addRawScore(
+      .reduceTeachingDeficit,
+      _computeTeachingDeficitScore(pairingUnit),
+    );
+
+    score.addRawScore(
+      .equalizeParticipation,
+      _computeEqualizeParticipation(pairingUnit),
+    );
+
+    score.addRawScore(
+      .minimizePracticing,
+      _computeMinimizePracticing(pairingUnit),
+    );
   }
 
-  double _countPartners() {
+  /// The goal is to have students partner with as many students as possible.
+  /// The reason is that this exposes students to more variety of people
+  /// and teaching styles. Plus, it equalizes access to desirable and
+  /// undesirable students.
+  double _countPartners(PairingUnit? pairingUnit) {
     Set<String> partnerUserIds = {};
     for (SessionPairing pairing
         in pairingContext.organizerSessionState.allPairings) {
@@ -175,13 +196,27 @@ class ScoredParticipant {
       }
     }
 
+    // Add the current pairings partners.
+    if (pairingUnit != null) {
+      partnerUserIds.add(pairingUnit.mentor.user.id);
+      for (ScoredParticipant learner in pairingUnit.learners) {
+        partnerUserIds.add(learner.user.id);
+      }
+    }
+
     // Remove self.
     partnerUserIds.remove(user.id);
 
     return partnerUserIds.length.toDouble();
   }
 
-  double _countHostAccess() {
+  /// Getting access to learn directly from the host is desirable. This score
+  /// helps equalize access to the host.
+  double _countHostAccess(PairingUnit? pairingUnit) {
+    if (isHost) {
+      return 0;
+    }
+
     String? hostUserId = pairingContext.applicationState.currentUser?.id;
     if (hostUserId == null) {
       return 0;
@@ -208,6 +243,45 @@ class ScoredParticipant {
       }
     }
 
+    // Consider the participants in the current pairing.
+    if (pairingUnit != null) {
+      if (pairingUnit.mentor.user.id == hostUserId) {
+        hostAccessCount++;
+      } else if (pairingUnit.learners.any(
+        (participant) => participant.isHost,
+      )) {
+        hostAccessCount++;
+      }
+    }
+
     return hostAccessCount.toDouble();
+  }
+
+  double _computeTeachingDeficitScore(PairingUnit? pairingUnit) {
+    if (pairingUnit == null) {
+      return teachingDeficit;
+    } else if (pairingUnit.mentor == this) {
+      return teachingDeficit + 1;
+    } else {
+      return teachingDeficit - (1 / pairingUnit.learners.length);
+    }
+  }
+
+  double _computeEqualizeParticipation(PairingUnit? pairingUnit) =>
+      learnCount + teachCount + (pairingUnit != null ? 1 : 0);
+
+  double _computeMinimizePracticing(PairingUnit? pairingUnit) {
+    if (isHost) {
+      // The host doesn't count.
+      return 0;
+    } else if (pairingUnit?.mentor == this) {
+      // Teaching isn't practicing.
+      return 0;
+    } else if (!graduatedLessons.contains(pairingUnit?.lesson)) {
+      // The participant is learning something new.
+      return 0;
+    } else {
+      return 1;
+    }
   }
 }

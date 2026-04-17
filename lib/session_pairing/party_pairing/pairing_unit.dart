@@ -61,10 +61,14 @@ class PairingUnit {
     _computeNewLessonScore(score);
 
     for (ScoredParticipant participant in [mentor, ...learners]) {
-      participant.computeRawScore(score);
+      participant.computeRawScore(score, this);
     }
   }
 
+  /// We prefer that students finish the current level before starting lessons
+  /// from the next level. Thus, we look at the first preferred lesson of each
+  /// student. If the lesson chosen by this pairing unit is in the next level,
+  /// it is counted as a negative.
   void _computeFinishLevelBeforeMovingOn(PairingScore score) {
     int levelSkipCount = 0;
     int? levelIndex = _findLevelIndex(lesson);
@@ -103,6 +107,10 @@ class PairingUnit {
     return pairingContext.libraryState.levels?.indexOf(unitLevel);
   }
 
+  /// The pairing algorithm has flexibility to jump ahead to future lessons.
+  /// This is done to make pairings possible even if they are not optimal. This
+  /// score expresses the preference to focus on the next lesson rather than
+  /// skipping lessons ahead.
   void _computeNearestLessonScore(PairingScore score) {
     double nearestLessonScore = 0;
 
@@ -120,6 +128,13 @@ class PairingUnit {
     score.addRawScore(.learnNearestLesson, nearestLessonScore);
   }
 
+  /// There may be multiple ways to pair up students. If the pairings are
+  /// basically sound and everyone is paired, we prefer to have students working
+  /// together who are closer to each others level.
+  ///
+  /// Example: Say that we have students A, B, C, and D. Their order reflects
+  /// how far they are progressed. Student A and D are the furthest apart.
+  /// Thus, we'd prefer to have student A/B and C/D to work together.
   void _computeBalanceStudentDistance(PairingScore score) {
     var lessons = pairingContext.libraryState.lessons;
     if (lessons == null || lessons.isEmpty) {
@@ -161,6 +176,15 @@ class PairingUnit {
     }
   }
 
+  /// With creating pairings, an important factor is to look ahead to avoid
+  /// creating bottlenecks. Let's say we have a large class and there is a
+  /// lesson that only one student can teach. So we should start spreading that
+  /// lesson to more students first before we have rounds where we can't pair
+  /// some students.
+  ///
+  /// Because it's expensive to consider all the future permutations, we are
+  /// using a heuristic. The less students know a certain lesson, the more that
+  /// lesson gets prioritized.
   void _computeRareLessonScore(PairingScore score) {
     double rareLessonScore = 0;
     for (int i = 0; i < _rareLessonFactor; i++) {
@@ -173,6 +197,10 @@ class PairingUnit {
     score.addRawScore(.prioritizeRareLessons, rareLessonScore);
   }
 
+  /// Using desperate pairings, we may have cases were a student is only
+  /// practicing a lesson. This score counts the number of lessons that students
+  /// would graduate to focus the algorithm on making progress through the
+  /// curriculum.
   void _computeNewLessonScore(PairingScore score) {
     double newLessonCount = 0;
 
