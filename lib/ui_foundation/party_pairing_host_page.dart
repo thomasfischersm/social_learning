@@ -3,6 +3,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/session_pairing/party_pairing_service/in_process_party_pairing_service.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/ui_foundation/advanced_pairing_host_page.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
@@ -38,10 +39,21 @@ class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomUiConstants.getTextPadding(
+                CustomUiConstants.getIndentationTextPadding(
                   Text(
                     'Party Pairing: $sessionName',
                     style: CustomTextStyles.headline,
+                  ),
+                ),
+                CustomUiConstants.getIndentationTextPadding(
+                  InkWell(
+                    onTap: _onSwitchToAdvancedViewTapped,
+                    child: Text(
+                      'Switch to advanced view',
+                      style: CustomTextStyles.getBodySmall(
+                        context,
+                      )?.copyWith(decoration: TextDecoration.underline),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -108,5 +120,9 @@ class _PartyPairingHostPageState extends State<PartyPairingHostPage> {
         Navigator.pushNamed(context, NavigationEnum.sessionHome.route);
       },
     );
+  }
+
+  void _onSwitchToAdvancedViewTapped() {
+    NavigationEnum.advancedPairingHost.navigateClean(context);
   }
 }
