@@ -37,6 +37,10 @@ class PartyPairingRosterCard extends StatelessWidget {
 
           double learnToTeachRatio =
               organizerSessionState.getLearnTeachRatio();
+          // TODO: Consider that long term, the host will be green and all the
+          // students will be red. The host should stay neutral. And the
+          // students should judged based on the median of the students so that
+          // red and green is balanced.
           Set<String> pairedParticipantIds =
               _buildPairedParticipantIds(organizerSessionState);
 
