@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data_support/entity_sync.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:social_learning/util/print_util.dart';
 
 class LessonSync extends EntitySync<Lesson> {
   LessonSync(Transaction transaction) : super('lessons', transaction);

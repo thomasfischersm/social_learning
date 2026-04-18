@@ -7,6 +7,7 @@ import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/data_support/level_sync.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class JsonCurriculumSync {
   static bool _runExportOnce = false;
