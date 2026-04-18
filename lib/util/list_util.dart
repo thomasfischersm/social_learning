@@ -43,7 +43,7 @@ T? firstSharedByOrder<T>(List<List<T>> lists) {
 
 extension ListSetOps<T> on List<T> {
   void forEachCombination(int k, void Function(List<T> tuple) visit) {
-    if (k <= 0 || k > length) return;
+    if (k < 0 || k > length) return;
 
     void rec(int start, List<T> acc) {
       if (acc.length == k) {

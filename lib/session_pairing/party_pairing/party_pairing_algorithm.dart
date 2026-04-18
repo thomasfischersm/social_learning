@@ -49,7 +49,14 @@ class PartyPairingAlgorithm {
     PairingUnitSet lastCandidate = candidatePairingUnitSet!;
     do {
       lastCandidate = candidatePairingUnitSet!;
-      breakAndRepair(candidatePairingUnitSet!, 2, pairingContext);
+      if (candidatePairingUnitSet!.pairingUnits.isEmpty) {
+        // TODO: Need to test if 0 works.
+        breakAndRepair(candidatePairingUnitSet!, 0, pairingContext);
+      } else if (candidatePairingUnitSet!.pairingUnits.length == 1) {
+        breakAndRepair(candidatePairingUnitSet!, 1, pairingContext);
+      } else {
+        breakAndRepair(candidatePairingUnitSet!, 2, pairingContext);
+      }
     } while (candidatePairingUnitSet != lastCandidate);
 
     stopwatch.stop();
@@ -283,6 +290,14 @@ class PartyPairingAlgorithm {
       hardLeftOverParticipants.add(learnerCandidate);
     }
 
+    // Put the hardLeftOverParticipants back into the leftOverParticipants
+    // because this method sadly operates by side effect.
+    leftOverParticipants.addAll(hardLeftOverParticipants);
+
+    print('Finished desperate pairings with '
+        '${leftOverParticipants.length} leftOver participants and '
+        '${hardLeftOverParticipants.length} hardLeftOverParticipants.');
+
     return pairings;
   }
 
@@ -296,13 +311,22 @@ class PartyPairingAlgorithm {
     if (originalSet.pairingUnits.length < breakCount) {
       return;
     }
+    print(
+      'Attempting break and repair on ${originalSet.pairingUnits.length} '
+      'units with a breakCount of $breakCount',
+    );
 
+    int debugCombinationCounter = 0;
     originalSet.pairingUnits.forEachCombination(breakCount, (brokenUnits) {
+      print('Looping breakAndRepair for combination ${debugCombinationCounter++}');
       List<PairingUnitSet> newSets = breakAndRepairTuples(
         originalSet,
         brokenUnits,
         pairingContext,
       );
+      print('Break and repair worked on this originalSet:');
+      originalSet.debugPrintSingleLine();
+      print('Got ${newSets.length} repair sets.');
 
       // Evaluate new sets.
       for (PairingUnitSet newSet in newSets) {
@@ -334,6 +358,11 @@ class PartyPairingAlgorithm {
     List<ScoredParticipant> availableParticipants =
         brokenUnits.expand((u) => [u.mentor, ...u.learners]).toSet().toList()
           ..addAll(originalSet.leftOverParticipants);
+    print('breakAndRepairTuples has '
+        '${availableParticipants.length} available participants from '
+        '${originalSet.leftOverParticipants.length} leftover participants and '
+        '${brokenUnits.expand((u) => [u.mentor, ...u.learners]).toSet().toList().length} '
+        'participants from broken units.');
 
     // Evaluate every possible recombination.
     List<PairingUnitSet> resultSets = [];
@@ -343,6 +372,7 @@ class PartyPairingAlgorithm {
     ) {
       // Create the new PairingUnitSet.
       List<ScoredParticipant> participantsFromFailedUnits = [];
+      print('breakAndRepairTuples got a new grouping.');
 
       List<PairingUnit> newlyFormedUnits = listOfListOfParticipants
           .map((participants) {
