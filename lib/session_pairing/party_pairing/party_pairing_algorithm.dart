@@ -138,7 +138,7 @@ class PartyPairingAlgorithm {
       createDesperatePairings(leftOverParticipants, pairingContext),
     );
 
-    PairingUnitSet result =  PairingUnitSet(pairingUnits, leftOverParticipants);
+    PairingUnitSet result = PairingUnitSet(pairingUnits, leftOverParticipants);
     print('Created the initial pairing candidate.');
     result.debugPrint();
     return result;
@@ -207,7 +207,9 @@ class PartyPairingAlgorithm {
         (leftOverParticipants.length + hardLeftOverParticipants.length >=
             unitSize)) {
       ScoredParticipant learnerCandidate = leftOverParticipants.removeAt(0);
-      print('Attempting desperate pairing for ${learnerCandidate.user.displayName}');
+      print(
+        'Attempting desperate pairing for ${learnerCandidate.user.displayName}',
+      );
 
       // Try for each prioritized lesson.
       for (Lesson lessonCandidate in learnerCandidate.prioritizedLessons) {
@@ -340,19 +342,26 @@ class PartyPairingAlgorithm {
       newLeftOvers,
     ) {
       // Create the new PairingUnitSet.
+      List<ScoredParticipant> participantsFromFailedUnits = [];
+
       List<PairingUnit> newlyFormedUnits = listOfListOfParticipants
-          .map(
-            (participants) => LessonPicker.chooseBestGroupLesson(
-              participants,
-              pairingContext,
-            ),
-          )
+          .map((participants) {
+            PairingUnit? lessonPickerResult =
+                LessonPicker.chooseBestGroupLesson(
+                  participants,
+                  pairingContext,
+                );
+            if (lessonPickerResult == null) {
+              participantsFromFailedUnits.addAll(participants);
+            }
+            return lessonPickerResult;
+          })
           .whereType<PairingUnit>()
           .toList();
-      PairingUnitSet newSet = PairingUnitSet([
-        ...basePairingUnits,
-        ...newlyFormedUnits,
-      ], newLeftOvers);
+      PairingUnitSet newSet = PairingUnitSet(
+        [...basePairingUnits, ...newlyFormedUnits],
+        [...newLeftOvers, ...participantsFromFailedUnits],
+      );
 
       // Skip already evaluated sets.
       var uniqueString = newSet.createUniqueString();
