@@ -11,6 +11,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 
 import 'package:social_learning/data/session.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class ScoredParticipant {
   static const int maxPrioritizedLessons = 5;
@@ -31,14 +32,14 @@ class ScoredParticipant {
 
   ScoredParticipant(this.participant, this.pairingContext)
     : user = pairingContext.organizerSessionState.getUser(participant)! {
-    print('Initializing scored participant ${user.displayName}');
+    dprint('Initializing scored participant ${user.displayName}');
     _initIsHost();
     _initPracticeRecords();
     _initGraduatedLessons();
     _initLearnedLessonsInCurrentSession();
     _initPrioritizedLessons();
     _initLearnTeachCounts();
-    print('Finished initializing scored participant ${user.displayName}');
+    dprint('Finished initializing scored participant ${user.displayName}');
   }
 
   void _initIsHost() {
@@ -60,7 +61,7 @@ class ScoredParticipant {
     graduatedLessons = pairingContext.organizerSessionState
         .getGraduatedLessons(participant)
         .toSet();
-    print(
+    dprint(
       'Initializing graduated lessons for ${user.displayName} with ${graduatedLessons.length} lessons:',
     );
   }
@@ -82,9 +83,9 @@ class ScoredParticipant {
       }
     }
 
-    print('learned lessons for ${user.displayName} are:');
+    dprint('learned lessons for ${user.displayName} are:');
     for (Lesson lesson in learnedLessonsInCurrentSession) {
-      print('- ${lesson.title}');
+      dprint('- ${lesson.title}');
     }
   }
 
@@ -107,9 +108,9 @@ class ScoredParticipant {
         }
       }
     } finally {
-      print('Prioritized lessons for ${user.displayName}:');
+      dprint('Prioritized lessons for ${user.displayName}:');
       for (Lesson lesson in prioritizedLessons) {
-        print('- ${lesson.title}');
+        dprint('- ${lesson.title}');
       }
     }
   }

@@ -6,6 +6,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/pre
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/inventory/tag_pill.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/ui_constants/course_designer_theme.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class PrerequisiteItemEntry extends StatelessWidget {
   final PrerequisiteContext context;
@@ -50,7 +51,7 @@ class PrerequisiteItemEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Building prerequisite item entry for ${item.name}');
+    dprint('Building prerequisite item entry for ${item.name}');
     final isRoot = parentItem == null;
 
     final isRequired =

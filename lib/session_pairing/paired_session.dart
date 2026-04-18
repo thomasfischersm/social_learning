@@ -3,6 +3,7 @@ import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/session_pairing/learner_pair.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class PairedSession {
   List<LearnerPair> pairs;
@@ -64,13 +65,13 @@ class PairedSession {
   }
 
   debugPrint() {
-    print('PairedSession');
+    dprint('PairedSession');
     for (LearnerPair pair in pairs) {
-      print('  ${pair.teachingParticipant.id} -> ${pair.learningParticipant.id}: Lesson: ${pair.lesson?.title}');
+      dprint('  ${pair.teachingParticipant.id} -> ${pair.learningParticipant.id}: Lesson: ${pair.lesson?.title}');
     }
-    print('Unpaired participants');
+    dprint('Unpaired participants');
     for (SessionParticipant participant in unpairedParticipants) {
-      print('  ${participant.id}');
+      dprint('  ${participant.id}');
     }
   }
 }

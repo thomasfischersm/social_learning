@@ -8,6 +8,7 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class RecordPracticeDialog extends StatefulWidget {
   final Lesson lesson;
@@ -67,7 +68,7 @@ class RecordPracticeDialogState extends State<RecordPracticeDialog> {
   }
 
   void _recordPressed() {
-    print('Record pressed');
+    dprint('Record pressed');
     User? localLearner = _selectedLearner;
     if (localLearner != null) {
       setState(() {

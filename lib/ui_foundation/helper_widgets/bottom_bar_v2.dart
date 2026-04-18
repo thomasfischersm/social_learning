@@ -8,6 +8,7 @@ import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/ui_foundation/ui_constants/home_selector.dart';
 import 'package:social_learning/ui_foundation/ui_constants/manage_selector.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class BottomBarV2 {
   static Widget build(BuildContext context) {
@@ -88,12 +89,12 @@ class BottomBarV2 {
       LibraryState libraryState,
       StudentSessionState studentSessionState,
       OrganizerSessionState organizerSessionState) {
-    print(
+    dprint(
         'bottom bar session button: host session ${organizerSessionState.isInitialized}, student session ${studentSessionState.isInitialized}, course selected ${libraryState.isCourseSelected}, logged in ${applicationState.isLoggedIn}');
 
     OnlineSessionState onlineSessionState =
         Provider.of<OnlineSessionState>(context, listen: false);
-    print(
+    dprint(
         'online session state: waiting session ${onlineSessionState.waitingSession}, active session ${onlineSessionState.activeSession}');
 
     if (organizerSessionState.currentSession != null) {
@@ -132,7 +133,7 @@ class BottomBarV2 {
 
     if (currentRoute == null) {
       // Use double quotes to avoid escaping the apostrophe in "Couldn't".
-      print("Couldn't determine the current route.");
+      dprint("Couldn't determine the current route.");
       return -1;
     }
 
@@ -194,14 +195,14 @@ class BottomBarV2 {
           (isManageVisible ? 1 : 0) +
           (isSessionsVisible ? 1 : 0);
     } else {
-      print('Unknown route: $currentRoute');
+      dprint('Unknown route: $currentRoute');
       return -1;
     }
   }
 
   static bool _isCourseAdmin(
       ApplicationState applicationState, LibraryState libraryState) {
-    print('isCourseAdmin: ${applicationState.currentUser?.displayName}');
+    dprint('isCourseAdmin: ${applicationState.currentUser?.displayName}');
     // Must be logged in.
     if (applicationState.currentUser == null) {
       return false;
@@ -217,7 +218,7 @@ class BottomBarV2 {
       return true;
     }
 
-    print(
+    dprint(
         'isCourseAdmin: ${libraryState.selectedCourse?.creatorId} == ${applicationState.currentUser?.uid}');
     return libraryState.selectedCourse?.creatorId ==
         applicationState.currentUser?.uid;
@@ -247,7 +248,7 @@ class BottomBarV2 {
     // Curriculum
     if (isLessonsVisible) {
       if (index == 0) {
-        print('Navigating from the bottom bar to the level list page.');
+        dprint('Navigating from the bottom bar to the level list page.');
         NavigationEnum.levelList.navigateClean(context);
         return;
       } else {
@@ -287,6 +288,6 @@ class BottomBarV2 {
       }
     }
 
-    print('Unknown index: $originalIndex');
+    dprint('Unknown index: $originalIndex');
   }
 }

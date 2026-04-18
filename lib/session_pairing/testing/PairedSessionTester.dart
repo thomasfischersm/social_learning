@@ -1,4 +1,5 @@
 import 'package:social_learning/session_pairing/paired_session.dart';
+import 'package:social_learning/util/print_util.dart';
 import 'organizer_session_state_mock.dart';
 
 /// Tests that the pairing algorithm created the right kind of PairedSession.
@@ -34,14 +35,14 @@ class PairedSessionTester {
 
     // Quick count tests.
     if (_pairedSession.pairs.length != _expectedPairs.length) {
-      print(
+      dprint(
           'Expected ${_expectedPairs.length} pairs but got ${_pairedSession.pairs.length}');
       success = false;
     }
 
     if (_pairedSession.unpairedParticipants.length !=
         _unpairedParticipants.length) {
-      print(
+      dprint(
           'Expected ${_unpairedParticipants.length} unpaired participants but got ${_pairedSession.unpairedParticipants.length}');
       success = false;
     }
@@ -55,7 +56,7 @@ class PairedSessionTester {
       if (mentor?.displayName != expectedPair._mentorDisplayName ||
           learner?.displayName != expectedPair._learnerDisplayName ||
           lesson?.title != expectedPair._lessonTitle) {
-        print(
+        dprint(
             'Expected pair ${expectedPair._mentorDisplayName} -> ${expectedPair._learnerDisplayName} -> ${expectedPair._lessonTitle} but got ${mentor?.displayName} -> ${learner?.displayName} -> ${lesson?.title}');
         success = false;
       }
@@ -67,16 +68,16 @@ class PairedSessionTester {
           _organizerSessionState.getUserByDisplayName(participantName);
       if (!_pairedSession.unpairedParticipants
           .any((p) => p.participantId.id == participant!.id)) {
-        print(
+        dprint(
             'Expected participant $participantName to be unpaired but was paired');
         success = false;
       }
     }
 
     if (success) {
-      print('+++ $testName: Success +++');
+      dprint('+++ $testName: Success +++');
     } else {
-      print('!!! $testName: Failed !!!');
+      dprint('!!! $testName: Failed !!!');
     }
 
     return success;

@@ -69,7 +69,7 @@ class _CourseDurationEditDialogState extends State<CourseDurationEditDialog> {
   }
 
   void _clearSessionCountAndDuration() {
-    print('Clearing session count and duration');
+    dprint('Clearing session count and duration');
     if (_totalMinutesController.text.isEmpty) return;
 
     _sessionCountController.clear();

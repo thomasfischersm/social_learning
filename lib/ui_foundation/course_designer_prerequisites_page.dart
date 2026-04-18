@@ -11,6 +11,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/pre
 import 'package:social_learning/ui_foundation/helper_widgets/general/course_designer_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class CourseDesignerPrerequisitesPage extends StatefulWidget {
   const CourseDesignerPrerequisitesPage({super.key});
@@ -71,18 +72,18 @@ class _CourseDesignerPrerequisitesPageState
   }
 
   void _handleFocusItemSelected(String? itemId) {
-    print('handleFocusItemSelected: $itemId start');
+    dprint('handleFocusItemSelected: $itemId start');
     final newFocus =
         itemId == null ? null : _prerequisiteContext?.itemById[itemId];
     setState(() {
       _focusedItem = newFocus;
     });
-    print('handleFocusItemSelected: new focus: $_focusedItem done');
+    dprint('handleFocusItemSelected: new focus: $_focusedItem done');
   }
 
   void _handleShowItemsWithPrerequisites() {
     // Optional: you could open a dialog or redirect
-    print('Requested items with prerequisites');
+    dprint('Requested items with prerequisites');
     setState(() {
       _focusedItem = null;
     });

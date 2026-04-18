@@ -11,6 +11,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/util/double_util.dart';
+import 'package:social_learning/util/print_util.dart';
 
 import 'helper_widgets/general/lesson_graduation_requirements_dialog.dart';
 import 'helper_widgets/general/progress_checkbox.dart';
@@ -218,7 +219,7 @@ class LevelDetailState extends State<LevelDetailPage> {
       ]));
     }
 
-    print('Done generate lesson list');
+    dprint('Done generate lesson list');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: children,

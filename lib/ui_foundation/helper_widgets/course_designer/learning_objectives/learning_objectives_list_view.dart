@@ -8,6 +8,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/lea
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/objective_teachable_item_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/objective_lesson_entry.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/learning_objectives/add_lesson_entry.dart';
+import 'package:social_learning/util/print_util.dart';
 
 import 'add_new_teachable_item_entry.dart';
 
@@ -55,7 +56,7 @@ class LearningObjectivesListView extends StatelessWidget {
 
         // Lessons under this teachable item
         for (final lessonRef in item.lessonRefs ?? []) {
-          print('Looking for lesson: ${lessonRef.id} for item: ${item.id}');
+          dprint('Looking for lesson: ${lessonRef.id} for item: ${item.id}');
           final lesson = library.findLesson(lessonRef.id);
           if (lesson != null) {
             rows.add(

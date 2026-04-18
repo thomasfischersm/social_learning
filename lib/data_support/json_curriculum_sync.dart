@@ -15,11 +15,11 @@ class JsonCurriculumSync {
 
   static Future<String?> export() async {
     if (_runExportOnce) {
-      print('Export has already run!');
+      dprint('Export has already run!');
       return Future.value(null);
     } else {
       _runExportOnce = true;
-      print('Starting export');
+      dprint('Starting export');
     }
 
     var db = FirebaseFirestore.instance;
@@ -32,7 +32,7 @@ class JsonCurriculumSync {
     // Parse lessons from the db.
     List<Lesson> lessons = [];
     Map<String, List<Map<String, dynamic>>> levelPathToLessonData = {};
-    print('Read ${lessonDocs.length} lessons.');
+    dprint('Read ${lessonDocs.length} lessons.');
     for (QueryDocumentSnapshot<Map<String, dynamic>> snapshot in lessonDocs) {
       var lesson = Lesson.fromSnapshot(snapshot);
       lessons.add(lesson);
@@ -124,17 +124,17 @@ class JsonCurriculumSync {
     JsonEncoder encoder = const JsonEncoder.withIndent('  ');
     var data = {'courses': coursesData};
     var json = encoder.convert(data);
-    print(json);
+    dprint(json);
     return json;
   }
 
   static void import() async {
     if (_runImportOnce) {
-      print('Import has already run!');
+      dprint('Import has already run!');
       return;
     } else {
       _runImportOnce = true;
-      print('Starting import');
+      dprint('Starting import');
     }
 
     String rawJson = await rootBundle.loadString('curriculum.json');
@@ -154,10 +154,10 @@ class JsonCurriculumSync {
           Map<String, dynamic> data = {'courseId': db.doc(courseId)};
           transaction.set(
               levelSnapshot.reference, data, SetOptions(merge: true));
-          print('fixing course reference');
+          dprint('fixing course reference');
         }
       }
-      print('Done fixing course references');
+      dprint('Done fixing course references');
     });
 
     db.runTransaction((transaction) async {
@@ -176,7 +176,7 @@ class JsonCurriculumSync {
 
       for (int i = 0; i < coursesJson.length; i++) {
         var courseJson = coursesJson[i];
-        print(
+        dprint(
             'Course ${courseJson['title']} has ${courseJson['levels']?.length}.');
         var jsonLevels = courseJson['levels'];
 
@@ -218,7 +218,7 @@ class JsonCurriculumSync {
       'sortOrder': levelSortOrder,
       'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
     });
-    print('Created level ${levelJson['title']}');
+    dprint('Created level ${levelJson['title']}');
   }
 
   static Future<bool> updateLevel(
@@ -228,12 +228,12 @@ class JsonCurriculumSync {
       int levelSortOrder,
       FirebaseFirestore db,
       Transaction transaction) async {
-    print(' $levelJson');
+    dprint(' $levelJson');
     Level newLevel = Level.fromJson(levelJson);
 
     Level currentLevel = Level.fromSnapshot(levelSnapshot);
 
-    print(
+    dprint(
         ' EQ: course ${newLevel.courseId == currentLevel.courseId}, title ${newLevel.title == currentLevel.title}, description ${newLevel.description == currentLevel.description}, sortOrder ${levelSortOrder == currentLevel.sortOrder} ($levelSortOrder - ${currentLevel.sortOrder}');
     if ((newLevel.courseId == currentLevel.courseId) &&
         (newLevel.title == currentLevel.title) &&
@@ -254,7 +254,7 @@ class JsonCurriculumSync {
         },
         SetOptions(merge: true));
 
-    print('Updated level ${newLevel.title}');
+    dprint('Updated level ${newLevel.title}');
     return true;
   }
 
@@ -269,7 +269,7 @@ class JsonCurriculumSync {
       var docRef = db.collection('levels').doc('${level.id}');
       transaction.delete(docRef);
 
-      print('Deleted level ${level.title}');
+      dprint('Deleted level ${level.title}');
     }
   }
 
@@ -305,16 +305,16 @@ class JsonCurriculumSync {
     JsonEncoder encoder = const JsonEncoder.withIndent('  ');
     var data = {'levels': levelsData};
     var json = encoder.convert(data);
-    print(json);
+    dprint(json);
   }
 
   static void importV2() async {
     if (_runImportV2Once) {
-      print('Import V2 has already run!');
+      dprint('Import V2 has already run!');
       return;
     } else {
       _runImportV2Once = true;
-      print('Starting import V2');
+      dprint('Starting import V2');
     }
 
     String rawJson = await rootBundle.loadString('curriculum.json');
@@ -327,7 +327,7 @@ class JsonCurriculumSync {
     //   var querySnapshot = await db.collection('lessons').get();
     //   for (QueryDocumentSnapshot<Map<String, dynamic>> doc in querySnapshot.docs) {
     //     transaction.delete(doc.reference);
-    //     print('Delete old lesson');
+    //     dprint('Delete old lesson');
     //   }
     // });
 
@@ -337,10 +337,10 @@ class JsonCurriculumSync {
       var coursesJson = json['courses'];
       for (int i = 0; i < coursesJson.length; i++) {
         var courseJson = coursesJson[i];
-        print(
+        dprint(
             'Course ${courseJson['title']} has ${courseJson['levels']?.length}.');
-        // print('get dynamic type: ${courseJson['levels'].runtimeType}');
-        // print('levels are: ${courseJson['levels']}');
+        // dprint('get dynamic type: ${courseJson['levels'].runtimeType}');
+        // dprint('levels are: ${courseJson['levels']}');
         List<dynamic>? jsonLevels = courseJson['levels'];
 
         if (jsonLevels != null) {

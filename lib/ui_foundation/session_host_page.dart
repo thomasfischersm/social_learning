@@ -20,6 +20,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class SessionHostPage extends StatefulWidget {
   const SessionHostPage({super.key});
@@ -89,7 +90,7 @@ class SessionHostState extends State<SessionHostPage> {
     // Sort participants by admin, proficiency, and name.
     List<SessionParticipant> sessionParticipants =
         List.from(organizerSessionState.sessionParticipants);
-    print('Number of participants: ${sessionParticipants.length}');
+    dprint('Number of participants: ${sessionParticipants.length}');
     sessionParticipants.sort((a, b) {
       // Put instructors on top.
       if (a.isInstructor) {
@@ -292,7 +293,7 @@ class SessionHostState extends State<SessionHostPage> {
       List<SessionPairing> sessionPairings =
           roundNumberToSessionPairing[round]!;
       for (SessionPairing sessionPairing in sessionPairings) {
-        print('mentorId = ${sessionPairing.mentorId?.id}');
+        dprint('mentorId = ${sessionPairing.mentorId?.id}');
         User? mentor =
             organizerSessionState.getUserById(sessionPairing.mentorId?.id);
         User? mentee =
@@ -343,7 +344,7 @@ class SessionHostState extends State<SessionHostPage> {
 
       organizerSessionState.endSession();
 
-      print('The session has ended. Going to the level list page.');
+      dprint('The session has ended. Going to the level list page.');
       Navigator.pushNamed(context, NavigationEnum.levelList.route);
     });
   }

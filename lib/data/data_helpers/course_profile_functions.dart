@@ -12,7 +12,7 @@ class CourseProfileFunctions {
   static const String _collectionPath = 'courseProfiles';
 
   static Future<CourseProfile?> getCourseProfile(String courseId) async {
-    print('Fetching course profile for courseId: $courseId');
+    dprint('Fetching course profile for courseId: $courseId');
     try {
       final courseRef = docRef('courses', courseId);
       final querySnapshot = await _firestore
@@ -22,13 +22,13 @@ class CourseProfileFunctions {
           .get();
 
       if (querySnapshot.docs.isEmpty) {
-        print('No course profile found for $courseId');
+        dprint('No course profile found for $courseId');
         return null;
       }
-      print('Course profiles found: ${querySnapshot.docs.length} for course $courseId');
+      dprint('Course profiles found: ${querySnapshot.docs.length} for course $courseId');
       return CourseProfile.fromSnapshot(querySnapshot.docs.first);
     } catch (e) {
-      print('Error fetching course profile for $courseId: $e');
+      dprint('Error fetching course profile for $courseId: $e');
       return null;
     }
   }
@@ -46,7 +46,7 @@ class CourseProfileFunctions {
         dataToUpdate.remove('createdAt');
 
         await docRef(_collectionPath, profile.id!).update(dataToUpdate);
-        print('Course profile updated successfully.');
+        dprint('Course profile updated successfully.');
       } else {
         // Create new
         await _firestore.collection(_collectionPath).add({
@@ -54,13 +54,13 @@ class CourseProfileFunctions {
           'createdAt': FieldValue.serverTimestamp(),
           'modifiedAt': FieldValue.serverTimestamp(),
         });
-        print('Course profile created successfully.');
+        dprint('Course profile created successfully.');
       }
 
       // Fetch the updated profile
       return (await getCourseProfile(profile.courseId.id))!;
     } catch (e) {
-      print('Error saving course profile: $e');
+      dprint('Error saving course profile: $e');
       rethrow;
     }
   }

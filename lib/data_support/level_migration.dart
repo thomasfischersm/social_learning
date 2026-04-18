@@ -11,11 +11,11 @@ class LevelMigration {
 
   static void migrate() async {
     if (_runOnce) {
-      print('Already run!');
+      dprint('Already run!');
       return;
     } else {
       _runOnce = true;
-      print('Starting migration');
+      dprint('Starting migration');
     }
 
     var db = FirebaseFirestore.instance;
@@ -23,16 +23,16 @@ class LevelMigration {
     db.runTransaction((transaction) async {
       var docs = (await db.collection('lessons').get()).docs;
       for (var element in docs) {
-        print('about to clear level ${element.get('title')}');
+        dprint('about to clear level ${element.get('title')}');
         if (element.data().keys.contains('levelId') &&
             element.get('levelId') is String) {
           transaction.set(element.reference,
               {'levelId': null, 'creatorId': element.get('creatorId')}, SetOptions(merge: true));
-          print('Cleared level id ${element.get('title')}');
+          dprint('Cleared level id ${element.get('title')}');
         }
       }
 
-      print('Done resetting levelId.');
+      dprint('Done resetting levelId.');
     });
 
     // Test permissions
@@ -42,16 +42,16 @@ class LevelMigration {
     //   'description': 'desc',
     //   'sortOrder': 0,
     //   'creatorId': auth.FirebaseAuth.instance.currentUser!.uid,
-    // }).onError((e, _) => print("222Error writing document: $e"));
-    // print('Tested writing to levels');
+    // }).onError((e, _) => dprint("222Error writing document: $e"));
+    // dprint('Tested writing to levels');
 
     db.runTransaction((transaction) async {
-      print('Starting transaction');
+      dprint('Starting transaction');
 
       // Delete all previous levels.
       var oldLevels = await db.collection('levels').get();
       for (QueryDocumentSnapshot snapshot in oldLevels.docs) {
-        print('Delete level: ${snapshot.get('title')}');
+        dprint('Delete level: ${snapshot.get('title')}');
         transaction.delete(snapshot.reference);
       }
 
@@ -59,7 +59,7 @@ class LevelMigration {
           .collection('lessons')
           .orderBy('sortOrder', descending: false)
           .get();
-      print('Got ${lessons.size} lessons.');
+      dprint('Got ${lessons.size} lessons.');
 
       int levelCount = 0;
       String lastLevelId = '';
@@ -67,7 +67,7 @@ class LevelMigration {
       // for (int i = 0; i < lessons.length; i++) {
       //   var lessonSnapshot = lessons[i];
       var docs = lessons.docs;
-      print('got ${docs.length} docs.');
+      dprint('got ${docs.length} docs.');
       for (int j = 0; j < docs.length; j++) {
         var lessonDoc = docs[j];
         if (lessonDoc.data().keys.contains('levelId') &&
@@ -79,7 +79,7 @@ class LevelMigration {
 
         if (lesson.isLevel == true) {
           // Create a new level.
-          print('Creating level: ${lesson.title}');
+          dprint('Creating level: ${lesson.title}');
           var newLevelRef = db.collection('levels').doc();
           Level newLevel = Level(newLevelRef.id, lesson.courseId, lesson.title,
               '', levelCount, auth.FirebaseAuth.instance.currentUser!.uid);
@@ -95,7 +95,7 @@ class LevelMigration {
           levelCount++;
         } else {
           // Update the level reference.
-          print('Updating lesson to refer to level.');
+          dprint('Updating lesson to refer to level.');
           var lessonDocRef = db.collection('lessons').doc(lesson.id);
           transaction.update(lessonDocRef, {
             'levelId': FirebaseFirestore.instance.doc('/levels/$lastLevelId')
@@ -104,15 +104,15 @@ class LevelMigration {
         // }
       }
 
-      print('Ready to commit transaction');
+      dprint('Ready to commit transaction');
     }).then(
-      (value) => print("DocumentSnapshot successfully updated!"),
+      (value) => dprint("DocumentSnapshot successfully updated!"),
       onError: (e) {
-        print("Error updating document $e ${e.runtimeType}");
-        print('${e.stackTrace}');
+        dprint("Error updating document $e ${e.runtimeType}");
+        dprint('${e.stackTrace}');
       },
     );
 
-    print('kicked off migration');
+    dprint('kicked off migration');
   }
 }

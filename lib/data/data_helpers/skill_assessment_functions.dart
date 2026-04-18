@@ -28,7 +28,7 @@ class SkillAssessmentFunctions {
       final snapshot = await docRefAssessment.get();
       return SkillAssessment.fromSnapshot(snapshot);
     } catch (e) {
-      print('Error creating skill assessment: $e');
+      dprint('Error creating skill assessment: $e');
       return null;
     }
   }
@@ -49,7 +49,7 @@ class SkillAssessmentFunctions {
       if (snapshot.docs.isEmpty) return null;
       return SkillAssessment.fromSnapshot(snapshot.docs.first);
     } catch (e) {
-      print('Error fetching latest skill assessment: $e');
+      dprint('Error fetching latest skill assessment: $e');
       return null;
     }
   }
@@ -70,7 +70,7 @@ class SkillAssessmentFunctions {
           .map((doc) => SkillAssessment.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error loading skill assessments: $e');
+      dprint('Error loading skill assessments: $e');
       return [];
     }
   }

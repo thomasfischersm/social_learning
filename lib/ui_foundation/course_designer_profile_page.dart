@@ -10,6 +10,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/general/course_desi
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 import '../state/course_designer_state.dart';
 
@@ -41,7 +42,7 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
   }
 
   Future<void> _loadData() async {
-    print('CourseDesignerProfilePage: Loading data for course');
+    dprint('CourseDesignerProfilePage: Loading data for course');
     var courseDesignerState = context.read<CourseDesignerState>();
     courseDesignerState.ensureInitialized();
     CourseProfile? courseProfile = courseDesignerState.courseProfile;
@@ -56,7 +57,7 @@ class _CourseDesignerProfilePageState extends State<CourseDesignerProfilePage> {
     toneController.text = courseProfile?.toneAndApproach ?? '';
     notesController.text = courseProfile?.anythingUnusual ?? '';
 
-    print('CourseDesignerProfilePage: Data loaded');
+    dprint('CourseDesignerProfilePage: Data loaded');
   }
 
   Future<void> _save() async {

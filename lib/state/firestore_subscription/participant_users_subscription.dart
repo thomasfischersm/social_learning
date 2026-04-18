@@ -2,6 +2,7 @@ import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/firestore_subscription/firestore_list_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/practice_records_subscription.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class ParticipantUsersSubscription extends FirestoreListSubscription<User> {
   final PracticeRecordsSubscription? _practiceRecordSubscription;
@@ -25,7 +26,7 @@ class ParticipantUsersSubscription extends FirestoreListSubscription<User> {
   postProcess(List<User> participantUsers) {
     _uidToUserMap = {for (var user in participantUsers) user.uid: user};
     _idToUserMap = {for (var user in participantUsers) user.id: user};
-    print('_idToUserMap: $_idToUserMap');
+    dprint('_idToUserMap: $_idToUserMap');
 
     _practiceRecordSubscription?.resubscribe((collectionReference) =>
         collectionReference

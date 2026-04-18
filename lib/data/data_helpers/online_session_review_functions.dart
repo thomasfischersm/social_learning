@@ -14,7 +14,7 @@ class OnlineSessionReviewFunctions {
         FirestoreService.instance.collection('onlineSessions').doc(session.id);
     DocumentReference? lessonRef = session.lessonId;
     if (lessonRef == null) {
-      print(
+      dprint(
           'Didn\'t create reviews for session ${session.id} because it has no lesson.');
       return;
     }
@@ -32,7 +32,7 @@ class OnlineSessionReviewFunctions {
       reviewerUid: session.mentorUid!,
       isMentor: true,
     );
-    print('Creating mentor review: ${mentorReview.toJson()}');
+    dprint('Creating mentor review: ${mentorReview.toJson()}');
     batch.set(mentorReviewRef, mentorReview.toJson());
 
     // Create the learner's pending review.
@@ -46,12 +46,12 @@ class OnlineSessionReviewFunctions {
       reviewerUid: session.learnerUid!,
       isMentor: false,
     );
-    print('Creating learner review: ${learnerReview.toJson()}');
+    dprint('Creating learner review: ${learnerReview.toJson()}');
     batch.set(learnerReviewRef, learnerReview.toJson());
 
     // Commit the batch.
     await batch.commit().onError(
-        (error, stacktrace) => print('Error creating pending reviews: $error'));
+        (error, stacktrace) => dprint('Error creating pending reviews: $error'));
   }
 
   static OnlineSessionReview _buildPendingReview({

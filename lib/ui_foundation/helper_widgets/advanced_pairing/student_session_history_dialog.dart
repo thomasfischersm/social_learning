@@ -13,6 +13,7 @@ import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class StudentSessionHistoryDialog {
   static void show(BuildContext context, User user) {
@@ -104,7 +105,7 @@ class StudentSessionHistoryDialog {
       pairing.menteeId,
       ...pairing.additionalStudentIds
     ].whereType<DocumentReference>().toList();
-    print('learnerUserIds: $learnerUserIds');
+    dprint('learnerUserIds: $learnerUserIds');
 
     // Make the current user be first (if contained in the list).
     learnerUserIds.sort((a, b) {
@@ -120,7 +121,7 @@ class StudentSessionHistoryDialog {
         .map((userRef) => organizerSessionState.getUserById(userRef.id))
         .whereType<User>()
         .toList();
-    print('learnerUsers: $learnerUsers');
+    dprint('learnerUsers: $learnerUsers');
 
     return [
     Container(

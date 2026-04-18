@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class EditLevelTitleDialog extends StatefulWidget {
   final Level level;
@@ -68,7 +69,7 @@ class EditLevelTitleDialogState extends State<EditLevelTitleDialog> {
               LibraryState libraryState = Provider.of<LibraryState>(context, listen: false);
               libraryState.updateLevel(widget.level);
 
-              print("Saved: ${_controller.text}");
+              dprint("Saved: ${_controller.text}");
               Navigator.of(context).pop();
             }
           }

@@ -4,7 +4,7 @@ import 'package:social_learning/state/firestore_subscription/firestore_document_
 class SessionSubscription extends FirestoreDocumentSubscription<Session> {
   SessionSubscription(Function() notifyChange)
       : super((snapshot) {
-          print('got a new session ${Session.fromSnapshot(snapshot).participantCount}');
+          dprint('got a new session ${Session.fromSnapshot(snapshot).participantCount}');
           return Session.fromSnapshot(snapshot);
         }, notifyChange);
 }

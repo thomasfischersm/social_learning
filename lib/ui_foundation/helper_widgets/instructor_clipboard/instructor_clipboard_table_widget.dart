@@ -11,6 +11,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 /// Table of lessons with simple checkboxes (only graduation).
 class InstructorClipboardTableWidget extends StatefulWidget {
@@ -80,15 +81,15 @@ class InstructorClipboardTableState
   }
 
   void _onCheckboxChanged(Lesson lesson, bool? checked) {
-    print('Checkbox changed: ${lesson.title} $checked');
+    dprint('Checkbox changed: ${lesson.title} $checked');
     final id = lesson.id!;
     // Only act on checking
     // if (checked == true) {
     final alreadyGraduated = _lessonState[id] == LessonState.graduated;
     if (alreadyGraduated) {
-      print('Already graduated: $id');
+      dprint('Already graduated: $id');
       _showGraduationInfo(id, lesson.title);
-      print('Graduation record: ${_graduationRecord[id]}');
+      dprint('Graduation record: ${_graduationRecord[id]}');
     } else {
       _confirmGraduation(lesson);
     }

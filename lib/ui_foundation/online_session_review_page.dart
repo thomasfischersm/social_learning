@@ -13,6 +13,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/general/star_rating
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 // TODO: Add lesson, user, and if learning or teaching.
 class OnlineSessionReviewPage extends StatefulWidget {
@@ -43,7 +44,7 @@ class OnlineSessionReviewPageState extends State<OnlineSessionReviewPage> {
 
   @override
   void initState() {
-    print('OnlineSessionReviewPage.initState start');
+    dprint('OnlineSessionReviewPage.initState start');
     super.initState();
 
     // For our rating, we consider the form complete when both ratings are > 0.
@@ -172,7 +173,7 @@ class OnlineSessionReviewPageState extends State<OnlineSessionReviewPage> {
               _otherUserUid =
                   _review.isMentor ? _review.learnerUid : _review.mentorUid;
               _otherUserLabel = _review.isMentor ? 'Learner' : 'Mentor';
-              print('OnlineSessionReviewPage has set fields $_otherUserLabel');
+              dprint('OnlineSessionReviewPage has set fields $_otherUserLabel');
 
               return FutureBuilder(
                   future: UserFunctions.getUserByUid(_otherUserUid),

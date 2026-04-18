@@ -12,6 +12,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/custom_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/dialog_utils.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class OnlineSessionSection extends StatefulWidget {
   const OnlineSessionSection({super.key});
@@ -65,7 +66,7 @@ class OnlineSessionSectionState extends State<OnlineSessionSection> {
   }
 
   void _onTeachNowPressed(List<OnlineSession>? sessionQueue) async {
-    print('Teach Now pressed. Queue size: ${sessionQueue?.length}');
+    dprint('Teach Now pressed. Queue size: ${sessionQueue?.length}');
 
     StudentState studentState =
         Provider.of<StudentState>(context, listen: false);
@@ -315,13 +316,13 @@ class OnlineSessionInitiationWidget extends StatelessWidget {
       stream: stream,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          print('${snapshot.error}');
+          dprint('${snapshot.error}');
         }
         int count = snapshot.hasData ? snapshot.data!.length : 0;
         String displayText =
             count > 0 ? '$count $roleLabel${count > 1 ? 's' : ''} waiting' : '';
 
-        print('Check sessions for $waitingRole role: $count');
+        dprint('Check sessions for $waitingRole role: $count');
 
         return Column(
           children: [

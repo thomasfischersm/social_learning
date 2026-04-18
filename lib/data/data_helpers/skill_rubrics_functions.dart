@@ -19,7 +19,7 @@ class SkillRubricsFunctions {
       if (query.docs.isEmpty) return null;
       return SkillRubric.fromSnapshot(query.docs.first);
     } catch (e) {
-      print('Error loading skill dimensions: $e');
+      dprint('Error loading skill dimensions: $e');
       return null;
     }
   }
@@ -39,7 +39,7 @@ class SkillRubricsFunctions {
       final snapshot = await docRefRubric.get();
       return SkillRubric.fromSnapshot(snapshot);
     } catch (e) {
-      print('Error ensuring skill rubric: $e');
+      dprint('Error ensuring skill rubric: $e');
       return null;
     }
   }
@@ -94,7 +94,7 @@ class SkillRubricsFunctions {
       });
       return existing;
     } catch (e) {
-      print('Error replacing skill rubric: $e');
+      dprint('Error replacing skill rubric: $e');
       return null;
     }
   }
@@ -147,7 +147,7 @@ class SkillRubricsFunctions {
         return rubric;
       }
     } catch (e) {
-      print('Error creating skill dimension: $e');
+      dprint('Error creating skill dimension: $e');
       return null;
     }
   }
@@ -183,7 +183,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error adding degree: $e');
+      dprint('Error adding degree: $e');
       return null;
     }
   }
@@ -212,7 +212,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error removing degree: $e');
+      dprint('Error removing degree: $e');
       return null;
     }
   }
@@ -234,7 +234,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error removing dimension: $e');
+      dprint('Error removing dimension: $e');
       return null;
     }
   }
@@ -262,7 +262,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error updating dimension: $e');
+      dprint('Error updating dimension: $e');
       return null;
     }
   }
@@ -294,7 +294,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error updating degree: $e');
+      dprint('Error updating degree: $e');
       return null;
     }
   }
@@ -321,7 +321,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error moving dimension: $e');
+      dprint('Error moving dimension: $e');
       return null;
     }
   }
@@ -355,7 +355,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error moving degree: $e');
+      dprint('Error moving degree: $e');
       return null;
     }
   }
@@ -385,7 +385,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error adding lesson: $e');
+      dprint('Error adding lesson: $e');
       return null;
     }
   }
@@ -421,7 +421,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error adding lesson: $e');
+      dprint('Error adding lesson: $e');
       return null;
     }
   }
@@ -453,7 +453,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error removing lesson: $e');
+      dprint('Error removing lesson: $e');
       return null;
     }
   }
@@ -499,7 +499,7 @@ class SkillRubricsFunctions {
       rubric.modifiedAt = Timestamp.now();
       return rubric;
     } catch (e) {
-      print('Error moving lesson: $e');
+      dprint('Error moving lesson: $e');
       return null;
     }
   }

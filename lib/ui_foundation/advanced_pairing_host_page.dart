@@ -28,6 +28,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 import 'package:social_learning/util/text_width_util.dart';
 import 'package:collection/collection.dart';
 
@@ -564,7 +565,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
               docRef('lessons', lesson.id!), []),
           batch);
     } else if (selectedGroup.memberParticipantIds.isEmpty) {
-      print('The group should already have been deleted.');
+      dprint('The group should already have been deleted.');
       setState(() {});
       batch.commit();
       return;
@@ -767,7 +768,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
     OrganizerSessionState organizerSessionState =
         context.read<OrganizerSessionState>();
 
-    print(
+    dprint(
         'Trying to load groupings. Got pairings ${organizerSessionState.allPairings.length}');
     Stopwatch stopWatch = Stopwatch()..start();
     List<SessionPairing> allPairings = organizerSessionState.allPairings
@@ -810,13 +811,13 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
     }
 
     if (_StudentGroup.deepEquals(groups, _lastLoadedGroups)) {
-      print('No new data from Firebase => Updating groups.');
+      dprint('No new data from Firebase => Updating groups.');
       return;
     }
     _lastLoadedGroups = groups;
 
     stopWatch.stop();
-    print(
+    dprint(
         'Rebuilt ${groups.length} groups in ${stopWatch.elapsedMilliseconds}ms.');
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -832,7 +833,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
         organizerSessionState.getParticipantByUserId(pairing.mentorId?.id);
     SessionParticipant? learnerParticipant =
         organizerSessionState.getParticipantByUserId(pairing.menteeId?.id);
-    print('Mentor lookup: pairing.mentorId = ${pairing.mentorId?.id}, '
+    dprint('Mentor lookup: pairing.mentorId = ${pairing.mentorId?.id}, '
         'mentorParticipant = $mentorParticipant');
 
     List<String> additionalLearners = [];
@@ -844,7 +845,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
       }
     }
 
-    print('Created a group from Firebase: '
+    dprint('Created a group from Firebase: '
         'id = ${pairing.id}, '
         'round = ${pairing.roundNumber}, '
         'lessonId = ${pairing.lessonId?.id}, '
@@ -934,7 +935,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
     final level = lesson?.levelId != null
         ? libraryState.findLevelByDocRef(lesson!.levelId!)
         : null;
-    print('Showing group info dialog for ${group.memberParticipantIds}');
+    dprint('Showing group info dialog for ${group.memberParticipantIds}');
     final members = group.memberParticipantIds
         .map((id) => _buildGroupMemberInfo(id, group, organizerSessionState))
         .whereType<_GroupMemberInfo>()
@@ -1030,7 +1031,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
 
     final user =
         organizerSessionState.getUserById(participant.participantId.id);
-    print(
+    dprint(
         'for participantId $participantId: Found participant $participant and $user');
     if (user == null) {
       return null;
@@ -1180,7 +1181,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
 
   String? _findMentor(List<String> participantIds, String? lessonId,
       OrganizerSessionState organizerSessionState, LibraryState libraryState) {
-    print('_findMentor out of $participantIds');
+    dprint('_findMentor out of $participantIds');
 
     // Handle a case of only one participant.
     if (participantIds.isEmpty) {
@@ -1199,12 +1200,12 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
       User? user = organizerSessionState.getUserByParticipantId(participantId);
 
       if (user == null) {
-        print('User not found for participantId $participantId.');
-        print(
+        dprint('User not found for participantId $participantId.');
+        dprint(
             'Organizer Session State contains user Ids: ${organizerSessionState.participantUsers.map((user) => user.id)}');
-        print(
+        dprint(
             'Organizer Session State contains participant Ids: ${organizerSessionState.sessionParticipants.map((participant) => participant.id)}');
-        print(
+        dprint(
             'Organizer Session State contains participant Uids: ${organizerSessionState.sessionParticipants.map((participant) => participant.participantUid)}');
         continue;
       }
@@ -1213,7 +1214,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
         qualifyingParticipantIds.add(participantId);
       }
     }
-    print(
+    dprint(
         '_findMentor: The following users have graduated the selected lesson ($lessonId): $qualifyingParticipantIds');
 
     if (qualifyingParticipantIds.length == 1) {
@@ -1233,7 +1234,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
     for (String lessonId in reversedLessonIds) {
       Lesson? lesson = libraryState.findLesson(lessonId);
       if (lesson == null) {
-        print('Couldn\'t find lesson: $lessonId');
+        dprint('Couldn\'t find lesson: $lessonId');
         continue;
       }
 
@@ -1243,12 +1244,12 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
             organizerSessionState.getUserByParticipantId(participantId)!;
         if (organizerSessionState.hasUserGraduatedLesson(user, lesson)) {
           candidateParticipantIds.add(participantId);
-          print(
+          dprint(
               'Found that participant $participantId has learned lesson ${lesson.title}');
         }
       }
 
-      print('candidateParticipantIds is $candidateParticipantIds');
+      dprint('candidateParticipantIds is $candidateParticipantIds');
       if (candidateParticipantIds.length == 1) {
         return candidateParticipantIds.first;
       }
@@ -1257,11 +1258,11 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
         qualifyingParticipantIds = candidateParticipantIds;
         break;
       }
-      print('Nobody graduated lesson ${lesson.title}. Trying the next lesson.');
+      dprint('Nobody graduated lesson ${lesson.title}. Trying the next lesson.');
     }
 
     // Find the student who was graduated first.
-    print('About to sort participants: $qualifyingParticipantIds');
+    dprint('About to sort participants: $qualifyingParticipantIds');
     qualifyingParticipantIds.sort((a, b) {
       User userA = organizerSessionState.getUserByParticipantId(a)!;
       User userB = organizerSessionState.getUserByParticipantId(b)!;
@@ -1285,7 +1286,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
       return;
     }
 
-    print('Found mentor: $mentorParticipantId from $participantIds');
+    dprint('Found mentor: $mentorParticipantId from $participantIds');
     group.mentorParticipantId = mentorParticipantId;
     participantIdsCopy.remove(mentorParticipantId);
 
@@ -1293,7 +1294,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
       group.learnerParticipantId = participantIdsCopy.first;
       participantIdsCopy.remove(group.learnerParticipantId);
       group.additionalLearnerParticipantIds = List.from(participantIdsCopy);
-      print(
+      dprint(
           'Set learner to ${group.learnerParticipantId} and additional: ${group.additionalLearnerParticipantIds}');
     } else {
       group.learnerParticipantId = null;
@@ -1302,7 +1303,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
   }
 
   void _dumpGroups(int step) {
-    print("Dumping group for step $step.");
+    dprint("Dumping group for step $step.");
     for (_StudentGroup group in _groups) {
       String msg = '- Group: ';
       if (group.mentorParticipantId != null) {
@@ -1314,7 +1315,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
       if (group.additionalLearnerParticipantIds.isNotEmpty) {
         msg += ' Additional: ${group.additionalLearnerParticipantIds}';
       }
-      print(msg);
+      dprint(msg);
     }
   }
 
@@ -1344,7 +1345,7 @@ class _AdvancedPairingHostPageState extends State<AdvancedPairingHostPage> {
           Provider.of<OrganizerSessionState>(context, listen: false);
           organizerSessionState.endSession();
 
-          print('The session has ended. Going to the level list page.');
+          dprint('The session has ended. Going to the level list page.');
           Navigator.pushNamed(context, NavigationEnum.sessionHome.route);
         });
   }

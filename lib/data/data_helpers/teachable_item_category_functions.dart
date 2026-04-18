@@ -14,24 +14,24 @@ class TeachableItemCategoryFunctions {
     required String name,
   }) async {
     try {
-      print('Adding category: $name to course: $courseId');
+      dprint('Adding category: $name to course: $courseId');
       final courseRef = docRef('courses', courseId);
 
       // Get highest sortOrder for the course
       QuerySnapshot<Map<String, dynamic>>? querySnapshot;
 
       try {
-        print('Querying for highest sortOrder for course: $courseId');
+        dprint('Querying for highest sortOrder for course: $courseId');
         querySnapshot = await _firestore
             .collection(_collectionPath)
             .where('courseId', isEqualTo: courseRef)
             .orderBy('sortOrder', descending: true)
             .limit(1)
             .get();
-        print('Query successful, found ${querySnapshot.docs.length} categories.');
+        dprint('Query successful, found ${querySnapshot.docs.length} categories.');
       } catch (e, stack) {
-        print('Firestore query failed: $e');
-        print('Stack trace:\n$stack');
+        dprint('Firestore query failed: $e');
+        dprint('Stack trace:\n$stack');
         return null; // or handle it another way
       }
 
@@ -42,7 +42,7 @@ class TeachableItemCategoryFunctions {
       final newSortOrder = currentHighestSortOrder + 1;
 
       // Create new document
-      print('Adding new category: $name with sortOrder: $newSortOrder');
+      dprint('Adding new category: $name with sortOrder: $newSortOrder');
       final categoryDocRef = await _firestore.collection(_collectionPath).add({
         'courseId': courseRef,
         'name': name,
@@ -50,14 +50,14 @@ class TeachableItemCategoryFunctions {
         'createdAt': FieldValue.serverTimestamp(),
         'modifiedAt': FieldValue.serverTimestamp(),
       });
-      print('Category added with ID: ${categoryDocRef.id}');
+      dprint('Category added with ID: ${categoryDocRef.id}');
 
       final snapshot = await categoryDocRef.get();
       if (!snapshot.exists) return null;
 
       return TeachableItemCategory.fromSnapshot(snapshot);
     } catch (e) {
-      print('Error adding category: $e');
+      dprint('Error adding category: $e');
       return null;
     }
   }
@@ -98,7 +98,7 @@ class TeachableItemCategoryFunctions {
         'modifiedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      print('Error updating category $categoryId: $e');
+      dprint('Error updating category $categoryId: $e');
       // Consider re-throwing or returning a boolean for success/failure
     }
   }
@@ -110,7 +110,7 @@ class TeachableItemCategoryFunctions {
       final categoryRef = docRef(_collectionPath, categoryId);
       final categorySnapshot = await categoryRef.get();
       if (!categorySnapshot.exists) {
-        print('Category $categoryId not found for deletion.');
+        dprint('Category $categoryId not found for deletion.');
         return;
       }
       final categoryData = categorySnapshot.data();
@@ -148,7 +148,7 @@ class TeachableItemCategoryFunctions {
 
       await batch.commit();
     } catch (e) {
-      print('Error deleting category $categoryId: $e');
+      dprint('Error deleting category $categoryId: $e');
       // Consider re-throwing or returning a boolean for success/failure
     }
   }
@@ -185,7 +185,7 @@ class TeachableItemCategoryFunctions {
 
       await batch.commit();
     } catch (e) {
-      print('Error reordering categories: $e');
+      dprint('Error reordering categories: $e');
     }
   }
 
@@ -203,7 +203,7 @@ class TeachableItemCategoryFunctions {
           .map((doc) => TeachableItemCategory.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error loading categories: $e');
+      dprint('Error loading categories: $e');
       return [];
     }
   }

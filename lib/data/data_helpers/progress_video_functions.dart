@@ -9,6 +9,7 @@ import 'package:social_learning/data/progress_video.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class ProgressVideoFunctions {
   static bool isValidYouTubeUrl(String url) {
@@ -60,7 +61,7 @@ class ProgressVideoFunctions {
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.hasError) {
-            print('Something went wrong: ${snapshot.error}');
+            dprint('Something went wrong: ${snapshot.error}');
             return const Text('Something went wrong.');
           }
 
@@ -85,7 +86,7 @@ class ProgressVideoFunctions {
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.hasError) {
-            print('Something went wrong: ${snapshot.error}');
+            dprint('Something went wrong: ${snapshot.error}');
             return const Text('Something went wrong.');
           }
 
@@ -109,7 +110,7 @@ class ProgressVideoFunctions {
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.hasError) {
-            print('Something went wrong: ${snapshot.error}');
+            dprint('Something went wrong: ${snapshot.error}');
             return const Text('Something went wrong.');
           }
 
@@ -132,7 +133,7 @@ class ProgressVideoFunctions {
   static List<ProgressVideo> convertAsyncSnapshotToSortedProgressVideos(
       AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> asyncSnapshot) {
     var snapshot = asyncSnapshot.data;
-    print('convertSnapshotToSortedProgressVideos data: $snapshot');
+    dprint('convertSnapshotToSortedProgressVideos data: $snapshot');
     if (snapshot == null) {
       return [];
     }
@@ -177,7 +178,7 @@ class ProgressVideoFunctions {
         builder: (BuildContext context,
             AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
           if (snapshot.hasError) {
-            print('Something went wrong: ${snapshot.error}');
+            dprint('Something went wrong: ${snapshot.error}');
             return const Text('Something went wrong.');
           }
 

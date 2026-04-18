@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class ProfileTextEditor extends StatefulWidget {
   final ApplicationState _applicationState;
@@ -149,7 +150,7 @@ class _ProfileTextEditorState extends State<ProfileTextEditor>
         setState(() => _isTruncated = textPainter.didExceedMaxLines);
       });
     }
-    print(
+    dprint(
         'Text is truncated: $_isTruncated, exceed max lines ${textPainter.didExceedMaxLines}, max width: $maxWidth');
   }
 }

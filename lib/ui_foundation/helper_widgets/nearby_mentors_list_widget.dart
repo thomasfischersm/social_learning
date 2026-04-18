@@ -6,6 +6,7 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/util/print_util.dart';
 
 // TODO: Implement, just copied from Gemini
 class NearbyMentorsListWidget extends StatelessWidget {
@@ -30,7 +31,7 @@ class NearbyMentorsListWidget extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          print('Error: ${snapshot.error}');
+          dprint('Error: ${snapshot.error}');
           return SelectableText('Error: ${snapshot.error}');
         }
 
@@ -49,7 +50,7 @@ class NearbyMentorsListWidget extends StatelessWidget {
         menteeUids
             .removeWhere((uid) => uid == applicationState.currentUser!.uid);
 
-        print(
+        dprint(
             'Found ${practiceRecords.length} practice records and ${menteeUids.length} mentors for lessonId: $lessonId.id');
 
         if (menteeUids.isEmpty) {
@@ -82,7 +83,7 @@ class NearbyMentorsListWidget extends StatelessWidget {
           future: usersFuture,
           builder: (context, userSnapshot) {
             if (userSnapshot.hasError) {
-              print('Error: ${userSnapshot.error}');
+              dprint('Error: ${userSnapshot.error}');
               return SelectableText('Error: ${userSnapshot.error}');
             }
 

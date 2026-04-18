@@ -20,6 +20,7 @@ import 'package:social_learning/data/data_helpers/session_plan_functions.dart';
 import 'package:social_learning/data/data_helpers/session_plan_block_functions.dart';
 import 'package:social_learning/data/data_helpers/session_plan_activity_functions.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 
 class SessionPlanContext {
@@ -198,13 +199,13 @@ class SessionPlanContext {
   }) async {
     final oldIndex = blocks.indexWhere((b) => b.id == blockId);
     if (oldIndex < 0) {
-      print('Block not found: $blockId');
+      dprint('Block not found: $blockId');
       return;
     }
 
     // Allow placing at the end
     if (newIndex < 0 || newIndex > blocks.length) {
-      print('Invalid newIndex: $newIndex');
+      dprint('Invalid newIndex: $newIndex');
       return;
     }
 

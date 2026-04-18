@@ -12,6 +12,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/general/learning_la
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
@@ -173,7 +174,7 @@ class OnlineSessionWaitingRoomState
   void initState() {
     super.initState();
     _startTimers();
-    print('started waiting room timers');
+    dprint('started waiting room timers');
   }
 
   @override
@@ -208,7 +209,7 @@ class OnlineSessionWaitingRoomState
   }
 
   void _cancelTimers() {
-    print('Canceling waiting room timers');
+    dprint('Canceling waiting room timers');
     _idleTimer?.cancel();
     _promptTimer?.cancel();
     _heartbeatTimer?.cancel();

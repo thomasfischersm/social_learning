@@ -47,7 +47,7 @@ class SessionPlanActivityFunctions {
           ? SessionPlanActivity.fromSnapshot(snapshot)
           : null;
     } catch (e) {
-      print('Error creating session plan activity: $e');
+      dprint('Error creating session plan activity: $e');
       return null;
     }
   }
@@ -91,7 +91,7 @@ class SessionPlanActivityFunctions {
           ? SessionPlanActivity.fromSnapshot(updatedSnapshot)
           : null;
     } catch (e) {
-      print('Error updating session plan activity $activityId: $e');
+      dprint('Error updating session plan activity $activityId: $e');
       return null;
     }
   }
@@ -101,7 +101,7 @@ class SessionPlanActivityFunctions {
     try {
       await docRef(_collectionPath, activityId).delete();
     } catch (e) {
-      print('Error deleting session plan activity: $e');
+      dprint('Error deleting session plan activity: $e');
     }
   }
 
@@ -118,7 +118,7 @@ class SessionPlanActivityFunctions {
           .map((doc) => SessionPlanActivity.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error fetching session plan activities by course: $e');
+      dprint('Error fetching session plan activities by course: $e');
       return [];
     }
   }
@@ -139,7 +139,7 @@ class SessionPlanActivityFunctions {
           .map((doc) => SessionPlanActivity.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error fetching session plan activities by session plan: $e');
+      dprint('Error fetching session plan activities by session plan: $e');
       return [];
     }
   }
@@ -159,7 +159,7 @@ class SessionPlanActivityFunctions {
           .map((doc) => SessionPlanActivity.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error fetching session plan activities by block: $e');
+      dprint('Error fetching session plan activities by block: $e');
       return [];
     }
   }
@@ -172,7 +172,7 @@ class SessionPlanActivityFunctions {
           ? SessionPlanActivity.fromSnapshot(snapshot)
           : null;
     } catch (e) {
-      print('Error fetching session plan activity by ID: $e');
+      dprint('Error fetching session plan activity by ID: $e');
       return null;
     }
   }

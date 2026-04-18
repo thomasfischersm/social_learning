@@ -6,6 +6,7 @@ import 'package:social_learning/session_pairing/fast/fast_session_pairing_algori
 import 'package:social_learning/session_pairing/testing/application_state_mock.dart';
 import 'package:social_learning/session_pairing/testing/library_state_mock.dart';
 import 'package:social_learning/session_pairing/testing/organizer_session_state_mock.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class SessionPairingAlgorithmPerformanceTest {
   void runForStudentCount(int studentCount) {
@@ -40,7 +41,7 @@ class SessionPairingAlgorithmPerformanceTest {
     final elapsed = stopwatch.elapsed;
     final elapsedMicroseconds = elapsed.inMicroseconds;
     final elapsedMilliseconds = elapsed.inMilliseconds;
-    print(
+    dprint(
       'SessionPairingAlgorithm pairing with $studentCount students took '
       '${elapsedMilliseconds}ms ($elapsedMicrosecondsµs)',
     );
@@ -67,13 +68,13 @@ void main() {
       stopwatch.stop();
 
       runsToTime[studentCount] = stopwatch.elapsed.inMicroseconds;
-      print('Size of times: ${runsToTime.length}');
+      dprint('Size of times: ${runsToTime.length}');
 
       List<int> keys = runsToTime.keys.toList()..sort();
       for (int key in keys) {
-        print('Students: $key, Time: ${runsToTime[key]}micro s');
+        dprint('Students: $key, Time: ${runsToTime[key]}micro s');
       }
-      print('Done!');
+      dprint('Done!');
     });
   }
 }

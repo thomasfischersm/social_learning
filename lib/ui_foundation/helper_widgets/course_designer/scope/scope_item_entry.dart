@@ -5,6 +5,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/course_designer/inv
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/scope/scope_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/value_input_dialog.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class ScopeItemEntry extends StatelessWidget {
   final TeachableItem item;
@@ -18,7 +19,7 @@ class ScopeItemEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Building scope item entry for ${item.name}');
+    dprint('Building scope item entry for ${item.name}');
 
     final tagWidgets = scopeContext
         .getTagsForItem(item)

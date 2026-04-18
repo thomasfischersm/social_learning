@@ -4,6 +4,7 @@ import 'package:social_learning/data/data_helpers/instructor_dashboard_functions
 import 'package:social_learning/ui_foundation/other_profile_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/util/print_util.dart';
 
 /// Dashboard summary showing key metrics in a 2×2 grid, fetching data in parallel.
 class InstructorDashboardSummaryWidget extends StatefulWidget {
@@ -38,7 +39,7 @@ class InstructorDashboardSummaryWidgetState
   }
 
   void _initCountsFuture() {
-    print('Initializing counts future with courseId: ${widget.courseId}');
+    dprint('Initializing counts future with courseId: ${widget.courseId}');
     if (widget.courseId != null) {
       // Kick off all three queries in parallel
       _countsFuture = Future.wait([
@@ -47,7 +48,7 @@ class InstructorDashboardSummaryWidgetState
         InstructorDashboardFunctions.getSessionsTaughtCount(widget.course!),
         InstructorDashboardFunctions.getMostAdvancedStudent(widget.courseId!),
       ]);
-      print('Counts future initialized with courseId: ${widget.courseId}');
+      dprint('Counts future initialized with courseId: ${widget.courseId}');
     } else {
       // No courseId yet: placeholders
       _countsFuture = Future.value([null, null, null, null]);

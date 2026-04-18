@@ -13,6 +13,7 @@ import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/student_state.dart';
+import 'package:social_learning/util/print_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class UserFunctions {
@@ -150,7 +151,7 @@ class UserFunctions {
     }
     String downloadURL =
         await StorageFunctions.getDownloadUrl(user.profileFireStoragePath!);
-    print('Got downlaod URL from Firebase storage for user ${user.id}: $downloadURL');
+    dprint('Got downlaod URL from Firebase storage for user ${user.id}: $downloadURL');
     return downloadURL;
   }
 
@@ -161,7 +162,7 @@ class UserFunctions {
     }
     String downloadURL = await StorageFunctions.getDownloadUrl(
         user.profileThumbnailFireStoragePath!);
-    print(
+    dprint(
         'Got thumbnail URL from Firebase storage for user ${user.id}: $downloadURL');
     return downloadURL;
   }
@@ -173,7 +174,7 @@ class UserFunctions {
     }
     String downloadURL =
         await StorageFunctions.getDownloadUrl(user.profileTinyFireStoragePath!);
-    print(
+    dprint(
         'Got tiny URL from Firebase storage for user ${user.id}: $downloadURL');
     return downloadURL;
   }
@@ -206,7 +207,7 @@ class UserFunctions {
     proficiency = proficiency.clamp(0.0, 1.0);
     proficiency = double.parse((proficiency.toStringAsFixed(2)));
     if (lessons == 1 || completedLessons == 0) {
-      print(
+      dprint(
           'Not updating proficiency because learned lessons or lesson count has not been loaded.');
       return;
     }
@@ -219,7 +220,7 @@ class UserFunctions {
     CourseProficiency? courseProficiency = user.getCourseProficiency(course);
     if (courseProficiency != null &&
         ((courseProficiency.proficiency - proficiency).abs() < 0.01)) {
-      print(
+      dprint(
           'Proficiency has not changed $proficiency. Completed lessons: $completedLessons, total lessons: $lessons.');
       return;
     }
@@ -227,7 +228,7 @@ class UserFunctions {
     // Update course proficiency.
     if (courseProficiency != null) {
       // Remove the old entry.
-      print('Removing old course proficiency.');
+      dprint('Removing old course proficiency.');
       Map<Object, Object?> data = {
         'courseProficiencies': FieldValue.arrayRemove([
           {
@@ -237,7 +238,7 @@ class UserFunctions {
         ]),
       };
       data.forEach((key, value) {
-        print('bad stuff: $key: $value');
+        dprint('bad stuff: $key: $value');
       });
       await docRef('users', user.id).update(data);
     }
@@ -260,7 +261,7 @@ class UserFunctions {
           ?.add(CourseProficiency(docRef('courses', course.id!), proficiency));
     }
 
-    print('Updated proficiency to $proficiency.');
+    dprint('Updated proficiency to $proficiency.');
   }
 
   static void updateProfileText(
@@ -313,7 +314,7 @@ class UserFunctions {
       // for iOS and Android
       PermissionStatus status = await Permission.locationWhenInUse.status;
       if (status.isGranted) {
-        print("Mobile: Location permission granted.");
+        dprint("Mobile: Location permission granted.");
       } else if (status.isDenied) {
         var permissionStatus = await Permission.locationWhenInUse.request();
         if (!permissionStatus.isGranted) {
@@ -350,7 +351,7 @@ class UserFunctions {
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       // Location services are not enabled, return or handle accordingly
-      print("Location services are disabled.");
+      dprint("Location services are disabled.");
       return false;
     }
 
@@ -361,14 +362,14 @@ class UserFunctions {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         // Permission denied, handle it here
-        print("Location permission denied.");
+        dprint("Location permission denied.");
         return false;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
       // Permissions are permanently denied
-      print("Location permission is permanently denied.");
+      dprint("Location permission is permanently denied.");
       return false;
     }
 
@@ -378,7 +379,7 @@ class UserFunctions {
         locationSettings:
             const LocationSettings(accuracy: LocationAccuracy.high),
       );
-      print(
+      dprint(
           "Current location: Lat: ${position.latitude}, Lon: ${position.longitude}");
 
       var newLocation = GeoPoint(position.latitude, position.longitude);
@@ -397,7 +398,7 @@ class UserFunctions {
 
       return true;
     } catch (e) {
-      print("Error getting location: $e");
+      dprint("Error getting location: $e");
       return false;
     }
   }
@@ -410,7 +411,7 @@ class UserFunctions {
 
     // Skip if the profile is private.
     if (applicationState.currentUser?.isProfilePrivate ?? true) {
-      print('User profile is private. Not updating practice records.');
+      dprint('User profile is private. Not updating practice records.');
       return false;
     }
 
@@ -420,7 +421,7 @@ class UserFunctions {
         haversineDistance(currentLocation, roughUserLocation) <
             minDistanceToUpdate) {
       // Don't update the practice records. The user hasn't moved enough.
-      print('User has not moved enough to update practice records.');
+      dprint('User has not moved enough to update practice records.');
       return false;
     }
 
@@ -440,7 +441,7 @@ class UserFunctions {
         });
       }
       batch.commit();
-      print(
+      dprint(
           'Updated ${snapshot.docs.length} practice records with a new geo location.');
     });
 
@@ -491,7 +492,7 @@ class UserFunctions {
         }
       }
       batch.commit();
-      print('Removed ${snapshot.docs.length} practice records geo location.');
+      dprint('Removed ${snapshot.docs.length} practice records geo location.');
     });
   }
 
@@ -621,7 +622,7 @@ class UserFunctions {
     );
 
     if (await canLaunchUrl(emailUri)) {
-      print('Launching email client with URI: $emailUri');
+      dprint('Launching email client with URI: $emailUri');
       await launchUrl(emailUri, mode: LaunchMode.externalApplication);
     } else {
       throw 'Could not launch $emailUri';

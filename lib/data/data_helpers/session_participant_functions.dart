@@ -43,7 +43,7 @@ class SessionParticipantFunctions {
     if (snapshot.docs.isEmpty) {
       return null;
     }
-    print('findActiveForUser found ${snapshot.docs.length} session participants.');
+    dprint('findActiveForUser found ${snapshot.docs.length} session participants.');
     return SessionParticipant.fromSnapshot(snapshot.docs.first);
   }
 

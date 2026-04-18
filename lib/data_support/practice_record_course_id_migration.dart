@@ -20,27 +20,27 @@ class PracticeRecordCourseIdMigration {
         final lessonSnap = await lessonRef.get();
 
         if (!lessonSnap.exists) {
-          print("Lesson not found for PracticeRecord ${record.id}. Lesson is ${lessonRef.id}");
+          dprint("Lesson not found for PracticeRecord ${record.id}. Lesson is ${lessonRef.id}");
           continue;
         }
 
         final courseId = lessonSnap['courseId'] as DocumentReference;
 
         if (record.data().containsKey('courseId')) {
-          print("Skipping PracticeRecord ${record.id}, already has courseId");
+          dprint("Skipping PracticeRecord ${record.id}, already has courseId");
           continue;
         }
         await practiceRecordsRef.doc(record.id).update({
           'courseId': courseId,
         });
 
-        print("Updated PracticeRecord ${record.id} with courseId ${courseId.id}");
+        dprint("Updated PracticeRecord ${record.id} with courseId ${courseId.id}");
       } catch (e) {
-        print("Error processing PracticeRecord ${record.id}: $e");
+        dprint("Error processing PracticeRecord ${record.id}: $e");
       }
     }
 
-    print("Backfill complete.");
+    dprint("Backfill complete.");
   }
 
   static Future<void> printPracticeRecordsMissingCourseId() async {
@@ -53,15 +53,15 @@ class PracticeRecordCourseIdMigration {
 
     for (var doc in snapshot.docs) {
       if (!doc.data().containsKey('courseId')) {
-        print('PracticeRecord missing courseId: ${doc.id}');
+        dprint('PracticeRecord missing courseId: ${doc.id}');
         missingCount++;
       }
     }
 
     if (missingCount == 0) {
-      print('✅ All practice records have a courseId.');
+      dprint('✅ All practice records have a courseId.');
     } else {
-      print('⚠️ $missingCount practice records are missing a courseId.');
+      dprint('⚠️ $missingCount practice records are missing a courseId.');
     }
   }
 
@@ -79,7 +79,7 @@ class PracticeRecordCourseIdMigration {
 
         if (!lessonSnap.exists) {
           orphanCount++;
-          print("Would delete PracticeRecord ${record.id} (lesson ${lessonRef.id} not found)");
+          dprint("Would delete PracticeRecord ${record.id} (lesson ${lessonRef.id} not found)");
 
           if (!dryRun) {
             // 🔥 Uncomment below to actually delete
@@ -87,14 +87,14 @@ class PracticeRecordCourseIdMigration {
           }
         }
       } catch (e) {
-        print("⚠️ Error checking PracticeRecord ${record.id}: $e");
+        dprint("⚠️ Error checking PracticeRecord ${record.id}: $e");
       }
     }
 
     if (orphanCount == 0) {
-      print("✅ No orphaned PracticeRecords found.");
+      dprint("✅ No orphaned PracticeRecords found.");
     } else {
-      print("⚠️ Found $orphanCount orphaned PracticeRecords.");
+      dprint("⚠️ Found $orphanCount orphaned PracticeRecords.");
     }
   }
 }

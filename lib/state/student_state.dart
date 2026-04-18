@@ -12,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:social_learning/data/data_helpers/user_functions.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class StudentState extends ChangeNotifier {
   final ApplicationState _applicationState;
@@ -127,11 +128,11 @@ class StudentState extends ChangeNotifier {
             ?.isAdmin ??
         false);
     if (hasGraduated || isAdmin) {
-      print('Recording practiceRecord.');
+      dprint('Recording practiceRecord.');
       recordTeaching(lesson.id!, lesson.courseId.id, mentee, isGraduation,
           graduationRequirementsMet);
     } else {
-      print('Silently discarding practiceRecord ${getLessonStatus(lesson)}');
+      dprint('Silently discarding practiceRecord ${getLessonStatus(lesson)}');
     }
   }
 
@@ -160,7 +161,7 @@ class StudentState extends ChangeNotifier {
       data['graduationRequirementsMet'] = graduationRequirementsMet;
     }
 
-    print('Record practice record: $data');
+    dprint('Record practice record: $data');
 
     await FirebaseFirestore.instance.collection('practiceRecords').add(data);
   }
@@ -366,7 +367,7 @@ class StudentState extends ChangeNotifier {
 
   LessonCount getCountsForLesson(Lesson lesson) {
     _init();
-    print('getCountsForLesson for ${lesson.title}');
+    dprint('getCountsForLesson for ${lesson.title}');
 
     return _lessonIdToLessonCountMap[lesson.id] ?? LessonCount();
   }
@@ -375,12 +376,12 @@ class StudentState extends ChangeNotifier {
     List<PracticeRecord>? lessonLearnRecords = _learnRecords
         ?.where((element) => element.lessonId.id == lesson.id)
         .toList();
-    print('${lesson.title} has ${lessonLearnRecords?.length} practice records.');
+    dprint('${lesson.title} has ${lessonLearnRecords?.length} practice records.');
 
     if (lessonLearnRecords == null || lessonLearnRecords.isEmpty) {
       return 0;
     } else if (lessonLearnRecords.any((element) => element.isGraduation)) {
-      print('${lesson.title} has been graduated.');
+      dprint('${lesson.title} has been graduated.');
       return 1;
     } else {
       PracticeRecord lastRecord = lessonLearnRecords.reduce((a, b) {
@@ -398,8 +399,8 @@ class StudentState extends ChangeNotifier {
           0;
 
       int requirementCount = lesson.graduationRequirements?.length ?? 0;
-      print('Practice record: /practiceRecords/${lastRecord.id}');
-      print(
+      dprint('Practice record: /practiceRecords/${lastRecord.id}');
+      dprint(
           'getLessonCompletionPercent for ${lesson.title} is ${metCount / requirementCount} and $metCount and $requirementCount');
       return requirementCount == 0
           ? 0.5
@@ -450,7 +451,7 @@ class StudentState extends ChangeNotifier {
         : _libraryState.getLessonsByLevel(levelId);
     double sum = lessons.fold(
         0, (total, lesson) => total + getLessonCompletionPercent(lesson));
-    print(
+    dprint(
         'getLevelCompletionPercent for ${level.title} is ${sum / lessons.length} and $sum and ${lessons.length}');
     return sum / lessons.length;
   }

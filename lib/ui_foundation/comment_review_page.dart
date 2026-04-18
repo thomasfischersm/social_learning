@@ -17,6 +17,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/instructor_dashboar
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class CommentReviewPage extends StatelessWidget {
   const CommentReviewPage({super.key});
@@ -48,7 +49,7 @@ class CommentReviewPage extends StatelessWidget {
                           ConnectionState.waiting) {
                         return CircularProgressIndicator();
                       } else if (commentSnapshot.hasError) {
-                        print(commentSnapshot.error);
+                        dprint(commentSnapshot.error);
                         return Text('Error: ${commentSnapshot.error}');
                       } else {
                         return FutureBuilder<List<User>>(

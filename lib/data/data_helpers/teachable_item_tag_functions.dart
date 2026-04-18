@@ -28,7 +28,7 @@ class TeachableItemTagFunctions {
       final snapshot = await tagDocRef.get();
       return TeachableItemTag.fromSnapshot(snapshot);
     } catch (e) {
-      print('Error adding tag: $e');
+      dprint('Error adding tag: $e');
       return null;
     }
   }
@@ -46,7 +46,7 @@ class TeachableItemTagFunctions {
         'modifiedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      print('Error updating tag $tagId: $e');
+      dprint('Error updating tag $tagId: $e');
     }
   }
 
@@ -76,7 +76,7 @@ class TeachableItemTagFunctions {
 
       await batch.commit();
     } catch (e) {
-      print('Error deleting tag $tagId: $e');
+      dprint('Error deleting tag $tagId: $e');
     }
   }
 
@@ -94,7 +94,7 @@ class TeachableItemTagFunctions {
           .map((doc) => TeachableItemTag.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error fetching tags for course $courseId: $e');
+      dprint('Error fetching tags for course $courseId: $e');
       return [];
     }
   }

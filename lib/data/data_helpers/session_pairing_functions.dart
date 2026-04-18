@@ -20,7 +20,7 @@ class SessionPairingFunctions {
       'isCompleted': pairing.isCompleted,
       if (pairing.isCompleted) 'completeAt': FieldValue.serverTimestamp(),
     });
-    print('Added session pairing ${newDoc.id}.');
+    dprint('Added session pairing ${newDoc.id}.');
     return newDoc.id;
   }
 
@@ -28,9 +28,9 @@ class SessionPairingFunctions {
     docRef('sessionPairings', sessionPairing.id!).update({
       'lessonId': docRef('lessons', lesson.id!),
     }).then((value) {
-      print('Added lesson to session pairing.');
+      dprint('Added lesson to session pairing.');
     }).catchError((error) {
-      print('Failed to add lesson to session pairing: $error');
+      dprint('Failed to add lesson to session pairing: $error');
     });
   }
 
@@ -38,9 +38,9 @@ class SessionPairingFunctions {
     docRef('sessionPairings', sessionPairing.id!).update({
       'lessonId': null,
     }).then((value) {
-      print('Removed lesson from session pairing.');
+      dprint('Removed lesson from session pairing.');
     }).catchError((error) {
-      print('Failed to remove lesson from session pairing: $error');
+      dprint('Failed to remove lesson from session pairing: $error');
     });
   }
 
@@ -72,7 +72,7 @@ class SessionPairingFunctions {
         'lessonId': lessonRef,
         'additionalStudentIds': additionalStudentRefs,
       });
-      print(
+      dprint(
           'Persisted to Firebase: Pairing (id = $pairingId) for mentor $mentorUserId and mentee $menteeUserId.');
     } on FirebaseException catch (exception, stackTrace) {
       debugPrint('FirebaseException: ${exception.code} – ${exception.message}');
@@ -82,28 +82,28 @@ class SessionPairingFunctions {
   }
 
   static void removePairing(String pairingId, WriteBatch batch) {
-    print('Delete session pairing $pairingId.');
+    dprint('Delete session pairing $pairingId.');
     try {
       batch.delete(docRef('sessionPairings', pairingId));
     } on FirebaseException catch (exception, stackTrace) {
-      print('Failed to remove session pairing $pairingId.');
+      dprint('Failed to remove session pairing $pairingId.');
       debugPrint('FirebaseException: ${exception.code} – ${exception.message}');
       debugPrint('Stack trace: $stackTrace');
       rethrow;
     }
-    print('Removed session pairing $pairingId.');
+    dprint('Removed session pairing $pairingId.');
   }
 
   static Future<void> completePairing(String pairingId) async {
-    print('Completing session pairing $pairingId.');
+    dprint('Completing session pairing $pairingId.');
     try {
       await docRef('sessionPairings', pairingId).update({
         'isCompleted': true,
         'completedAt': FieldValue.serverTimestamp(),
       });
     } catch (e, stack) {
-      print('Failed tup mark session pairing as completed: $e');
-      print(stack);
+      dprint('Failed tup mark session pairing as completed: $e');
+      dprint(stack);
       rethrow;
     }
   }

@@ -35,7 +35,7 @@ class LevelSync extends EntitySync<Level> {
   @override
   bool compareEntity(Level dbType, Level jsonType, int newSortOrder) {
     if (enableDebug) {
-      print(
+      dprint(
           ' EQ (level): course ${jsonType.courseId == dbType.courseId}, '
               'title ${jsonType.title == dbType.title}, '
               'description ${jsonType.description == dbType.description}, '
@@ -88,9 +88,9 @@ class LevelSync extends EntitySync<Level> {
     }
     List<dynamic>? children = currentJson['lessons'];
 
-    // print('Looking at  level\'s children ${children?.length}');
+    // dprint('Looking at  level\'s children ${children?.length}');
     if (children != null) {
-      print('handling level\'s children.$fullId');
+      dprint('handling level\'s children.$fullId');
       await _lessonSync.sync(children, fullId, isLastInvocation);
     }
   }

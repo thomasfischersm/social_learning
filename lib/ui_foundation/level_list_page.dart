@@ -13,6 +13,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.da
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/level_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class LevelListPage extends StatefulWidget {
   const LevelListPage({super.key});
@@ -26,7 +27,7 @@ class LevelListPage extends StatefulWidget {
 class LevelListState extends State<LevelListPage> {
   @override
   Widget build(BuildContext context) {
-    print('Landed on LevelListPage');
+    dprint('Landed on LevelListPage');
 
     return Consumer<LibraryState>(builder: (context, libraryState, child) {
       return Scaffold(

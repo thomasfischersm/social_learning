@@ -6,6 +6,7 @@ import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/data/session_participant.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class OrganizerSessionStateMock extends OrganizerSessionState {
   final List<SessionParticipant> _sessionParticipants = [];
@@ -83,7 +84,7 @@ class OrganizerSessionStateMock extends OrganizerSessionState {
         learnCount,
         LearningStrategyEnum.completeBeforeAdvance);
     _sessionParticipants.add(participant);
-    print('$name has user id ${user.id} and participant id ${participant.id}');
+    dprint('$name has user id ${user.id} and participant id ${participant.id}');
 
     _graduatedLessons[participant] = graduatedLessons;
   }

@@ -6,6 +6,7 @@ import 'package:social_learning/session_pairing/party_pairing/party_pairing_cont
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class InProcessPartyPairingService extends ChangeNotifier {
   final ApplicationState _applicationState;
@@ -35,7 +36,7 @@ class InProcessPartyPairingService extends ChangeNotifier {
 
     _doIncrementalPairingGuard();
 
-    print('Started InProcessPartyPairingService.');
+    dprint('Started InProcessPartyPairingService.');
     notifyListeners();
   }
 
@@ -43,12 +44,12 @@ class InProcessPartyPairingService extends ChangeNotifier {
     _organizerSessionState.removeListener(_doIncrementalPairingGuard);
     _isRunning = false;
 
-    print('Stopped InProcessPartyPairingService.');
+    dprint('Stopped InProcessPartyPairingService.');
     notifyListeners();
   }
 
   void _doIncrementalPairingGuard() {
-    print(
+    dprint(
       'Triggered incremental pairing. ('
       'isRunning: $_isRunning, '
       'isPairing: $_isPairing, '
@@ -77,15 +78,15 @@ class InProcessPartyPairingService extends ChangeNotifier {
   }
 
   void _doIncrementalPairing() {
-    print('_doIncrementalPairing is called');
+    dprint('_doIncrementalPairing is called');
     Session? currentSession = _organizerSessionState.currentSession;
     if (currentSession == null || !currentSession.isActive) {
-      print('The current session is not active.');
+      dprint('The current session is not active.');
       return;
     }
 
     int? unitSize = _getUnitSize(currentSession);
-    print('Got unit size: $unitSize');
+    dprint('Got unit size: $unitSize');
     if (unitSize == null) {
       return;
     }
@@ -99,7 +100,7 @@ class InProcessPartyPairingService extends ChangeNotifier {
     int activeParticipantCount = _organizerSessionState.sessionParticipants
         .where(
           (participant) {
-            print('Participant: '
+            dprint('Participant: '
                 'userId: ${participant.participantId.id}, '
                 'active: ${participant.isActive}, '
                 'instructor: ${participant.isInstructor}');
@@ -111,9 +112,9 @@ class InProcessPartyPairingService extends ChangeNotifier {
 
     // Handle the special case where the session size is 3 and the
     // pairing size is 3. (And 2 respectively.)
-    print('Copy of Building student roster with ${_organizerSessionState.sessionParticipants.length} participants. ${identityHashCode(_organizerSessionState)}');
-    print('currentSession.includeHostInPairing = ${currentSession.includeHostInPairing}');
-    print(
+    dprint('Copy of Building student roster with ${_organizerSessionState.sessionParticipants.length} participants. ${identityHashCode(_organizerSessionState)}');
+    dprint('currentSession.includeHostInPairing = ${currentSession.includeHostInPairing}');
+    dprint(
       'Considering starting the pairing algorithm: '
       'unitSize: $unitSize, '
       'allParticipantCount: ${_organizerSessionState.sessionParticipants.length}, '
@@ -122,7 +123,7 @@ class InProcessPartyPairingService extends ChangeNotifier {
       'activeParticipantCount: $activeParticipantCount',
     );
     if (unpairedCount >= unitSize + 1 || (activeParticipantCount == unitSize)) {
-      print('Actually doing the incremental pairing');
+      dprint('Actually doing the incremental pairing');
       PartyPairingAlgorithm(
         unitSize,
       ).pairAvailableStudentsAndPersist(pairingContext);

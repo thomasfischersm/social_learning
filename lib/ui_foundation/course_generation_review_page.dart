@@ -8,6 +8,7 @@ import 'package:social_learning/data/data_helpers/course_plan_functions.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class CourseGenerationReviewPage extends StatefulWidget {
   const CourseGenerationReviewPage({super.key});
@@ -30,10 +31,10 @@ class _CourseGenerationReviewPageState
     setState(() {
       _coursePlan = plan;
       try {
-        print('Parsing generatedJson: ${plan.generatedJson}');
+        dprint('Parsing generatedJson: ${plan.generatedJson}');
         _generatedCourse =
             GeneratedCourse.fromJsonString(plan.generatedJson ?? '');
-        print('Parsed generatedJson successfully: $_generatedCourse');
+        dprint('Parsed generatedJson successfully: $_generatedCourse');
       } catch (e, stackTrace) {
         debugPrint('Failed to parse generatedJson: $e\n$stackTrace');
       }
@@ -53,7 +54,7 @@ class _CourseGenerationReviewPageState
           enableCourseLoadingGuard: true,
           Consumer<LibraryState>(
             builder: (context, libraryState, _) {
-              print(
+              dprint(
                   'Building page: LibraryState: ${libraryState.selectedCourse} _coursePlan: $_coursePlan, _generatedCourse: $_generatedCourse}');
 
               final course = libraryState.selectedCourse;
@@ -66,15 +67,15 @@ class _CourseGenerationReviewPageState
               }
 
               if (_generatedCourse == null) {
-                print('No generated course found for course ID: ${course.id}');
+                dprint('No generated course found for course ID: ${course.id}');
                 return const Text('No generated plan available.');
               }
 
-              print('About to build listview builder ${_generatedCourse!.levels.length}');
+              dprint('About to build listview builder ${_generatedCourse!.levels.length}');
               return ListView.builder(
                 itemCount: _generatedCourse!.levels.length,
                 itemBuilder: (context, i) {
-                  print('Level count: ${_generatedCourse!.levels.length}');
+                  dprint('Level count: ${_generatedCourse!.levels.length}');
                   final level = _generatedCourse!.levels[i];
                   return _CustomExpansionTile(
                     title: Text(level.title),

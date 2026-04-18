@@ -1,5 +1,6 @@
 import 'package:social_learning/session_pairing/paired_session.dart';
 import 'package:social_learning/session_pairing/session_pairing_algorithm.dart';
+import 'package:social_learning/util/print_util.dart';
 
 import 'application_state_mock.dart';
 import 'library_state_mock.dart';
@@ -32,9 +33,9 @@ class SessionPairingAlgorithmTest {
         organizerSessionState, libraryState);
 
     // Output the result.
-    print('***** Test Result ****');
+    dprint('***** Test Result ****');
     pairedSession.debugPrint();
-    print('********************');
+    dprint('********************');
 
     // Evaluate the result.
     // Evaluate the result.
@@ -61,9 +62,9 @@ class SessionPairingAlgorithmTest {
         organizerSessionState, libraryState);
 
     // Output the result.
-    print('***** Test Result ****');
+    dprint('***** Test Result ****');
     pairedSession.debugPrint();
-    print('********************');
+    dprint('********************');
 
     // Evaluate the result.
     PairedSessionTester(pairedSession, organizerSessionState)
@@ -95,9 +96,9 @@ class SessionPairingAlgorithmTest {
         organizerSessionState, libraryState);
 
     // Output the result.
-    print('***** Test Result ****');
+    dprint('***** Test Result ****');
     pairedSession.debugPrint();
-    print('********************');
+    dprint('********************');
 
     // Evaluate the result.
     PairedSessionTester(pairedSession, organizerSessionState)
@@ -126,9 +127,9 @@ class SessionPairingAlgorithmTest {
         organizerSessionState, libraryState);
 
     // Output the result.
-    print('***** Test Result ****');
+    dprint('***** Test Result ****');
     pairedSession.debugPrint();
-    print('********************');
+    dprint('********************');
 
     // Evaluate the result.
     PairedSessionTester(pairedSession, organizerSessionState)
@@ -153,9 +154,9 @@ class SessionPairingAlgorithmTest {
     PairedSession pairedSession = algorithm.generateNextSessionPairing(
         organizerSessionState, libraryState);
 
-    print('***** Test Result ****');
+    dprint('***** Test Result ****');
     pairedSession.debugPrint();
-    print('********************');
+    dprint('********************');
 
     PairedSessionTester(pairedSession, organizerSessionState)
         .assertPair('C', 'A', 'Lesson 1000')

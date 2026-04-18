@@ -11,6 +11,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/online_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 enum WaitingRole {
   waitingForLearner, // Waiting for a learner (sessions initiated by a mentor)
@@ -46,7 +47,7 @@ class OnlineSessionFunctions {
       'lessonId': session.lessonId,
     };
 
-    print('Creating online session with data: $sessionData');
+    dprint('Creating online session with data: $sessionData');
 
     return await _onlineSessionsCollection.add(sessionData);
   }
@@ -78,7 +79,7 @@ class OnlineSessionFunctions {
     DateTime validSince = DateTime.now().subtract(HEARTBEAT_EXPIRATION);
     Timestamp validSinceTimestamp = Timestamp.fromDate(validSince);
 
-    print('Check validSinceTimestamp: $validSinceTimestamp');
+    dprint('Check validSinceTimestamp: $validSinceTimestamp');
 
     Query<Map<String, dynamic>> query = _onlineSessionsCollection
         .where('courseId', isEqualTo: docRef('courses', courseId!))
@@ -241,7 +242,7 @@ class OnlineSessionFunctions {
       DateTime lastActive = session.lastActive!.toDate();
       var isSessionActive = lastActive.isAfter(validSince) &&
           session.status == OnlineSessionStatus.waiting;
-      print('Session ${session.id} is active: $isSessionActive');
+      dprint('Session ${session.id} is active: $isSessionActive');
       return isSessionActive;
     }).toList();
 
@@ -263,10 +264,10 @@ class OnlineSessionFunctions {
 
     // Iterate over the eligible sessions.
     for (OnlineSession session in activeSessions) {
-      print('Considering session: ${session.id}');
+      dprint('Considering session: ${session.id}');
       // Ask the external method if the current user can partner on this session.
       DocumentReference? lessonRef = await canPartner(session, context);
-      print('Found suggested lesson: $lessonRef');
+      dprint('Found suggested lesson: $lessonRef');
       if (lessonRef != null) {
         // A good match is found. Build the update data.
 
@@ -302,7 +303,7 @@ class OnlineSessionFunctions {
   static Future<bool> pairWithTransaction(
       BuildContext context, String sessionId, DocumentReference lessonRef,
       {String? learnerUid, String? mentorUid}) async {
-    print('Pairing with session: $sessionId');
+    dprint('Pairing with session: $sessionId');
     if (learnerUid == null && mentorUid == null) {
       throw Exception('Either learnerUid or mentorUid must be provided.');
     }
@@ -310,23 +311,23 @@ class OnlineSessionFunctions {
     // Start transaction.
     bool success = false;
     await FirestoreService.instance.runTransaction((transaction) async {
-      print('Start transaction to pair with session: $sessionId');
+      dprint('Start transaction to pair with session: $sessionId');
       var sessionRef = docRef('onlineSessions', sessionId);
       DocumentSnapshot<Map<String, dynamic>> snapshot =
           await transaction.get(sessionRef);
       if (!snapshot.exists) {
-        print('Session does not exist.');
+        dprint('Session does not exist.');
         return;
       }
       OnlineSession session = OnlineSession.fromSnapshot(snapshot);
 
       if (learnerUid != null && session.learnerUid != null) {
-        print('Session already has a learner.');
+        dprint('Session already has a learner.');
         return;
       }
 
       if (mentorUid != null && session.mentorUid != null) {
-        print('Session already has a mentor.');
+        dprint('Session already has a mentor.');
         return;
       }
 
@@ -347,10 +348,10 @@ class OnlineSessionFunctions {
 
       transaction.update(sessionRef, data);
       success = true;
-      print('Transaction completed for session: $sessionId');
+      dprint('Transaction completed for session: $sessionId');
     });
 
-    print('Online session pair transaction result: $success');
+    dprint('Online session pair transaction result: $success');
     if (success) {
       OnlineSession session = await getOnlineSession(sessionId);
       OnlineSessionState onlineSessionState =
@@ -393,17 +394,17 @@ class OnlineSessionFunctions {
             ? thisStudentLessonIds
             : otherStudentLessonIds)
         .toSet();
-    print(
+    dprint(
         'Trying pairing. Mentor lesson count: ${mentorLessonIds.length}. Learner lesson count: ${learnerLessonIds.length}');
 
     for (String lessonId in thisStudentLessonIds) {
-      print('This student lesson: $lessonId');
+      dprint('This student lesson: $lessonId');
     }
 
     List<Lesson>? lessons = libraryState.lessons;
     if (lessons != null) {
       for (Lesson lesson in lessons) {
-        print(
+        dprint(
             'Trying to partner lesson: ${lesson.id} ${lesson.title} mentor: ${mentorLessonIds.contains(lesson.id)} learner: ${learnerLessonIds.contains(lesson.id)}; this student: ${thisStudentLessonIds.contains(lesson.id)} other student: ${otherStudentLessonIds.contains(lesson.id)}');
         // TODO: Handle that admin can teach everything.
         if (mentorLessonIds.contains(lesson.id) &&
@@ -434,7 +435,7 @@ class OnlineSessionFunctions {
 
     return OnlineSessionReview.fromSnapshot(snapshot.docs.first);
     // } catch(e) {
-    //   print('Error getting pending review: $e');
+    //   dprint('Error getting pending review: $e');
     //   rethrow;
     // }
   }

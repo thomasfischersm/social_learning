@@ -13,6 +13,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/instructor_dashboar
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 const int _maxBottomLabels = 12;
 
@@ -82,7 +83,7 @@ class StudentPopulationAnalyticsPage extends StatelessWidget {
       }
     }
 
-    print(
+    dprint(
         'Built data for ${rows.length} lessons and ${practiceRecords.length} practice records');
 
     return rows;
@@ -448,7 +449,7 @@ class _ChartConfig {
       graduationSpots.add(FlSpot(x, row.graduationCount.toDouble()));
       totalSpots.add(FlSpot(x, row.totalCount.toDouble()));
     }
-    print('Graduation spot count: ${graduationSpots.length}');
+    dprint('Graduation spot count: ${graduationSpots.length}');
 
     final rawMaxY = totalSpots
         .map((spot) => spot.y)

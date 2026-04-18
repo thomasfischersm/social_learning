@@ -60,7 +60,7 @@ class TeachableItemFunctions {
 
       return TeachableItem.fromSnapshot(snapshot);
     } catch (e) {
-      print('Error adding item: $e');
+      dprint('Error adding item: $e');
       return null;
     }
   }
@@ -128,7 +128,7 @@ class TeachableItemFunctions {
           .doc(itemId)
           .update(dataToUpdate);
     } catch (e) {
-      print('Error updating item $itemId: $e');
+      dprint('Error updating item $itemId: $e');
     }
   }
 
@@ -137,7 +137,7 @@ class TeachableItemFunctions {
       final itemRef = _firestore.collection(_collectionPath).doc(itemId);
       final itemSnapshot = await itemRef.get();
       if (!itemSnapshot.exists) {
-        print('Item $itemId not found for deletion.');
+        dprint('Item $itemId not found for deletion.');
         return;
       }
       final itemData = itemSnapshot.data();
@@ -161,7 +161,7 @@ class TeachableItemFunctions {
       }
       await batch.commit();
     } catch (e) {
-      print('Error deleting item $itemId: $e');
+      dprint('Error deleting item $itemId: $e');
     }
   }
 
@@ -175,7 +175,7 @@ class TeachableItemFunctions {
         'modifiedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      print('Error assigning tag to item $itemId: $e');
+      dprint('Error assigning tag to item $itemId: $e');
     }
   }
 
@@ -189,7 +189,7 @@ class TeachableItemFunctions {
         'modifiedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      print('Error removing tag from item $itemId: $e');
+      dprint('Error removing tag from item $itemId: $e');
     }
   }
 
@@ -301,7 +301,7 @@ class TeachableItemFunctions {
         await batch.commit();
       }
     } catch (e) {
-      print('Error reordering items: $e');
+      dprint('Error reordering items: $e');
     }
   }
 
@@ -319,7 +319,7 @@ class TeachableItemFunctions {
           .map((doc) => TeachableItem.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error loading items: $e');
+      dprint('Error loading items: $e');
       return [];
     }
   }
@@ -335,7 +335,7 @@ class TeachableItemFunctions {
       }
       return null;
     } catch (e) {
-      print('Error fetching item $itemId: $e');
+      dprint('Error fetching item $itemId: $e');
       return null;
     }
   }
@@ -361,7 +361,7 @@ class TeachableItemFunctions {
           ? TeachableItem.fromSnapshot(updatedSnapshot)
           : null;
     } catch (e) {
-      print('Error adding dependency to item ${target.id}: $e');
+      dprint('Error adding dependency to item ${target.id}: $e');
       return null;
     }
   }
@@ -385,7 +385,7 @@ class TeachableItemFunctions {
           ? TeachableItem.fromSnapshot(updatedSnapshot)
           : null;
     } catch (e) {
-      print('Error removing dependency from item ${target.id}: $e');
+      dprint('Error removing dependency from item ${target.id}: $e');
       return null;
     }
   }
@@ -422,7 +422,7 @@ class TeachableItemFunctions {
           ? TeachableItem.fromSnapshot(updatedSnapshot)
           : null;
     } catch (e) {
-      print('Error toggling dependency for item ${target.id}: $e');
+      dprint('Error toggling dependency for item ${target.id}: $e');
       return null;
     }
   }
@@ -430,7 +430,7 @@ class TeachableItemFunctions {
   static void updateInclusionStatuses(
       Set<TeachableItem> needToSelect, Set<TeachableItem> needToDeselect) {
     if (needToSelect.isEmpty && needToDeselect.isEmpty) {
-      print('No items to update inclusion statuses for.');
+      dprint('No items to update inclusion statuses for.');
       return;
     }
 
@@ -453,7 +453,7 @@ class TeachableItemFunctions {
     }
 
     batch.commit().catchError((e) {
-      print('Error updating inclusion statuses: $e');
+      dprint('Error updating inclusion statuses: $e');
     });
   }
 
@@ -463,7 +463,7 @@ class TeachableItemFunctions {
       'inclusionStatus': item.inclusionStatus.toInt(),
       'modifiedAt': FieldValue.serverTimestamp(),
     }).catchError((e) {
-      print('Error updating inclusion status for item ${item.id}: $e');
+      dprint('Error updating inclusion status for item ${item.id}: $e');
     });
   }
 
@@ -474,7 +474,7 @@ class TeachableItemFunctions {
       'durationInMinutes': newDurationOverride,
       'modifiedAt': FieldValue.serverTimestamp(),
     }).catchError((e) {
-      print('Error updating duration override for item ${item.id}: $e');
+      dprint('Error updating duration override for item ${item.id}: $e');
     });
   }
 

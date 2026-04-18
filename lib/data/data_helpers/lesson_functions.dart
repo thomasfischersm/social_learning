@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/lesson.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class LessonFunctions {
   static StreamSubscription<List<Lesson>> listenLessons(
@@ -36,7 +37,7 @@ class LessonFunctions {
       if (lessonId == null) {
         continue;
       }
-      print('### Batch: Set sort order for ${lesson.title} from ${lesson.sortOrder} to ${lesson.sortOrder}');
+      dprint('### Batch: Set sort order for ${lesson.title} from ${lesson.sortOrder} to ${lesson.sortOrder}');
       batch.update(
           docRef(
             'lessons',

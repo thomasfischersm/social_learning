@@ -8,6 +8,8 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/data/user.dart';
 
+import '../../util/print_util.dart';
+
 class FastPairingContext {
   final OrganizerSessionState organizerSessionState;
   final LibraryState libraryState;
@@ -117,8 +119,8 @@ class FastPairingContext {
   }
 
   void debugPrintAll(String label) {
-    print('-------------------------------');
-    print('FastPairingContext dump: $label');
+    dprint('-------------------------------');
+    dprint('FastPairingContext dump: $label');
 
     _debugPrintUsers('All participants', allActiveParticipants);
     _debugPrintUsers('Teaching group', teachingGroup);
@@ -128,17 +130,17 @@ class FastPairingContext {
   }
 
   void _debugPrintUsers(String label, List<SessionParticipant> participants) {
-    print('\n$label:');
+    dprint('\n$label:');
     for (var participant in participants) {
       var user = userByParticipant[participant];
-      print('  Participant ID: ${participant.id}, User: ${user?.displayName}');
+      dprint('  Participant ID: ${participant.id}, User: ${user?.displayName}');
     }
   }
 
   void _debugPrintPairs() {
-    print('\nLearner Pairs:');
+    dprint('\nLearner Pairs:');
     for (var pair in pairs) {
-      print(
+      dprint(
           '  Mentor: ${pair.teachingParticipant.id} (${pair.teachingUser.displayName}) -> Mentee: ${pair.learningParticipant.id} (${pair.learningUser.displayName}), Lesson: ${pair.lesson?.title}');
     }
   }

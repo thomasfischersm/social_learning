@@ -16,6 +16,7 @@ import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/state/student_session_state.dart';
 import 'package:social_learning/state/student_state.dart';
 import 'package:social_learning/state/course_analytics_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class ApplicationState extends ChangeNotifier {
   ApplicationState() {
@@ -33,7 +34,7 @@ class ApplicationState extends ChangeNotifier {
       UserFunctions.updateDisplayName(uid, newDisplayName);
     }
 
-    print('ApplicationState.notifyListeners because of displayName update');
+    dprint('ApplicationState.notifyListeners because of displayName update');
     notifyListeners();
   }
 
@@ -80,9 +81,9 @@ class ApplicationState extends ChangeNotifier {
   }
 
   Future<void> _initUser() async {
-    print('ApplicationState: _initUser called');
+    dprint('ApplicationState: _initUser called');
     if (_isLoggedIn && !_isCurrentUserInitialized) {
-      print('ApplicationState: Actually initializing the user');
+      dprint('ApplicationState: Actually initializing the user');
       _isCurrentUserInitialized = true;
       _currentUser = await UserFunctions.getCurrentUser();
 
@@ -103,13 +104,13 @@ class ApplicationState extends ChangeNotifier {
             .update({'email': currentAuthEmail});
       }
 
-      print('ApplicationState about to complete the future.');
+      dprint('ApplicationState about to complete the future.');
       if (_initializationCompleter.isCompleted) {
         // If the completer is already completed, we need to create a new one.
         _initializationCompleter = Completer<void>();
       }
       _initializationCompleter.complete();
-      print('ApplicationState completed the future.');
+      dprint('ApplicationState completed the future.');
       notifyListeners();
     }
 
@@ -122,7 +123,7 @@ class ApplicationState extends ChangeNotifier {
     ]);
 
     auth.FirebaseAuth.instance.idTokenChanges().listen((auth.User? user) {
-      print('FirebaseAuth state changed: user=$user');
+      dprint('FirebaseAuth state changed: user=$user');
       if (user == null) {
         _isLoggedIn = false;
         _isLoggedOut = true;
@@ -175,9 +176,9 @@ class ApplicationState extends ChangeNotifier {
   }
 
   Future<void> signOut(BuildContext context) async {
-    print('Start signOut');
+    dprint('Start signOut');
     auth.FirebaseAuth.instance.signOut();
-    print('FirebaseAuth signOut done');
+    dprint('FirebaseAuth signOut done');
 
     _isLoggedIn = false;
     _isLoggedOut = true;
@@ -216,7 +217,7 @@ class ApplicationState extends ChangeNotifier {
         Provider.of<OnlineSessionState>(context, listen: false);
     onlineSessionState.signOut();
 
-    print('End signOut');
+    dprint('End signOut');
   }
 
   void setIsProfilePrivate(
@@ -238,7 +239,7 @@ class ApplicationState extends ChangeNotifier {
       UserFunctions.updateGeoLocation(applicationState);
     }
 
-    print(
+    dprint(
         'ApplicationState.notifyListeners because of isProfilePrivate update');
     notifyListeners();
   }

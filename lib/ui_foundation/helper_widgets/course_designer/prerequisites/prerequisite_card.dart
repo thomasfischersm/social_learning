@@ -3,6 +3,7 @@ import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/decomposed_course_designer_card.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/prerequisites/prerequisite_context.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/prerequisites/prerequisite_item_entry.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class PrerequisitesCard extends StatelessWidget {
   final PrerequisiteContext context;
@@ -112,7 +113,7 @@ class PrerequisitesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Building prerequisites card for: ${focusedItem?.name ?? 'null'}');
+    dprint('Building prerequisites card for: ${focusedItem?.name ?? 'null'}');
     return focusedItem == null
         ? _buildViewForAllItemsWithDependencies()
         : _buildViewForFocusedItem();

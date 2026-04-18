@@ -13,6 +13,7 @@ import 'package:social_learning/util/list_util.dart';
 
 import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/session_pairing/party_pairing/lesson_picker.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class PartyPairingAlgorithm {
   final int unitSize;
@@ -60,7 +61,7 @@ class PartyPairingAlgorithm {
     } while (candidatePairingUnitSet != lastCandidate);
 
     stopwatch.stop();
-    print('Pairing algorithm took ${stopwatch.elapsed}');
+    dprint('Pairing algorithm took ${stopwatch.elapsed}');
 
     return candidatePairingUnitSet;
   }
@@ -146,7 +147,7 @@ class PartyPairingAlgorithm {
     );
 
     PairingUnitSet result = PairingUnitSet(pairingUnits, leftOverParticipants);
-    print('Created the initial pairing candidate.');
+    dprint('Created the initial pairing candidate.');
     result.debugPrint();
     return result;
   }
@@ -198,7 +199,7 @@ class PartyPairingAlgorithm {
     List<ScoredParticipant> leftOverParticipants,
     PartyPairingContext pairingContext,
   ) {
-    print(
+    dprint(
       'Creating desperate pairings for ${leftOverParticipants.length} participants.',
     );
     // Start with participants who have already learned the most because they
@@ -214,7 +215,7 @@ class PartyPairingAlgorithm {
         (leftOverParticipants.length + hardLeftOverParticipants.length >=
             unitSize)) {
       ScoredParticipant learnerCandidate = leftOverParticipants.removeAt(0);
-      print(
+      dprint(
         'Attempting desperate pairing for ${learnerCandidate.user.displayName}',
       );
 
@@ -294,7 +295,7 @@ class PartyPairingAlgorithm {
     // because this method sadly operates by side effect.
     leftOverParticipants.addAll(hardLeftOverParticipants);
 
-    print('Finished desperate pairings with '
+    dprint('Finished desperate pairings with '
         '${leftOverParticipants.length} leftOver participants and '
         '${hardLeftOverParticipants.length} hardLeftOverParticipants.');
 
@@ -311,22 +312,22 @@ class PartyPairingAlgorithm {
     if (originalSet.pairingUnits.length < breakCount) {
       return;
     }
-    print(
+    dprint(
       'Attempting break and repair on ${originalSet.pairingUnits.length} '
       'units with a breakCount of $breakCount',
     );
 
     int debugCombinationCounter = 0;
     originalSet.pairingUnits.forEachCombination(breakCount, (brokenUnits) {
-      print('Looping breakAndRepair for combination ${debugCombinationCounter++}');
+      dprint('Looping breakAndRepair for combination ${debugCombinationCounter++}');
       List<PairingUnitSet> newSets = breakAndRepairTuples(
         originalSet,
         brokenUnits,
         pairingContext,
       );
-      print('Break and repair worked on this originalSet:');
+      dprint('Break and repair worked on this originalSet:');
       originalSet.debugPrintSingleLine();
-      print('Got ${newSets.length} repair sets.');
+      dprint('Got ${newSets.length} repair sets.');
 
       // Evaluate new sets.
       for (PairingUnitSet newSet in newSets) {
@@ -335,7 +336,7 @@ class PartyPairingAlgorithm {
         PairingScorer.score(candidatePairingUnitSet!, newSet);
 
         candidatePairingUnitSet?.debugPrintSingleLine();
-        print('vs.');
+        dprint('vs.');
         newSet.debugPrintSingleLine();
 
         if ((newSet.score.totalScore ?? 0) >
@@ -358,7 +359,7 @@ class PartyPairingAlgorithm {
     List<ScoredParticipant> availableParticipants =
         brokenUnits.expand((u) => [u.mentor, ...u.learners]).toSet().toList()
           ..addAll(originalSet.leftOverParticipants);
-    print('breakAndRepairTuples has '
+    dprint('breakAndRepairTuples has '
         '${availableParticipants.length} available participants from '
         '${originalSet.leftOverParticipants.length} leftover participants and '
         '${brokenUnits.expand((u) => [u.mentor, ...u.learners]).toSet().toList().length} '
@@ -372,7 +373,7 @@ class PartyPairingAlgorithm {
     ) {
       // Create the new PairingUnitSet.
       List<ScoredParticipant> participantsFromFailedUnits = [];
-      print('breakAndRepairTuples got a new grouping.');
+      dprint('breakAndRepairTuples got a new grouping.');
 
       List<PairingUnit> newlyFormedUnits = listOfListOfParticipants
           .map((participants) {

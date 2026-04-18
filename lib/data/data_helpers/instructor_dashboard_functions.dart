@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/util/print_util.dart';
 
 /// Collection of helper functions for the Instructor Dashboard.
 class InstructorDashboardFunctions {
@@ -56,7 +57,7 @@ class InstructorDashboardFunctions {
           .get();
       return agg.count;
     } catch (e) {
-      print(e);
+      dprint(e);
       return null;
     }
   }
@@ -64,7 +65,7 @@ class InstructorDashboardFunctions {
   /// Returns the ID of the most advanced student for this course,
   /// or null if none has been recorded yet.
   static Future<String?> _getTopStudentId(String courseId) async {
-    print('Fetching top student ID for course $courseId');
+    dprint('Fetching top student ID for course $courseId');
     try {
       final analyticsSnap = await FirestoreService.instance
           .collection('courseAnalytics')
@@ -74,8 +75,8 @@ class InstructorDashboardFunctions {
       if (!analyticsSnap.exists) return null;
       return analyticsSnap.data()?['topStudentId'] as String?;
     } catch (e, stack) {
-      print('Error fetching top student ID for course $courseId: $e');
-      print(stack);
+      dprint('Error fetching top student ID for course $courseId: $e');
+      dprint(stack);
       return null;
     }
   }
@@ -84,16 +85,16 @@ class InstructorDashboardFunctions {
   /// or null if there isn’t one yet.
   static Future<User?> getMostAdvancedStudent(String courseId) async {
     final topId = await _getTopStudentId(courseId);
-    print('Top student ID: $topId');
+    dprint('Top student ID: $topId');
     if (topId == null) {
-      print('No top student ID found for course $courseId');
+      dprint('No top student ID found for course $courseId');
       return null;
     }
 
     final userSnap =
         await FirestoreService.instance.collection('users').doc(topId).get();
 
-    print('Got most advanced student: ${userSnap.data()}');
+    dprint('Got most advanced student: ${userSnap.data()}');
     return userSnap.exists ? User.fromSnapshot(userSnap) : null;
   }
 

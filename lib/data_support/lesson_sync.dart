@@ -26,7 +26,7 @@ class LessonSync extends EntitySync<Lesson> {
   @override
   bool compareEntity(Lesson dbType, Lesson jsonType, int newSortOrder) {
     if (enableDebug) {
-      print(' EQ (lesson): course ${jsonType.courseId == dbType.courseId}, '
+      dprint(' EQ (lesson): course ${jsonType.courseId == dbType.courseId}, '
           'title ${jsonType.title == dbType.title}, '
           'synopsis ${jsonType.synopsis == dbType.synopsis}, '
           'instructions ${jsonType.instructions == dbType.instructions}, '
@@ -73,7 +73,7 @@ class LessonSync extends EntitySync<Lesson> {
   @override
   void updateEntity(
       Lesson dbType, Lesson jsonType, String fullParentId, int sortOrder) {
-    print('Update lesson with level id $fullParentId');
+    dprint('Update lesson with level id $fullParentId');
     var docRef = createRef(dbType.id!);
     String rawParentId = fullParentId.substring(fullParentId.lastIndexOf('/') + 1);
     transaction.set(

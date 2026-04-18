@@ -19,6 +19,7 @@ import 'package:social_learning/data/data_helpers/lesson_functions.dart';
 import 'package:social_learning/data/data_helpers/level_functions.dart';
 import 'package:social_learning/data/data_helpers/lesson_comment_functions.dart';
 import 'package:social_learning/data/data_helpers/user_functions.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class LibraryState extends ChangeNotifier {
   final ApplicationState _applicationState;
@@ -58,7 +59,7 @@ class LibraryState extends ChangeNotifier {
         UserFunctions.updateCurrentCourse(currentUser, courseId);
       }
 
-      print('LibraryState.notifyListeners because of selectedCourse');
+      dprint('LibraryState.notifyListeners because of selectedCourse');
       SchedulerBinding.instance.addPostFrameCallback((_) {
         notifyListeners();
       });
@@ -97,18 +98,18 @@ class LibraryState extends ChangeNotifier {
   }
 
   Future<void> initialize() async {
-    print('LibraryState.initialize called');
+    dprint('LibraryState.initialize called');
     if (_isInitialized) {
-      print('LibraryState.initialize: Instant return of the future.');
+      dprint('LibraryState.initialize: Instant return of the future.');
       return _initializationCompleter.future;
     }
     _isInitialized = true;
 
-    print(
+    dprint(
         'LibraryState.initialize: Blocking on waiting for user to be signed in');
     final currentCourseId =
         (await _applicationState.currentUserBlocking)?.currentCourseId?.id;
-    print(
+    dprint(
         'LibraryState.initialize: currentUser = ${_applicationState.currentUser}');
 
     final futures = <Future<void>>[loadCourseList()];
@@ -126,9 +127,9 @@ class LibraryState extends ChangeNotifier {
       }
     }
 
-    print('LibraryState.initialize: Complete the future.');
+    dprint('LibraryState.initialize: Complete the future.');
     _initializationCompleter.complete();
-    print('LibraryState.initialize: Completed the future.');
+    dprint('LibraryState.initialize: Completed the future.');
     notifyListeners();
     return _initializationCompleter.future;
   }
@@ -145,10 +146,10 @@ class LibraryState extends ChangeNotifier {
       if (!publicCompleter.isCompleted) {
         publicCompleter.complete();
       }
-      print('Loaded ${_publicCourses.length} public courses');
+      dprint('Loaded ${_publicCourses.length} public courses');
       notifyListeners();
     }, onError: (error, stackTrace) {
-      print('Failed to load public courses: $error');
+      dprint('Failed to load public courses: $error');
     });
 
     await Future.wait([publicCompleter.future, _reloadEnrolledCourses()]);
@@ -163,14 +164,14 @@ class LibraryState extends ChangeNotifier {
       _enrolledPrivateCourses =
           await CourseFunctions.fetchEnrolledPrivateCourses(enrolledCourseIds);
       _rebuildAvailableCourses();
-      print('Loaded ${_enrolledPrivateCourses.length} enrolled courses');
+      dprint('Loaded ${_enrolledPrivateCourses.length} enrolled courses');
       notifyListeners();
     } else {
       if (_enrolledPrivateCourses.isNotEmpty) {
         _enrolledPrivateCourses = [];
         _rebuildAvailableCourses();
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          print(
+          dprint(
               'LibraryState.notifyListeners because of reload private courses.');
           notifyListeners();
         });
@@ -201,7 +202,7 @@ class LibraryState extends ChangeNotifier {
         if (!completer.isCompleted) {
           completer.complete();
         }
-        print('Loaded ${_lessons?.length} lessons');
+        dprint('Loaded ${_lessons?.length} lessons');
         notifyListeners();
       });
 
@@ -220,7 +221,7 @@ class LibraryState extends ChangeNotifier {
         if (!completer.isCompleted) {
           completer.complete();
         }
-        print('Loaded ${_levels?.length} levels');
+        dprint('Loaded ${_levels?.length} levels');
         notifyListeners();
       });
 
@@ -336,12 +337,12 @@ class LibraryState extends ChangeNotifier {
   }
 
   void _setSortOrder(Lesson lesson, int newSortOrder) async {
-    print(
+    dprint(
         '### Set sort order for ${lesson.title} from ${lesson.sortOrder} to $newSortOrder');
     try {
       await LessonFunctions.setSortOrder(lesson.id!, newSortOrder);
     } catch (e, stackTrace) {
-      print('Failed to set sort order: $e');
+      dprint('Failed to set sort order: $e');
       debugPrintStack(stackTrace: stackTrace);
     }
   }
@@ -682,7 +683,7 @@ class LibraryState extends ChangeNotifier {
     for (Level level in levels!) {
       for (Lesson lesson in getLessonsByLevel(level.id!)) {
         if (lesson.sortOrder != sortOrder) {
-          print(
+          dprint(
               '!!! Fixing sort order for ${lesson.title} from ${lesson.sortOrder} to $sortOrder');
           _setSortOrder(lesson, sortOrder);
         }
@@ -695,7 +696,7 @@ class LibraryState extends ChangeNotifier {
         .sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
     for (Lesson lesson in unattachedLessons) {
       if (lesson.sortOrder != sortOrder) {
-        print(
+        dprint(
             '!!! Fixing sort order for ${lesson.title} from ${lesson.sortOrder} to $sortOrder');
         _setSortOrder(lesson, sortOrder);
       }
@@ -709,11 +710,11 @@ class LibraryState extends ChangeNotifier {
   }
 
   deleteLessonComment(LessonComment comment) async {
-    print('Deleting comment: ${comment.id}');
+    dprint('Deleting comment: ${comment.id}');
     try {
       await LessonCommentFunctions.deleteLessonComment(comment);
     } catch (error, stackTrace) {
-      print('Failed to delete comment: $error');
+      dprint('Failed to delete comment: $error');
       debugPrintStack(stackTrace: stackTrace);
     }
   }

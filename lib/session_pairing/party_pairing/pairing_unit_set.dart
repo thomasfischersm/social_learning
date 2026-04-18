@@ -2,6 +2,7 @@ import 'package:social_learning/session_pairing/party_pairing/pairing_score.dart
 import 'package:social_learning/session_pairing/party_pairing/pairing_score_type.dart';
 import 'package:social_learning/session_pairing/party_pairing/pairing_unit.dart';
 import 'package:social_learning/session_pairing/party_pairing/scored_participant.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class PairingUnitSet {
   final List<PairingUnit> pairingUnits;
@@ -43,26 +44,26 @@ class PairingUnitSet {
   }
 
   void debugPrint() {
-    print('----- start pairing unit set ----');
+    dprint('----- start pairing unit set ----');
 
     for (int i = 0; i < pairingUnits.length; i++) {
-      print('$i. PairingUnit');
+      dprint('$i. PairingUnit');
       PairingUnit pairingUnit = pairingUnits[i];
-      print('Lesson: ${pairingUnit.lesson.title}');
-      print('Mentor: ${pairingUnit.mentor.user.displayName}');
+      dprint('Lesson: ${pairingUnit.lesson.title}');
+      dprint('Mentor: ${pairingUnit.mentor.user.displayName}');
 
       for (ScoredParticipant scoredParticipant in pairingUnit.learners) {
-        print('Learner: ${scoredParticipant.user.displayName}');
+        dprint('Learner: ${scoredParticipant.user.displayName}');
       }
-      print('');
+      dprint('');
     }
 
-    print('Leftover participants');
+    dprint('Leftover participants');
     for (ScoredParticipant scoredParticipant in leftOverParticipants) {
-      print('- ${scoredParticipant.user.displayName}');
+      dprint('- ${scoredParticipant.user.displayName}');
     }
 
-    print('----- end pairing unit set ----');
+    dprint('----- end pairing unit set ----');
   }
 
   void debugPrintSingleLine() {
@@ -100,6 +101,6 @@ class PairingUnitSet {
     }
     sb.write('}');
 
-    print(sb);
+    dprint(sb);
   }
 }

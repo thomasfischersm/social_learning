@@ -10,6 +10,7 @@ import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class PartyPairingContext {
   final ApplicationState applicationState;
@@ -122,11 +123,11 @@ class PartyPairingContext {
         .map((entry) => entry.key)
         .toList();
 
-    print(
+    dprint(
       'Most constraint participants (${mostConstrainedParticipantsFirst.length}):',
     );
     for (ScoredParticipant participant in mostConstrainedParticipantsFirst) {
-      print('-${participant.user.displayName}');
+      dprint('-${participant.user.displayName}');
     }
   }
 

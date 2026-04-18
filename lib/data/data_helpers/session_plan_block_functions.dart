@@ -31,7 +31,7 @@ class SessionPlanBlockFunctions {
       final snapshot = await docRefBlock.get();
       return snapshot.exists ? SessionPlanBlock.fromSnapshot(snapshot) : null;
     } catch (e) {
-      print('Error creating session plan block: $e');
+      dprint('Error creating session plan block: $e');
       return null;
     }
   }
@@ -54,7 +54,7 @@ class SessionPlanBlockFunctions {
       final snapshot = await doc.get();
       return snapshot.exists ? SessionPlanBlock.fromSnapshot(snapshot) : null;
     } catch (e) {
-      print('Error updating session plan block $blockId: $e');
+      dprint('Error updating session plan block $blockId: $e');
       return null;
     }
   }
@@ -64,7 +64,7 @@ class SessionPlanBlockFunctions {
     try {
       await docRef(_collectionPath, blockId).delete();
     } catch (e) {
-      print('Error deleting session plan block: $e');
+      dprint('Error deleting session plan block: $e');
     }
   }
 
@@ -81,7 +81,7 @@ class SessionPlanBlockFunctions {
           .map((doc) => SessionPlanBlock.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error fetching session plan blocks by course: $e');
+      dprint('Error fetching session plan blocks by course: $e');
       return [];
     }
   }
@@ -101,7 +101,7 @@ class SessionPlanBlockFunctions {
           .map((doc) => SessionPlanBlock.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error fetching session plan blocks by session plan: $e');
+      dprint('Error fetching session plan blocks by session plan: $e');
       return [];
     }
   }
@@ -112,7 +112,7 @@ class SessionPlanBlockFunctions {
       final snapshot = await docRef(_collectionPath, blockId).get();
       return snapshot.exists ? SessionPlanBlock.fromSnapshot(snapshot) : null;
     } catch (e) {
-      print('Error fetching session plan block by ID: $e');
+      dprint('Error fetching session plan block by ID: $e');
       return null;
     }
   }

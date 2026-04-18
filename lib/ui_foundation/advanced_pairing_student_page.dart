@@ -18,6 +18,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widget
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class AdvancedPairingStudentArgument {
   final String sessionId;
@@ -190,7 +191,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
     final currentPairing = studentSessionState.currentPairing;
 
     if (currentUserId == null || currentPairing == null) {
-      print(
+      dprint(
         '_isMentoringActiveRound: return false because of $currentUserId || $currentPairing',
       );
       return false;
@@ -200,7 +201,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
         currentPairing.mentorId?.id == currentUserId &&
         !currentPairing.isCompleted;
 
-    print(
+    dprint(
       'check _isMentoringActiveRound: '
       '${currentPairing.mentorId?.id == currentUserId} '
       '&& ${!currentPairing.isCompleted} '

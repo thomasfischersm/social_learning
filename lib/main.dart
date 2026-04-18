@@ -62,6 +62,7 @@ import 'package:social_learning/ui_foundation/sign_in_page.dart';
 import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 import 'package:social_learning/ui_foundation/create_skill_assessment_page.dart';
 import 'package:social_learning/ui_foundation/view_skill_assessment_page.dart';
+import 'package:social_learning/util/print_util.dart';
 
 import 'firebase_options.dart';
 import 'ui_foundation/profile_page.dart';
@@ -142,24 +143,24 @@ void main() async {
 class DebugObserver extends NavigatorObserver {
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    print('didPush ${route.settings.name} $route');
-    // print(StackTrace.current);
+    dprint('didPush ${route.settings.name} $route');
+    // dprint(StackTrace.current);
   }
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    print('didPop ${route.settings.name}');
+    dprint('didPop ${route.settings.name}');
   }
 
   @override
   void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    print('didRemove ${route.settings.name}');
+    dprint('didRemove ${route.settings.name}');
   }
 
   @override
   void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) {
-    print('didReplace ${newRoute?.settings.name}');
-    // print(StackTrace.current);
+    dprint('didReplace ${newRoute?.settings.name}');
+    // dprint(StackTrace.current);
   }
 }
 

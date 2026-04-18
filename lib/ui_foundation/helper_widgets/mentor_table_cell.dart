@@ -4,6 +4,7 @@ import 'package:social_learning/data/session_pairing.dart';
 import 'package:social_learning/data/user.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/user_table_cell.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class MentorTableCell extends UserTableCell {
   final Lesson? lesson;
@@ -33,7 +34,7 @@ class MentorTableCell extends UserTableCell {
 
     // Remove users that are already in pairings.
     List<SessionPairing>? currentRound = organizerSessionState.lastRound;
-    print('Participant users: ${organizerSessionState.participantUsers.length} and currentRound: ${currentRound?.length}');
+    dprint('Participant users: ${organizerSessionState.participantUsers.length} and currentRound: ${currentRound?.length}');
     if (currentRound != null) {
       for (SessionPairing pairing in currentRound) {
         var mentorId = pairing.mentorId;

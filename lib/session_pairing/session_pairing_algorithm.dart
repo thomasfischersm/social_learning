@@ -8,6 +8,7 @@ import 'package:social_learning/session_pairing/lesson_count_list.dart';
 import 'package:social_learning/session_pairing/paired_session.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/state/organizer_session_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class SessionPairingAlgorithm {
   PairedSession generateNextSessionPairing(
@@ -15,7 +16,7 @@ class SessionPairingAlgorithm {
     // Generate all possible pairings.
     List<PairedSession> possiblePairings =
         _generatePossiblePairings(organizerSessionState, libraryState);
-    print('(1) Generated possible pairings: ${possiblePairings.length}');
+    dprint('(1) Generated possible pairings: ${possiblePairings.length}');
     for (var element in possiblePairings) {
       element.debugPrint();
     }
@@ -24,17 +25,17 @@ class SessionPairingAlgorithm {
     for (var pairedSession in possiblePairings) {
       pairedSession.removePairsWithoutLesson();
     }
-    print('(2) Removed pairs without a lesson: ${possiblePairings.length}');
+    dprint('(2) Removed pairs without a lesson: ${possiblePairings.length}');
 
     // Only keep the pairings with the least amount of unpaired participants.
     _keepOnlyPairingsWithTheLeastUnpairedParticipants(possiblePairings);
-    print(
+    dprint(
         '(3) Removed pairings with the least amount of unpaired participants: ${possiblePairings.length}');
 
     // Only keep the pairings that balance out the best how much students have
     // taught and learned.
     _keepOnlyPairingsWithTheMostBalancedLearnTeachCount(possiblePairings);
-    print(
+    dprint(
         '(4) Removed pairings that balance out the best how much students have taught and learned: ${possiblePairings.length}');
 
     // Only keep the pairings that spread the rarest lessons. In the ideal case,
@@ -42,7 +43,7 @@ class SessionPairingAlgorithm {
     // introduces to the first student.
     possiblePairings = _returnOnlyPairingsWithTheRarestLessons(
         possiblePairings, organizerSessionState);
-    print(
+    dprint(
         '(5) Removed pairings that spread the rarest lessons: ${possiblePairings.length}');
 
     // TODO: Consider diversity.
@@ -129,7 +130,7 @@ class SessionPairingAlgorithm {
       SessionParticipant participantB,
       OrganizerSessionState organizerSessionState,
       LibraryState libraryState) {
-    print('Picking best lesson for ${participantA.id} and ${participantB.id}');
+    dprint('Picking best lesson for ${participantA.id} and ${participantB.id}');
     User? userA = organizerSessionState.getUser(participantA);
     List<Lesson> teachableLessons =
         organizerSessionState.getGraduatedLessons(participantA);
@@ -145,7 +146,7 @@ class SessionPairingAlgorithm {
     } else if (userA?.isAdmin ?? false) {
       // If the teacher is an instructor, pick the lesson that's next for the
       // learner.
-      print('_pickBestLesson: instructor teaching');
+      dprint('_pickBestLesson: instructor teaching');
       var tmp = libraryState.lessons;
       if (tmp != null) {
         List<Lesson> courseLessons = List.from(tmp);
@@ -153,7 +154,7 @@ class SessionPairingAlgorithm {
             lessonA.sortOrder.compareTo(lessonB.sortOrder));
         Set<Lesson> alreadyLearnedLessonsSet = alreadyLearnedLessons.toSet();
         for (var element in alreadyLearnedLessonsSet) {
-          print('lesson learned: ${element.title}');
+          dprint('lesson learned: ${element.title}');
         }
         courseLessons
             .removeWhere((lesson) => alreadyLearnedLessonsSet.contains(lesson));

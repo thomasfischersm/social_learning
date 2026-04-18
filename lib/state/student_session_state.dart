@@ -18,6 +18,7 @@ import 'package:social_learning/ui_foundation/advanced_pairing_student_page.dart
 import 'package:social_learning/ui_foundation/session_student_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/util/list_util.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class StudentSessionState extends ChangeNotifier {
   bool get isInitialized => _sessionSubscription.isInitialized;
@@ -45,7 +46,7 @@ class StudentSessionState extends ChangeNotifier {
       if (_sessionSubscription.item?.isActive == false) {
         _resetSession();
       }
-      print(
+      dprint(
         'StudentSessionState.notifyListeners because the session subscription changed',
       );
       notifyListeners();
@@ -58,7 +59,7 @@ class StudentSessionState extends ChangeNotifier {
       false,
       true,
       () {
-        print(
+        dprint(
           'StudentSessionState.notifyListeners because session participants subscription changed',
         );
         notifyListeners();
@@ -68,7 +69,7 @@ class StudentSessionState extends ChangeNotifier {
       _applicationState,
     );
     _sessionPairingSubscription = SessionPairingsSubscription(() {
-      print(
+      dprint(
         'StudentSessionState.notifyListeners because session pairing subscription changed',
       );
       notifyListeners();
@@ -111,7 +112,7 @@ class StudentSessionState extends ChangeNotifier {
   }
 
   void _checkForOngoingSession() {
-    print(
+    dprint(
       'StudentSessionState._checkForOngoingSession() for user ${_applicationState.currentUser?.id}',
     );
 
@@ -119,7 +120,7 @@ class StudentSessionState extends ChangeNotifier {
     var currentCourse = _libraryState.selectedCourse;
     if ((currentUser == _lastUser) && (currentCourse == _lastCourse)) {
       // No change. Ignore!
-      print('User and course haven\'t changed.');
+      dprint('User and course haven\'t changed.');
       return;
     }
     _lastUser = currentUser;
@@ -127,24 +128,24 @@ class StudentSessionState extends ChangeNotifier {
 
     if (currentUser == null) {
       // Clear any session.
-      print('User is gone.');
+      dprint('User is gone.');
       _resetSession();
       return;
     }
 
     if (currentCourse == null) {
-      print('Trying to check for ongoing session, but no course is selected!');
+      dprint('Trying to check for ongoing session, but no course is selected!');
       return;
     }
 
-    print('Checking active session for user ${currentUser.id}');
+    dprint('Checking active session for user ${currentUser.id}');
     SessionParticipantFunctions.findActiveForUser(
           currentUser.id,
           currentCourse.id!,
         )
         .then((sessionParticipant) {
           if (sessionParticipant != null) {
-            print(
+            dprint(
               'Trying to automatically log into session '
               '${sessionParticipant.sessionId.id} '
               '(session: ${sessionParticipant.sessionId.id}), '
@@ -158,7 +159,7 @@ class StudentSessionState extends ChangeNotifier {
           }
         })
         .catchError((error) {
-          print(
+          dprint(
             'Error getting active participants for the current session: $error',
           );
           _resetSession();
@@ -217,7 +218,7 @@ class StudentSessionState extends ChangeNotifier {
   Future<void> _resetSession() async {
     await signOut();
 
-    print('StudentSessionState.notifyListeners because the session was reset');
+    dprint('StudentSessionState.notifyListeners because the session was reset');
     notifyListeners();
   }
 
@@ -229,7 +230,7 @@ class StudentSessionState extends ChangeNotifier {
   }
 
   Future<void> completeCurrentPairing() async {
-    print(
+    dprint(
       'Attempting to complete pairing by id ${_applicationState.currentUser?.id} and uid ${_applicationState.currentUser?.uid}',
     );
     final pairing = currentPairing;
@@ -296,7 +297,7 @@ class StudentSessionState extends ChangeNotifier {
   }) {
     Session? targetSession = session ?? currentSession;
     SessionType? targetSessionType = sessionType ?? targetSession?.sessionType;
-    print(
+    dprint(
       'Active session ${targetSession?.id} has sessionType $targetSessionType',
     );
 

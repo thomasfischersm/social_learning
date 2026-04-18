@@ -27,6 +27,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/lesson_cover_image_
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/youtube_video_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 import 'package:social_learning/util/string_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -59,21 +60,21 @@ class LessonDetailState extends State<LessonDetailPage> {
 
   @override
   void initState() {
-    print('LessonDetailState.initState');
+    dprint('LessonDetailState.initState');
     super.initState();
 
     Future.microtask(() {
       setState(() {
-        print('LessonDetailState.initState Future.microtask');
+        dprint('LessonDetailState.initState Future.microtask');
         Lesson? lesson = _getLesson(null, context);
         if (lesson != null) {
           setState(() {
             int sectionCount = _countInstructionSections(lesson);
-            print(
+            dprint(
                 'LessonDetailState.initState Future.microtask setState $sectionCount');
             _isSectionExpanded = List.filled(max(1, sectionCount), false);
             _isSectionExpanded[0] = true;
-            print('Size of _isSectionExpanded: ${_isSectionExpanded.length}');
+            dprint('Size of _isSectionExpanded: ${_isSectionExpanded.length}');
           });
         }
       });
@@ -299,7 +300,7 @@ class LessonDetailState extends State<LessonDetailPage> {
             ? _isSectionExpanded[sectionIndex]
             : false;
         final int savedIndex = sectionIndex;
-        print(
+        dprint(
             'Size of _isSectionExpanded: ${_isSectionExpanded.length} and sectionIndex: $sectionIndex and savedIndex: $savedIndex and isExpanded: $isExpanded');
 
         str = str.substring(0, str.length - 3);
@@ -402,7 +403,7 @@ class LessonDetailState extends State<LessonDetailPage> {
   }
 
   void _toggleSectionExpanded(int sectionIndex) {
-    print('Toggling section $sectionIndex');
+    dprint('Toggling section $sectionIndex');
     setState(() {
       if (_isSectionExpanded.length > sectionIndex) {
         if (_isSectionExpanded[sectionIndex]) {
@@ -413,7 +414,7 @@ class LessonDetailState extends State<LessonDetailPage> {
           }
         }
       } else {
-        print('Section index $sectionIndex out of bounds');
+        dprint('Section index $sectionIndex out of bounds');
       }
     });
   }
@@ -449,7 +450,7 @@ class LessonDetailState extends State<LessonDetailPage> {
   Widget _createCommentsView(
       Lesson lesson, BuildContext context, ApplicationState applicationState) {
     DocumentReference lessonId = docRef('lessons', lesson.id!);
-    print('Querying for comments for lesson: $lessonId');
+    dprint('Querying for comments for lesson: $lessonId');
     Widget commentColumn = StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
             .collection('lessonComments')
@@ -457,7 +458,7 @@ class LessonDetailState extends State<LessonDetailPage> {
             // .orderBy('createdAt', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
-          print(
+          dprint(
               'StreamBuilder came back with ${snapshot.connectionState} and ${snapshot.data} and ${snapshot.data?.docs.length}');
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -478,7 +479,7 @@ class LessonDetailState extends State<LessonDetailPage> {
           });
           var userIds =
               comments.map((comment) => comment.creatorId.id).toSet().toList();
-          print('UserIds: $userIds');
+          dprint('UserIds: $userIds');
 
           return FutureBuilder(
               future: FirebaseFirestore.instance
@@ -486,7 +487,7 @@ class LessonDetailState extends State<LessonDetailPage> {
                   .where(FieldPath.documentId, whereIn: userIds)
                   .get(),
               builder: (context, userSnapshot) {
-                print(
+                dprint(
                     'FutureBuilder is called with userSnapshot $userSnapshot');
                 if (userSnapshot.data == null) {
                   return const Center(child: CircularProgressIndicator());
@@ -578,12 +579,12 @@ class LessonDetailState extends State<LessonDetailPage> {
 
   void _sendComment(Lesson lesson, ApplicationState applicationState) {
     // Send the comment
-    print('send clicked');
+    dprint('send clicked');
     if (_commentController.text.isNotEmpty) {
       String comment = _commentController.text;
       _commentController.clear();
 
-      print('attempting to create comment');
+      dprint('attempting to create comment');
       LessonCommentFunctions.addLessonComment(
           lesson, comment, applicationState.currentUser!);
     }

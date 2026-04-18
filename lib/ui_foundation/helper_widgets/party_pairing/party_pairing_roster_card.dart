@@ -15,6 +15,7 @@ import 'package:social_learning/ui_foundation/instructor_clipboard_page.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class PartyPairingRosterCard extends StatelessWidget {
   const PartyPairingRosterCard({super.key});
@@ -313,7 +314,7 @@ class PartyPairingRosterCard extends StatelessWidget {
     List<SessionParticipant> participants = List<SessionParticipant>.from(
       organizerSessionState.sessionParticipants,
     );
-    print('Building student roster with ${organizerSessionState.sessionParticipants.length} participants. ${identityHashCode(organizerSessionState)}');
+    dprint('Building student roster with ${organizerSessionState.sessionParticipants.length} participants. ${identityHashCode(organizerSessionState)}');
     Map<String, int> lessonIndexById = <String, int>{
       for (int i = 0; i < orderedLessons.length; i++) orderedLessons[i].id!: i
     };

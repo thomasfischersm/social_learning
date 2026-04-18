@@ -4,6 +4,7 @@ import 'package:social_learning/data/online_session.dart';
 import 'package:social_learning/data/online_session_review.dart';
 import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class OnlineSessionState extends ChangeNotifier {
   final ApplicationState applicationState;
@@ -26,7 +27,7 @@ class OnlineSessionState extends ChangeNotifier {
     _attemptInit();
 
     applicationState.addListener(() {
-      print('OnlineSessionState received applicationState change');
+      dprint('OnlineSessionState received applicationState change');
       _attemptInit();
       if (applicationState.currentUser == null) {
         signOut();
@@ -34,7 +35,7 @@ class OnlineSessionState extends ChangeNotifier {
     });
 
     libraryState.addListener(() {
-      print('OnlineSessionState received libraryState change');
+      dprint('OnlineSessionState received libraryState change');
       String? newCourseId = libraryState.selectedCourse?.id;
       if (newCourseId != _courseId) {
         _courseId = newCourseId;
@@ -51,7 +52,7 @@ class OnlineSessionState extends ChangeNotifier {
   }
 
   void _attemptInit() {
-    print('OnlineSessionState._attemptInit: isInitialized: $isInitialized, currentUser: ${applicationState.currentUser}');
+    dprint('OnlineSessionState._attemptInit: isInitialized: $isInitialized, currentUser: ${applicationState.currentUser}');
     if (!isInitialized && (applicationState.currentUser != null)) {
       isInitialized = true;
 
@@ -112,18 +113,18 @@ class OnlineSessionState extends ChangeNotifier {
   Future<void> _loadPendingReview() async {
     String? localCourseId = _courseId;
     if (localCourseId == null) {
-      print('OnlineSessionState._loadPendingReview: No course selected.');
+      dprint('OnlineSessionState._loadPendingReview: No course selected.');
       _pendingReview = null;
       notifyListeners();
       return;
     }
 
-    print('Attempt to load pending review for course $localCourseId');
+    dprint('Attempt to load pending review for course $localCourseId');
     String currentUserUid = applicationState.currentUser!.uid;
     _pendingReview = await OnlineSessionFunctions.getPendingReview(
         currentUserUid, localCourseId);
     notifyListeners();
-    print('Succeeded to load pending review for course $localCourseId, review: $pendingReview');
+    dprint('Succeeded to load pending review for course $localCourseId, review: $pendingReview');
   }
 
   /// Called when a session enters the waiting state.

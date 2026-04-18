@@ -28,8 +28,8 @@ class CloudFunctions {
         .timeout(const Duration(minutes: 10));
 
     if (response.statusCode != 200) {
-      print('Cloud Run call failed: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      dprint('Cloud Run call failed: ${response.statusCode}');
+      dprint('Response body: ${response.body}');
       throw Exception('Cloud Run call failed: ${response.body}');
     }
   }
@@ -67,8 +67,8 @@ class CloudFunctions {
         .timeout(const Duration(minutes: 10));
 
     if (response.statusCode != 200) {
-      print('Cloud Run call failed: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      dprint('Cloud Run call failed: ${response.statusCode}');
+      dprint('Response body: ${response.body}');
       throw Exception('Cloud Run call failed: ${response.body}');
     }
 
@@ -109,8 +109,8 @@ class CloudFunctions {
         .timeout(const Duration(minutes: 10));
 
     if (response.statusCode != 200) {
-      print('Cloud Run call failed: ${response.statusCode}');
-      print('Response body: ${response.body}');
+      dprint('Cloud Run call failed: ${response.statusCode}');
+      dprint('Response body: ${response.body}');
       throw Exception('Cloud Run call failed: ${response.body}');
     }
 

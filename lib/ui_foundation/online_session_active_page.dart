@@ -14,6 +14,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/general/learning_la
 import 'package:social_learning/ui_foundation/helper_widgets/session_widgets/active_online_session_card.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class OnlineSessionActivePage extends StatefulWidget {
   const OnlineSessionActivePage({super.key});
@@ -39,7 +40,7 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
                   builder: (context, applicationState, onlineSessionState,
                       libraryState, child) {
             String? sessionId = onlineSessionState.activeSession?.id;
-            print('Active onnline session page has sessionId: $sessionId');
+            dprint('Active onnline session page has sessionId: $sessionId');
             if (sessionId == null) {
               return Center(
                   child: CircularProgressIndicator(color: Colors.red));
@@ -47,7 +48,7 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
               return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                   stream: OnlineSessionFunctions.getSessionStream(sessionId),
                   builder: (context, snapshot) {
-                    print('Active page has snapshot: ${snapshot.data}');
+                    dprint('Active page has snapshot: ${snapshot.data}');
                     if (!snapshot.hasData) {
                       return Center(
                           child:
@@ -88,14 +89,14 @@ class OnlineSessionActiveState extends State<OnlineSessionActivePage> {
                     return FutureBuilder(
                         future: UserFunctions.getUserByUid(otherUserUid!),
                         builder: (context, userSnapshot) {
-                          print(
+                          dprint(
                               'Active online session page has other user: ${userSnapshot.data}');
                           if (!userSnapshot.hasData) {
                             return Center(
                                 child: CircularProgressIndicator(
                                     color: Colors.pink));
                           } else {
-                            print('Active session page is ready to render.');
+                            dprint('Active session page is ready to render.');
                             return ActiveOnlineSessionCard(
                                 session: session,
                                 currentUser: applicationState.currentUser!,

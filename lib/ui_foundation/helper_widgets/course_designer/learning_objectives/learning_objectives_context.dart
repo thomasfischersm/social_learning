@@ -95,7 +95,7 @@ class LearningObjectivesContext {
   }
 
   addObjective(String name) async {
-    print('(In context) Adding objective: $name');
+    dprint('(In context) Adding objective: $name');
     // Determine the next sort order.
     int sortOrder = learningObjectives.isEmpty
         ? 0

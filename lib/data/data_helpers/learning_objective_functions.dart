@@ -23,7 +23,7 @@ class LearningObjectiveFunctions {
           .map((doc) => LearningObjective.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error loading objectives: $e');
+      dprint('Error loading objectives: $e');
       return [];
     }
   }
@@ -36,7 +36,7 @@ class LearningObjectiveFunctions {
     String? description,
     List<DocumentReference>? teachableItemIds,
   }) async {
-    print(
+    dprint(
         'LearningObjectiveFunctions: Saving objective: $id, courseId: $courseId, sortOrder: $sortOrder, name: $name, description: $description, teachableItemIds: $teachableItemIds');
     try {
       final courseRef = docRef('courses', courseId);
@@ -59,7 +59,7 @@ class LearningObjectiveFunctions {
         return LearningObjective.fromSnapshot(snapshot);
       }
     } catch (e) {
-      print('Error saving objective: $e');
+      dprint('Error saving objective: $e');
       return null;
     }
   }
@@ -74,7 +74,7 @@ class LearningObjectiveFunctions {
         'modifiedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      print('Error adding teachable item: $e');
+      dprint('Error adding teachable item: $e');
     }
   }
 
@@ -88,7 +88,7 @@ class LearningObjectiveFunctions {
         'modifiedAt': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      print('Error removing teachable item: $e');
+      dprint('Error removing teachable item: $e');
     }
   }
 
@@ -96,7 +96,7 @@ class LearningObjectiveFunctions {
     try {
       await docRef(_collectionPath, objective.id!).delete();
     } catch (e) {
-      print('Error deleting objective ${objective.id}: $e');
+      dprint('Error deleting objective ${objective.id}: $e');
     }
   }
 
@@ -118,7 +118,7 @@ class LearningObjectiveFunctions {
       {required String courseId,
       required String name,
       required int sortOrder}) async {
-    print(
+    dprint(
         'Adding objective: courseId: $courseId, name: $name, sortOrder: $sortOrder');
     name = name.trim();
     final courseRef = docRef('courses', courseId);

@@ -8,6 +8,7 @@ import 'package:social_learning/state/application_state.dart';
 import 'package:social_learning/state/firestore_subscription/firestore_list_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/participant_users_subscription.dart';
 import 'package:social_learning/state/firestore_subscription/session_subscription.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class SessionParticipantsSubscription
     extends FirestoreListSubscription<SessionParticipant> {
@@ -62,7 +63,7 @@ class SessionParticipantsSubscription
           .collection('sessions')
           .doc(session.id)
           .update({'participantCount': activeCount});
-      print('_updateParticipantCount($activeCount)');
+      dprint('_updateParticipantCount($activeCount)');
     }
   }
 
@@ -88,13 +89,13 @@ class SessionParticipantsSubscription
     final matching = sessionParticipants
         .where((p) => p.participantUid == currentUser.uid)
         .toList();
-    print(
+    dprint(
         'Found ${matching.length} matching participants for ${currentUser.uid}');
 
     if (matching.isEmpty) {
       if (!_isJoinPending) {
         _isJoinPending = true;
-        print('Student added itself as a participant (pending join)');
+        dprint('Student added itself as a participant (pending join)');
         SessionParticipantFunctions.createParticipant(
           sessionId: session.id!,
           userId: currentUser.id,
@@ -102,23 +103,23 @@ class SessionParticipantsSubscription
           courseId: session.courseId.id,
           isInstructor: currentUser.isAdmin,
         ).then((documentReference) {
-          print(
+          dprint(
               'Participant document created for ${currentUser.uid}: ${documentReference.id}');
         }).catchError((error, stackTrace) {
-          print(
+          dprint(
               'Failed to create participant document for ${currentUser.uid}: $error');
         }).whenComplete(() {
           _isJoinPending = false;
-          print('Join attempt completed for ${currentUser.uid}');
+          dprint('Join attempt completed for ${currentUser.uid}');
         });
       } else {
-        print('Join already pending for ${currentUser.uid}, skipping.');
+        dprint('Join already pending for ${currentUser.uid}, skipping.');
       }
       return;
     }
 
     if (matching.length > 1) {
-      print(
+      dprint(
           'Warning: multiple participant records found for user ${currentUser.uid}');
     }
 
@@ -127,22 +128,22 @@ class SessionParticipantsSubscription
     }
 
     final existing = matching.first;
-    print('Reactivating existing participant document: ${existing.id}');
+    dprint('Reactivating existing participant document: ${existing.id}');
     SessionParticipantFunctions.updateIsActive(existing.id!, true);
   }
 
   SessionParticipant? getParticipantByParticipantId(String participantId) {
-    print('getParticipantByParticipantId for $participantId to look through '
+    dprint('getParticipantByParticipantId for $participantId to look through '
         '${items.map((participant) => participant.id)}');
     return items
         .firstWhereOrNull((participant) => participant.id == participantId);
   }
 
   SessionParticipant? getParticipantByUserId(String userId) {
-    print('getParticipantByUserId for $userId to look through '
+    dprint('getParticipantByUserId for $userId to look through '
         '${items.map((participant) => participant.participantId.id)}');
-    print('Participant.id = ${items.map((participant) => participant.id)}');
-    print('user.uid = ${items.map((participant) => participant.participantUid)}');
+    dprint('Participant.id = ${items.map((participant) => participant.id)}');
+    dprint('user.uid = ${items.map((participant) => participant.participantUid)}');
     return items.firstWhereOrNull(
         (participant) => participant.participantId.id == userId);
   }

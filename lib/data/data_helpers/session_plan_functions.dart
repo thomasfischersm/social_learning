@@ -27,7 +27,7 @@ class SessionPlanFunctions {
           ? SessionPlan.fromSnapshot(snapshot)
           : null;
     } catch (e) {
-      print('Error creating session plan: $e');
+      dprint('Error creating session plan: $e');
       return null;
     }
   }
@@ -35,24 +35,24 @@ class SessionPlanFunctions {
   static Future<SessionPlan> getOrCreateSessionPlanForCourse(String courseId) async {
     final courseRef = docRef('courses', courseId);
     try {
-      print('Fetching session plan for course: $courseId');
+      dprint('Fetching session plan for course: $courseId');
       final query = await _firestore
           .collection(_collectionPath)
           .where('courseId', isEqualTo: courseRef)
           .limit(1)
           .get();
-      print('Session plan query returned ${query.docs.length} documents');
+      dprint('Session plan query returned ${query.docs.length} documents');
 
       if (query.docs.isNotEmpty) {
         return SessionPlan.fromSnapshot(query.docs.first);
       }
     } on FirebaseException catch (e) {
-      print('Error fetching session plan for course $courseId: ${e.code} ${e.message}');
+      dprint('Error fetching session plan for course $courseId: ${e.code} ${e.message}');
       rethrow;
     }
 
     try {
-      print('No session plan found for $courseId; creating new plan');
+      dprint('No session plan found for $courseId; creating new plan');
       final docRefPlan = await _firestore.collection(_collectionPath).add({
         'courseId': courseRef,
         'name': 'Session Plan',
@@ -61,10 +61,10 @@ class SessionPlanFunctions {
       });
 
       final snapshot = await docRefPlan.get();
-      print('Created session plan ${docRefPlan.id} for course $courseId');
+      dprint('Created session plan ${docRefPlan.id} for course $courseId');
       return SessionPlan.fromSnapshot(snapshot);
     } on FirebaseException catch (e) {
-      print('Error creating session plan for course $courseId: ${e.code} ${e.message}');
+      dprint('Error creating session plan for course $courseId: ${e.code} ${e.message}');
       rethrow;
     }
   }
@@ -88,7 +88,7 @@ class SessionPlanFunctions {
           ? SessionPlan.fromSnapshot(updatedSnapshot)
           : null;
     } catch (e) {
-      print('Error updating session plan $sessionPlanId: $e');
+      dprint('Error updating session plan $sessionPlanId: $e');
       return null;
     }
   }
@@ -98,7 +98,7 @@ class SessionPlanFunctions {
     try {
       await docRef(_collectionPath, sessionPlanId).delete();
     } catch (e) {
-      print('Error deleting session plan: $e');
+      dprint('Error deleting session plan: $e');
     }
   }
 
@@ -115,7 +115,7 @@ class SessionPlanFunctions {
           .map((doc) => SessionPlan.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      print('Error fetching session plans: $e');
+      dprint('Error fetching session plans: $e');
       return [];
     }
   }
@@ -128,7 +128,7 @@ class SessionPlanFunctions {
           ? SessionPlan.fromSnapshot(snapshot)
           : null;
     } catch (e) {
-      print('Error fetching session plan by ID: $e');
+      dprint('Error fetching session plan by ID: $e');
       return null;
     }
   }

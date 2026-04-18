@@ -45,10 +45,10 @@ abstract class EntitySync<T> {
     if (!hasLoadedFromDb) {
       hasLoadedFromDb = true;
       await loadFromDb();
-      print('after await loadFromDb();');
+      dprint('after await loadFromDb();');
 
       if (enableDebug) {
-        print(
+        dprint(
             'Loaded ${rawIdToDbEntity.length} from the $collectionName collection.');
       }
     }
@@ -60,20 +60,20 @@ abstract class EntitySync<T> {
       String? newRawId;
 
       if (enableDebug && (collectionName == 'lessons')) {
-        print('syncing ${jsonEntity['title']}');
+        dprint('syncing ${jsonEntity['title']}');
       }
 
       if (dbType == null) {
         newRawId = createNewEntity(jsonType, fullParentId, sortOrderCounter);
 
         if (enableDebug) {
-          print('Created $collectionName ${jsonEntity['title']}. $newRawId');
+          dprint('Created $collectionName ${jsonEntity['title']}. $newRawId');
         }
       } else if (!compareEntity(dbType, jsonType, sortOrderCounter)) {
         updateEntity(dbType, jsonType, fullParentId, sortOrderCounter);
 
         if (enableDebug) {
-          print('Updated $collectionName ${jsonEntity['title']}.');
+          dprint('Updated $collectionName ${jsonEntity['title']}.');
         }
       }
 
@@ -90,11 +90,11 @@ abstract class EntitySync<T> {
     }
 
     if (deleteLeftOver) {
-      print('Deleting leftover $collectionName.');
-      print('raw DB ids: ${rawIdToDbEntity.keys.toList()
+      dprint('Deleting leftover $collectionName.');
+      dprint('raw DB ids: ${rawIdToDbEntity.keys.toList()
         ..sort((a, b) => a.compareTo(b))
         ..join(', ')}');
-      print('raw synced ids: ${syncedRawIds.toList()
+      dprint('raw synced ids: ${syncedRawIds.toList()
         ..sort((a, b) => a.compareTo(b))
         ..join(', ')}');
 
@@ -104,7 +104,7 @@ abstract class EntitySync<T> {
         deleteEntity(obsoleteId);
 
         if (enableDebug) {
-          print('Deleted $obsoleteId from the $collectionName collection.');
+          dprint('Deleted $obsoleteId from the $collectionName collection.');
         }
       }
     }

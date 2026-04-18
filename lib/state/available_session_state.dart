@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:social_learning/data/course.dart';
 import 'package:social_learning/data/session.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class AvailableSessionState extends ChangeNotifier {
 
@@ -16,14 +17,14 @@ class AvailableSessionState extends ChangeNotifier {
   List<Session> get availableSessions => _availableSessions;
 
   AvailableSessionState(LibraryState libraryState) {
-    print('AvailableSessionState cstr()');
+    dprint('AvailableSessionState cstr()');
     libraryState.addListener(() { onLibraryStateUpdated(libraryState);});
 
     onLibraryStateUpdated(libraryState);
   }
 
   void onLibraryStateUpdated(LibraryState libraryState) {
-    print('AvailableSessionState.onLibraryStateUpdated(); course: ${libraryState.selectedCourse?.title}');
+    dprint('AvailableSessionState.onLibraryStateUpdated(); course: ${libraryState.selectedCourse?.title}');
     Course? newCourse = libraryState.selectedCourse;
     if (_lastCourse == newCourse) {
       // No change. Ignore!
@@ -50,7 +51,7 @@ class AvailableSessionState extends ChangeNotifier {
         .snapshots()
         .listen((snapshot) {
       _availableSessions = snapshot.docs.map((e) => Session.fromQuerySnapshot(e)).toList();
-      print('Loaded ${_availableSessions.length} available sessions.');
+      dprint('Loaded ${_availableSessions.length} available sessions.');
       notifyListeners();
     });
   }

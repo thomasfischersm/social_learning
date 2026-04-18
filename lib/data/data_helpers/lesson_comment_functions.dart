@@ -25,16 +25,16 @@ class LessonCommentFunctions {
       'creatorUid': user.uid,
       'createdAt': FieldValue.serverTimestamp(),
     });
-    print('finished firebase call to create comment');
+    dprint('finished firebase call to create comment');
   }
 
   static Future<void> deleteLessonComment(LessonComment comment) async {
-    print('Deleting comment: ${comment.id}');
+    dprint('Deleting comment: ${comment.id}');
     await _firestore
         .doc('/lessonComments/${comment.id}')
         .delete()
         .onError((error, stackTrace) {
-      print('Failed to delete comment: $error');
+      dprint('Failed to delete comment: $error');
       debugPrintStack(stackTrace: stackTrace);
     });
   }

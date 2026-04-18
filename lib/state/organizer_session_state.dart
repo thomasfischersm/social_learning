@@ -27,6 +27,7 @@ import 'package:social_learning/state/graduation_status.dart';
 import 'package:social_learning/state/library_state.dart';
 import 'package:social_learning/data/data_helpers/session_participant_functions.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class OrganizerSessionState extends ChangeNotifier {
   final LibraryState _libraryState;
@@ -114,7 +115,7 @@ class OrganizerSessionState extends ChangeNotifier {
           .where('courseId', isEqualTo: docRef('courses', courseId))
           .get()
           .then((snapshot) {
-            print(
+            dprint(
               'Got active session where this user is the organiser: ${snapshot.docs.length}, incomplete: ${snapshot.metadata.hasPendingWrites}',
             );
             if ((snapshot.size > 0) && !snapshot.metadata.hasPendingWrites) {
@@ -126,12 +127,12 @@ class OrganizerSessionState extends ChangeNotifier {
                 _subscribeToSession(sessionId);
                 _sessionSubscription.loadItemManually(session);
               } else {
-                print('Active session found for a different course; ignoring.');
+                dprint('Active session found for a different course; ignoring.');
               }
             }
           })
           .onError((error, stackTrace) {
-            print('Failed to get active session from Firestore: $error');
+            dprint('Failed to get active session from Firestore: $error');
           });
     }
   }
@@ -180,7 +181,7 @@ class OrganizerSessionState extends ChangeNotifier {
     String sessionId = sessionDoc.id;
 
     // Create organizer participant.
-    print('before creating participant');
+    dprint('before creating participant');
     await SessionParticipantFunctions.createParticipant(
       sessionId: sessionId,
       userId: organizer.id,
@@ -188,7 +189,7 @@ class OrganizerSessionState extends ChangeNotifier {
       courseId: course.id!,
       isInstructor: organizer.isAdmin,
     );
-    print('after creating participant');
+    dprint('after creating participant');
 
     // Listen to session changes.
     _subscribeToSession(sessionId);
@@ -254,7 +255,7 @@ class OrganizerSessionState extends ChangeNotifier {
 
     // Determine the last round.
     int currentRound = _sessionPairingSubscription.getLatestRoundNumber() + 1;
-    print('Next round number is $currentRound');
+    dprint('Next round number is $currentRound');
 
     // Save pairings.
     for (LearnerPair pair in pairedSession.pairs) {
@@ -275,9 +276,9 @@ class OrganizerSessionState extends ChangeNotifier {
             'additionalStudentIds': [],
           })
           .catchError((error) {
-            print('Failed to save session pairing: $error');
+            dprint('Failed to save session pairing: $error');
           });
-      print('Saved session pair.');
+      dprint('Saved session pair.');
     }
 
     // Add unpaired students to the instructor session.
@@ -295,7 +296,7 @@ class OrganizerSessionState extends ChangeNotifier {
         .getParticipantByParticipantId(participantId);
 
     if (participant == null) {
-      print('Participant not found for participantId $participantId');
+      dprint('Participant not found for participantId $participantId');
       return null;
     }
     return _participantUsersSubscription.getUser(participant);
@@ -347,7 +348,7 @@ class OrganizerSessionState extends ChangeNotifier {
     // TODO: This doesn't really work because we can't modify the SessionParticipant
     // documents that are owned by the session participants!
 
-    //   print('Ending the current round');
+    //   dprint('Ending the current round');
     //
     //   List<SessionPairing>? currentRound =
     //       _sessionPairingSubscription.getLastRound();
@@ -357,13 +358,13 @@ class OrganizerSessionState extends ChangeNotifier {
     //
     //     for (SessionPairing pairing in currentRound) {
     //       // Increase the teach count for the mentor.
-    //       print('Incrementing teach count for ${pairing.mentorId.id}');
+    //       dprint('Incrementing teach count for ${pairing.mentorId.id}');
     //       updateFutures.add(FirebaseFirestore.instance
     //           .doc('/sessionParticipants/${pairing.mentorId.id}')
     //           .update({'teachCount': FieldValue.increment(1)}));
     //
     //       // Increase the learn count for the mentee.
-    //       print('Incrementing learn count for ${pairing.menteeId.id}');
+    //       dprint('Incrementing learn count for ${pairing.menteeId.id}');
     //       updateFutures.add(FirebaseFirestore.instance
     //           .doc('/sessionParticipants/${pairing.menteeId.id}')
     //           .update({'learnCount': FieldValue.increment(1)}));
@@ -389,10 +390,10 @@ class OrganizerSessionState extends ChangeNotifier {
     docRef('sessionPairings', sessionPairing.id!)
         .update({'mentorId': null})
         .then((value) {
-          print('Removed mentor from session pairing.');
+          dprint('Removed mentor from session pairing.');
         })
         .catchError((error) {
-          print('Failed to remove mentor from session pairing: $error');
+          dprint('Failed to remove mentor from session pairing: $error');
         });
   }
 
@@ -400,10 +401,10 @@ class OrganizerSessionState extends ChangeNotifier {
     docRef('sessionPairings', sessionPairing.id!)
         .update({'menteeId': null})
         .then((value) {
-          print('Removed mentee from session pairing.');
+          dprint('Removed mentee from session pairing.');
         })
         .catchError((error) {
-          print('Failed to remove mentee from session pairing: $error');
+          dprint('Failed to remove mentee from session pairing: $error');
         });
   }
 
@@ -415,10 +416,10 @@ class OrganizerSessionState extends ChangeNotifier {
           ),
         })
         .then((value) {
-          print('Added mentor to session pairing.');
+          dprint('Added mentor to session pairing.');
         })
         .catchError((error) {
-          print('Failed to add mentor to session pairing: $error');
+          dprint('Failed to add mentor to session pairing: $error');
         });
   }
 
@@ -430,10 +431,10 @@ class OrganizerSessionState extends ChangeNotifier {
           ),
         })
         .then((value) {
-          print('Added mentee to session pairing.');
+          dprint('Added mentee to session pairing.');
         })
         .catchError((error) {
-          print('Failed to add mentee to session pairing: $error');
+          dprint('Failed to add mentee to session pairing: $error');
         });
   }
 

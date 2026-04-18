@@ -9,6 +9,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/lesson_cover_image_
 import 'package:social_learning/ui_foundation/helper_widgets/user_profile_widgets/profile_image_widget_v2.dart';
 import 'package:social_learning/ui_foundation/lesson_detail_page.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class SessionRoundCard extends StatelessWidget {
   final String roundNumber;
@@ -65,7 +66,7 @@ class SessionRoundCard extends StatelessWidget {
       _isTeaching = false;
       _isLearning = false;
     }
-    print('_otherUser: $_otherUser');
+    dprint('_otherUser: $_otherUser');
   }
 
   @override

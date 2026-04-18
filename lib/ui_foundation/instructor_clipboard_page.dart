@@ -10,6 +10,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/instructor_clipboar
 import 'package:social_learning/ui_foundation/helper_widgets/instructor_clipboard/instructor_clipboard_table_widget.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 /// Arguments to pass into the check-off page.
 class InstructorClipboardArgument {
@@ -54,7 +55,7 @@ class _StudentCheckOffState extends State<InstructorClipboardPage> {
     final id = _studentId, uid = _studentUid;
     if (id != null && uid != null) {
       UserFunctions.getUserById(id).then((user) {
-        print('Loaded student user: $user');
+        dprint('Loaded student user: $user');
         setState(() => _student = user);
       });
       PracticeRecordFunctions.getLessonsLearnedCount(uid).then((count) {

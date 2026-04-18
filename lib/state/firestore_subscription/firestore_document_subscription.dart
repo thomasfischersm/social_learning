@@ -19,25 +19,25 @@ class FirestoreDocumentSubscription<T> {
   FirestoreDocumentSubscription(this._convertSnapshot, this._notifyChange);
 
   void resubscribe(String Function() docPath) {
-    print('Attempting to subscribe to ${docPath()}');
+    dprint('Attempting to subscribe to ${docPath()}');
     _streamSubscription?.cancel();
 
     _streamSubscription = FirebaseFirestore.instance
         .doc(docPath())
         .snapshots(includeMetadataChanges: true)
         .listen((DocumentSnapshot<Map<String, dynamic>> docSnapshot) {
-      print('Got a new snapshot for ${docPath()}');
+      dprint('Got a new snapshot for ${docPath()}');
       if (!docSnapshot.metadata.hasPendingWrites) {
         _item = _convertSnapshot(docSnapshot);
       } else {
-        print('Ignoring update to ${docPath()} because it is pending writes.');
+        dprint('Ignoring update to ${docPath()} because it is pending writes.');
       }
 
       _isInitialized = true;
 
       _notifyChange();
     }, onError: (error) {
-      print('Error subscribing to ${docPath()}: $error');
+      dprint('Error subscribing to ${docPath()}: $error');
     });
   }
 

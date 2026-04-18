@@ -8,6 +8,7 @@ import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.d
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
 import 'package:social_learning/ui_foundation/ui_constants/whatsapp_util.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class CourseCreatePage extends StatefulWidget {
   const CourseCreatePage({super.key});
@@ -149,7 +150,7 @@ class CourseCreateState extends State<CourseCreatePage> {
   void _createCourse() async {
     // Ignore until the form is complete.
     if (!_isFormComplete) {
-      print('Form is not complete');
+      dprint('Form is not complete');
       return;
     }
 
@@ -157,7 +158,7 @@ class CourseCreateState extends State<CourseCreatePage> {
     String invitationCode = invitationCodeController.text.trim();
     String description = descriptionController.text.trim();
     String whatsappLink = whatsappLinkController.text.trim();
-    print('Attempting to create course $courseName');
+    dprint('Attempting to create course $courseName');
 
     var applicationState =
         Provider.of<ApplicationState>(context, listen: false);

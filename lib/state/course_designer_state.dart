@@ -27,6 +27,7 @@ import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/data/data_helpers/skill_rubrics_functions.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class CourseDesignerState extends ChangeNotifier {
   final LibraryState _libraryState;
@@ -90,7 +91,7 @@ class CourseDesignerState extends ChangeNotifier {
   }
 
   Future<void> _loadDataForCourse(String courseId) async {
-    print('Loading course data for courseId: $courseId');
+    dprint('Loading course data for courseId: $courseId');
     final planFuture =
         SessionPlanFunctions.getOrCreateSessionPlanForCourse(courseId);
     final objectivesFuture =
@@ -106,7 +107,7 @@ class CourseDesignerState extends ChangeNotifier {
     try {
       plan = await planFuture;
     } on FirebaseException catch (e) {
-      print(
+      dprint(
           'Error retrieving session plan for course $courseId: ${e.code} ${e.message}');
       rethrow;
     }

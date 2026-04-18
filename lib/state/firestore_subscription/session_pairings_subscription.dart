@@ -14,7 +14,7 @@ class SessionPairingsSubscription
       : super(
           'sessionPairings',
           (snapshot) {
-            print('Trying to load session paring: ${snapshot.id}');
+            dprint('Trying to load session paring: ${snapshot.id}');
             return SessionPairing.fromSnapshot(snapshot);
           },
           notifyChange,

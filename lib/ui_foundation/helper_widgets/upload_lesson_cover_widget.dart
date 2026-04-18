@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/state/download_url_cache_state.dart';
 import 'package:social_learning/state/library_state.dart';
+import 'package:social_learning/util/print_util.dart';
 
 /// A widget that shows the cover photo for a lesson. The user can tap to
 /// upload a new photo. If there is no photo, a place holder is shown.
@@ -141,7 +142,7 @@ class UploadLessonCoverWidgetState extends State<UploadLessonCoverWidget> {
             context.read<DownloadUrlCacheState>();
         cacheState.invalidate(fireStoragePath);
       } catch (e) {
-        print('Error uploading photo: $e');
+        dprint('Error uploading photo: $e');
       }
 
       // Cause the photo to be re-rendered.
@@ -149,7 +150,7 @@ class UploadLessonCoverWidgetState extends State<UploadLessonCoverWidget> {
         _lastCoverFireStoragePath = null;
       });
 
-      print('Uploaded photo of length $length to $fireStoragePath');
+      dprint('Uploaded photo of length $length to $fireStoragePath');
     }
   }
 }

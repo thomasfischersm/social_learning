@@ -76,7 +76,7 @@ class ScopeContext {
   }
 
   _initRequireRecommendedItemIds() {
-    print('Initializing required and recommended item IDs...');
+    dprint('Initializing required and recommended item IDs...');
     requiredItemIds.clear();
     recommendedItemIds.clear();
 
@@ -86,7 +86,7 @@ class ScopeContext {
             TeachableItemInclusionStatus.explicitlyIncluded)
         .toSet();
 
-    print('Explicitly selected items: ${explicitlySelectedItems.length}');
+    dprint('Explicitly selected items: ${explicitlySelectedItems.length}');
 
     Set<TeachableItem> requiredItemsToVisit = {};
     Set<TeachableItem> recommendedItemsToVisit = {};
@@ -115,14 +115,14 @@ class ScopeContext {
       }
     }
 
-    print('Initial required items to visit: ${requiredItemsToVisit.length} and ${recommendedItemsToVisit.length}');
+    dprint('Initial required items to visit: ${requiredItemsToVisit.length} and ${recommendedItemsToVisit.length}');
     while (
         requiredItemsToVisit.isNotEmpty || recommendedItemsToVisit.isNotEmpty) {
       // Visit required items.
       if (requiredItemsToVisit.isNotEmpty) {
         final item = requiredItemsToVisit.first;
         requiredItemsToVisit.remove(item);
-        print('Visiting required item: ${item.name}');
+        dprint('Visiting required item: ${item.name}');
 
         // Stop here if the user excluded the item.
         if (item.inclusionStatus == TeachableItemInclusionStatus.explicitlyExcluded) {
@@ -160,7 +160,7 @@ class ScopeContext {
         // Visit recommended items.
         final item = recommendedItemsToVisit.first;
         recommendedItemsToVisit.remove(item);
-        print('Visiting recommended item: ${item.name}');
+        dprint('Visiting recommended item: ${item.name}');
 
         // Stop here if the user excluded the item.
         if (item.inclusionStatus == TeachableItemInclusionStatus.explicitlyExcluded) {
@@ -203,7 +203,7 @@ class ScopeContext {
       }
     }
 
-    print(
+    dprint(
         'Done initializing required and recommended item IDs: Required: ${requiredItemIds.length} Recommended: ${recommendedItemIds.length}');
   }
 

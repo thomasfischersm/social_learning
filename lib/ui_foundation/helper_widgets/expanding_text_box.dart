@@ -74,7 +74,7 @@ class ExpandingTextBoxState extends State<ExpandingTextBox>
         setState(() => _isTruncated = textPainter.didExceedMaxLines);
       });
     }
-    print(
+    dprint(
         'Text is truncated: $_isTruncated, exceed max lines ${textPainter.didExceedMaxLines}, max width: $maxWidth');
   }
 }

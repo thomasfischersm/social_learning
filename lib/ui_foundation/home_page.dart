@@ -10,6 +10,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/bottom_bar_v2.dart'
 import 'package:social_learning/ui_foundation/helper_widgets/general/learning_lab_app_bar.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
+import 'package:social_learning/util/print_util.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'ui_constants/navigation_enum.dart';
@@ -250,7 +251,7 @@ class HomePageState extends State<HomePage> {
 
   _openCourse(Course course, LibraryState libraryState) {
     libraryState.selectedCourse = course;
-    print('Open a course from the home page.');
+    dprint('Open a course from the home page.');
     Navigator.pushNamed(context, NavigationEnum.levelList.route);
   }
 
@@ -265,7 +266,7 @@ class HomePageState extends State<HomePage> {
     String invitationCode = _invitationCodeController.text.toLowerCase();
     Course? course =
         await libraryState.joinPrivateCourse(invitationCode);
-    print('Joined course: ${course?.title}');
+    dprint('Joined course: ${course?.title}');
 
     if (course == null) {
       Fluttertoast.showToast(
@@ -281,10 +282,10 @@ class HomePageState extends State<HomePage> {
 
     // Navigate to the curriculum of the private course.
     if (context.mounted) {
-      print(
+      dprint(
           'The currently selected course is ${libraryState.selectedCourse?.title}');
       Navigator.pushNamed(context, NavigationEnum.levelList.route);
-      print('Navigated to curriculum');
+      dprint('Navigated to curriculum');
     }
     // TODO: The page switch isn't working yet.
   }

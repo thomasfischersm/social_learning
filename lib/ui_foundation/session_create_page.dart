@@ -10,6 +10,7 @@ import 'package:social_learning/ui_foundation/helper_widgets/general/learning_la
 import 'package:social_learning/ui_foundation/ui_constants/custom_text_styles.dart';
 import 'package:social_learning/ui_foundation/ui_constants/custom_ui_constants.dart';
 import 'package:social_learning/ui_foundation/ui_constants/navigation_enum.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class SessionCreatePage extends StatefulWidget {
   const SessionCreatePage({super.key});
@@ -110,7 +111,7 @@ class SessionCreateState extends State<SessionCreatePage> {
   }
 
   void _createSession(String sessionName, SessionType sessionType) async {
-    print('Attempting to create session $sessionName');
+    dprint('Attempting to create session $sessionName');
 
     ApplicationState applicationState =
         Provider.of<ApplicationState>(context, listen: false);

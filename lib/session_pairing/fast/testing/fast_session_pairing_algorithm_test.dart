@@ -4,6 +4,7 @@ import 'package:social_learning/session_pairing/testing/PairedSessionTester.dart
 import 'package:social_learning/session_pairing/testing/application_state_mock.dart';
 import 'package:social_learning/session_pairing/testing/library_state_mock.dart';
 import 'package:social_learning/session_pairing/testing/organizer_session_state_mock.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class FastSessionPairingAlgorithmTest {
   void testAll() {
@@ -30,9 +31,9 @@ class FastSessionPairingAlgorithmTest {
         organizerSessionState, libraryState);
 
     // Output the result.
-    print('***** Test Result ****');
+    dprint('***** Test Result ****');
     pairedSession.debugPrint();
-    print('********************');
+    dprint('********************');
 
     // Evaluate the result.
     // Evaluate the result.
@@ -60,9 +61,9 @@ class FastSessionPairingAlgorithmTest {
         organizerSessionState, libraryState);
 
     // Output the result.
-    print('***** Test Result ****');
+    dprint('***** Test Result ****');
     pairedSession.debugPrint();
-    print('********************');
+    dprint('********************');
 
     // Evaluate the result.
     // Evaluate the result.
@@ -91,9 +92,9 @@ class FastSessionPairingAlgorithmTest {
         organizerSessionState, libraryState);
 
     // Output the result.
-    print('***** Test Result ****');
+    dprint('***** Test Result ****');
     pairedSession.debugPrint();
-    print('********************');
+    dprint('********************');
 
     // Evaluate the result.
     // Evaluate the result.
@@ -128,9 +129,9 @@ class FastSessionPairingAlgorithmTest {
         organizerSessionState, libraryState);
 
     // Output the result.
-    print('***** Test Result ****');
+    dprint('***** Test Result ****');
     pairedSession.debugPrint();
-    print('********************');
+    dprint('********************');
 
     // Evaluate the result.
     // Evaluate the result.
