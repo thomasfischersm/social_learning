@@ -17,6 +17,9 @@ class PairingUnitSet {
   String createUniqueString() {
     // Make sure that all units and learners have a consistent sort order!!!
 
+    // Note: We don't need the leftover units because they are always the same
+    // for the same units.
+
     List<String> unitStrings = pairingUnits.map((unit) => unit.createUniqueString()).toList();
 
     unitStrings.sort();
