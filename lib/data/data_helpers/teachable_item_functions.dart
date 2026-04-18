@@ -3,6 +3,7 @@ import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/teachable_item.dart';
 import 'package:social_learning/data/teachable_item_inclusion_status.dart';
 import 'package:social_learning/data/firestore_service.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class TeachableItemFunctions {
   // Getter for Firestore so that tests can provide a fake instance via

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/teachable_item_category.dart'; // For deleting items within a category
 import 'package:social_learning/data/firestore_service.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class TeachableItemCategoryFunctions {
   // Getter for Firestore so tests can override the instance.

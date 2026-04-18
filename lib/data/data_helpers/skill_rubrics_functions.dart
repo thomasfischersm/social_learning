@@ -3,6 +3,7 @@ import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/skill_rubric.dart';
 import 'package:social_learning/cloud_functions/skill_rubric_generation_response.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class SkillRubricsFunctions {
   static FirebaseFirestore get _firestore => FirestoreService.instance;

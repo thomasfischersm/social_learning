@@ -8,6 +8,7 @@ import 'package:social_learning/data/data_helpers/teachable_item_functions.dart'
 import 'package:social_learning/data/data_helpers/teachable_item_category_functions.dart';
 import 'package:social_learning/data/data_helpers/teachable_item_tag_functions.dart';
 import 'package:social_learning/data/data_helpers/course_profile_functions.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class ScopeContext {
   final List<TeachableItem> items;

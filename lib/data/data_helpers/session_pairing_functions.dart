@@ -5,6 +5,7 @@ import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/session_pairing.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class SessionPairingFunctions {
   static String addPairing(SessionPairing pairing, WriteBatch batch) {

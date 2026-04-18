@@ -6,6 +6,7 @@ import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:social_learning/data/lesson_comment.dart';
 import 'package:social_learning/data/user.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class LessonCommentFunctions {
   // Use a getter instead of a `final` field so tests can substitute

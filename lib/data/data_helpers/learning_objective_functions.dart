@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/learning_objective.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class LearningObjectiveFunctions {
   // Access Firestore through a getter so that tests can inject a

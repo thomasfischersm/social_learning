@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
 import 'package:social_learning/data/course_profile.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class CourseProfileFunctions {
   // Use a getter so tests can override the Firestore instance via

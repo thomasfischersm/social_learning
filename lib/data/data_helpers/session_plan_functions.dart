@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/firestore_service.dart';
 import 'package:social_learning/data/session_plan.dart';
 import 'package:social_learning/data/data_helpers/reference_helper.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class SessionPlanFunctions {
   // Getter for Firestore to allow injection of a fake instance in tests.

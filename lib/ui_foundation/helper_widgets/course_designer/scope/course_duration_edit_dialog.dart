@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:social_learning/ui_foundation/helper_widgets/course_designer/scope/scope_context.dart';
+import 'package:social_learning/util/print_util.dart';
 
 class CourseDurationEditDialog extends StatefulWidget {
   final ScopeContext scopeContext;
