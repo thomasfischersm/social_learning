@@ -322,6 +322,14 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
                 style: CustomTextStyles.subHeadline,
                 textAlign: TextAlign.center,
               ),
+              SizedBox(height: 16),
+              Text(
+                'We\'ve got a great next group lined up for you. '
+                'They are still finishing up.\n\n '
+                'So keep checking here so that you don\'t miss when they are read.',
+                style: CustomTextStyles.subHeadline,
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
