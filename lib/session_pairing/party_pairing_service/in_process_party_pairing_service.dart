@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:social_learning/data/session.dart';
@@ -34,7 +36,7 @@ class InProcessPartyPairingService extends ChangeNotifier {
 
     _organizerSessionState.addListener(_doIncrementalPairingGuard);
 
-    _doIncrementalPairingGuard();
+    unawaited(_doIncrementalPairingGuard());
 
     dprint('Started InProcessPartyPairingService.');
     notifyListeners();
@@ -48,7 +50,7 @@ class InProcessPartyPairingService extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _doIncrementalPairingGuard() {
+  Future<void> _doIncrementalPairingGuard() async {
     dprint(
       'Triggered incremental pairing. ('
       'isRunning: $_isRunning, '
@@ -67,17 +69,17 @@ class InProcessPartyPairingService extends ChangeNotifier {
 
     _isPairing = true;
 
-    _doIncrementalPairing();
+    await _doIncrementalPairing();
 
     _isPairing = false;
 
     if (_hasPendingPairingRequest) {
       _hasPendingPairingRequest = false;
-      _doIncrementalPairingGuard();
+      await _doIncrementalPairingGuard();
     }
   }
 
-  void _doIncrementalPairing() {
+  Future<void> _doIncrementalPairing() async {
     dprint('_doIncrementalPairing is called');
     Session? currentSession = _organizerSessionState.currentSession;
     if (currentSession == null || !currentSession.isActive) {
@@ -124,7 +126,7 @@ class InProcessPartyPairingService extends ChangeNotifier {
     );
     if (unpairedCount >= unitSize + 1 || (activeParticipantCount == unitSize)) {
       dprint('Actually doing the incremental pairing');
-      PartyPairingAlgorithm(
+      await PartyPairingAlgorithm(
         unitSize,
       ).pairAvailableStudentsAndPersist(pairingContext);
     }

@@ -23,11 +23,11 @@ class PartyPairingAlgorithm {
 
   PartyPairingAlgorithm(this.unitSize);
 
-  void pairAvailableStudentsAndPersist(PartyPairingContext pairingContext) {
+  Future<void> pairAvailableStudentsAndPersist(PartyPairingContext pairingContext) async {
     PairingUnitSet? pairingUnitSet = pairAvailableStudents(pairingContext);
 
     if (pairingUnitSet != null) {
-      persist(pairingUnitSet, pairingContext);
+      await persist(pairingUnitSet, pairingContext);
     }
   }
 
@@ -420,10 +420,10 @@ class PartyPairingAlgorithm {
     );
   }
 
-  void persist(
+  Future<void> persist(
     PairingUnitSet pairingUnitSet,
     PartyPairingContext pairingContext,
-  ) {
+  ) async {
     OrganizerSessionState organizerSessionState =
         pairingContext.organizerSessionState;
     WriteBatch batch = FirestoreService.instance.batch();
@@ -458,6 +458,6 @@ class PartyPairingAlgorithm {
       organizerSessionState.addPairing(sessionPairing, batch);
     }
 
-    batch.commit();
+    await batch.commit();
   }
 }
