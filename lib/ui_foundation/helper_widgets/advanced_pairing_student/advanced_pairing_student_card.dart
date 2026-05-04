@@ -115,11 +115,13 @@ class _AdvancedPairingStudentCardState
 
   Widget _buildRoundAndLessonRow(BuildContext context) {
     final lesson = widget.lesson;
-    final roundPrefix = 'Round ${widget.roundNumber}';
+    // final roundPrefix = 'Round ${widget.roundNumber}';
+    final roundPrefix = 'Lesson: ';
 
     if (lesson == null) {
       return Text(
-        '$roundPrefix - Lesson not assigned',
+        // '$roundPrefix - Lesson not assigned',
+        'Lesson not assigned',
         style: CustomTextStyles.subHeadline,
       );
     }
@@ -127,12 +129,12 @@ class _AdvancedPairingStudentCardState
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Text('$roundPrefix - ', style: CustomTextStyles.subHeadline),
+        // Text('$roundPrefix - ', style: CustomTextStyles.subHeadline),
         InkWell(
           onTap: () =>
               LessonDetailArgument.goToLessonDetailPage(context, lesson.id!),
           child: Text(
-            lesson.title,
+            'Lesson: ${lesson.title}',
             style: CustomTextStyles.subHeadline.copyWith(
               decoration: TextDecoration.underline,
             ),

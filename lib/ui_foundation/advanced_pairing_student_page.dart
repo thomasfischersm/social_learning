@@ -243,7 +243,7 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
           (pairing.mentorId?.id == currentUserId) ||
           (pairing.menteeId?.id == currentUserId) ||
           pairing.additionalStudentIds.any((ref) => ref.id == currentUserId);
-      if (isCurrentUser) {
+      if (isCurrentUser && !pairing.isCompleted) {
         relevantPairings.add(pairing);
       }
     }
@@ -311,26 +311,29 @@ class _AdvancedPairingStudentState extends State<AdvancedPairingStudentPage> {
       aspectRatio: 3 / 2,
       child: Card(
         color: Colors.white,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text(
-                'Please, wait for the next available pairing!',
-                style: CustomTextStyles.subHeadline,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'We\'ve got a great next group lined up for you. '
-                'They are still finishing up.\n\n '
-                'So keep checking here so that you don\'t miss when they are read.',
-                style: CustomTextStyles.subHeadline,
-                textAlign: TextAlign.center,
-              ),
-            ],
+        child: Padding(
+          padding: EdgeInsets.all(4),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text(
+                  'Please, wait for the next available pairing!',
+                  style: CustomTextStyles.subHeadline,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'We\'ve got a great next group lined up for you. '
+                  'They are still finishing up.\n\n '
+                  'So keep checking here so that you don\'t miss when they are ready.',
+                  style: CustomTextStyles.getBodyNote(context),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
           ),
         ),
       ),
