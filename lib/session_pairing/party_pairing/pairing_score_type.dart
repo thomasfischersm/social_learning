@@ -5,8 +5,8 @@ import 'package:social_learning/session_pairing/party_pairing/pairing_score_weig
 enum PairingScoreType {
   // Unit scope
   diversePartners(.unit, .fineTune, .maximize),
-  balanceHostAccess(.unit, .fineTune, .minimizeDispersion),
-  reduceTeachingDeficit(.unit, .important, .minimizeDispersion),
+  balanceHostAccess(.unit, .important, .minimizeDispersion),
+  reduceTeachingDeficit(.unit, .critical, .minimizeDispersion),
   equalizeParticipation(.unit, .important, .minimizeDispersion),
   minimizePracticing(.unit, .important, .minimize),
 

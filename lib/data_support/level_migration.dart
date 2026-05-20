@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:social_learning/data/Level.dart';
 import 'package:social_learning/data/lesson.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:social_learning/util/print_util.dart';
 
 /// Migrates the db version where levels were a type of lesson to where it's
 /// a high level object.

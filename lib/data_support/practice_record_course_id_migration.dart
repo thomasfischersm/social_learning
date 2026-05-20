@@ -1,6 +1,7 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:social_learning/util/print_util.dart';
 
 /// A migration tool. In order to query practice records more efficiently, the
 /// data was denormalized to add a courseId. These are methods to backfill it
