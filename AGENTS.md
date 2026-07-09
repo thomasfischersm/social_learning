@@ -27,6 +27,14 @@ Students can find other students to learn from, teach to, and track their progre
 - Prefer using types for references in methods over final.
 - Prefer one class per file with exceptions for stateful widgets where it makes sense to combine the widget and state class. Also page arguments are fine in the same page. However, especially of a page has classes for widgets, the pattern is to create a subdirectory for each page under helper_widgets. (If the page is called CourseHomePage, it would have a subdirectory called course_home where all its classes for widgets go.)
 
+## Uncertainty
+You'll be uncertain at certain times on how to implement something. I might not have thought through
+an edge case or there is another conflict. I've noticed that you often make a best guess. These
+sometimes result in errors. Any time you are uncertain or had to make a choice that wasn't clear
+from the prompt, create a TODO comment for me. The TODO comment should explain the problem and
+why you chose what you did. In other words, any time that you make a guess, create such a comment
+so that I can review your guess.
+
 ## Build & Test Commands
 ```bash
 flutter pub get
